@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:bg_tools/core/services/image_service.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 // Виджет загрузки изображений
 class ImagePickerWidget extends StatefulWidget {
@@ -164,7 +165,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? buildLoadingScreen()
               : _currentImagePath != null
               ? Stack(
                   fit: StackFit.expand,

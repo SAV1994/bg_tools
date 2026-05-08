@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class GamesListScreen extends ConsumerStatefulWidget {
   const GamesListScreen({super.key});
@@ -56,7 +57,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen> {
         builder: (context, snapshot) {
           // Показываем индикатор загрузки
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            buildLoadingScreen();
           }
 
           // Обрабатываем ошибки

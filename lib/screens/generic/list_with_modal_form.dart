@@ -1,11 +1,12 @@
-import 'package:bg_tools/core/consts.dart';
-import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 
+import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class ListWithModalFormConfig<T, D, C> {
   final String pageTitle;
@@ -68,16 +69,7 @@ class ListWithModalFormScreen<T> extends ConsumerWidget {
             },
           );
         },
-        loading: () => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(getLoadingMsg()),
-            ],
-          ),
-        ),
+        loading: () => buildLoadingScreen(),
         error: (err, _) => Text('ОШИБКА'),
       ),
     );
@@ -173,11 +165,7 @@ class _ModalFormState extends ConsumerState<ModalForm> {
           spacing: 16,
           mainAxisSize: MainAxisSize.min,
           children: _isLoading
-              ? [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text(getLoadingMsg()),
-                ]
+              ? [buildLoadingScreen()]
               : [
                   if (widget.instanceId != null)
                     IconButton(

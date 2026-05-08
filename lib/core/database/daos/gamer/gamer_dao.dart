@@ -8,7 +8,7 @@ part 'gamer_dao.g.dart';
 @DriftAccessor(tables: [Gamers])
 class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
   GamerDao(super.db);
-  
+
   // Создание новой записи
   Future<int> create(GamersCompanion gamer) async {
     return await into(gamers).insert(gamer);
@@ -16,7 +16,9 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
 
   // Редактирование
   Future<bool> updInstance(int gamerId, GamersCompanion gamer) async {
-    final updateResult = await (update(gamers)..where((g) => g.id.equals(gamerId))).write(gamer);
+    final updateResult = await (update(
+      gamers,
+    )..where((g) => g.id.equals(gamerId))).write(gamer);
     return updateResult > 0;
   }
 
@@ -30,18 +32,22 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
     return await (select(gamers)..where((g) => g.isOwner.equals(false))).get();
   }
 
-   // Все игроки, включая владельца приложения
+  // Все игроки, включая владельца приложения
   Future<List<Gamer>> getEverybody() async {
     return await (select(gamers)).get();
   }
 
   // Игрок
   Future<Gamer?> get(int gamerId) async {
-    return await (select(gamers)..where((g) => g.id.equals(gamerId))).getSingleOrNull();
+    return await (select(
+      gamers,
+    )..where((g) => g.id.equals(gamerId))).getSingleOrNull();
   }
 
   // Владелец
   Future<Gamer?> getOwner() async {
-    return await (select(gamers)..where((g) => g.isOwner.equals(true))).getSingleOrNull();
+    return await (select(
+      gamers,
+    )..where((g) => g.isOwner.equals(true))).getSingleOrNull();
   }
 }

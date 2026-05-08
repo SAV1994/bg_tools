@@ -9,6 +9,7 @@ import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
 import 'package:bg_tools/core/widgets/select_with_search.dart';
 import 'package:bg_tools/screens/gaming_session/form_widgets/gamer_card_widget.dart';
@@ -163,7 +164,7 @@ class _GamingSessionFormScreenState
       return;
     }
 
-    // Показываем диалог выбора дизайнера
+    // Показываем диалог игрока
     showDialog(
       context: context,
       builder: (context) {
@@ -413,13 +414,7 @@ class _GamingSessionFormScreenState
         ],
       ),
       body: _isLoading
-          ? Center(
-              child: Column(
-                spacing: 16,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [CircularProgressIndicator(), Text(getLoadingMsg())],
-              ),
-            )
+          ? buildLoadingScreen()
           : SingleChildScrollView(
               padding: EdgeInsets.all(16),
               child: Form(

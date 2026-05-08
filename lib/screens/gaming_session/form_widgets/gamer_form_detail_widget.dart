@@ -63,7 +63,10 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Отмена'),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('Отмена'),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -87,7 +90,10 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
                       );
                     }
                   },
-                  child: const Text('Добавить'),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('Добавить'),
+                  ),
                 ),
               ),
             ],

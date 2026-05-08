@@ -1,11 +1,14 @@
+import 'package:flutter/material.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class NotesList extends ConsumerStatefulWidget {
   final int gameId;
@@ -96,7 +99,7 @@ class _NotesListState extends ConsumerState<NotesList> {
         builder: (context, snapshot) {
           // Показываем индикатор загрузки
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return buildLoadingScreen();
           }
 
           // Обрабатываем ошибки

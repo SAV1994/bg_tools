@@ -1,12 +1,13 @@
-import 'package:bg_tools/core/database/app_database.dart';
-import 'package:bg_tools/core/widgets/import.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts.dart';
-import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/import.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,40 +18,10 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final Gamer? owner;
-  // Загрузка
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    _isLoading = true;
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    final gamerDao = ref.read(gamerDaoProvider);
-    owner = await gamerDao.getOwner();
-
-    setState(() => _isLoading = false);
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: Text(appName)),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(getLoadingMsg()),
-            ],
-          ),
-        ),
-      );
-    }
+    final ownerAsync = ref.watch(ownerDataProvider);
 
     final ButtonStyle btnStyle = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 30),
@@ -64,16 +35,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: Text(appName),
         actions: [
-          IconButton(
-            icon: Icon(Icons.face),
-            onPressed: () => {
-              context.pushNamed(
-                'gamers-update',
-                pathParameters: {'gamerId': owner!.id.toString()},
-              ),
+          ownerAsync.when(
+            data: (owner) {
+              return IconButton(
+                icon: Icon(Icons.face),
+                onPressed: () => {
+                  context.pushNamed(
+                    'gamers-update',
+                    pathParameters: {'gamerId': owner!.id.toString()},
+                  ),
+                },
+                tooltip: 'Профиль',
+              );
             },
-            tooltip: 'Профиль',
+            loading: () => buildLoadingScreen(),
+            error: (error, _) => Text('Ошибка'),
           ),
+
           // Меню
           PopupMenuButton(
             icon: Icon(Icons.more_vert),

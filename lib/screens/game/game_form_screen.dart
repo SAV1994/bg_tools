@@ -4,11 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/image_picker.dart';
 import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
 
@@ -149,6 +150,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
         }
 
         if (mounted) {
+          ref.invalidate(gameFullDataProvider);
           Navigator.pop(context, true);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -181,16 +183,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
         ),
       ),
       body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text(getLoadingMsg()),
-                ],
-              ),
-            )
+          ? buildLoadingScreen()
           : SingleChildScrollView(
               padding: EdgeInsets.all(16),
               child: Form(

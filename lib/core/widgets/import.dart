@@ -1,9 +1,11 @@
-// widgets/backup_buttons.dart
+import 'package:flutter/material.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/services/export_service.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 // Кнопки для импорта/экспорта
 class BackupButtons extends ConsumerWidget {
@@ -17,7 +19,7 @@ class BackupButtons extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => buildLoadingScreen(),
     );
 
     final savedPath = await backupService.exportAllData();
@@ -74,7 +76,7 @@ class BackupButtons extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => buildLoadingScreen(),
     );
 
     final database = ref.read(databaseProvider);
@@ -87,9 +89,12 @@ class BackupButtons extends ConsumerWidget {
     if (success) {
       // Обновляем провайдеры
       ref.invalidate(artistsDataProvider);
-      ref.invalidate(tagsDataProvider);
+      ref.invalidate(designersDataProvider);
       ref.invalidate(gameFullDataProvider);
+      ref.invalidate(ownerDataProvider);
       ref.invalidate(gamingSessionDataProvider);
+      ref.invalidate(notesForGameDataProvider);
+      ref.invalidate(tagsDataProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

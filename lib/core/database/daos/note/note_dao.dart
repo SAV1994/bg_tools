@@ -20,6 +20,7 @@ class NoteDao extends DatabaseAccessor<AppDatabase> with _$NoteDaoMixin {
         gameId: Value(gameId),
         title: Value(title),
         content: Value(content),
+        createdAt: Value(DateTime.now()),
         updatedAt: Value(DateTime.now()),
       ),
     );

@@ -12,6 +12,7 @@ import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class GamingSessionDetailScreen extends ConsumerStatefulWidget {
   final int gamingSessionId;
@@ -319,7 +320,7 @@ class _GamingSessionDetailScreenState
         data: (data) {
           return _buildContent(context, data!);
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => buildLoadingScreen(),
         error: (error, _) => _buildError(context, error, ref),
       ),
     );

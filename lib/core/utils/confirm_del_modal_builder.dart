@@ -11,8 +11,9 @@ void buildDelModal(
   WidgetRef ref,
   Provider daoProvider,
   bool mounted,
-  instance,
-) {
+  instance, [
+  Function? afterDel,
+]) {
   final String instName = UniversalAttrGetter.getTitle(instance);
 
   showDialog(
@@ -33,6 +34,9 @@ void buildDelModal(
               gameFullDataProvider,
             ); // Обновляем провайдер с данными для игр
             if (mounted) {
+              if (afterDel != null) {
+                afterDel();
+              }
               Navigator.pop(context); // Закрыть диалог
               Navigator.pop(context, true); // Вернуться назад
               ScaffoldMessenger.of(context).showSnackBar(

@@ -11,6 +11,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class NoteDetailScreen extends ConsumerStatefulWidget {
   final int gameId;
@@ -104,16 +105,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text(appName)),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(getLoadingMsg()),
-            ],
-          ),
-        ),
+        body: buildLoadingScreen(),
       );
     }
 

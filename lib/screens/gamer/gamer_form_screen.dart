@@ -1,12 +1,13 @@
-import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class GamersFormScreen extends ConsumerStatefulWidget {
   final int? gamerId;
@@ -108,16 +109,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
             widget.gamerId == null ? 'Новый игрок' : 'Редактирование игрока',
           ),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(getLoadingMsg()),
-            ],
-          ),
-        ),
+        body: buildLoadingScreen(),
       );
     }
 
@@ -131,7 +123,14 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
             IconButton(
               icon: Icon(Icons.delete_outlined),
               onPressed: () => {
-                buildDelModal(context, ref, gamerDaoProvider, mounted, gamer),
+                buildDelModal(
+                  context,
+                  ref,
+                  gamerDaoProvider,
+                  mounted,
+                  gamer,
+                  () => {ref.invalidate(gamingSessionDataProvider)},
+                ),
               },
             ),
         ],

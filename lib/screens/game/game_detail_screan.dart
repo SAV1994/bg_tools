@@ -12,6 +12,8 @@ import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/checkbox_view_builder.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
+import 'package:bg_tools/core/utils/error_screen_builder.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class GamesDetailScreen extends ConsumerStatefulWidget {
   final int gameId;
@@ -31,7 +33,6 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
 
     if (result == true) {
       ref.invalidate(gameFullDataProvider); // Обновляем провайдер
-      setState(() {});
     }
   }
 
@@ -226,6 +227,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(gameFullDataProvider(widget.gameId));
+    final game = gameAsync.value?.game;
 
     return Scaffold(
       appBar: AppBar(
@@ -242,19 +244,29 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
           IconButton(
             icon: const Icon(Icons.note),
             onPressed: () {
-              context.pushNamed(
-                'notes-list',
-                pathParameters: {'gameId': gameAsync.value!.game.id.toString()},
-              );
+              if (game != null) {
+                context.pushNamed(
+                  'notes-list',
+                  pathParameters: {
+                    'gameId': gameAsync.value!.game.id.toString(),
+                  },
+                );
+              }
             },
           ),
           // Кнопка удаления
           IconButton(
             icon: const Icon(Icons.delete_outlined),
             onPressed: () {
-              final game = gameAsync.value?.game;
               if (game != null) {
-                buildDelModal(context, ref, gameDaoProvider, mounted, game);
+                buildDelModal(
+                  context,
+                  ref,
+                  gameDaoProvider,
+                  mounted,
+                  game,
+                  () => {ref.invalidate(gamingSessionDataProvider)},
+                );
               }
             },
           ),
@@ -262,9 +274,13 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
       ),
       body: gameAsync.when(
         data: (data) {
-          return _buildContent(context, data!);
+          if (data != null) {
+            return _buildContent(context, data);
+          } else {
+            return buildErrorScreen();
+          }
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => buildLoadingScreen(),
         error: (error, _) => _buildError(context, error, ref),
       ),
     );
