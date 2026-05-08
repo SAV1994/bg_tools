@@ -37,3 +37,8 @@ final tagDaoProvider = Provider<TagDao>((ref) {
 final gamingSessionDaoProvider = Provider<GamingSessionDao>((ref) {
   return ref.read(databaseProvider).gamingSessionDao;
 });
+
+// Заметка (ДАО)
+final noteDaoProvider = Provider<NoteDao>((ref) {
+  return ref.read(databaseProvider).noteDao;
+});

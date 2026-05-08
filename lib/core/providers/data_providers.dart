@@ -38,3 +38,18 @@ final gamingSessionDataProvider =
       final dao = ref.watch(gamingSessionDaoProvider);
       return await dao.getFullInfo(id);
     });
+
+// Заметки по игре
+final notesForGameDataProvider = FutureProvider.family<List<Note>, int>((
+  ref,
+  gameId,
+) async {
+  final dao = ref.watch(noteDaoProvider);
+  return await dao.getAll(gameId);
+});
+
+// Заметкa по игре
+final noteDataProvider = FutureProvider.family<Note?, int>((ref, noteId) async {
+  final dao = ref.watch(noteDaoProvider);
+  return await dao.getSingle(noteId);
+});

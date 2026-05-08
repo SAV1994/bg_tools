@@ -9,4 +9,7 @@ export 'gamer/gamer_list_screen.dart';
 export 'gaming_session/gaming_session_detail_screen.dart';
 export 'gaming_session/gaming_session_form_screen.dart';
 export 'gaming_session/gaming_session_list_screen.dart';
+export 'note/note_detail_screen.dart';
+export 'note/note_form_screen.dart';
+export 'note/note_list_screen.dart';
 export 'tag/tag_list_screen.dart';

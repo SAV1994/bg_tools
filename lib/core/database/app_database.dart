@@ -23,9 +23,18 @@ part 'app_database.g.dart';
     GamingSessionsExpansions,
     GamingSessionsGamers,
     GamingSessions,
+    Notes,
     Tags,
   ],
-  daos: [GamerDao, GameDao, DesignerDao, ArtistDao, TagDao, GamingSessionDao],
+  daos: [
+    ArtistDao,
+    DesignerDao,
+    GameDao,
+    GamerDao,
+    GamingSessionDao,
+    NoteDao,
+    TagDao,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

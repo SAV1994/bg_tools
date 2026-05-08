@@ -68,7 +68,16 @@ class ListWithModalFormScreen<T> extends ConsumerWidget {
             },
           );
         },
-        loading: () => CircularProgressIndicator(),
+        loading: () => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text(getLoadingMsg()),
+            ],
+          ),
+        ),
         error: (err, _) => Text('ОШИБКА'),
       ),
     );

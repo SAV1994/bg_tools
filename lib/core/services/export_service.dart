@@ -79,6 +79,7 @@ class BackupService {
     final gamesArtists = await database.select(database.gamesArtists).get();
     final gamesDesigners = await database.select(database.gamesDesigners).get();
     final gamesTags = await database.select(database.gamesTags).get();
+    final notes = await database.select(database.notes).get();
     final gamingSessions = await database.select(database.gamingSessions).get();
     final gamingSessionsExpansions = await database
         .select(database.gamingSessionsExpansions)
@@ -137,13 +138,25 @@ class BackupService {
       'gamesTags': gamesTags
           .map((gt) => {'gameId': gt.gameId, 'tagId': gt.tagId})
           .toList(),
+      'notes': notes
+          .map(
+            (note) => {
+              'id': note.id,
+              'gameId': note.gameId,
+              'title': note.title,
+              'content': note.content,
+              'createdAt': note.createdAt.toIso8601String(),
+              'updatedAt': note.updatedAt.toIso8601String(),
+            },
+          )
+          .toList(),
       'gamingSessions': gamingSessions
           .map(
             (gamingSession) => {
               'id': gamingSession.id,
               'gameId': gamingSession.gameId,
-              'startedAt': gamingSession.startedAt,
-              'finishedAt': gamingSession.finishedAt,
+              'startedAt': gamingSession.startedAt.toIso8601String(),
+              'finishedAt': gamingSession.finishedAt?.toIso8601String(),
               'comment': gamingSession.comment,
             },
           )
@@ -302,7 +315,7 @@ class BackupService {
     // 1. Читаем JSON
     final jsonFile = File(path.join(importDir.path, 'data.json'));
     final jsonContent = await jsonFile.readAsString();
-    final data = _parseJsonSafely(jsonContent);
+    final data = json.decode(jsonContent);
 
     // 2. Копируем изображения
     final imagesDir = Directory(path.join(importDir.path, 'images'));
@@ -404,12 +417,30 @@ class BackupService {
             .insert(
               GamingSessionsCompanion(
                 gameId: Value(gamesIds[gamingSessionJson['gameId']]!),
-                startedAt: Value(gamingSessionJson['startedAt']),
-                finishedAt: Value(gamingSessionJson['finishedAt']),
+                startedAt: Value(
+                  DateTime.parse(gamingSessionJson['startedAt']),
+                ),
+                finishedAt: gamingSessionJson['finishedAt'] != null
+                    ? Value(DateTime.parse(gamingSessionJson['finishedAt']))
+                    : const Value(null),
                 comment: Value(gamingSessionJson['comment']),
               ),
             );
         gamingSessionsIds[gamingSessionJson['id']] = id;
+      }
+
+      for (final noteJson in data['notes']) {
+        await database
+            .into(database.notes)
+            .insert(
+              NotesCompanion(
+                gameId: Value(gamesIds[noteJson['gameId']]!),
+                title: Value(noteJson['title']),
+                content: Value(noteJson['content']),
+                createdAt: Value(DateTime.parse(noteJson['createdAt'])),
+                updatedAt: Value(DateTime.parse(noteJson['updatedAt'])),
+              ),
+            );
       }
 
       // Импортируем связи
@@ -478,9 +509,9 @@ class BackupService {
                   gamingSessionsIds[gsgJson['gamingSessionId']]!,
                 ),
                 gamerId: Value(gamersIds[gsgJson['gamerId']]!),
-                score: Value(gsgJson['year']),
-                place: Value(gsgJson['minPlayers']),
-                turnOrder: Value(gsgJson['minPlayers']),
+                score: Value(gsgJson['score']),
+                place: Value(gsgJson['place']),
+                turnOrder: Value(gsgJson['turnOrder']),
               ),
             );
       }
@@ -498,12 +529,5 @@ class BackupService {
     final destPath = path.join(imagesDir.path, fileName);
     await imageFile.copy(destPath);
     return destPath;
-  }
-
-  /// Безопасный парсинг JSON
-  dynamic _parseJsonSafely(String jsonString) {
-    // Удаляем лишние кавычки и экранирование
-    jsonString = jsonString.replaceAll(r'\', '');
-    return json.decode(jsonString);
   }
 }

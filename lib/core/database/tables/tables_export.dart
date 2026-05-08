@@ -9,4 +9,5 @@ export 'games_tags.dart';
 export 'gaming_session.dart';
 export 'gaming_sessions_expansions.dart';
 export 'gaming_sessions_gamers.dart';
+export 'note.dart';
 export 'tag.dart';

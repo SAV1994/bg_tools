@@ -238,6 +238,16 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
               _openUpdateForm();
             },
           ),
+          // Заметки
+          IconButton(
+            icon: const Icon(Icons.note),
+            onPressed: () {
+              context.pushNamed(
+                'notes-list',
+                pathParameters: {'gameId': gameAsync.value!.game.id.toString()},
+              );
+            },
+          ),
           // Кнопка удаления
           IconButton(
             icon: const Icon(Icons.delete_outlined),

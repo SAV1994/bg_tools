@@ -61,6 +61,36 @@ final GoRouter goRouter = GoRouter(
           GamesFormScreen(gameId: int.parse(state.pathParameters['gameId']!)),
     ),
 
+    // Заметки
+    GoRoute(
+      path: '/games/:gameId/notes',
+      name: 'notes-list',
+      builder: (BuildContext context, GoRouterState state) =>
+          NotesList(gameId: int.parse(state.pathParameters['gameId']!)),
+    ),
+    GoRoute(
+      path: '/games/:gameId/notes/add',
+      name: 'notes-add',
+      builder: (BuildContext context, GoRouterState state) =>
+          NoteForm(gameId: int.parse(state.pathParameters['gameId']!)),
+    ),
+    GoRoute(
+      path: '/games/:gameId/notes/:noteId',
+      name: 'notes-detail',
+      builder: (BuildContext context, GoRouterState state) => NoteDetailScreen(
+        gameId: int.parse(state.pathParameters['gameId']!),
+        noteId: int.parse(state.pathParameters['noteId']!),
+      ),
+    ),
+    GoRoute(
+      path: '/games/:gameId/notes/:noteId/update',
+      name: 'notes-update',
+      builder: (BuildContext context, GoRouterState state) => NoteForm(
+        gameId: int.parse(state.pathParameters['gameId']!),
+        noteId: int.parse(state.pathParameters['noteId']!),
+      ),
+    ),
+
     // Игровые сессии
     GoRoute(
       path: '/gaming-session',
