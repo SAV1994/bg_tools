@@ -1,13 +1,17 @@
 export 'artist.dart';
+export 'counting_template.dart';
 export 'designer.dart';
 export 'expansions_games.dart';
 export 'game.dart';
 export 'gamer.dart';
 export 'games_artists.dart';
+export 'games_counting_templates_expansions.dart';
+export 'games_counting_templates.dart';
 export 'games_designers.dart';
 export 'games_tags.dart';
 export 'gaming_session.dart';
 export 'gaming_sessions_expansions.dart';
 export 'gaming_sessions_gamers.dart';
 export 'note.dart';
+export 'rating.dart';
 export 'tag.dart';

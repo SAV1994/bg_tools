@@ -87,8 +87,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // ElevatedButton.icon(
             //   onPressed: () => {},
             //   style: btnStyle,
+            //   label: Text('Статистика'),
+            //   icon: const Icon(Icons.trending_up),
+            // ),
+            // ElevatedButton.icon(
+            //   onPressed: () => {},
+            //   style: btnStyle,
             //   label: Text('Мой рейтинг игр'),
             //   icon: const Icon(Icons.favorite),
+            // ),
+            // ElevatedButton.icon(
+            //   onPressed: () => {},
+            //   style: btnStyle,
+            //   label: Text('Шаблоны итогов партий'),
+            //   icon: const Icon(Icons.build),
             // ),
             ElevatedButton.icon(
               onPressed: () => {context.pushNamed('tags')},

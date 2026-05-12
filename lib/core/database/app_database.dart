@@ -13,9 +13,12 @@ part 'app_database.g.dart';
 @DriftDatabase(
   tables: [
     Artists,
+    CountingTemplates,
     Designers,
     ExpansionsGames,
     GamesArtists,
+    GamesCountingTemplatesExpansions,
+    GamesCountingTemplates,
     GamesDesigners,
     GamesTags,
     Games,
@@ -24,6 +27,7 @@ part 'app_database.g.dart';
     GamingSessionsGamers,
     GamingSessions,
     Notes,
+    Ratings,
     Tags,
   ],
   daos: [
