@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 
-import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
+import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class ListWithModalFormConfig<T, D, C> {
@@ -49,7 +49,7 @@ class ListWithModalFormScreen<T> extends ConsumerWidget {
         data: (data) {
           // Если данных нет
           if (data.isEmpty) {
-            return Center(child: Text(emptyListMsg));
+            return buildEmptyListScreen();
           }
           return ListView.builder(
             itemCount: data.length,

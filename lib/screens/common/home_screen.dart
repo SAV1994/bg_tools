@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -56,7 +57,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           PopupMenuButton(
             icon: Icon(Icons.more_vert),
             itemBuilder: (context) => [
-              PopupMenuItem(child: Text('Настройки'), onTap: () => ()),
+              PopupMenuItem(
+                child: Text('Выйти'),
+                onTap: () => SystemNavigator.pop(),
+              ),
             ],
           ),
         ],

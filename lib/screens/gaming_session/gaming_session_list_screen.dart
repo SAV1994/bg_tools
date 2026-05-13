@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
+import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class GamingSessionListScreen extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _GamingSessionListScreenState
 
   @override
   Widget build(BuildContext context) {
-    final gamingSessionDao = ref.watch(gamingSessionDaoProvider);
+    final gamingSessionsAsync = ref.watch(gamingSessionDataProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,26 +56,11 @@ class _GamingSessionListScreenState
           ),
         ],
       ),
-      body: FutureBuilder<List<GamingSessionData>>(
-        future: gamingSessionDao.getAll(),
-        builder: (context, snapshot) {
-          // Показываем индикатор загрузки
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return buildLoadingScreen();
+      body: gamingSessionsAsync.when(
+        data: (gamingSessions) {
+          if (gamingSessions.isEmpty) {
+            return buildEmptyListScreen();
           }
-
-          // Обрабатываем ошибки
-          if (snapshot.hasError) {
-            return Center(child: Text('Ошибка: ${snapshot.error}'));
-          }
-
-          // Если данных нет
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text(emptyListMsg));
-          }
-
-          // Получаем данные
-          final gamingSessions = snapshot.data!;
 
           return ListView.builder(
             itemCount: gamingSessions.length,
@@ -111,6 +97,8 @@ class _GamingSessionListScreenState
             },
           );
         },
+        loading: () => buildLoadingScreen(),
+        error: (err, _) => Text('ОШИБКА'),
       ),
     );
   }

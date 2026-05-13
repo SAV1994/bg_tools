@@ -129,7 +129,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
                   gamerDaoProvider,
                   mounted,
                   gamer,
-                  () => {ref.invalidate(gamingSessionDataProvider)},
+                  () => {ref.invalidate(gamingSessionFullDataProvider)},
                 ),
               },
             ),

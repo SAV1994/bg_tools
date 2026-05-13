@@ -265,7 +265,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
                   gameDaoProvider,
                   mounted,
                   game,
-                  () => {ref.invalidate(gamingSessionDataProvider)},
+                  () => {ref.invalidate(gamingSessionFullDataProvider)},
                 );
               }
             },

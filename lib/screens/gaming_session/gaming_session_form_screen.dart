@@ -297,12 +297,6 @@ class _GamingSessionFormScreenState
             Navigator.pop(context);
           },
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
-          ),
-        ],
       ),
     );
   }
@@ -339,6 +333,10 @@ class _GamingSessionFormScreenState
     } else {
       setState(() => _startedAt = dateTime);
     }
+  }
+
+  void _setCurrentDateTime() {
+    setState(() => _finishedAt = DateTime.now());
   }
 
   void _submitForm() async {
@@ -501,22 +499,50 @@ class _GamingSessionFormScreenState
                         child: Text(DateFormats.formatDateTime(_startedAt)),
                       ),
                     ),
-                    InkWell(
-                      onTap: () async {
-                        _selectDateTime(isFinishedAt: true);
-                      },
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Конец партии',
-                          border: OutlineInputBorder(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () async {
+                              _selectDateTime(isFinishedAt: true);
+                            },
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                labelText: 'Конец партии',
+                                border: OutlineInputBorder(),
+                              ),
+                              child: Text(
+                                _finishedAt != null
+                                    ? DateFormats.formatDateTime(_finishedAt!)
+                                    : emptyVal,
+                              ),
+                            ),
+                          ),
                         ),
-                        child: Text(
-                          _finishedAt != null
-                              ? DateFormats.formatDateTime(_finishedAt!)
-                              : emptyVal,
+                        const SizedBox(width: 8),
+                        Tooltip(
+                          message: 'Установить текущие дату и время',
+                          child: InkWell(
+                            onTap: _setCurrentDateTime,
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.blue.shade200),
+                              ),
+                              child: const Icon(
+                                Icons.today,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
+
                     TextFormField(
                       controller: _commentController,
                       decoration: InputDecoration(

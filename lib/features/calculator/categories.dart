@@ -1,40 +1,40 @@
 // Вид игры
-enum GameType {
+enum GameTypeEnum {
   coop('Кооператив (соло)'),
   team('Командная игра'),
   classic('Один победитель');
 
   final String label;
 
-  const GameType(this.label);
+  const GameTypeEnum(this.label);
 
-  static GameType fromString(String value) {
-    return GameType.values.firstWhere(
+  static GameTypeEnum fromString(String value) {
+    return GameTypeEnum.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => GameType.classic,
+      orElse: () => GameTypeEnum.classic,
     );
   }
 }
 
 // Определение первого игрока в первом раунде
-enum FirstPlayerStartType {
+enum FirstPlayerStartTypeEnum {
   circle('Игроки ходят по кругу'),
   random('Игроки ходят в произвольном порядке');
 
   final String label;
 
-  const FirstPlayerStartType(this.label);
+  const FirstPlayerStartTypeEnum(this.label);
 
-  static FirstPlayerStartType fromString(String value) {
-    return FirstPlayerStartType.values.firstWhere(
+  static FirstPlayerStartTypeEnum fromString(String value) {
+    return FirstPlayerStartTypeEnum.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => FirstPlayerStartType.circle,
+      orElse: () => FirstPlayerStartTypeEnum.circle,
     );
   }
 }
 
 // Определение первого игрока между раундами
-enum FirstPlayerRoundType {
+enum FirstPlayerRoundTypeEnum {
   circle('По часовой стрелке от текущего первого игрока'),
   leader('Победитель ходит первым'),
   loser('Проигравший ходит первым'),
@@ -43,47 +43,47 @@ enum FirstPlayerRoundType {
 
   final String label;
 
-  const FirstPlayerRoundType(this.label);
+  const FirstPlayerRoundTypeEnum(this.label);
 
-  static FirstPlayerRoundType fromString(String value) {
-    return FirstPlayerRoundType.values.firstWhere(
+  static FirstPlayerRoundTypeEnum fromString(String value) {
+    return FirstPlayerRoundTypeEnum.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => FirstPlayerRoundType.circle,
+      orElse: () => FirstPlayerRoundTypeEnum.circle,
     );
   }
 }
 
 // Тип процесса определения результативности
-enum ResultType {
+enum ResultTypeEnum {
   end('Подсчёт в конце игры'),
   round('Подсчёт между раундами'),
   condition('В игре нет подсчёта очков');
 
   final String label;
 
-  const ResultType(this.label);
+  const ResultTypeEnum(this.label);
 
-  static ResultType fromString(String value) {
-    return ResultType.values.firstWhere(
+  static ResultTypeEnum fromString(String value) {
+    return ResultTypeEnum.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => ResultType.end,
+      orElse: () => ResultTypeEnum.end,
     );
   }
 }
 
 // Тип игровых очков (Что нужно для победы?)
-enum PointType {
+enum PointTypeEnum {
   max('Максимум очков'),
   min('Минимум очков');
 
   final String label;
 
-  const PointType(this.label);
+  const PointTypeEnum(this.label);
 
-  static PointType fromString(String value) {
-    return PointType.values.firstWhere(
+  static PointTypeEnum fromString(String value) {
+    return PointTypeEnum.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => PointType.max,
+      orElse: () => PointTypeEnum.max,
     );
   }
 }

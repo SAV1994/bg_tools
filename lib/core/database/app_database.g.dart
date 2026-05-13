@@ -193,6 +193,313 @@ class ArtistsCompanion extends UpdateCompanion<Artist> {
   }
 }
 
+class $CountingTemplatesTable extends CountingTemplates
+    with TableInfo<$CountingTemplatesTable, CountingTemplate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CountingTemplatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, description, data];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'counting_templates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CountingTemplate> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CountingTemplate map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CountingTemplate(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      )!,
+    );
+  }
+
+  @override
+  $CountingTemplatesTable createAlias(String alias) {
+    return $CountingTemplatesTable(attachedDatabase, alias);
+  }
+}
+
+class CountingTemplate extends DataClass
+    implements Insertable<CountingTemplate> {
+  final int id;
+  final String name;
+  final String? description;
+  final String data;
+  const CountingTemplate({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.data,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['data'] = Variable<String>(data);
+    return map;
+  }
+
+  CountingTemplatesCompanion toCompanion(bool nullToAbsent) {
+    return CountingTemplatesCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      data: Value(data),
+    );
+  }
+
+  factory CountingTemplate.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CountingTemplate(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      data: serializer.fromJson<String>(json['data']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'data': serializer.toJson<String>(data),
+    };
+  }
+
+  CountingTemplate copyWith({
+    int? id,
+    String? name,
+    Value<String?> description = const Value.absent(),
+    String? data,
+  }) => CountingTemplate(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description.present ? description.value : this.description,
+    data: data ?? this.data,
+  );
+  CountingTemplate copyWithCompanion(CountingTemplatesCompanion data) {
+    return CountingTemplate(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      data: data.data.present ? data.data.value : this.data,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CountingTemplate(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, description, data);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CountingTemplate &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.data == this.data);
+}
+
+class CountingTemplatesCompanion extends UpdateCompanion<CountingTemplate> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<String> data;
+  const CountingTemplatesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.data = const Value.absent(),
+  });
+  CountingTemplatesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.description = const Value.absent(),
+    required String data,
+  }) : name = Value(name),
+       data = Value(data);
+  static Insertable<CountingTemplate> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<String>? data,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (data != null) 'data': data,
+    });
+  }
+
+  CountingTemplatesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String?>? description,
+    Value<String>? data,
+  }) {
+    return CountingTemplatesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      data: data ?? this.data,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CountingTemplatesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $DesignersTable extends Designers
     with TableInfo<$DesignersTable, Designer> {
   @override
@@ -1399,6 +1706,526 @@ class GamesArtistsCompanion extends UpdateCompanion<GamesArtist> {
     return (StringBuffer('GamesArtistsCompanion(')
           ..write('gameId: $gameId, ')
           ..write('artistId: $artistId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GamesCountingTemplatesTable extends GamesCountingTemplates
+    with TableInfo<$GamesCountingTemplatesTable, GamesCountingTemplate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GamesCountingTemplatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES games (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _countingTemplateIdMeta =
+      const VerificationMeta('countingTemplateId');
+  @override
+  late final GeneratedColumn<int> countingTemplateId = GeneratedColumn<int>(
+    'counting_template_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES counting_templates (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, gameId, countingTemplateId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'games_counting_templates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GamesCountingTemplate> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('counting_template_id')) {
+      context.handle(
+        _countingTemplateIdMeta,
+        countingTemplateId.isAcceptableOrUnknown(
+          data['counting_template_id']!,
+          _countingTemplateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_countingTemplateIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GamesCountingTemplate map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GamesCountingTemplate(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_id'],
+      )!,
+      countingTemplateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}counting_template_id'],
+      )!,
+    );
+  }
+
+  @override
+  $GamesCountingTemplatesTable createAlias(String alias) {
+    return $GamesCountingTemplatesTable(attachedDatabase, alias);
+  }
+}
+
+class GamesCountingTemplate extends DataClass
+    implements Insertable<GamesCountingTemplate> {
+  final int id;
+  final int gameId;
+  final int countingTemplateId;
+  const GamesCountingTemplate({
+    required this.id,
+    required this.gameId,
+    required this.countingTemplateId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['game_id'] = Variable<int>(gameId);
+    map['counting_template_id'] = Variable<int>(countingTemplateId);
+    return map;
+  }
+
+  GamesCountingTemplatesCompanion toCompanion(bool nullToAbsent) {
+    return GamesCountingTemplatesCompanion(
+      id: Value(id),
+      gameId: Value(gameId),
+      countingTemplateId: Value(countingTemplateId),
+    );
+  }
+
+  factory GamesCountingTemplate.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GamesCountingTemplate(
+      id: serializer.fromJson<int>(json['id']),
+      gameId: serializer.fromJson<int>(json['gameId']),
+      countingTemplateId: serializer.fromJson<int>(json['countingTemplateId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'gameId': serializer.toJson<int>(gameId),
+      'countingTemplateId': serializer.toJson<int>(countingTemplateId),
+    };
+  }
+
+  GamesCountingTemplate copyWith({
+    int? id,
+    int? gameId,
+    int? countingTemplateId,
+  }) => GamesCountingTemplate(
+    id: id ?? this.id,
+    gameId: gameId ?? this.gameId,
+    countingTemplateId: countingTemplateId ?? this.countingTemplateId,
+  );
+  GamesCountingTemplate copyWithCompanion(
+    GamesCountingTemplatesCompanion data,
+  ) {
+    return GamesCountingTemplate(
+      id: data.id.present ? data.id.value : this.id,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      countingTemplateId: data.countingTemplateId.present
+          ? data.countingTemplateId.value
+          : this.countingTemplateId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GamesCountingTemplate(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('countingTemplateId: $countingTemplateId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, gameId, countingTemplateId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GamesCountingTemplate &&
+          other.id == this.id &&
+          other.gameId == this.gameId &&
+          other.countingTemplateId == this.countingTemplateId);
+}
+
+class GamesCountingTemplatesCompanion
+    extends UpdateCompanion<GamesCountingTemplate> {
+  final Value<int> id;
+  final Value<int> gameId;
+  final Value<int> countingTemplateId;
+  const GamesCountingTemplatesCompanion({
+    this.id = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.countingTemplateId = const Value.absent(),
+  });
+  GamesCountingTemplatesCompanion.insert({
+    this.id = const Value.absent(),
+    required int gameId,
+    required int countingTemplateId,
+  }) : gameId = Value(gameId),
+       countingTemplateId = Value(countingTemplateId);
+  static Insertable<GamesCountingTemplate> custom({
+    Expression<int>? id,
+    Expression<int>? gameId,
+    Expression<int>? countingTemplateId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gameId != null) 'game_id': gameId,
+      if (countingTemplateId != null)
+        'counting_template_id': countingTemplateId,
+    });
+  }
+
+  GamesCountingTemplatesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? gameId,
+    Value<int>? countingTemplateId,
+  }) {
+    return GamesCountingTemplatesCompanion(
+      id: id ?? this.id,
+      gameId: gameId ?? this.gameId,
+      countingTemplateId: countingTemplateId ?? this.countingTemplateId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    if (countingTemplateId.present) {
+      map['counting_template_id'] = Variable<int>(countingTemplateId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GamesCountingTemplatesCompanion(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('countingTemplateId: $countingTemplateId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GamesCountingTemplatesExpansionsTable
+    extends GamesCountingTemplatesExpansions
+    with
+        TableInfo<
+          $GamesCountingTemplatesExpansionsTable,
+          GamesCountingTemplatesExpansion
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GamesCountingTemplatesExpansionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _gamesCountingTemplateIdMeta =
+      const VerificationMeta('gamesCountingTemplateId');
+  @override
+  late final GeneratedColumn<int> gamesCountingTemplateId =
+      GeneratedColumn<int>(
+        'games_counting_template_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES games_counting_templates (id) ON DELETE CASCADE',
+        ),
+      );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES games (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [gamesCountingTemplateId, gameId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'games_counting_templates_expansions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GamesCountingTemplatesExpansion> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('games_counting_template_id')) {
+      context.handle(
+        _gamesCountingTemplateIdMeta,
+        gamesCountingTemplateId.isAcceptableOrUnknown(
+          data['games_counting_template_id']!,
+          _gamesCountingTemplateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_gamesCountingTemplateIdMeta);
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gamesCountingTemplateId, gameId};
+  @override
+  GamesCountingTemplatesExpansion map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GamesCountingTemplatesExpansion(
+      gamesCountingTemplateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}games_counting_template_id'],
+      )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_id'],
+      )!,
+    );
+  }
+
+  @override
+  $GamesCountingTemplatesExpansionsTable createAlias(String alias) {
+    return $GamesCountingTemplatesExpansionsTable(attachedDatabase, alias);
+  }
+}
+
+class GamesCountingTemplatesExpansion extends DataClass
+    implements Insertable<GamesCountingTemplatesExpansion> {
+  final int gamesCountingTemplateId;
+  final int gameId;
+  const GamesCountingTemplatesExpansion({
+    required this.gamesCountingTemplateId,
+    required this.gameId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['games_counting_template_id'] = Variable<int>(gamesCountingTemplateId);
+    map['game_id'] = Variable<int>(gameId);
+    return map;
+  }
+
+  GamesCountingTemplatesExpansionsCompanion toCompanion(bool nullToAbsent) {
+    return GamesCountingTemplatesExpansionsCompanion(
+      gamesCountingTemplateId: Value(gamesCountingTemplateId),
+      gameId: Value(gameId),
+    );
+  }
+
+  factory GamesCountingTemplatesExpansion.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GamesCountingTemplatesExpansion(
+      gamesCountingTemplateId: serializer.fromJson<int>(
+        json['gamesCountingTemplateId'],
+      ),
+      gameId: serializer.fromJson<int>(json['gameId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'gamesCountingTemplateId': serializer.toJson<int>(
+        gamesCountingTemplateId,
+      ),
+      'gameId': serializer.toJson<int>(gameId),
+    };
+  }
+
+  GamesCountingTemplatesExpansion copyWith({
+    int? gamesCountingTemplateId,
+    int? gameId,
+  }) => GamesCountingTemplatesExpansion(
+    gamesCountingTemplateId:
+        gamesCountingTemplateId ?? this.gamesCountingTemplateId,
+    gameId: gameId ?? this.gameId,
+  );
+  GamesCountingTemplatesExpansion copyWithCompanion(
+    GamesCountingTemplatesExpansionsCompanion data,
+  ) {
+    return GamesCountingTemplatesExpansion(
+      gamesCountingTemplateId: data.gamesCountingTemplateId.present
+          ? data.gamesCountingTemplateId.value
+          : this.gamesCountingTemplateId,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GamesCountingTemplatesExpansion(')
+          ..write('gamesCountingTemplateId: $gamesCountingTemplateId, ')
+          ..write('gameId: $gameId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(gamesCountingTemplateId, gameId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GamesCountingTemplatesExpansion &&
+          other.gamesCountingTemplateId == this.gamesCountingTemplateId &&
+          other.gameId == this.gameId);
+}
+
+class GamesCountingTemplatesExpansionsCompanion
+    extends UpdateCompanion<GamesCountingTemplatesExpansion> {
+  final Value<int> gamesCountingTemplateId;
+  final Value<int> gameId;
+  final Value<int> rowid;
+  const GamesCountingTemplatesExpansionsCompanion({
+    this.gamesCountingTemplateId = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GamesCountingTemplatesExpansionsCompanion.insert({
+    required int gamesCountingTemplateId,
+    required int gameId,
+    this.rowid = const Value.absent(),
+  }) : gamesCountingTemplateId = Value(gamesCountingTemplateId),
+       gameId = Value(gameId);
+  static Insertable<GamesCountingTemplatesExpansion> custom({
+    Expression<int>? gamesCountingTemplateId,
+    Expression<int>? gameId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (gamesCountingTemplateId != null)
+        'games_counting_template_id': gamesCountingTemplateId,
+      if (gameId != null) 'game_id': gameId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GamesCountingTemplatesExpansionsCompanion copyWith({
+    Value<int>? gamesCountingTemplateId,
+    Value<int>? gameId,
+    Value<int>? rowid,
+  }) {
+    return GamesCountingTemplatesExpansionsCompanion(
+      gamesCountingTemplateId:
+          gamesCountingTemplateId ?? this.gamesCountingTemplateId,
+      gameId: gameId ?? this.gameId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (gamesCountingTemplateId.present) {
+      map['games_counting_template_id'] = Variable<int>(
+        gamesCountingTemplateId.value,
+      );
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GamesCountingTemplatesExpansionsCompanion(')
+          ..write('gamesCountingTemplateId: $gamesCountingTemplateId, ')
+          ..write('gameId: $gameId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3107,6 +3934,15 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _teamMeta = const VerificationMeta('team');
+  @override
+  late final GeneratedColumn<int> team = GeneratedColumn<int>(
+    'team',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     gamingSessionId,
@@ -3114,6 +3950,7 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
     score,
     place,
     turnOrder,
+    team,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3164,6 +4001,12 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
         turnOrder.isAcceptableOrUnknown(data['turn_order']!, _turnOrderMeta),
       );
     }
+    if (data.containsKey('team')) {
+      context.handle(
+        _teamMeta,
+        team.isAcceptableOrUnknown(data['team']!, _teamMeta),
+      );
+    }
     return context;
   }
 
@@ -3193,6 +4036,10 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
         DriftSqlType.int,
         data['${effectivePrefix}turn_order'],
       ),
+      team: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}team'],
+      ),
     );
   }
 
@@ -3209,12 +4056,14 @@ class GamingSessionsGamer extends DataClass
   final int? score;
   final int? place;
   final int? turnOrder;
+  final int? team;
   const GamingSessionsGamer({
     required this.gamingSessionId,
     required this.gamerId,
     this.score,
     this.place,
     this.turnOrder,
+    this.team,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3229,6 +4078,9 @@ class GamingSessionsGamer extends DataClass
     }
     if (!nullToAbsent || turnOrder != null) {
       map['turn_order'] = Variable<int>(turnOrder);
+    }
+    if (!nullToAbsent || team != null) {
+      map['team'] = Variable<int>(team);
     }
     return map;
   }
@@ -3246,6 +4098,7 @@ class GamingSessionsGamer extends DataClass
       turnOrder: turnOrder == null && nullToAbsent
           ? const Value.absent()
           : Value(turnOrder),
+      team: team == null && nullToAbsent ? const Value.absent() : Value(team),
     );
   }
 
@@ -3260,6 +4113,7 @@ class GamingSessionsGamer extends DataClass
       score: serializer.fromJson<int?>(json['score']),
       place: serializer.fromJson<int?>(json['place']),
       turnOrder: serializer.fromJson<int?>(json['turnOrder']),
+      team: serializer.fromJson<int?>(json['team']),
     );
   }
   @override
@@ -3271,6 +4125,7 @@ class GamingSessionsGamer extends DataClass
       'score': serializer.toJson<int?>(score),
       'place': serializer.toJson<int?>(place),
       'turnOrder': serializer.toJson<int?>(turnOrder),
+      'team': serializer.toJson<int?>(team),
     };
   }
 
@@ -3280,12 +4135,14 @@ class GamingSessionsGamer extends DataClass
     Value<int?> score = const Value.absent(),
     Value<int?> place = const Value.absent(),
     Value<int?> turnOrder = const Value.absent(),
+    Value<int?> team = const Value.absent(),
   }) => GamingSessionsGamer(
     gamingSessionId: gamingSessionId ?? this.gamingSessionId,
     gamerId: gamerId ?? this.gamerId,
     score: score.present ? score.value : this.score,
     place: place.present ? place.value : this.place,
     turnOrder: turnOrder.present ? turnOrder.value : this.turnOrder,
+    team: team.present ? team.value : this.team,
   );
   GamingSessionsGamer copyWithCompanion(GamingSessionsGamersCompanion data) {
     return GamingSessionsGamer(
@@ -3296,6 +4153,7 @@ class GamingSessionsGamer extends DataClass
       score: data.score.present ? data.score.value : this.score,
       place: data.place.present ? data.place.value : this.place,
       turnOrder: data.turnOrder.present ? data.turnOrder.value : this.turnOrder,
+      team: data.team.present ? data.team.value : this.team,
     );
   }
 
@@ -3306,14 +4164,15 @@ class GamingSessionsGamer extends DataClass
           ..write('gamerId: $gamerId, ')
           ..write('score: $score, ')
           ..write('place: $place, ')
-          ..write('turnOrder: $turnOrder')
+          ..write('turnOrder: $turnOrder, ')
+          ..write('team: $team')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(gamingSessionId, gamerId, score, place, turnOrder);
+      Object.hash(gamingSessionId, gamerId, score, place, turnOrder, team);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3322,7 +4181,8 @@ class GamingSessionsGamer extends DataClass
           other.gamerId == this.gamerId &&
           other.score == this.score &&
           other.place == this.place &&
-          other.turnOrder == this.turnOrder);
+          other.turnOrder == this.turnOrder &&
+          other.team == this.team);
 }
 
 class GamingSessionsGamersCompanion
@@ -3332,6 +4192,7 @@ class GamingSessionsGamersCompanion
   final Value<int?> score;
   final Value<int?> place;
   final Value<int?> turnOrder;
+  final Value<int?> team;
   final Value<int> rowid;
   const GamingSessionsGamersCompanion({
     this.gamingSessionId = const Value.absent(),
@@ -3339,6 +4200,7 @@ class GamingSessionsGamersCompanion
     this.score = const Value.absent(),
     this.place = const Value.absent(),
     this.turnOrder = const Value.absent(),
+    this.team = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GamingSessionsGamersCompanion.insert({
@@ -3347,6 +4209,7 @@ class GamingSessionsGamersCompanion
     this.score = const Value.absent(),
     this.place = const Value.absent(),
     this.turnOrder = const Value.absent(),
+    this.team = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : gamingSessionId = Value(gamingSessionId),
        gamerId = Value(gamerId);
@@ -3356,6 +4219,7 @@ class GamingSessionsGamersCompanion
     Expression<int>? score,
     Expression<int>? place,
     Expression<int>? turnOrder,
+    Expression<int>? team,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3364,6 +4228,7 @@ class GamingSessionsGamersCompanion
       if (score != null) 'score': score,
       if (place != null) 'place': place,
       if (turnOrder != null) 'turn_order': turnOrder,
+      if (team != null) 'team': team,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3374,6 +4239,7 @@ class GamingSessionsGamersCompanion
     Value<int?>? score,
     Value<int?>? place,
     Value<int?>? turnOrder,
+    Value<int?>? team,
     Value<int>? rowid,
   }) {
     return GamingSessionsGamersCompanion(
@@ -3382,6 +4248,7 @@ class GamingSessionsGamersCompanion
       score: score ?? this.score,
       place: place ?? this.place,
       turnOrder: turnOrder ?? this.turnOrder,
+      team: team ?? this.team,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3404,6 +4271,9 @@ class GamingSessionsGamersCompanion
     if (turnOrder.present) {
       map['turn_order'] = Variable<int>(turnOrder.value);
     }
+    if (team.present) {
+      map['team'] = Variable<int>(team.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3418,6 +4288,7 @@ class GamingSessionsGamersCompanion
           ..write('score: $score, ')
           ..write('place: $place, ')
           ..write('turnOrder: $turnOrder, ')
+          ..write('team: $team, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3823,16 +4694,320 @@ class NotesCompanion extends UpdateCompanion<Note> {
   }
 }
 
+class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RatingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (month >= 2026 AND month <= 9999)',
+  );
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  @override
+  late final GeneratedColumn<int> month = GeneratedColumn<int>(
+    'month',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'CHECK (month >= 1 AND month <= 12)',
+  );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, year, month, data];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ratings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Rating> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_yearMeta);
+    }
+    if (data.containsKey('month')) {
+      context.handle(
+        _monthMeta,
+        month.isAcceptableOrUnknown(data['month']!, _monthMeta),
+      );
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Rating map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Rating(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      )!,
+      month: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}month'],
+      ),
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      )!,
+    );
+  }
+
+  @override
+  $RatingsTable createAlias(String alias) {
+    return $RatingsTable(attachedDatabase, alias);
+  }
+}
+
+class Rating extends DataClass implements Insertable<Rating> {
+  final int id;
+  final int year;
+  final int? month;
+  final String data;
+  const Rating({
+    required this.id,
+    required this.year,
+    this.month,
+    required this.data,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['year'] = Variable<int>(year);
+    if (!nullToAbsent || month != null) {
+      map['month'] = Variable<int>(month);
+    }
+    map['data'] = Variable<String>(data);
+    return map;
+  }
+
+  RatingsCompanion toCompanion(bool nullToAbsent) {
+    return RatingsCompanion(
+      id: Value(id),
+      year: Value(year),
+      month: month == null && nullToAbsent
+          ? const Value.absent()
+          : Value(month),
+      data: Value(data),
+    );
+  }
+
+  factory Rating.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Rating(
+      id: serializer.fromJson<int>(json['id']),
+      year: serializer.fromJson<int>(json['year']),
+      month: serializer.fromJson<int?>(json['month']),
+      data: serializer.fromJson<String>(json['data']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'year': serializer.toJson<int>(year),
+      'month': serializer.toJson<int?>(month),
+      'data': serializer.toJson<String>(data),
+    };
+  }
+
+  Rating copyWith({
+    int? id,
+    int? year,
+    Value<int?> month = const Value.absent(),
+    String? data,
+  }) => Rating(
+    id: id ?? this.id,
+    year: year ?? this.year,
+    month: month.present ? month.value : this.month,
+    data: data ?? this.data,
+  );
+  Rating copyWithCompanion(RatingsCompanion data) {
+    return Rating(
+      id: data.id.present ? data.id.value : this.id,
+      year: data.year.present ? data.year.value : this.year,
+      month: data.month.present ? data.month.value : this.month,
+      data: data.data.present ? data.data.value : this.data,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Rating(')
+          ..write('id: $id, ')
+          ..write('year: $year, ')
+          ..write('month: $month, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, year, month, data);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Rating &&
+          other.id == this.id &&
+          other.year == this.year &&
+          other.month == this.month &&
+          other.data == this.data);
+}
+
+class RatingsCompanion extends UpdateCompanion<Rating> {
+  final Value<int> id;
+  final Value<int> year;
+  final Value<int?> month;
+  final Value<String> data;
+  const RatingsCompanion({
+    this.id = const Value.absent(),
+    this.year = const Value.absent(),
+    this.month = const Value.absent(),
+    this.data = const Value.absent(),
+  });
+  RatingsCompanion.insert({
+    this.id = const Value.absent(),
+    required int year,
+    this.month = const Value.absent(),
+    required String data,
+  }) : year = Value(year),
+       data = Value(data);
+  static Insertable<Rating> custom({
+    Expression<int>? id,
+    Expression<int>? year,
+    Expression<int>? month,
+    Expression<String>? data,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (year != null) 'year': year,
+      if (month != null) 'month': month,
+      if (data != null) 'data': data,
+    });
+  }
+
+  RatingsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? year,
+    Value<int?>? month,
+    Value<String>? data,
+  }) {
+    return RatingsCompanion(
+      id: id ?? this.id,
+      year: year ?? this.year,
+      month: month ?? this.month,
+      data: data ?? this.data,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (month.present) {
+      map['month'] = Variable<int>(month.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RatingsCompanion(')
+          ..write('id: $id, ')
+          ..write('year: $year, ')
+          ..write('month: $month, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ArtistsTable artists = $ArtistsTable(this);
+  late final $CountingTemplatesTable countingTemplates =
+      $CountingTemplatesTable(this);
   late final $DesignersTable designers = $DesignersTable(this);
   late final $GamesTable games = $GamesTable(this);
   late final $ExpansionsGamesTable expansionsGames = $ExpansionsGamesTable(
     this,
   );
   late final $GamesArtistsTable gamesArtists = $GamesArtistsTable(this);
+  late final $GamesCountingTemplatesTable gamesCountingTemplates =
+      $GamesCountingTemplatesTable(this);
+  late final $GamesCountingTemplatesExpansionsTable
+  gamesCountingTemplatesExpansions = $GamesCountingTemplatesExpansionsTable(
+    this,
+  );
   late final $GamesDesignersTable gamesDesigners = $GamesDesignersTable(this);
   late final $TagsTable tags = $TagsTable(this);
   late final $GamesTagsTable gamesTags = $GamesTagsTable(this);
@@ -3843,6 +5018,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $GamingSessionsGamersTable gamingSessionsGamers =
       $GamingSessionsGamersTable(this);
   late final $NotesTable notes = $NotesTable(this);
+  late final $RatingsTable ratings = $RatingsTable(this);
   late final ArtistDao artistDao = ArtistDao(this as AppDatabase);
   late final DesignerDao designerDao = DesignerDao(this as AppDatabase);
   late final GameDao gameDao = GameDao(this as AppDatabase);
@@ -3858,10 +5034,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     artists,
+    countingTemplates,
     designers,
     games,
     expansionsGames,
     gamesArtists,
+    gamesCountingTemplates,
+    gamesCountingTemplatesExpansions,
     gamesDesigners,
     tags,
     gamesTags,
@@ -3870,6 +5049,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     gamingSessionsExpansions,
     gamingSessionsGamers,
     notes,
+    ratings,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -3900,6 +5080,48 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('games_artists', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'games',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('games_counting_templates', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'counting_templates',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('games_counting_templates', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'games_counting_templates',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate(
+          'games_counting_templates_expansions',
+          kind: UpdateKind.delete,
+        ),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'games',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate(
+          'games_counting_templates_expansions',
+          kind: UpdateKind.delete,
+        ),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -4203,6 +5425,317 @@ typedef $$ArtistsTableProcessedTableManager =
       (Artist, $$ArtistsTableReferences),
       Artist,
       PrefetchHooks Function({bool gamesArtistsRefs})
+    >;
+typedef $$CountingTemplatesTableCreateCompanionBuilder =
+    CountingTemplatesCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<String?> description,
+      required String data,
+    });
+typedef $$CountingTemplatesTableUpdateCompanionBuilder =
+    CountingTemplatesCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String?> description,
+      Value<String> data,
+    });
+
+final class $$CountingTemplatesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $CountingTemplatesTable,
+          CountingTemplate
+        > {
+  $$CountingTemplatesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<
+    $GamesCountingTemplatesTable,
+    List<GamesCountingTemplate>
+  >
+  _gamesCountingTemplatesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gamesCountingTemplates,
+        aliasName: $_aliasNameGenerator(
+          db.countingTemplates.id,
+          db.gamesCountingTemplates.countingTemplateId,
+        ),
+      );
+
+  $$GamesCountingTemplatesTableProcessedTableManager
+  get gamesCountingTemplatesRefs {
+    final manager =
+        $$GamesCountingTemplatesTableTableManager(
+          $_db,
+          $_db.gamesCountingTemplates,
+        ).filter(
+          (f) => f.countingTemplateId.id.sqlEquals($_itemColumn<int>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _gamesCountingTemplatesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CountingTemplatesTableFilterComposer
+    extends Composer<_$AppDatabase, $CountingTemplatesTable> {
+  $$CountingTemplatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> gamesCountingTemplatesRefs(
+    Expression<bool> Function($$GamesCountingTemplatesTableFilterComposer f) f,
+  ) {
+    final $$GamesCountingTemplatesTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.countingTemplateId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableFilterComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$CountingTemplatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CountingTemplatesTable> {
+  $$CountingTemplatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CountingTemplatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CountingTemplatesTable> {
+  $$CountingTemplatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+
+  Expression<T> gamesCountingTemplatesRefs<T extends Object>(
+    Expression<T> Function($$GamesCountingTemplatesTableAnnotationComposer a) f,
+  ) {
+    final $$GamesCountingTemplatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.countingTemplateId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$CountingTemplatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CountingTemplatesTable,
+          CountingTemplate,
+          $$CountingTemplatesTableFilterComposer,
+          $$CountingTemplatesTableOrderingComposer,
+          $$CountingTemplatesTableAnnotationComposer,
+          $$CountingTemplatesTableCreateCompanionBuilder,
+          $$CountingTemplatesTableUpdateCompanionBuilder,
+          (CountingTemplate, $$CountingTemplatesTableReferences),
+          CountingTemplate,
+          PrefetchHooks Function({bool gamesCountingTemplatesRefs})
+        > {
+  $$CountingTemplatesTableTableManager(
+    _$AppDatabase db,
+    $CountingTemplatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CountingTemplatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CountingTemplatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CountingTemplatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String> data = const Value.absent(),
+              }) => CountingTemplatesCompanion(
+                id: id,
+                name: name,
+                description: description,
+                data: data,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<String?> description = const Value.absent(),
+                required String data,
+              }) => CountingTemplatesCompanion.insert(
+                id: id,
+                name: name,
+                description: description,
+                data: data,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CountingTemplatesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({gamesCountingTemplatesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (gamesCountingTemplatesRefs) db.gamesCountingTemplates,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (gamesCountingTemplatesRefs)
+                    await $_getPrefetchedData<
+                      CountingTemplate,
+                      $CountingTemplatesTable,
+                      GamesCountingTemplate
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CountingTemplatesTableReferences
+                          ._gamesCountingTemplatesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CountingTemplatesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).gamesCountingTemplatesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.countingTemplateId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CountingTemplatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CountingTemplatesTable,
+      CountingTemplate,
+      $$CountingTemplatesTableFilterComposer,
+      $$CountingTemplatesTableOrderingComposer,
+      $$CountingTemplatesTableAnnotationComposer,
+      $$CountingTemplatesTableCreateCompanionBuilder,
+      $$CountingTemplatesTableUpdateCompanionBuilder,
+      (CountingTemplate, $$CountingTemplatesTableReferences),
+      CountingTemplate,
+      PrefetchHooks Function({bool gamesCountingTemplatesRefs})
     >;
 typedef $$DesignersTableCreateCompanionBuilder =
     DesignersCompanion Function({Value<int> id, required String name});
@@ -4519,6 +6052,62 @@ final class $$GamesTableReferences
     );
   }
 
+  static MultiTypedResultKey<
+    $GamesCountingTemplatesTable,
+    List<GamesCountingTemplate>
+  >
+  _gamesCountingTemplatesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gamesCountingTemplates,
+        aliasName: $_aliasNameGenerator(
+          db.games.id,
+          db.gamesCountingTemplates.gameId,
+        ),
+      );
+
+  $$GamesCountingTemplatesTableProcessedTableManager
+  get gamesCountingTemplatesRefs {
+    final manager = $$GamesCountingTemplatesTableTableManager(
+      $_db,
+      $_db.gamesCountingTemplates,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gamesCountingTemplatesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $GamesCountingTemplatesExpansionsTable,
+    List<GamesCountingTemplatesExpansion>
+  >
+  _gamesCountingTemplatesExpansionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gamesCountingTemplatesExpansions,
+        aliasName: $_aliasNameGenerator(
+          db.games.id,
+          db.gamesCountingTemplatesExpansions.gameId,
+        ),
+      );
+
+  $$GamesCountingTemplatesExpansionsTableProcessedTableManager
+  get gamesCountingTemplatesExpansionsRefs {
+    final manager = $$GamesCountingTemplatesExpansionsTableTableManager(
+      $_db,
+      $_db.gamesCountingTemplatesExpansions,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gamesCountingTemplatesExpansionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$GamesDesignersTable, List<GamesDesigner>>
   _gamesDesignersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.gamesDesigners,
@@ -4746,6 +6335,61 @@ class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> gamesCountingTemplatesRefs(
+    Expression<bool> Function($$GamesCountingTemplatesTableFilterComposer f) f,
+  ) {
+    final $$GamesCountingTemplatesTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableFilterComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> gamesCountingTemplatesExpansionsRefs(
+    Expression<bool> Function(
+      $$GamesCountingTemplatesExpansionsTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$GamesCountingTemplatesExpansionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplatesExpansions,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesExpansionsTableFilterComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplatesExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -5053,6 +6697,61 @@ class $$GamesTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> gamesCountingTemplatesRefs<T extends Object>(
+    Expression<T> Function($$GamesCountingTemplatesTableAnnotationComposer a) f,
+  ) {
+    final $$GamesCountingTemplatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> gamesCountingTemplatesExpansionsRefs<T extends Object>(
+    Expression<T> Function(
+      $$GamesCountingTemplatesExpansionsTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$GamesCountingTemplatesExpansionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplatesExpansions,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesExpansionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplatesExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<T> gamesDesignersRefs<T extends Object>(
     Expression<T> Function($$GamesDesignersTableAnnotationComposer a) f,
   ) {
@@ -5198,6 +6897,8 @@ class $$GamesTableTableManager
             bool expansions,
             bool bases,
             bool gamesArtistsRefs,
+            bool gamesCountingTemplatesRefs,
+            bool gamesCountingTemplatesExpansionsRefs,
             bool gamesDesignersRefs,
             bool gamesTagsRefs,
             bool gamingSessionsRefs,
@@ -5271,6 +6972,8 @@ class $$GamesTableTableManager
                 expansions = false,
                 bases = false,
                 gamesArtistsRefs = false,
+                gamesCountingTemplatesRefs = false,
+                gamesCountingTemplatesExpansionsRefs = false,
                 gamesDesignersRefs = false,
                 gamesTagsRefs = false,
                 gamingSessionsRefs = false,
@@ -5283,6 +6986,9 @@ class $$GamesTableTableManager
                     if (expansions) db.expansionsGames,
                     if (bases) db.expansionsGames,
                     if (gamesArtistsRefs) db.gamesArtists,
+                    if (gamesCountingTemplatesRefs) db.gamesCountingTemplates,
+                    if (gamesCountingTemplatesExpansionsRefs)
+                      db.gamesCountingTemplatesExpansions,
                     if (gamesDesignersRefs) db.gamesDesigners,
                     if (gamesTagsRefs) db.gamesTags,
                     if (gamingSessionsRefs) db.gamingSessions,
@@ -5343,6 +7049,48 @@ class $$GamesTableTableManager
                                 table,
                                 p0,
                               ).gamesArtistsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamesCountingTemplatesRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamesCountingTemplate
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamesCountingTemplatesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesCountingTemplatesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamesCountingTemplatesExpansionsRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamesCountingTemplatesExpansion
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamesCountingTemplatesExpansionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesCountingTemplatesExpansionsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.gameId == item.id,
@@ -5466,6 +7214,8 @@ typedef $$GamesTableProcessedTableManager =
         bool expansions,
         bool bases,
         bool gamesArtistsRefs,
+        bool gamesCountingTemplatesRefs,
+        bool gamesCountingTemplatesExpansionsRefs,
         bool gamesDesignersRefs,
         bool gamesTagsRefs,
         bool gamingSessionsRefs,
@@ -6181,6 +7931,923 @@ typedef $$GamesArtistsTableProcessedTableManager =
       (GamesArtist, $$GamesArtistsTableReferences),
       GamesArtist,
       PrefetchHooks Function({bool gameId, bool artistId})
+    >;
+typedef $$GamesCountingTemplatesTableCreateCompanionBuilder =
+    GamesCountingTemplatesCompanion Function({
+      Value<int> id,
+      required int gameId,
+      required int countingTemplateId,
+    });
+typedef $$GamesCountingTemplatesTableUpdateCompanionBuilder =
+    GamesCountingTemplatesCompanion Function({
+      Value<int> id,
+      Value<int> gameId,
+      Value<int> countingTemplateId,
+    });
+
+final class $$GamesCountingTemplatesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $GamesCountingTemplatesTable,
+          GamesCountingTemplate
+        > {
+  $$GamesCountingTemplatesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GamesTable _gameIdTable(_$AppDatabase db) => db.games.createAlias(
+    $_aliasNameGenerator(db.gamesCountingTemplates.gameId, db.games.id),
+  );
+
+  $$GamesTableProcessedTableManager get gameId {
+    final $_column = $_itemColumn<int>('game_id')!;
+
+    final manager = $$GamesTableTableManager(
+      $_db,
+      $_db.games,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CountingTemplatesTable _countingTemplateIdTable(_$AppDatabase db) =>
+      db.countingTemplates.createAlias(
+        $_aliasNameGenerator(
+          db.gamesCountingTemplates.countingTemplateId,
+          db.countingTemplates.id,
+        ),
+      );
+
+  $$CountingTemplatesTableProcessedTableManager get countingTemplateId {
+    final $_column = $_itemColumn<int>('counting_template_id')!;
+
+    final manager = $$CountingTemplatesTableTableManager(
+      $_db,
+      $_db.countingTemplates,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_countingTemplateIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $GamesCountingTemplatesExpansionsTable,
+    List<GamesCountingTemplatesExpansion>
+  >
+  _gamesCountingTemplatesExpansionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gamesCountingTemplatesExpansions,
+        aliasName: $_aliasNameGenerator(
+          db.gamesCountingTemplates.id,
+          db.gamesCountingTemplatesExpansions.gamesCountingTemplateId,
+        ),
+      );
+
+  $$GamesCountingTemplatesExpansionsTableProcessedTableManager
+  get gamesCountingTemplatesExpansionsRefs {
+    final manager =
+        $$GamesCountingTemplatesExpansionsTableTableManager(
+          $_db,
+          $_db.gamesCountingTemplatesExpansions,
+        ).filter(
+          (f) =>
+              f.gamesCountingTemplateId.id.sqlEquals($_itemColumn<int>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _gamesCountingTemplatesExpansionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$GamesCountingTemplatesTableFilterComposer
+    extends Composer<_$AppDatabase, $GamesCountingTemplatesTable> {
+  $$GamesCountingTemplatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GamesTableFilterComposer get gameId {
+    final $$GamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableFilterComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CountingTemplatesTableFilterComposer get countingTemplateId {
+    final $$CountingTemplatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.countingTemplateId,
+      referencedTable: $db.countingTemplates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CountingTemplatesTableFilterComposer(
+            $db: $db,
+            $table: $db.countingTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> gamesCountingTemplatesExpansionsRefs(
+    Expression<bool> Function(
+      $$GamesCountingTemplatesExpansionsTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$GamesCountingTemplatesExpansionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplatesExpansions,
+          getReferencedColumn: (t) => t.gamesCountingTemplateId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesExpansionsTableFilterComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplatesExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$GamesCountingTemplatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GamesCountingTemplatesTable> {
+  $$GamesCountingTemplatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GamesTableOrderingComposer get gameId {
+    final $$GamesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableOrderingComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CountingTemplatesTableOrderingComposer get countingTemplateId {
+    final $$CountingTemplatesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.countingTemplateId,
+      referencedTable: $db.countingTemplates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CountingTemplatesTableOrderingComposer(
+            $db: $db,
+            $table: $db.countingTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GamesCountingTemplatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GamesCountingTemplatesTable> {
+  $$GamesCountingTemplatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  $$GamesTableAnnotationComposer get gameId {
+    final $$GamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CountingTemplatesTableAnnotationComposer get countingTemplateId {
+    final $$CountingTemplatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.countingTemplateId,
+          referencedTable: $db.countingTemplates,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CountingTemplatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.countingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  Expression<T> gamesCountingTemplatesExpansionsRefs<T extends Object>(
+    Expression<T> Function(
+      $$GamesCountingTemplatesExpansionsTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$GamesCountingTemplatesExpansionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplatesExpansions,
+          getReferencedColumn: (t) => t.gamesCountingTemplateId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesExpansionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplatesExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$GamesCountingTemplatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GamesCountingTemplatesTable,
+          GamesCountingTemplate,
+          $$GamesCountingTemplatesTableFilterComposer,
+          $$GamesCountingTemplatesTableOrderingComposer,
+          $$GamesCountingTemplatesTableAnnotationComposer,
+          $$GamesCountingTemplatesTableCreateCompanionBuilder,
+          $$GamesCountingTemplatesTableUpdateCompanionBuilder,
+          (GamesCountingTemplate, $$GamesCountingTemplatesTableReferences),
+          GamesCountingTemplate,
+          PrefetchHooks Function({
+            bool gameId,
+            bool countingTemplateId,
+            bool gamesCountingTemplatesExpansionsRefs,
+          })
+        > {
+  $$GamesCountingTemplatesTableTableManager(
+    _$AppDatabase db,
+    $GamesCountingTemplatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GamesCountingTemplatesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$GamesCountingTemplatesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$GamesCountingTemplatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> gameId = const Value.absent(),
+                Value<int> countingTemplateId = const Value.absent(),
+              }) => GamesCountingTemplatesCompanion(
+                id: id,
+                gameId: gameId,
+                countingTemplateId: countingTemplateId,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int gameId,
+                required int countingTemplateId,
+              }) => GamesCountingTemplatesCompanion.insert(
+                id: id,
+                gameId: gameId,
+                countingTemplateId: countingTemplateId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GamesCountingTemplatesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                gameId = false,
+                countingTemplateId = false,
+                gamesCountingTemplatesExpansionsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gamesCountingTemplatesExpansionsRefs)
+                      db.gamesCountingTemplatesExpansions,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (gameId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.gameId,
+                                    referencedTable:
+                                        $$GamesCountingTemplatesTableReferences
+                                            ._gameIdTable(db),
+                                    referencedColumn:
+                                        $$GamesCountingTemplatesTableReferences
+                                            ._gameIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (countingTemplateId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.countingTemplateId,
+                                    referencedTable:
+                                        $$GamesCountingTemplatesTableReferences
+                                            ._countingTemplateIdTable(db),
+                                    referencedColumn:
+                                        $$GamesCountingTemplatesTableReferences
+                                            ._countingTemplateIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gamesCountingTemplatesExpansionsRefs)
+                        await $_getPrefetchedData<
+                          GamesCountingTemplate,
+                          $GamesCountingTemplatesTable,
+                          GamesCountingTemplatesExpansion
+                        >(
+                          currentTable: table,
+                          referencedTable:
+                              $$GamesCountingTemplatesTableReferences
+                                  ._gamesCountingTemplatesExpansionsRefsTable(
+                                    db,
+                                  ),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesCountingTemplatesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesCountingTemplatesExpansionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gamesCountingTemplateId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$GamesCountingTemplatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GamesCountingTemplatesTable,
+      GamesCountingTemplate,
+      $$GamesCountingTemplatesTableFilterComposer,
+      $$GamesCountingTemplatesTableOrderingComposer,
+      $$GamesCountingTemplatesTableAnnotationComposer,
+      $$GamesCountingTemplatesTableCreateCompanionBuilder,
+      $$GamesCountingTemplatesTableUpdateCompanionBuilder,
+      (GamesCountingTemplate, $$GamesCountingTemplatesTableReferences),
+      GamesCountingTemplate,
+      PrefetchHooks Function({
+        bool gameId,
+        bool countingTemplateId,
+        bool gamesCountingTemplatesExpansionsRefs,
+      })
+    >;
+typedef $$GamesCountingTemplatesExpansionsTableCreateCompanionBuilder =
+    GamesCountingTemplatesExpansionsCompanion Function({
+      required int gamesCountingTemplateId,
+      required int gameId,
+      Value<int> rowid,
+    });
+typedef $$GamesCountingTemplatesExpansionsTableUpdateCompanionBuilder =
+    GamesCountingTemplatesExpansionsCompanion Function({
+      Value<int> gamesCountingTemplateId,
+      Value<int> gameId,
+      Value<int> rowid,
+    });
+
+final class $$GamesCountingTemplatesExpansionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $GamesCountingTemplatesExpansionsTable,
+          GamesCountingTemplatesExpansion
+        > {
+  $$GamesCountingTemplatesExpansionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GamesCountingTemplatesTable _gamesCountingTemplateIdTable(
+    _$AppDatabase db,
+  ) => db.gamesCountingTemplates.createAlias(
+    $_aliasNameGenerator(
+      db.gamesCountingTemplatesExpansions.gamesCountingTemplateId,
+      db.gamesCountingTemplates.id,
+    ),
+  );
+
+  $$GamesCountingTemplatesTableProcessedTableManager
+  get gamesCountingTemplateId {
+    final $_column = $_itemColumn<int>('games_counting_template_id')!;
+
+    final manager = $$GamesCountingTemplatesTableTableManager(
+      $_db,
+      $_db.gamesCountingTemplates,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(
+      _gamesCountingTemplateIdTable($_db),
+    );
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $GamesTable _gameIdTable(_$AppDatabase db) => db.games.createAlias(
+    $_aliasNameGenerator(
+      db.gamesCountingTemplatesExpansions.gameId,
+      db.games.id,
+    ),
+  );
+
+  $$GamesTableProcessedTableManager get gameId {
+    final $_column = $_itemColumn<int>('game_id')!;
+
+    final manager = $$GamesTableTableManager(
+      $_db,
+      $_db.games,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GamesCountingTemplatesExpansionsTableFilterComposer
+    extends Composer<_$AppDatabase, $GamesCountingTemplatesExpansionsTable> {
+  $$GamesCountingTemplatesExpansionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$GamesCountingTemplatesTableFilterComposer get gamesCountingTemplateId {
+    final $$GamesCountingTemplatesTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.gamesCountingTemplateId,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableFilterComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  $$GamesTableFilterComposer get gameId {
+    final $$GamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableFilterComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GamesCountingTemplatesExpansionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GamesCountingTemplatesExpansionsTable> {
+  $$GamesCountingTemplatesExpansionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$GamesCountingTemplatesTableOrderingComposer get gamesCountingTemplateId {
+    final $$GamesCountingTemplatesTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.gamesCountingTemplateId,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableOrderingComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  $$GamesTableOrderingComposer get gameId {
+    final $$GamesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableOrderingComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GamesCountingTemplatesExpansionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GamesCountingTemplatesExpansionsTable> {
+  $$GamesCountingTemplatesExpansionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$GamesCountingTemplatesTableAnnotationComposer get gamesCountingTemplateId {
+    final $$GamesCountingTemplatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.gamesCountingTemplateId,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  $$GamesTableAnnotationComposer get gameId {
+    final $$GamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GamesCountingTemplatesExpansionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GamesCountingTemplatesExpansionsTable,
+          GamesCountingTemplatesExpansion,
+          $$GamesCountingTemplatesExpansionsTableFilterComposer,
+          $$GamesCountingTemplatesExpansionsTableOrderingComposer,
+          $$GamesCountingTemplatesExpansionsTableAnnotationComposer,
+          $$GamesCountingTemplatesExpansionsTableCreateCompanionBuilder,
+          $$GamesCountingTemplatesExpansionsTableUpdateCompanionBuilder,
+          (
+            GamesCountingTemplatesExpansion,
+            $$GamesCountingTemplatesExpansionsTableReferences,
+          ),
+          GamesCountingTemplatesExpansion,
+          PrefetchHooks Function({bool gamesCountingTemplateId, bool gameId})
+        > {
+  $$GamesCountingTemplatesExpansionsTableTableManager(
+    _$AppDatabase db,
+    $GamesCountingTemplatesExpansionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GamesCountingTemplatesExpansionsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$GamesCountingTemplatesExpansionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$GamesCountingTemplatesExpansionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> gamesCountingTemplateId = const Value.absent(),
+                Value<int> gameId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GamesCountingTemplatesExpansionsCompanion(
+                gamesCountingTemplateId: gamesCountingTemplateId,
+                gameId: gameId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int gamesCountingTemplateId,
+                required int gameId,
+                Value<int> rowid = const Value.absent(),
+              }) => GamesCountingTemplatesExpansionsCompanion.insert(
+                gamesCountingTemplateId: gamesCountingTemplateId,
+                gameId: gameId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GamesCountingTemplatesExpansionsTableReferences(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({gamesCountingTemplateId = false, gameId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (gamesCountingTemplateId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.gamesCountingTemplateId,
+                                referencedTable:
+                                    $$GamesCountingTemplatesExpansionsTableReferences
+                                        ._gamesCountingTemplateIdTable(db),
+                                referencedColumn:
+                                    $$GamesCountingTemplatesExpansionsTableReferences
+                                        ._gamesCountingTemplateIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (gameId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.gameId,
+                                referencedTable:
+                                    $$GamesCountingTemplatesExpansionsTableReferences
+                                        ._gameIdTable(db),
+                                referencedColumn:
+                                    $$GamesCountingTemplatesExpansionsTableReferences
+                                        ._gameIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GamesCountingTemplatesExpansionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GamesCountingTemplatesExpansionsTable,
+      GamesCountingTemplatesExpansion,
+      $$GamesCountingTemplatesExpansionsTableFilterComposer,
+      $$GamesCountingTemplatesExpansionsTableOrderingComposer,
+      $$GamesCountingTemplatesExpansionsTableAnnotationComposer,
+      $$GamesCountingTemplatesExpansionsTableCreateCompanionBuilder,
+      $$GamesCountingTemplatesExpansionsTableUpdateCompanionBuilder,
+      (
+        GamesCountingTemplatesExpansion,
+        $$GamesCountingTemplatesExpansionsTableReferences,
+      ),
+      GamesCountingTemplatesExpansion,
+      PrefetchHooks Function({bool gamesCountingTemplateId, bool gameId})
     >;
 typedef $$GamesDesignersTableCreateCompanionBuilder =
     GamesDesignersCompanion Function({
@@ -8350,6 +11017,7 @@ typedef $$GamingSessionsGamersTableCreateCompanionBuilder =
       Value<int?> score,
       Value<int?> place,
       Value<int?> turnOrder,
+      Value<int?> team,
       Value<int> rowid,
     });
 typedef $$GamingSessionsGamersTableUpdateCompanionBuilder =
@@ -8359,6 +11027,7 @@ typedef $$GamingSessionsGamersTableUpdateCompanionBuilder =
       Value<int?> score,
       Value<int?> place,
       Value<int?> turnOrder,
+      Value<int?> team,
       Value<int> rowid,
     });
 
@@ -8440,6 +11109,11 @@ class $$GamingSessionsGamersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get team => $composableBuilder(
+    column: $table.team,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$GamingSessionsTableFilterComposer get gamingSessionId {
     final $$GamingSessionsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -8511,6 +11185,11 @@ class $$GamingSessionsGamersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get team => $composableBuilder(
+    column: $table.team,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GamingSessionsTableOrderingComposer get gamingSessionId {
     final $$GamingSessionsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -8575,6 +11254,9 @@ class $$GamingSessionsGamersTableAnnotationComposer
 
   GeneratedColumn<int> get turnOrder =>
       $composableBuilder(column: $table.turnOrder, builder: (column) => column);
+
+  GeneratedColumn<int> get team =>
+      $composableBuilder(column: $table.team, builder: (column) => column);
 
   $$GamingSessionsTableAnnotationComposer get gamingSessionId {
     final $$GamingSessionsTableAnnotationComposer composer = $composerBuilder(
@@ -8664,6 +11346,7 @@ class $$GamingSessionsGamersTableTableManager
                 Value<int?> score = const Value.absent(),
                 Value<int?> place = const Value.absent(),
                 Value<int?> turnOrder = const Value.absent(),
+                Value<int?> team = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamingSessionsGamersCompanion(
                 gamingSessionId: gamingSessionId,
@@ -8671,6 +11354,7 @@ class $$GamingSessionsGamersTableTableManager
                 score: score,
                 place: place,
                 turnOrder: turnOrder,
+                team: team,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8680,6 +11364,7 @@ class $$GamingSessionsGamersTableTableManager
                 Value<int?> score = const Value.absent(),
                 Value<int?> place = const Value.absent(),
                 Value<int?> turnOrder = const Value.absent(),
+                Value<int?> team = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamingSessionsGamersCompanion.insert(
                 gamingSessionId: gamingSessionId,
@@ -8687,6 +11372,7 @@ class $$GamingSessionsGamersTableTableManager
                 score: score,
                 place: place,
                 turnOrder: turnOrder,
+                team: team,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -9100,12 +11786,183 @@ typedef $$NotesTableProcessedTableManager =
       Note,
       PrefetchHooks Function({bool gameId})
     >;
+typedef $$RatingsTableCreateCompanionBuilder =
+    RatingsCompanion Function({
+      Value<int> id,
+      required int year,
+      Value<int?> month,
+      required String data,
+    });
+typedef $$RatingsTableUpdateCompanionBuilder =
+    RatingsCompanion Function({
+      Value<int> id,
+      Value<int> year,
+      Value<int?> month,
+      Value<String> data,
+    });
+
+class $$RatingsTableFilterComposer
+    extends Composer<_$AppDatabase, $RatingsTable> {
+  $$RatingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RatingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RatingsTable> {
+  $$RatingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RatingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RatingsTable> {
+  $$RatingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<int> get month =>
+      $composableBuilder(column: $table.month, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+}
+
+class $$RatingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RatingsTable,
+          Rating,
+          $$RatingsTableFilterComposer,
+          $$RatingsTableOrderingComposer,
+          $$RatingsTableAnnotationComposer,
+          $$RatingsTableCreateCompanionBuilder,
+          $$RatingsTableUpdateCompanionBuilder,
+          (Rating, BaseReferences<_$AppDatabase, $RatingsTable, Rating>),
+          Rating,
+          PrefetchHooks Function()
+        > {
+  $$RatingsTableTableManager(_$AppDatabase db, $RatingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RatingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RatingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RatingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> year = const Value.absent(),
+                Value<int?> month = const Value.absent(),
+                Value<String> data = const Value.absent(),
+              }) => RatingsCompanion(
+                id: id,
+                year: year,
+                month: month,
+                data: data,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int year,
+                Value<int?> month = const Value.absent(),
+                required String data,
+              }) => RatingsCompanion.insert(
+                id: id,
+                year: year,
+                month: month,
+                data: data,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RatingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RatingsTable,
+      Rating,
+      $$RatingsTableFilterComposer,
+      $$RatingsTableOrderingComposer,
+      $$RatingsTableAnnotationComposer,
+      $$RatingsTableCreateCompanionBuilder,
+      $$RatingsTableUpdateCompanionBuilder,
+      (Rating, BaseReferences<_$AppDatabase, $RatingsTable, Rating>),
+      Rating,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$ArtistsTableTableManager get artists =>
       $$ArtistsTableTableManager(_db, _db.artists);
+  $$CountingTemplatesTableTableManager get countingTemplates =>
+      $$CountingTemplatesTableTableManager(_db, _db.countingTemplates);
   $$DesignersTableTableManager get designers =>
       $$DesignersTableTableManager(_db, _db.designers);
   $$GamesTableTableManager get games =>
@@ -9114,6 +11971,17 @@ class $AppDatabaseManager {
       $$ExpansionsGamesTableTableManager(_db, _db.expansionsGames);
   $$GamesArtistsTableTableManager get gamesArtists =>
       $$GamesArtistsTableTableManager(_db, _db.gamesArtists);
+  $$GamesCountingTemplatesTableTableManager get gamesCountingTemplates =>
+      $$GamesCountingTemplatesTableTableManager(
+        _db,
+        _db.gamesCountingTemplates,
+      );
+  $$GamesCountingTemplatesExpansionsTableTableManager
+  get gamesCountingTemplatesExpansions =>
+      $$GamesCountingTemplatesExpansionsTableTableManager(
+        _db,
+        _db.gamesCountingTemplatesExpansions,
+      );
   $$GamesDesignersTableTableManager get gamesDesigners =>
       $$GamesDesignersTableTableManager(_db, _db.gamesDesigners);
   $$TagsTableTableManager get tags => $$TagsTableTableManager(_db, _db.tags);
@@ -9132,4 +12000,6 @@ class $AppDatabaseManager {
       $$GamingSessionsGamersTableTableManager(_db, _db.gamingSessionsGamers);
   $$NotesTableTableManager get notes =>
       $$NotesTableTableManager(_db, _db.notes);
+  $$RatingsTableTableManager get ratings =>
+      $$RatingsTableTableManager(_db, _db.ratings);
 }

@@ -31,6 +31,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
           score: Value(gamerData.score),
           place: Value(gamerData.place),
           turnOrder: Value(gamerData.turnOrder),
+          team: Value(gamerData.team),
         ),
       );
     }
@@ -66,7 +67,6 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     await (delete(
       gamingSessionsExpansions,
     )..where((ge) => ge.gamingSessionId.equals(gamingSessionId))).go();
-
     // 3. Добавляем новые связи
     for (final gamerData in gamersData) {
       await into(gamingSessionsGamers).insert(
@@ -76,6 +76,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
           score: Value(gamerData.score),
           place: Value(gamerData.place),
           turnOrder: Value(gamerData.turnOrder),
+          team: Value(gamerData.team),
         ),
       );
     }
@@ -102,7 +103,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   // Все игровые сессии
   Future<List<GamingSessionData>> getAll() async {
     final query =
-        await (select(gamingSessions).join([
+        (select(gamingSessions).join([
           innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
         ])..orderBy([
           OrderingTerm(
@@ -118,6 +119,28 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
       return GamingSessionData(gamingSession: gamingSession, game: game);
     }).toList();
+  }
+
+  // Все игровые сессии (поток)
+  Stream<List<GamingSessionData>> watchAll() {
+    final query =
+        (select(gamingSessions).join([
+          innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
+        ])..orderBy([
+          OrderingTerm(
+            expression: gamingSessions.startedAt,
+            mode: OrderingMode.desc,
+          ),
+        ]));
+
+    return query.watch().map((rows) {
+      return rows.map((row) {
+        final Game game = row.readTable(games);
+        final GamingSession gamingSession = row.readTable(gamingSessions);
+
+        return GamingSessionData(gamingSession: gamingSession, game: game);
+      }).toList();
+    });
   }
 
   // Дополнения, использованные в игровой сессии
@@ -163,6 +186,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
         score: gamerInfo.score,
         place: gamerInfo.place,
         turnOrder: gamerInfo.turnOrder,
+        team: gamerInfo.team,
       );
     }).toList();
 

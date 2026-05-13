@@ -177,6 +177,7 @@ class BackupService {
               'score': gg.score,
               'place': gg.place,
               'turnOrder': gg.turnOrder,
+              'team': gg.team,
             },
           )
           .toList(),
@@ -512,6 +513,7 @@ class BackupService {
                 score: Value(gsgJson['score']),
                 place: Value(gsgJson['place']),
                 turnOrder: Value(gsgJson['turnOrder']),
+                team: Value(gsgJson['team']),
               ),
             );
       }

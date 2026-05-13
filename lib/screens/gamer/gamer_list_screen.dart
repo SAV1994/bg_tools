@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class GamersListScreen extends ConsumerStatefulWidget {
@@ -62,7 +62,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
 
           // Если данных нет
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text(emptyListMsg));
+            return buildEmptyListScreen();
           }
 
           // Получаем данные

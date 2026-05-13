@@ -1,5 +1,7 @@
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/screens/gaming_session/form_widgets/team_select_widget.dart';
 import 'package:flutter/material.dart';
 
 class GamingSessionGamerCard extends StatefulWidget {
@@ -22,6 +24,7 @@ class _GamingSessionGamerCardState extends State<GamingSessionGamerCard> {
   late TextEditingController _scoreController;
   late TextEditingController _placeController;
   late TextEditingController _turnOrderController;
+  late TeamsEnum? _selectedTeam;
 
   @override
   void initState() {
@@ -35,11 +38,21 @@ class _GamingSessionGamerCardState extends State<GamingSessionGamerCard> {
     _turnOrderController = TextEditingController(
       text: widget.gamerData.turnOrder?.toString(),
     );
+    _selectedTeam = (widget.gamerData.team != null)
+        ? TeamsEnum.fromId(widget.gamerData.team!)
+        : null;
 
     // Добавляем слушателей
     _scoreController.addListener(_notifyParent);
     _placeController.addListener(_notifyParent);
     _turnOrderController.addListener(_notifyParent);
+  }
+
+  void _handleTeamChange(TeamsEnum? team) {
+    setState(() {
+      _selectedTeam = team;
+    });
+    _notifyParent();
   }
 
   void _notifyParent() {
@@ -55,6 +68,7 @@ class _GamingSessionGamerCardState extends State<GamingSessionGamerCard> {
         turnOrder: _turnOrderController.text.isNotEmpty
             ? int.tryParse(_turnOrderController.text)
             : null,
+        team: _selectedTeam?.id,
       ),
     );
   }
@@ -122,6 +136,10 @@ class _GamingSessionGamerCardState extends State<GamingSessionGamerCard> {
                   tooltip: 'Удалить',
                 ),
               ],
+            ),
+            TeamSelector(
+              selectedTeam: _selectedTeam,
+              onChanged: _handleTeamChange,
             ),
             TextFormField(
               controller: _scoreController,

@@ -17,6 +17,12 @@ final designersDataProvider = StreamProvider<List<Designer>>((ref) {
   return designerDao.watchAll(); // Stream автоматически обновляется
 });
 
+// Игры
+final gamesDataProvider = StreamProvider<List<Game>>((ref) {
+  final gameDao = ref.watch(gameDaoProvider);
+  return gameDao.watchAll(); // Stream автоматически обновляется
+});
+
 // Полная информация о игре
 final gameFullDataProvider = FutureProvider.family<GameFullData?, int>((
   ref,
@@ -32,8 +38,16 @@ final ownerDataProvider = FutureProvider<Gamer?>((ref) async {
   return dao.getOwner();
 });
 
+// Игровые сессии
+final gamingSessionDataProvider = StreamProvider<List<GamingSessionData>>((
+  ref,
+) {
+  final gamingSessionDao = ref.watch(gamingSessionDaoProvider);
+  return gamingSessionDao.watchAll(); // Stream автоматически обновляется
+});
+
 // Полная информация об игровой сессии
-final gamingSessionDataProvider =
+final gamingSessionFullDataProvider =
     FutureProvider.family<GamingSessionFullData?, int>((ref, id) async {
       final dao = ref.watch(gamingSessionDaoProvider);
       return await dao.getFullInfo(id);

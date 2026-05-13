@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts.dart';
-import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class GamesListScreen extends ConsumerStatefulWidget {
@@ -40,7 +41,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final gameDao = ref.watch(gameDaoProvider);
+    final gamesAsync = ref.watch(gamesDataProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -52,26 +53,12 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<List<Game>>(
-        future: gameDao.getAll(),
-        builder: (context, snapshot) {
-          // Показываем индикатор загрузки
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            buildLoadingScreen();
-          }
-
-          // Обрабатываем ошибки
-          if (snapshot.hasError) {
-            return Center(child: Text('Ошибка: ${snapshot.error}'));
-          }
-
+      body: gamesAsync.when(
+        data: (games) {
           // Если данных нет
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text(emptyListMsg));
+          if (games.isEmpty) {
+            return buildEmptyListScreen();
           }
-
-          // Получаем данные
-          final games = snapshot.data!;
 
           return ListView.builder(
             itemCount: games.length,
@@ -106,6 +93,8 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen> {
             },
           );
         },
+        loading: () => buildLoadingScreen(),
+        error: (err, _) => Text('ОШИБКА'),
       ),
     );
   }

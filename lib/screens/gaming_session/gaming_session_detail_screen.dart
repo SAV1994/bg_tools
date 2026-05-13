@@ -33,7 +33,7 @@ class _GamingSessionDetailScreenState
     );
 
     if (result == true) {
-      ref.invalidate(gamingSessionDataProvider); // Обновляем провайдер
+      ref.invalidate(gamingSessionFullDataProvider); // Обновляем провайдер
       setState(() {});
     }
   }
@@ -79,7 +79,9 @@ class _GamingSessionDetailScreenState
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ref.invalidate(gamingSessionDataProvider(widget.gamingSessionId));
+              ref.invalidate(
+                gamingSessionFullDataProvider(widget.gamingSessionId),
+              );
             },
             child: const Text('Повторить'),
           ),
@@ -257,6 +259,16 @@ class _GamingSessionDetailScreenState
                             _buildInfoRow('Игрок', gamerName),
                             const Divider(),
                             _buildInfoRow(
+                              'Команда',
+                              (gamerData.team != null)
+                                  ? TeamsEnum.fromId(gamerData.team!).label
+                                  : null,
+                              valueColor: (gamerData.team != null)
+                                  ? TeamsEnum.fromId(gamerData.team!).color
+                                  : null,
+                            ),
+                            const Divider(),
+                            _buildInfoRow(
                               'Количество набранных очков',
                               gamerData.score?.toString(),
                             ),
@@ -284,7 +296,7 @@ class _GamingSessionDetailScreenState
   @override
   Widget build(BuildContext context) {
     final gamingSessionAsync = ref.watch(
-      gamingSessionDataProvider(widget.gamingSessionId),
+      gamingSessionFullDataProvider(widget.gamingSessionId),
     );
 
     return Scaffold(

@@ -14,12 +14,14 @@ class GamingSessionGamerData {
   final int? score;
   final int? place;
   final int? turnOrder;
+  final int? team;
 
   GamingSessionGamerData({
     required this.gamer,
     this.score,
     this.place,
     this.turnOrder,
+    this.team,
   });
 }
 

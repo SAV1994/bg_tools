@@ -1,6 +1,9 @@
+import 'package:bg_tools/core/consts.dart';
+import 'package:flutter/material.dart';
+
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
-import 'package:flutter/material.dart';
+import 'package:bg_tools/screens/gaming_session/form_widgets/team_select_widget.dart';
 
 class AddGamerDetailsForm extends StatefulWidget {
   final Gamer gamer;
@@ -22,6 +25,7 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
   final TextEditingController _scoreController = TextEditingController();
   final TextEditingController _placeController = TextEditingController();
   final TextEditingController _turnOrderController = TextEditingController();
+  TeamsEnum? _selectedTeam;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +35,14 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
         mainAxisSize: MainAxisSize.min,
         spacing: 12,
         children: [
+          TeamSelector(
+            selectedTeam: _selectedTeam,
+            onChanged: (team) => {
+              setState(() {
+                _selectedTeam = team;
+              }),
+            },
+          ),
           TextFormField(
             controller: _scoreController,
             decoration: const InputDecoration(
@@ -86,6 +98,7 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
                           turnOrder: _turnOrderController.text.isNotEmpty
                               ? int.tryParse(_turnOrderController.text)
                               : null,
+                          team: _selectedTeam?.id,
                         ),
                       );
                     }

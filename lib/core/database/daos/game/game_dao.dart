@@ -135,6 +135,11 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     return await select(games).get();
   }
 
+  // Все игры (поток)
+  Stream<List<Game>> watchAll() {
+    return select(games).watch();
+  }
+
   // Базовые игры
   Future<List<Game>> getBases(int gameId) async {
     final query = select(games).join([
