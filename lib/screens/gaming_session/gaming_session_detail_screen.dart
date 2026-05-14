@@ -28,7 +28,7 @@ class _GamingSessionDetailScreenState
     extends ConsumerState<GamingSessionDetailScreen> {
   Future<void> _openUpdateForm() async {
     final result = await context.pushNamed(
-      'gaming-session-update',
+      'gaming-sessions-update',
       pathParameters: {'gamingSessionId': widget.gamingSessionId.toString()},
     );
 

@@ -173,6 +173,16 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _yearController.dispose();
+    _minPlayersController.dispose();
+    _maxPlayersController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

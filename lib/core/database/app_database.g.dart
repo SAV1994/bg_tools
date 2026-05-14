@@ -1731,6 +1731,19 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
   @override
   late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
@@ -1757,7 +1770,7 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
     ),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, gameId, countingTemplateId];
+  List<GeneratedColumn> get $columns => [id, name, gameId, countingTemplateId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1772,6 +1785,14 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
     }
     if (data.containsKey('game_id')) {
       context.handle(
@@ -1805,6 +1826,10 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
       gameId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}game_id'],
@@ -1825,10 +1850,12 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
 class GamesCountingTemplate extends DataClass
     implements Insertable<GamesCountingTemplate> {
   final int id;
+  final String name;
   final int gameId;
   final int countingTemplateId;
   const GamesCountingTemplate({
     required this.id,
+    required this.name,
     required this.gameId,
     required this.countingTemplateId,
   });
@@ -1836,6 +1863,7 @@ class GamesCountingTemplate extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
     map['game_id'] = Variable<int>(gameId);
     map['counting_template_id'] = Variable<int>(countingTemplateId);
     return map;
@@ -1844,6 +1872,7 @@ class GamesCountingTemplate extends DataClass
   GamesCountingTemplatesCompanion toCompanion(bool nullToAbsent) {
     return GamesCountingTemplatesCompanion(
       id: Value(id),
+      name: Value(name),
       gameId: Value(gameId),
       countingTemplateId: Value(countingTemplateId),
     );
@@ -1856,6 +1885,7 @@ class GamesCountingTemplate extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return GamesCountingTemplate(
       id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
       gameId: serializer.fromJson<int>(json['gameId']),
       countingTemplateId: serializer.fromJson<int>(json['countingTemplateId']),
     );
@@ -1865,6 +1895,7 @@ class GamesCountingTemplate extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
       'gameId': serializer.toJson<int>(gameId),
       'countingTemplateId': serializer.toJson<int>(countingTemplateId),
     };
@@ -1872,10 +1903,12 @@ class GamesCountingTemplate extends DataClass
 
   GamesCountingTemplate copyWith({
     int? id,
+    String? name,
     int? gameId,
     int? countingTemplateId,
   }) => GamesCountingTemplate(
     id: id ?? this.id,
+    name: name ?? this.name,
     gameId: gameId ?? this.gameId,
     countingTemplateId: countingTemplateId ?? this.countingTemplateId,
   );
@@ -1884,6 +1917,7 @@ class GamesCountingTemplate extends DataClass
   ) {
     return GamesCountingTemplate(
       id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
       gameId: data.gameId.present ? data.gameId.value : this.gameId,
       countingTemplateId: data.countingTemplateId.present
           ? data.countingTemplateId.value
@@ -1895,6 +1929,7 @@ class GamesCountingTemplate extends DataClass
   String toString() {
     return (StringBuffer('GamesCountingTemplate(')
           ..write('id: $id, ')
+          ..write('name: $name, ')
           ..write('gameId: $gameId, ')
           ..write('countingTemplateId: $countingTemplateId')
           ..write(')'))
@@ -1902,12 +1937,13 @@ class GamesCountingTemplate extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, gameId, countingTemplateId);
+  int get hashCode => Object.hash(id, name, gameId, countingTemplateId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is GamesCountingTemplate &&
           other.id == this.id &&
+          other.name == this.name &&
           other.gameId == this.gameId &&
           other.countingTemplateId == this.countingTemplateId);
 }
@@ -1915,26 +1951,32 @@ class GamesCountingTemplate extends DataClass
 class GamesCountingTemplatesCompanion
     extends UpdateCompanion<GamesCountingTemplate> {
   final Value<int> id;
+  final Value<String> name;
   final Value<int> gameId;
   final Value<int> countingTemplateId;
   const GamesCountingTemplatesCompanion({
     this.id = const Value.absent(),
+    this.name = const Value.absent(),
     this.gameId = const Value.absent(),
     this.countingTemplateId = const Value.absent(),
   });
   GamesCountingTemplatesCompanion.insert({
     this.id = const Value.absent(),
+    required String name,
     required int gameId,
     required int countingTemplateId,
-  }) : gameId = Value(gameId),
+  }) : name = Value(name),
+       gameId = Value(gameId),
        countingTemplateId = Value(countingTemplateId);
   static Insertable<GamesCountingTemplate> custom({
     Expression<int>? id,
+    Expression<String>? name,
     Expression<int>? gameId,
     Expression<int>? countingTemplateId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (name != null) 'name': name,
       if (gameId != null) 'game_id': gameId,
       if (countingTemplateId != null)
         'counting_template_id': countingTemplateId,
@@ -1943,11 +1985,13 @@ class GamesCountingTemplatesCompanion
 
   GamesCountingTemplatesCompanion copyWith({
     Value<int>? id,
+    Value<String>? name,
     Value<int>? gameId,
     Value<int>? countingTemplateId,
   }) {
     return GamesCountingTemplatesCompanion(
       id: id ?? this.id,
+      name: name ?? this.name,
       gameId: gameId ?? this.gameId,
       countingTemplateId: countingTemplateId ?? this.countingTemplateId,
     );
@@ -1958,6 +2002,9 @@ class GamesCountingTemplatesCompanion
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
     }
     if (gameId.present) {
       map['game_id'] = Variable<int>(gameId.value);
@@ -1972,6 +2019,7 @@ class GamesCountingTemplatesCompanion
   String toString() {
     return (StringBuffer('GamesCountingTemplatesCompanion(')
           ..write('id: $id, ')
+          ..write('name: $name, ')
           ..write('gameId: $gameId, ')
           ..write('countingTemplateId: $countingTemplateId')
           ..write(')'))
@@ -3341,6 +3389,20 @@ class $GamingSessionsTable extends GamingSessions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _rootSessionIdMeta = const VerificationMeta(
+    'rootSessionId',
+  );
+  @override
+  late final GeneratedColumn<int> rootSessionId = GeneratedColumn<int>(
+    'root_session_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES gaming_sessions (id)',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3348,6 +3410,7 @@ class $GamingSessionsTable extends GamingSessions
     startedAt,
     finishedAt,
     comment,
+    rootSessionId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3392,6 +3455,15 @@ class $GamingSessionsTable extends GamingSessions
         comment.isAcceptableOrUnknown(data['comment']!, _commentMeta),
       );
     }
+    if (data.containsKey('root_session_id')) {
+      context.handle(
+        _rootSessionIdMeta,
+        rootSessionId.isAcceptableOrUnknown(
+          data['root_session_id']!,
+          _rootSessionIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3421,6 +3493,10 @@ class $GamingSessionsTable extends GamingSessions
         DriftSqlType.string,
         data['${effectivePrefix}comment'],
       ),
+      rootSessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}root_session_id'],
+      ),
     );
   }
 
@@ -3436,12 +3512,14 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
   final DateTime startedAt;
   final DateTime? finishedAt;
   final String? comment;
+  final int? rootSessionId;
   const GamingSession({
     required this.id,
     required this.gameId,
     required this.startedAt,
     this.finishedAt,
     this.comment,
+    this.rootSessionId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3454,6 +3532,9 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     }
     if (!nullToAbsent || comment != null) {
       map['comment'] = Variable<String>(comment);
+    }
+    if (!nullToAbsent || rootSessionId != null) {
+      map['root_session_id'] = Variable<int>(rootSessionId);
     }
     return map;
   }
@@ -3469,6 +3550,9 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       comment: comment == null && nullToAbsent
           ? const Value.absent()
           : Value(comment),
+      rootSessionId: rootSessionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rootSessionId),
     );
   }
 
@@ -3483,6 +3567,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       finishedAt: serializer.fromJson<DateTime?>(json['finishedAt']),
       comment: serializer.fromJson<String?>(json['comment']),
+      rootSessionId: serializer.fromJson<int?>(json['rootSessionId']),
     );
   }
   @override
@@ -3494,6 +3579,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'finishedAt': serializer.toJson<DateTime?>(finishedAt),
       'comment': serializer.toJson<String?>(comment),
+      'rootSessionId': serializer.toJson<int?>(rootSessionId),
     };
   }
 
@@ -3503,12 +3589,16 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     DateTime? startedAt,
     Value<DateTime?> finishedAt = const Value.absent(),
     Value<String?> comment = const Value.absent(),
+    Value<int?> rootSessionId = const Value.absent(),
   }) => GamingSession(
     id: id ?? this.id,
     gameId: gameId ?? this.gameId,
     startedAt: startedAt ?? this.startedAt,
     finishedAt: finishedAt.present ? finishedAt.value : this.finishedAt,
     comment: comment.present ? comment.value : this.comment,
+    rootSessionId: rootSessionId.present
+        ? rootSessionId.value
+        : this.rootSessionId,
   );
   GamingSession copyWithCompanion(GamingSessionsCompanion data) {
     return GamingSession(
@@ -3519,6 +3609,9 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           ? data.finishedAt.value
           : this.finishedAt,
       comment: data.comment.present ? data.comment.value : this.comment,
+      rootSessionId: data.rootSessionId.present
+          ? data.rootSessionId.value
+          : this.rootSessionId,
     );
   }
 
@@ -3529,13 +3622,15 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           ..write('gameId: $gameId, ')
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
-          ..write('comment: $comment')
+          ..write('comment: $comment, ')
+          ..write('rootSessionId: $rootSessionId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, gameId, startedAt, finishedAt, comment);
+  int get hashCode =>
+      Object.hash(id, gameId, startedAt, finishedAt, comment, rootSessionId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3544,7 +3639,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           other.gameId == this.gameId &&
           other.startedAt == this.startedAt &&
           other.finishedAt == this.finishedAt &&
-          other.comment == this.comment);
+          other.comment == this.comment &&
+          other.rootSessionId == this.rootSessionId);
 }
 
 class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
@@ -3553,12 +3649,14 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
   final Value<DateTime> startedAt;
   final Value<DateTime?> finishedAt;
   final Value<String?> comment;
+  final Value<int?> rootSessionId;
   const GamingSessionsCompanion({
     this.id = const Value.absent(),
     this.gameId = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.finishedAt = const Value.absent(),
     this.comment = const Value.absent(),
+    this.rootSessionId = const Value.absent(),
   });
   GamingSessionsCompanion.insert({
     this.id = const Value.absent(),
@@ -3566,6 +3664,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     required DateTime startedAt,
     this.finishedAt = const Value.absent(),
     this.comment = const Value.absent(),
+    this.rootSessionId = const Value.absent(),
   }) : gameId = Value(gameId),
        startedAt = Value(startedAt);
   static Insertable<GamingSession> custom({
@@ -3574,6 +3673,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     Expression<DateTime>? startedAt,
     Expression<DateTime>? finishedAt,
     Expression<String>? comment,
+    Expression<int>? rootSessionId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3581,6 +3681,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
       if (startedAt != null) 'started_at': startedAt,
       if (finishedAt != null) 'finished_at': finishedAt,
       if (comment != null) 'comment': comment,
+      if (rootSessionId != null) 'root_session_id': rootSessionId,
     });
   }
 
@@ -3590,6 +3691,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     Value<DateTime>? startedAt,
     Value<DateTime?>? finishedAt,
     Value<String?>? comment,
+    Value<int?>? rootSessionId,
   }) {
     return GamingSessionsCompanion(
       id: id ?? this.id,
@@ -3597,6 +3699,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
       startedAt: startedAt ?? this.startedAt,
       finishedAt: finishedAt ?? this.finishedAt,
       comment: comment ?? this.comment,
+      rootSessionId: rootSessionId ?? this.rootSessionId,
     );
   }
 
@@ -3618,6 +3721,9 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     if (comment.present) {
       map['comment'] = Variable<String>(comment.value);
     }
+    if (rootSessionId.present) {
+      map['root_session_id'] = Variable<int>(rootSessionId.value);
+    }
     return map;
   }
 
@@ -3628,7 +3734,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
           ..write('gameId: $gameId, ')
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
-          ..write('comment: $comment')
+          ..write('comment: $comment, ')
+          ..write('rootSessionId: $rootSessionId')
           ..write(')'))
         .toString();
   }
@@ -5020,9 +5127,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $NotesTable notes = $NotesTable(this);
   late final $RatingsTable ratings = $RatingsTable(this);
   late final ArtistDao artistDao = ArtistDao(this as AppDatabase);
+  late final CountingTemplateDao countingTemplateDao = CountingTemplateDao(
+    this as AppDatabase,
+  );
   late final DesignerDao designerDao = DesignerDao(this as AppDatabase);
   late final GameDao gameDao = GameDao(this as AppDatabase);
   late final GamerDao gamerDao = GamerDao(this as AppDatabase);
+  late final GamesCountingTemplatesDao gamesCountingTemplatesDao =
+      GamesCountingTemplatesDao(this as AppDatabase);
   late final GamingSessionDao gamingSessionDao = GamingSessionDao(
     this as AppDatabase,
   );
@@ -7935,12 +8047,14 @@ typedef $$GamesArtistsTableProcessedTableManager =
 typedef $$GamesCountingTemplatesTableCreateCompanionBuilder =
     GamesCountingTemplatesCompanion Function({
       Value<int> id,
+      required String name,
       required int gameId,
       required int countingTemplateId,
     });
 typedef $$GamesCountingTemplatesTableUpdateCompanionBuilder =
     GamesCountingTemplatesCompanion Function({
       Value<int> id,
+      Value<String> name,
       Value<int> gameId,
       Value<int> countingTemplateId,
     });
@@ -8045,6 +8159,11 @@ class $$GamesCountingTemplatesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$GamesTableFilterComposer get gameId {
     final $$GamesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -8135,6 +8254,11 @@ class $$GamesCountingTemplatesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GamesTableOrderingComposer get gameId {
     final $$GamesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -8193,6 +8317,9 @@ class $$GamesCountingTemplatesTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
 
   $$GamesTableAnnotationComposer get gameId {
     final $$GamesTableAnnotationComposer composer = $composerBuilder(
@@ -8315,20 +8442,24 @@ class $$GamesCountingTemplatesTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
                 Value<int> gameId = const Value.absent(),
                 Value<int> countingTemplateId = const Value.absent(),
               }) => GamesCountingTemplatesCompanion(
                 id: id,
+                name: name,
                 gameId: gameId,
                 countingTemplateId: countingTemplateId,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                required String name,
                 required int gameId,
                 required int countingTemplateId,
               }) => GamesCountingTemplatesCompanion.insert(
                 id: id,
+                name: name,
                 gameId: gameId,
                 countingTemplateId: countingTemplateId,
               ),
@@ -10098,6 +10229,7 @@ typedef $$GamingSessionsTableCreateCompanionBuilder =
       required DateTime startedAt,
       Value<DateTime?> finishedAt,
       Value<String?> comment,
+      Value<int?> rootSessionId,
     });
 typedef $$GamingSessionsTableUpdateCompanionBuilder =
     GamingSessionsCompanion Function({
@@ -10106,6 +10238,7 @@ typedef $$GamingSessionsTableUpdateCompanionBuilder =
       Value<DateTime> startedAt,
       Value<DateTime?> finishedAt,
       Value<String?> comment,
+      Value<int?> rootSessionId,
     });
 
 final class $$GamingSessionsTableReferences
@@ -10128,6 +10261,28 @@ final class $$GamingSessionsTableReferences
       $_db.games,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $GamingSessionsTable _rootSessionIdTable(_$AppDatabase db) =>
+      db.gamingSessions.createAlias(
+        $_aliasNameGenerator(
+          db.gamingSessions.rootSessionId,
+          db.gamingSessions.id,
+        ),
+      );
+
+  $$GamingSessionsTableProcessedTableManager? get rootSessionId {
+    final $_column = $_itemColumn<int>('root_session_id');
+    if ($_column == null) return null;
+    final manager = $$GamingSessionsTableTableManager(
+      $_db,
+      $_db.gamingSessions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_rootSessionIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -10243,6 +10398,29 @@ class $$GamingSessionsTableFilterComposer
     return composer;
   }
 
+  $$GamingSessionsTableFilterComposer get rootSessionId {
+    final $$GamingSessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rootSessionId,
+      referencedTable: $db.gamingSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamingSessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.gamingSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<bool> gamingSessionsExpansionsRefs(
     Expression<bool> Function($$GamingSessionsExpansionsTableFilterComposer f)
     f,
@@ -10347,6 +10525,29 @@ class $$GamingSessionsTableOrderingComposer
     );
     return composer;
   }
+
+  $$GamingSessionsTableOrderingComposer get rootSessionId {
+    final $$GamingSessionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rootSessionId,
+      referencedTable: $db.gamingSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamingSessionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.gamingSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$GamingSessionsTableAnnotationComposer
@@ -10386,6 +10587,29 @@ class $$GamingSessionsTableAnnotationComposer
           }) => $$GamesTableAnnotationComposer(
             $db: $db,
             $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GamingSessionsTableAnnotationComposer get rootSessionId {
+    final $$GamingSessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rootSessionId,
+      referencedTable: $db.gamingSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamingSessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gamingSessions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -10464,6 +10688,7 @@ class $$GamingSessionsTableTableManager
           GamingSession,
           PrefetchHooks Function({
             bool gameId,
+            bool rootSessionId,
             bool gamingSessionsExpansionsRefs,
             bool gamingSessionsGamersRefs,
           })
@@ -10488,12 +10713,14 @@ class $$GamingSessionsTableTableManager
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> finishedAt = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
+                Value<int?> rootSessionId = const Value.absent(),
               }) => GamingSessionsCompanion(
                 id: id,
                 gameId: gameId,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
                 comment: comment,
+                rootSessionId: rootSessionId,
               ),
           createCompanionCallback:
               ({
@@ -10502,12 +10729,14 @@ class $$GamingSessionsTableTableManager
                 required DateTime startedAt,
                 Value<DateTime?> finishedAt = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
+                Value<int?> rootSessionId = const Value.absent(),
               }) => GamingSessionsCompanion.insert(
                 id: id,
                 gameId: gameId,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
                 comment: comment,
+                rootSessionId: rootSessionId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -10520,6 +10749,7 @@ class $$GamingSessionsTableTableManager
           prefetchHooksCallback:
               ({
                 gameId = false,
+                rootSessionId = false,
                 gamingSessionsExpansionsRefs = false,
                 gamingSessionsGamersRefs = false,
               }) {
@@ -10557,6 +10787,21 @@ class $$GamingSessionsTableTableManager
                                     referencedColumn:
                                         $$GamingSessionsTableReferences
                                             ._gameIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (rootSessionId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.rootSessionId,
+                                    referencedTable:
+                                        $$GamingSessionsTableReferences
+                                            ._rootSessionIdTable(db),
+                                    referencedColumn:
+                                        $$GamingSessionsTableReferences
+                                            ._rootSessionIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -10630,6 +10875,7 @@ typedef $$GamingSessionsTableProcessedTableManager =
       GamingSession,
       PrefetchHooks Function({
         bool gameId,
+        bool rootSessionId,
         bool gamingSessionsExpansionsRefs,
         bool gamingSessionsGamersRefs,
       })

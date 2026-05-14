@@ -1,3 +1,4 @@
+import 'package:bg_tools/core/utils/add_gamer_modal_form.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
@@ -37,15 +38,11 @@ class _GamingSessionFormScreenState
   Set<int> _selectedExpansionIds = {};
   DateTime _startedAt = DateTime.now();
   DateTime? _finishedAt;
-  // Контроллеры
-  late final TextEditingController _commentController;
-  // Поиск Игроков
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
   List<Gamer> _allGamers = [];
-  List<Gamer> _filteredGamers = [];
   // Выбранные игроки
   final Map<int, GamingSessionGamerData> _selectedGamers = {};
+  // Контроллеры
+  late final TextEditingController _commentController;
   // Загрузка
   bool _isLoading = false;
   // Ошибка
@@ -55,7 +52,6 @@ class _GamingSessionFormScreenState
   void initState() {
     _isLoading = true;
     super.initState();
-    _searchController.addListener(_onSearchChanged);
     _loadData();
   }
 
@@ -63,7 +59,6 @@ class _GamingSessionFormScreenState
     // Загружаем всех игроков
     final gamerDao = ref.read(gamerDaoProvider);
     _allGamers = await gamerDao.getEverybody();
-    _filteredGamers = _allGamers;
     // Загружаем все игры
     final GameDao gameDao = ref.read(gameDaoProvider);
     _games = await gameDao.getAll();
@@ -109,9 +104,9 @@ class _GamingSessionFormScreenState
   }
 
   Future<void> _onGameSelected(Game? game) async {
+    _selectedExpansionIds.clear(); // Очищаем выбранные дополнения
     setState(() {
       _selectedGame = game;
-      _selectedExpansionIds.clear(); // Очищаем выбранные дополнения
     });
 
     if (game != null) {
@@ -123,162 +118,23 @@ class _GamingSessionFormScreenState
     }
   }
 
-  void _onSearchChanged() {
-    setState(() {
-      _searchQuery = _searchController.text;
-      _filterGamers();
-    });
-  }
-
-  void _filterGamers() {
-    if (_searchQuery.isEmpty) {
-      _filteredGamers = _allGamers;
-    } else {
-      _filteredGamers = _allGamers.where((gamer) {
-        final username = gamer.username.toLowerCase();
-        final firstName = gamer.firstName.toLowerCase();
-        final lastName = gamer.lastName?.toLowerCase() ?? '';
-        final query = _searchQuery.toLowerCase();
-        return username.contains(query) ||
-            firstName.contains(query) ||
-            lastName.contains(query);
-      }).toList();
-    }
-  }
-
   void _showAddGamerDialog() {
-    final notSelectedGamers = _filteredGamers
+    final notSelectedGamers = _allGamers
         .where((g) => !_selectedGamers.containsKey(g.id))
         .toList();
 
     if (notSelectedGamers.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _searchQuery == ''
-                ? 'Все игроки уже добавлены'
-                : 'Не найдено игроков',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Все игроки уже добавлены')));
       return;
     }
 
     // Показываем диалог игрока
-    showDialog(
-      context: context,
-      builder: (context) {
-        String localSearchQuery = '';
-        List<Gamer> localFiltered = List.from(notSelectedGamers);
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            // Функция обновления поиска
-            void updateSearch(String query) {
-              setDialogState(() {
-                localSearchQuery = query;
-                if (query.isEmpty) {
-                  localFiltered = List.from(notSelectedGamers);
-                } else {
-                  localFiltered = notSelectedGamers.where((gamer) {
-                    final username = gamer.username.toLowerCase();
-                    final firstName = gamer.firstName.toLowerCase();
-                    final lastName = gamer.lastName?.toLowerCase() ?? '';
-                    final searchLower = query.toLowerCase();
-                    return username.contains(searchLower) ||
-                        firstName.contains(searchLower) ||
-                        lastName.contains(searchLower);
-                  }).toList();
-                }
-              });
-            }
-
-            return AlertDialog(
-              title: const Text('Выберите игрока'),
-              content: SizedBox(
-                width: 400,
-                height: 500,
-                child: Column(
-                  children: [
-                    // Поле поиска в диалоге
-                    TextField(
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: 'Поиск...',
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: localSearchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () => updateSearch(''),
-                              )
-                            : null,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onChanged: updateSearch,
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Результаты поиска
-                    Expanded(
-                      child: localFiltered.isEmpty
-                          ? const Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.search_off,
-                                    size: 48,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text('Ничего не найдено'),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: localFiltered.length,
-                              itemBuilder: (context, index) {
-                                final gamer = localFiltered[index];
-
-                                String fio = '';
-                                if (gamer.lastName != null) {
-                                  fio += '${gamer.lastName} ';
-                                }
-                                fio += '${gamer.firstName} ';
-                                if (gamer.middleName != null) {
-                                  fio += '${gamer.middleName}';
-                                }
-
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    child: Text(
-                                      gamer.username[0].toUpperCase(),
-                                    ),
-                                  ),
-                                  title: Text(gamer.username),
-                                  subtitle: Text(fio),
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    _addGamerWithDetails(gamer);
-                                  },
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Отмена'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+    buildAddGamerModal(
+      context,
+      notSelectedGamers,
+      (gamer) => _addGamerWithDetails(gamer),
     );
   }
 
@@ -313,25 +169,25 @@ class _GamingSessionFormScreenState
 
     if (date == null) return;
 
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(date),
-    );
+    if (mounted) {
+      final time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(date),
+      );
+      if (time == null) return;
 
-    if (time == null) return;
-
-    final DateTime dateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.minute,
-    );
-
-    if (isFinishedAt) {
-      setState(() => _finishedAt = dateTime);
-    } else {
-      setState(() => _startedAt = dateTime);
+      final DateTime dateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+      if (isFinishedAt) {
+        setState(() => _finishedAt = dateTime);
+      } else {
+        setState(() => _startedAt = dateTime);
+      }
     }
   }
 
@@ -381,12 +237,17 @@ class _GamingSessionFormScreenState
           );
         }
       } catch (e) {
-        print(e);
         setState(() {
-          _generalError = 'Запись уже существует';
+          _generalError = 'Ошибка';
         });
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -452,9 +313,6 @@ class _GamingSessionFormScreenState
                       items: _games,
                       selectedItem: _selectedGame,
                       onSelectionChanged: (baseGame) {
-                        setState(() {
-                          _selectedGame = baseGame;
-                        });
                         _onGameSelected(baseGame);
                       },
                       displayName: (baseGame) => baseGame.name,

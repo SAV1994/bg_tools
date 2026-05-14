@@ -22,6 +22,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final sessionDataAsync = ref.watch(sessionDataProvider);
     final ownerAsync = ref.watch(ownerDataProvider);
 
     final ButtonStyle btnStyle = ElevatedButton.styleFrom(
@@ -53,6 +54,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             error: (error, _) => Text('Ошибка'),
           ),
 
+          if (sessionDataAsync.value != null)
+            IconButton(
+              icon: Icon(Icons.play_arrow),
+              onPressed: () => {context.pushNamed('session-runner')},
+              tooltip: 'Продолжить сессию',
+            ),
+
           // Меню
           PopupMenuButton(
             icon: Icon(Icons.more_vert),
@@ -83,10 +91,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               icon: const Icon(Icons.wc),
             ),
             ElevatedButton.icon(
-              onPressed: () => {context.pushNamed('gaming-session-list')},
+              onPressed: () => {context.pushNamed('gaming-sessions-list')},
               style: btnStyle,
               label: Text('История партий'),
               icon: const Icon(Icons.assignment),
+            ),
+            ElevatedButton.icon(
+              onPressed: () => {context.pushNamed('templates-list')},
+              style: btnStyle,
+              label: Text('Шаблоны партий'),
+              icon: const Icon(Icons.build),
             ),
             // ElevatedButton.icon(
             //   onPressed: () => {},
@@ -99,12 +113,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //   style: btnStyle,
             //   label: Text('Мой рейтинг игр'),
             //   icon: const Icon(Icons.favorite),
-            // ),
-            // ElevatedButton.icon(
-            //   onPressed: () => {},
-            //   style: btnStyle,
-            //   label: Text('Шаблоны итогов партий'),
-            //   icon: const Icon(Icons.build),
             // ),
             ElevatedButton.icon(
               onPressed: () => {context.pushNamed('tags')},

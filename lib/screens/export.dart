@@ -1,11 +1,17 @@
 export 'artist/artist_list_screen.dart';
 export 'common/home_screen.dart';
+export 'counting_template/counting_template_detail_screen.dart';
+export 'counting_template/counting_template_form_screen.dart';
+export 'counting_template/counting_template_list_screen.dart';
 export 'designer/designer_list_screen.dart';
 export 'game/game_detail_screan.dart';
 export 'game/game_form_screen.dart';
 export 'game/game_list_screen.dart';
 export 'gamer/gamer_form_screen.dart';
 export 'gamer/gamer_list_screen.dart';
+export 'games_counting_templates/games_counting_templates_form_screan.dart';
+export 'games_counting_templates/games_counting_templates_list_screan.dart';
+export 'games_counting_templates/games_counting_templates_select_screan.dart';
 export 'gaming_session/gaming_session_detail_screen.dart';
 export 'gaming_session/gaming_session_form_screen.dart';
 export 'gaming_session/gaming_session_list_screen.dart';

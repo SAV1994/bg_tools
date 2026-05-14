@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
+import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,13 +27,27 @@ class GamesDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
-  Future<void> _openUpdateForm() async {
-    final result = await context.pushNamed(
-      'games-update',
+  Future<void> _openNewScreen(String pathName) async {
+    await context.pushNamed(
+      pathName,
       pathParameters: {'gameId': widget.gameId.toString()},
     );
 
-    if (result == true) {
+    ref.invalidate(gameFullDataProvider); // Обновляем провайдер
+  }
+
+  Future<void> _runSession() async {
+    final gamesCountingTemplatesDao = ref.read(
+      gamesCountingTemplatesDaoProvider,
+    );
+    List<GamesCountingTemplatesData> templatesData =
+        await gamesCountingTemplatesDao.getAll(widget.gameId);
+    await initSessionData(templatesData[0]);
+
+    ref.invalidate(sessionDataProvider);
+
+    if (mounted) {
+      await context.pushNamed('session-runner');
       ref.invalidate(gameFullDataProvider); // Обновляем провайдер
     }
   }
@@ -227,62 +243,79 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(gameFullDataProvider(widget.gameId));
-    final game = gameAsync.value?.game;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Информация об игре'),
-        actions: [
-          // Кнопка редактирования
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              _openUpdateForm();
-            },
-          ),
-          // Заметки
-          IconButton(
-            icon: const Icon(Icons.note),
-            onPressed: () {
-              if (game != null) {
-                context.pushNamed(
-                  'notes-list',
-                  pathParameters: {
-                    'gameId': gameAsync.value!.game.id.toString(),
+    return gameAsync.when(
+      data: (data) {
+        if (data != null) {
+          final Game game = data.game;
+          final int templatesCount = data.templatesCount;
+
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Игра'),
+              actions: [
+                // Кнопка редактирования
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    _openNewScreen('games-update');
                   },
-                );
-              }
-            },
-          ),
-          // Кнопка удаления
-          IconButton(
-            icon: const Icon(Icons.delete_outlined),
-            onPressed: () {
-              if (game != null) {
-                buildDelModal(
-                  context,
-                  ref,
-                  gameDaoProvider,
-                  mounted,
-                  game,
-                  () => {ref.invalidate(gamingSessionFullDataProvider)},
-                );
-              }
-            },
-          ),
-        ],
-      ),
-      body: gameAsync.when(
-        data: (data) {
-          if (data != null) {
-            return _buildContent(context, data);
-          } else {
-            return buildErrorScreen();
-          }
-        },
-        loading: () => buildLoadingScreen(),
-        error: (error, _) => _buildError(context, error, ref),
-      ),
+                ),
+                // Кнопка настройки шаблонов
+                IconButton(
+                  icon: const Icon(Icons.build),
+                  onPressed: () async {
+                    _openNewScreen('counting-templates-list');
+                  },
+                ),
+                // Кнопка запуска партии
+                if (templatesCount > 0)
+                  IconButton(
+                    icon: (templatesCount == 1)
+                        ? Icon(Icons.play_arrow)
+                        : Icon(Icons.play_arrow_outlined),
+                    onPressed: () async {
+                      (templatesCount == 1)
+                          ? _runSession()
+                          : _openNewScreen('counting-templates-select');
+                    },
+                  ),
+                // Заметки
+                IconButton(
+                  icon: const Icon(Icons.note),
+                  onPressed: () {
+                    context.pushNamed(
+                      'notes-list',
+                      pathParameters: {
+                        'gameId': gameAsync.value!.game.id.toString(),
+                      },
+                    );
+                  },
+                ),
+                // Кнопка удаления
+                IconButton(
+                  icon: const Icon(Icons.delete_outlined),
+                  onPressed: () {
+                    buildDelModal(
+                      context,
+                      ref,
+                      gameDaoProvider,
+                      mounted,
+                      game,
+                      () => {ref.invalidate(gamingSessionFullDataProvider)},
+                    );
+                  },
+                ),
+              ],
+            ),
+            body: _buildContent(context, data),
+          );
+        } else {
+          return buildErrorScreen();
+        }
+      },
+      loading: () => buildLoadingScreen(),
+      error: (error, _) => _buildError(context, error, ref),
     );
   }
 }

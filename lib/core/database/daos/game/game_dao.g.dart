@@ -12,6 +12,10 @@ mixin _$GameDaoMixin on DatabaseAccessor<AppDatabase> {
   $GamesArtistsTable get gamesArtists => attachedDatabase.gamesArtists;
   $TagsTable get tags => attachedDatabase.tags;
   $GamesTagsTable get gamesTags => attachedDatabase.gamesTags;
+  $CountingTemplatesTable get countingTemplates =>
+      attachedDatabase.countingTemplates;
+  $GamesCountingTemplatesTable get gamesCountingTemplates =>
+      attachedDatabase.gamesCountingTemplates;
   GameDaoManager get managers => GameDaoManager(this);
 }
 
@@ -40,4 +44,14 @@ class GameDaoManager {
       $$TagsTableTableManager(_db.attachedDatabase, _db.tags);
   $$GamesTagsTableTableManager get gamesTags =>
       $$GamesTagsTableTableManager(_db.attachedDatabase, _db.gamesTags);
+  $$CountingTemplatesTableTableManager get countingTemplates =>
+      $$CountingTemplatesTableTableManager(
+        _db.attachedDatabase,
+        _db.countingTemplates,
+      );
+  $$GamesCountingTemplatesTableTableManager get gamesCountingTemplates =>
+      $$GamesCountingTemplatesTableTableManager(
+        _db.attachedDatabase,
+        _db.gamesCountingTemplates,
+      );
 }

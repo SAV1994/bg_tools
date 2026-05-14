@@ -12,6 +12,7 @@ class GameFullData {
   final List<Tag> tags;
   final Set<int> selectedTagIds;
   final List<Game> expansions;
+  final int templatesCount;
 
   GameFullData({
     required this.game,
@@ -24,5 +25,6 @@ class GameFullData {
     required this.tags,
     required this.selectedTagIds,
     required this.expansions,
+    required this.templatesCount,
   });
 }

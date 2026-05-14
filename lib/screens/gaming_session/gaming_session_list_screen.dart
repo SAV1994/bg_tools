@@ -22,7 +22,7 @@ class GamingSessionListScreen extends ConsumerStatefulWidget {
 class _GamingSessionListScreenState
     extends ConsumerState<GamingSessionListScreen> {
   Future<void> _openAddForm() async {
-    final result = await context.pushNamed('gaming-session-add');
+    final result = await context.pushNamed('gaming-sessions-add');
 
     if (result == true) {
       ref.invalidate(gamingSessionDaoProvider); // Обновляем провайдер
@@ -32,7 +32,7 @@ class _GamingSessionListScreenState
 
   Future<void> _openDetailPage(int gamingSessionId) async {
     final result = await context.pushNamed(
-      'gaming-session-detail',
+      'gaming-sessions-detail',
       pathParameters: {'gamingSessionId': gamingSessionId.toString()},
     );
 
@@ -77,10 +77,6 @@ class _GamingSessionListScreenState
               gamingSessionInfo += DateFormats.formatDateTime(
                 gamingSession.startedAt,
               );
-              if (gamingSession.finishedAt != null) {
-                gamingSessionInfo +=
-                    ' - ${DateFormats.formatDateTime(gamingSession.finishedAt!)}';
-              }
 
               return Card(
                 margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

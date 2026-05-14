@@ -2,6 +2,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/expansions_games.dart';
 import 'package:bg_tools/core/database/tables/game.dart';
 import 'package:bg_tools/core/database/tables/games_artists.dart';
+import 'package:bg_tools/core/database/tables/games_counting_templates.dart';
 import 'package:bg_tools/core/database/tables/games_designers.dart';
 import 'package:bg_tools/core/database/tables/games_tags.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
@@ -11,7 +12,14 @@ import 'package:drift/drift.dart';
 part 'game_dao.g.dart';
 
 @DriftAccessor(
-  tables: [Games, ExpansionsGames, GamesDesigners, GamesArtists, GamesTags],
+  tables: [
+    Games,
+    ExpansionsGames,
+    GamesDesigners,
+    GamesArtists,
+    GamesTags,
+    GamesCountingTemplates,
+  ],
 )
 class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   GameDao(super.db);
@@ -24,7 +32,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     Set<int> artisrIds,
     Set<int> tagIds,
   ) async {
-    int gameId = await into(games).insert(game);
+    final int gameId = await into(games).insert(game);
 
     for (final baseId in baseIds) {
       await into(expansionsGames).insert(
@@ -199,6 +207,15 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     return results.map((row) => row.readTable(tags)).toList();
   }
 
+  // Количество шаблонов
+  Future<int> getTemplatesCount(int gameId) async {
+    final query = select(gamesCountingTemplates)
+      ..where((gct) => gct.gameId.equals(gameId));
+    final templates = await query.get();
+
+    return templates.length;
+  }
+
   // Игра со всеми связанными сущностями
   Future<GameFullData?> getFullInfo(int gameId) async {
     final game = await (select(
@@ -221,6 +238,8 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
     final expansions = await getExpansions(gameId);
 
+    final int templatesCount = await getTemplatesCount(gameId);
+
     return GameFullData(
       game: game,
       bases: bases,
@@ -232,6 +251,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       tags: tags,
       selectedTagIds: selectedTagIds,
       expansions: expansions,
+      templatesCount: templatesCount,
     );
   }
 

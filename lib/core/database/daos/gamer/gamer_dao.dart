@@ -37,6 +37,13 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
     return await (select(gamers)).get();
   }
 
+  // Игроки по списку с ID
+  Future<List<Gamer>> getByIds(List<int> gamerIds) async {
+    if (gamerIds.isEmpty) return [];
+
+    return await (select(gamers)..where((g) => g.id.isIn(gamerIds))).get();
+  }
+
   // Игрок
   Future<Gamer?> get(int gamerId) async {
     return await (select(

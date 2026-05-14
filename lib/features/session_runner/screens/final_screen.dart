@@ -1,0 +1,115 @@
+import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
+import 'package:flutter/material.dart';
+
+import 'package:drift/drift.dart' show Value;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/core/providers/database_providers.dart';
+
+class FinalScreen extends ConsumerStatefulWidget {
+  final Map<String, dynamic> data;
+
+  const FinalScreen({super.key, required this.data});
+
+  @override
+  ConsumerState<FinalScreen> createState() => _FinalScreenState();
+}
+
+class _FinalScreenState extends ConsumerState<FinalScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // Контроллеры
+  late final TextEditingController _commentController = TextEditingController();
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      final gamingSessionDao = ref.read(gamingSessionDaoProvider);
+      final gamerDao = ref.read(gamerDaoProvider);
+      final gamingSessionComp = GamingSessionsCompanion(
+        gameId: Value(widget.data['gameId']),
+        startedAt: Value(DateTime.parse(widget.data['startedAt'])),
+        finishedAt: Value(DateTime.parse(widget.data['finishedAt'])),
+        comment: Value(_commentController.text),
+        rootSessionId: Value(widget.data['gameId']),
+      );
+      final List<GamingSessionGamerData?> gamersData = [];
+      for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
+        final Gamer? gamer = await gamerDao.get(gamerData['id']);
+        final gamingSessionGamerData = GamingSessionGamerData(
+          gamer: gamer!,
+          score: gamerData['score'],
+          place: gamerData['place'],
+          turnOrder: gamerData['turnOrder'],
+          team: gamerData['rootSessionId'],
+        );
+        gamersData.add(gamingSessionGamerData);
+      }
+
+      final Set<int> expansionIds = {};
+      for (final int expansionId in widget.data['expansionIds']) {
+        expansionIds.add(expansionId);
+      }
+
+      await gamingSessionDao.create(
+        gamingSessionComp,
+        gamersData,
+        expansionIds,
+      );
+
+      _formKey.currentState!.save();
+
+      await AppDataManager.clearSession();
+
+      ref.invalidate(sessionDataProvider);
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Запись о игровой сессии добавлена')),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+        return Form(
+          key: _formKey,
+          child: Column(
+            spacing: 20,
+            children: [
+              TextFormField(
+                controller: _commentController,
+                decoration: InputDecoration(
+                  labelText: 'Комментарий',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 6,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _submitForm,
+                      child: Text('Сохранить'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

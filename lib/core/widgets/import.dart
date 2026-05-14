@@ -89,6 +89,9 @@ class BackupButtons extends ConsumerWidget {
     if (success) {
       // Обновляем провайдеры
       ref.invalidate(artistsDataProvider);
+      ref.invalidate(countingTemplatesDataProvider);
+      ref.invalidate(countingTemplateDataProvider);
+      ref.invalidate(gamesCountingTemplatesDataProvider);
       ref.invalidate(designersDataProvider);
       ref.invalidate(gamesDataProvider);
       ref.invalidate(gameFullDataProvider);

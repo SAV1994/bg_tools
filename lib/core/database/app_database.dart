@@ -5,8 +5,8 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import 'package:bg_tools/core/database/daos/daos_exports.dart';
-import 'package:bg_tools/core/database/tables/tables_export.dart';
+import 'package:bg_tools/core/database/daos/export.dart';
+import 'package:bg_tools/core/database/tables/export.dart';
 
 part 'app_database.g.dart';
 
@@ -32,9 +32,11 @@ part 'app_database.g.dart';
   ],
   daos: [
     ArtistDao,
+    CountingTemplateDao,
     DesignerDao,
     GameDao,
     GamerDao,
+    GamesCountingTemplatesDao,
     GamingSessionDao,
     NoteDao,
     TagDao,

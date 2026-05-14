@@ -101,6 +101,15 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
   }
 
   @override
+  void dispose() {
+    _usernameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _middleNameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(

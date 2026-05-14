@@ -10,16 +10,16 @@ import 'package:bg_tools/core/utils/dateformats.dart';
 import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
-class NotesList extends ConsumerStatefulWidget {
+class NotesListScreen extends ConsumerStatefulWidget {
   final int gameId;
 
-  const NotesList({super.key, required this.gameId});
+  const NotesListScreen({super.key, required this.gameId});
 
   @override
-  ConsumerState<NotesList> createState() => _NotesListState();
+  ConsumerState<NotesListScreen> createState() => _NotesListScreentate();
 }
 
-class _NotesListState extends ConsumerState<NotesList> {
+class _NotesListScreentate extends ConsumerState<NotesListScreen> {
   Widget _buildNoteCard(Note note) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),

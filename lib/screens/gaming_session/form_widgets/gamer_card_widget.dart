@@ -75,8 +75,11 @@ class _GamingSessionGamerCardState extends State<GamingSessionGamerCard> {
 
   @override
   void dispose() {
+    _scoreController.removeListener(_notifyParent);
     _scoreController.dispose();
+    _placeController.removeListener(_notifyParent);
     _placeController.dispose();
+    _turnOrderController.removeListener(_notifyParent);
     _turnOrderController.dispose();
     super.dispose();
   }

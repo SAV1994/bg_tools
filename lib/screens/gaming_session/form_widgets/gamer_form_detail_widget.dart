@@ -28,6 +28,14 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
   TeamsEnum? _selectedTeam;
 
   @override
+  void dispose() {
+    _scoreController.dispose();
+    _placeController.dispose();
+    _turnOrderController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,

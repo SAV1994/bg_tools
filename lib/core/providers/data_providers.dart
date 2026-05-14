@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
@@ -10,6 +14,35 @@ final artistsDataProvider = StreamProvider<List<Artist>>((ref) {
   final artistDao = ref.watch(artistDaoProvider);
   return artistDao.watchAll(); // Stream автоматически обновляется
 });
+
+// Шаблоны
+final countingTemplatesDataProvider = StreamProvider<List<CountingTemplate>>((
+  ref,
+) {
+  final countingTemplateDao = ref.watch(countingTemplateDaoProvider);
+  return countingTemplateDao.watchAll(); // Stream автоматически обновляется
+});
+
+// Шаблон
+final countingTemplateDataProvider =
+    FutureProvider.family<CountingTemplate?, int>((
+      ref,
+      countingTemplateId,
+    ) async {
+      final dao = ref.watch(countingTemplateDaoProvider);
+      return await dao.get(countingTemplateId);
+    });
+
+// Шабоны партий игры
+final gamesCountingTemplatesDataProvider =
+    StreamProvider.family<List<GamesCountingTemplatesData>, int>((ref, gameId) {
+      final gamesCountingTemplatesDao = ref.watch(
+        gamesCountingTemplatesDaoProvider,
+      );
+      return gamesCountingTemplatesDao.watchAll(
+        gameId,
+      ); // Stream автоматически обновляется
+    });
 
 // Геймдизайнеры
 final designersDataProvider = StreamProvider<List<Designer>>((ref) {
@@ -26,10 +59,10 @@ final gamesDataProvider = StreamProvider<List<Game>>((ref) {
 // Полная информация о игре
 final gameFullDataProvider = FutureProvider.family<GameFullData?, int>((
   ref,
-  id,
+  gameId,
 ) async {
   final dao = ref.watch(gameDaoProvider);
-  return await dao.getFullInfo(id);
+  return await dao.getFullInfo(gameId);
 });
 
 // Владелец приложения
@@ -48,9 +81,12 @@ final gamingSessionDataProvider = StreamProvider<List<GamingSessionData>>((
 
 // Полная информация об игровой сессии
 final gamingSessionFullDataProvider =
-    FutureProvider.family<GamingSessionFullData?, int>((ref, id) async {
+    FutureProvider.family<GamingSessionFullData?, int>((
+      ref,
+      gamingSessionId,
+    ) async {
       final dao = ref.watch(gamingSessionDaoProvider);
-      return await dao.getFullInfo(id);
+      return await dao.getFullInfo(gamingSessionId);
     });
 
 // Заметки по игре
@@ -66,4 +102,9 @@ final notesForGameDataProvider = FutureProvider.family<List<Note>, int>((
 final tagsDataProvider = StreamProvider<List<Tag>>((ref) {
   final tagDao = ref.watch(tagDaoProvider);
   return tagDao.watchAll(); // Stream автоматически обновляется
+});
+
+// Данные текущей сессии
+final sessionDataProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
+  return AppDataManager.loadActiveSession();
 });

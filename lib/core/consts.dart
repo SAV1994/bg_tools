@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-const String appName = 'BGTools';
+const String appName = '🎲 BGTools';
 // Затычка на случай, если поле пустое
 const String emptyVal = '—';
 // Варианты строк для виджета загрузки
@@ -12,6 +12,7 @@ String getLoadingMsg() {
     'Кидаем кубы...',
     'Изучаем карты...',
     'Даунтайм...',
+    'Паралич анализа. Ждите...',
   ];
   return loadingMsgs[Random().nextInt(loadingMsgs.length)];
 }
@@ -45,3 +46,9 @@ enum TeamsEnum {
     );
   }
 }
+
+// Ключи для данных в shared_preferences
+const String sessionKey = 'session';
+const String gamersOfLastSessionKey = 'gamersOfLastSession';
+const String settingsKey = 'settings';
+const String ratingKey = 'rating';

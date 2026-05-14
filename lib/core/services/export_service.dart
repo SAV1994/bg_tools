@@ -69,6 +69,9 @@ class BackupService {
   Future<void> _exportDatabase(Directory exportDir) async {
     // Получаем все данные из таблиц
     final artists = await database.select(database.artists).get();
+    final countingTemplates = await database
+        .select(database.countingTemplates)
+        .get();
     final designers = await database.select(database.designers).get();
     final tags = await database.select(database.tags).get();
     final gamers = await database.select(database.gamers).get();
@@ -77,6 +80,12 @@ class BackupService {
         .select(database.expansionsGames)
         .get();
     final gamesArtists = await database.select(database.gamesArtists).get();
+    final gamesCountingTemplates = await database
+        .select(database.gamesCountingTemplates)
+        .get();
+    final gamesCountingTemplateExpansions = await database
+        .select(database.gamesCountingTemplatesExpansions)
+        .get();
     final gamesDesigners = await database.select(database.gamesDesigners).get();
     final gamesTags = await database.select(database.gamesTags).get();
     final notes = await database.select(database.notes).get();
@@ -94,6 +103,16 @@ class BackupService {
       'exportDate': DateTime.now().toIso8601String(),
       'artists': artists
           .map((artist) => {'id': artist.id, 'name': artist.name})
+          .toList(),
+      'countingTemplates': countingTemplates
+          .map(
+            (countingTemplate) => {
+              'id': countingTemplate.id,
+              'name': countingTemplate.name,
+              'description': countingTemplate.description,
+              'data': countingTemplate.data,
+            },
+          )
           .toList(),
       'designers': designers
           .map((disigner) => {'id': disigner.id, 'name': disigner.name})
@@ -129,11 +148,29 @@ class BackupService {
       'expansionsGames': expansionsGames
           .map((eg) => {'gameId': eg.gameId, 'expansionId': eg.expansionId})
           .toList(),
-      'gameDesigners': gamesDesigners
-          .map((gd) => {'gameId': gd.gameId, 'designerId': gd.designerId})
-          .toList(),
       'gamesArtists': gamesArtists
           .map((ga) => {'gameId': ga.gameId, 'artistId': ga.artistId})
+          .toList(),
+      'gamesCountingTemplates': gamesCountingTemplates
+          .map(
+            (gct) => {
+              'id': gct.id,
+              'name': gct.name,
+              'gameId': gct.gameId,
+              'countingTemplateId': gct.countingTemplateId,
+            },
+          )
+          .toList(),
+      'gamesCountingTemplateExpansions': gamesCountingTemplateExpansions
+          .map(
+            (gcte) => {
+              'gamesCountingTemplateId': gcte.gamesCountingTemplateId,
+              'gameId': gcte.gameId,
+            },
+          )
+          .toList(),
+      'gameDesigners': gamesDesigners
+          .map((gd) => {'gameId': gd.gameId, 'designerId': gd.designerId})
           .toList(),
       'gamesTags': gamesTags
           .map((gt) => {'gameId': gt.gameId, 'tagId': gt.tagId})
@@ -158,6 +195,7 @@ class BackupService {
               'startedAt': gamingSession.startedAt.toIso8601String(),
               'finishedAt': gamingSession.finishedAt?.toIso8601String(),
               'comment': gamingSession.comment,
+              'rootSessionId': gamingSession.rootSessionId,
             },
           )
           .toList(),
@@ -336,12 +374,15 @@ class BackupService {
     await database.transaction(() async {
       // Очищаем существующие данные
       await database.delete(database.artists).go();
+      await database.delete(database.countingTemplates).go();
       await database.delete(database.designers).go();
       await database.delete(database.tags).go();
       await database.delete(database.gamers).go();
       await database.delete(database.games).go();
       await database.delete(database.expansionsGames).go();
       await database.delete(database.gamesArtists).go();
+      await database.delete(database.gamesCountingTemplates).go();
+      await database.delete(database.gamesCountingTemplatesExpansions).go();
       await database.delete(database.gamesDesigners).go();
       await database.delete(database.gamesTags).go();
       await database.delete(database.gamingSessions).go();
@@ -354,6 +395,20 @@ class BackupService {
             .into(database.artists)
             .insert(ArtistsCompanion(name: Value(artistJson['name'])));
         artistsIds[artistJson['id']] = id;
+      }
+
+      final countingTemplatesIds = <int, int>{};
+      for (final countingTemplateJson in data['countingTemplates']) {
+        final id = await database
+            .into(database.countingTemplates)
+            .insert(
+              CountingTemplatesCompanion(
+                name: Value(countingTemplateJson['name']),
+                description: Value(countingTemplateJson['description']),
+                data: Value(countingTemplateJson['data']),
+              ),
+            );
+        countingTemplatesIds[countingTemplateJson['id']] = id;
       }
 
       final designersIds = <int, int>{};
@@ -411,6 +466,38 @@ class BackupService {
         gamesIds[gameJson['id']] = id;
       }
 
+      final gamesCountingTemplatesIds = <int, int>{};
+      for (final gamesCountingTemplatesJson in data['gamesCountingTemplates']) {
+        final id = await database
+            .into(database.gamesCountingTemplates)
+            .insert(
+              GamesCountingTemplatesCompanion(
+                name: Value(gamesCountingTemplatesJson['name']),
+                gameId: Value(gamesIds[gamesCountingTemplatesJson['gameId']]!),
+                countingTemplateId: Value(
+                  countingTemplatesIds[gamesCountingTemplatesJson['countingTemplateId']]!,
+                ),
+              ),
+            );
+        gamesCountingTemplatesIds[gamesCountingTemplatesJson['id']] = id;
+      }
+
+      for (final gamesCountingTemplateExpansionsJson
+          in data['gamesCountingTemplateExpansions']) {
+        await database
+            .into(database.gamesCountingTemplatesExpansions)
+            .insert(
+              GamesCountingTemplatesExpansionsCompanion(
+                gamesCountingTemplateId: Value(
+                  gamesCountingTemplatesIds[gamesCountingTemplateExpansionsJson['gamesCountingTemplateId']]!,
+                ),
+                gameId: Value(
+                  gamesIds[gamesCountingTemplateExpansionsJson['gameId']]!,
+                ),
+              ),
+            );
+      }
+
       final gamingSessionsIds = <int, int>{};
       for (final gamingSessionJson in data['gamingSessions']) {
         final id = await database
@@ -425,6 +512,9 @@ class BackupService {
                     ? Value(DateTime.parse(gamingSessionJson['finishedAt']))
                     : const Value(null),
                 comment: Value(gamingSessionJson['comment']),
+                rootSessionId: Value(
+                  gamingSessionsIds[gamingSessionJson['rootSessionId']]!,
+                ),
               ),
             );
         gamingSessionsIds[gamingSessionJson['id']] = id;

@@ -7,8 +7,7 @@ class UniversalAttrGetter {
     if (instance is Gamer) {
       return instance.username;
     } else if (instance is GamingSession) {
-      return '''Игровая сессия ${DateFormats.formatDateTime(instance.startedAt)} 
-      - ${instance.finishedAt == null ? "..." : DateFormats.formatDateTime(instance.finishedAt!)}''';
+      return 'Игровая сессия от ${DateFormats.formatDate(instance.startedAt)}';
     } else if (instance is Note) {
       return instance.title;
     }
