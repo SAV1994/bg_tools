@@ -512,9 +512,11 @@ class BackupService {
                     ? Value(DateTime.parse(gamingSessionJson['finishedAt']))
                     : const Value(null),
                 comment: Value(gamingSessionJson['comment']),
-                rootSessionId: Value(
-                  gamingSessionsIds[gamingSessionJson['rootSessionId']]!,
-                ),
+                rootSessionId: gamingSessionJson['rootSessionId'] != null
+                    ? Value(
+                        gamingSessionsIds[gamingSessionJson['rootSessionId']]!,
+                      )
+                    : const Value(null),
               ),
             );
         gamingSessionsIds[gamingSessionJson['id']] = id;
