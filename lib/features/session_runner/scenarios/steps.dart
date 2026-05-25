@@ -72,6 +72,14 @@ final oneWinnerSelectStep = ScenarioStep(
   initialData: {},
 );
 
+final soloResultStep = ScenarioStep(
+  title: 'Результаты',
+  description: 'Отметьте результаты партии',
+  contentBuilder: (data) => SoloResultScreen(data: data),
+  validator: (data) {},
+  initialData: {},
+);
+
 final finalStep = ScenarioStep(
   title: 'Комментарий',
   description: 'Можете добавить кооментарий к партии',

@@ -13,15 +13,21 @@ Future<void> initSessionData(
   final Map<String, dynamic> countingTemplateData = jsonDecode(
     gamesCountingTemplatesData.countingTemplate.data,
   );
-  final String selector =
-      '${countingTemplateData['gameType']}.${countingTemplateData['firstPlayerStartType']}.'
-      '${countingTemplateData['resultType']}.${countingTemplateData['pointType'] ?? 0}.'
-      '${countingTemplateData['FirstPlayerRoundType'] ?? 0}';
-  final Scenario scenario = scenarioMapping[selector];
 
+  sessionData['type'] = countingTemplateData['gameType'];
+  sessionData['resultType'] = countingTemplateData['resultType'];
+  sessionData['pointType'] = countingTemplateData['pointType'];
+  sessionData['altVictoryType'] = countingTemplateData['altVictoryType'];
+  sessionData['firstPlayerRoundType'] =
+      countingTemplateData['firstPlayerRoundType'];
+
+  final String selector =
+      '${sessionData['type']}.${countingTemplateData['firstPlayerStartType'] ?? 0}.'
+      '${sessionData['resultType']}.${sessionData['pointType'] ?? 0}.'
+      '${sessionData['altVictoryType'] ?? 0}.${sessionData['firstPlayerRoundType'] ?? 0}';
+  final Scenario scenario = scenarioMapping[selector];
   sessionData['selector'] = selector;
-  sessionData['FirstPlayerRoundType'] =
-      countingTemplateData['FirstPlayerRoundType'];
+
   sessionData['totalSteps'] = scenario.steps.length;
   sessionData['gameId'] =
       gamesCountingTemplatesData.gamesCountingTemplate.gameId;

@@ -15,3 +15,17 @@ class OneWinnerScenario {
     ],
   );
 }
+
+// Соло
+class SoloScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      sessionStartStep,
+      sessionStopStep,
+      soloResultStep,
+      finalStep,
+    ],
+  );
+}

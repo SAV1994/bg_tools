@@ -92,7 +92,7 @@ final GoRouter goRouter = GoRouter(
       ),
     ),
 
-    // Заметки
+    // Шаблоны сессий игры
     GoRoute(
       path: '/games/:gameId/counting-templates',
       name: 'counting-templates-list',

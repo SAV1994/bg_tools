@@ -27,7 +27,11 @@ class Scenario {
 // Структура данных сессии
 const Map<String, dynamic> sessionInitialData = {
   'selector': null,
-  'FirstPlayerRoundType': null,
+  'type': null,
+  'resultType': null,
+  'pointType': null,
+  'altVictoryType': null,
+  'firstPlayerRoundType': null,
   'step': 0,
   'totalSteps': null,
   'gameId': null,

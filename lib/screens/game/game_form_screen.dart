@@ -59,7 +59,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
     setState(() => _isLoading = true);
 
     final GameDao gameDao = ref.read(gameDaoProvider);
-    final List<Game> baseGames = await gameDao.getAll();
+
     final List<Designer> designers;
     final List<Artist> artists;
     final List<Tag> tags;
@@ -98,7 +98,12 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
       text: gameData?.game.maxPlayers?.toString(),
     );
 
-    _baseGames = baseGames;
+    if (widget.gameId != null) {
+      _baseGames = await gameDao.getAllExceptSelected([widget.gameId!]);
+    } else {
+      _baseGames = await gameDao.getAll();
+    }
+
     _designers = designers;
     _artists = artists;
     _tags = tags;

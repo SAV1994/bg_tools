@@ -169,10 +169,18 @@ class _CountingTemplateDetailScreenState
                                     : null,
                               ),
                               _buildInfoRow(
+                                'Возможность победы другим путём',
+                                templateData['altVictoryType'] != null
+                                    ? AltVictoryTypeEnum.fromId(
+                                        templateData['altVictoryType'],
+                                      ).label
+                                    : null,
+                              ),
+                              _buildInfoRow(
                                 'Тип определения первого игрока в раунде',
-                                templateData['FirstPlayerRoundType'] != null
+                                templateData['firstPlayerRoundType'] != null
                                     ? FirstPlayerRoundTypeEnum.fromId(
-                                        templateData['FirstPlayerRoundType'],
+                                        templateData['firstPlayerRoundType'],
                                       ).label
                                     : null,
                               ),

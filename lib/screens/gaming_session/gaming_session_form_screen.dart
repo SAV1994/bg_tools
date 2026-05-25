@@ -39,6 +39,8 @@ class _GamingSessionFormScreenState
   DateTime _startedAt = DateTime.now();
   DateTime? _finishedAt;
   List<Gamer> _allGamers = [];
+  List<GamingSession> _gamingSessions = [];
+  GamingSession? _selectedGamingSession;
   // Выбранные игроки
   final Map<int, GamingSessionGamerData> _selectedGamers = {};
   // Контроллеры
@@ -74,7 +76,15 @@ class _GamingSessionFormScreenState
           gamingSessionData!.gamers;
       final GamingSession gamingSession = gamingSessionData!.gamingSession;
       _selectedGame = gamingSessionData!.game;
+      if (gamingSession.rootSessionId == null) {
+        _selectedGamingSession = null;
+      } else {
+        _selectedGamingSession = await gamingSessionDao.getSingle(
+          gamingSession.rootSessionId!,
+        );
+      }
       await _loadExpansionsForGame(_selectedGame!.id);
+      await _loadGamingSessionsForGame(_selectedGame!.id);
       _selectedExpansionIds = gamingSessionData!.selectedExpansionIds;
       _startedAt = gamingSession.startedAt;
       if (gamingSession.finishedAt != null) {
@@ -94,6 +104,11 @@ class _GamingSessionFormScreenState
     setState(() => _isLoading = false);
   }
 
+  Future<void> _loadGamingSessionsForGame(int gameId) async {
+    final sessionsDao = ref.read(gamingSessionDaoProvider);
+    _gamingSessions = await sessionsDao.getByGame(gameId);
+  }
+
   Future<void> _loadExpansionsForGame(int gameId) async {
     final gameDao = ref.read(gameDaoProvider);
     final expansions = await gameDao.getExpansions(gameId);
@@ -105,12 +120,14 @@ class _GamingSessionFormScreenState
 
   Future<void> _onGameSelected(Game? game) async {
     _selectedExpansionIds.clear(); // Очищаем выбранные дополнения
+    _selectedGamingSession = null;
     setState(() {
       _selectedGame = game;
     });
 
     if (game != null) {
       await _loadExpansionsForGame(game.id);
+      await _loadGamingSessionsForGame(_selectedGame!.id);
     } else {
       setState(() {
         _expansions = [];
@@ -203,6 +220,7 @@ class _GamingSessionFormScreenState
         startedAt: Value(_startedAt),
         finishedAt: Value(_finishedAt),
         comment: Value(_commentController.text),
+        rootSessionId: Value(_selectedGamingSession?.id),
       );
       final List<GamingSessionGamerData?> gamersData = _selectedGamers.values
           .toList();
@@ -307,6 +325,23 @@ class _GamingSessionFormScreenState
                             ),
                           ],
                         ),
+                      ),
+                    if (widget.gamingSessionId != null)
+                      SelectWithSearch<GamingSession>(
+                        label: 'Первая сессия серии',
+                        items: _gamingSessions,
+                        selectedItem: _selectedGamingSession,
+                        onSelectionChanged: (gamingSession) {
+                          setState(() {
+                            _selectedGamingSession = gamingSession;
+                          });
+                        },
+                        displayName: (gamingSession) =>
+                            '${DateFormats.formatDate(gamingSession.startedAt)} (${gamingSession.comment ?? emptyVal})',
+                        getId: (template) => template.id,
+                        searchHint: 'Поиск сессии...',
+                        isRequired: false,
+                        placeholder: 'Не выбрана',
                       ),
                     SelectWithSearch<Game>(
                       label: 'Игра *',

@@ -20,9 +20,9 @@ String getLoadingMsg() {
 // Команды для игровой сессии
 enum TeamsEnum {
   red(1, 'Красная команда', Colors.red),
-  green(2, 'Зеленая команда', Colors.green),
-  blue(3, 'Синяя команда', Colors.blue),
-  yellow(4, 'Желтая команда', Colors.yellow);
+  blue(2, 'Синяя команда', Colors.blue),
+  green(3, 'Зеленая команда', Colors.green),
+  purple(4, 'Фиолетовая команда', Colors.purple);
 
   final int id;
   final String label;

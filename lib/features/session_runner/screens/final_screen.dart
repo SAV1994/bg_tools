@@ -32,7 +32,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
         startedAt: Value(DateTime.parse(widget.data['startedAt'])),
         finishedAt: Value(DateTime.parse(widget.data['finishedAt'])),
         comment: Value(_commentController.text),
-        rootSessionId: Value(widget.data['gameId']),
+        rootSessionId: Value(widget.data['rootSessionId']),
       );
       final List<GamingSessionGamerData?> gamersData = [];
       for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
@@ -42,7 +42,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
           score: gamerData['score'],
           place: gamerData['place'],
           turnOrder: gamerData['turnOrder'],
-          team: gamerData['rootSessionId'],
+          team: gamerData['team'],
         );
         gamersData.add(gamingSessionGamerData);
       }

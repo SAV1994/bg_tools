@@ -138,6 +138,11 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     return await (delete(games)..where((g) => g.id.equals(gameId))).go();
   }
 
+  // Все игры кроме текущей
+  Future<List<Game>> getAllExceptSelected(List<int> gameIds) async {
+    return await (select(games)..where((g) => g.id.isIn(gameIds).not())).get();
+  }
+
   // Все игры
   Future<List<Game>> getAll() async {
     return await select(games).get();

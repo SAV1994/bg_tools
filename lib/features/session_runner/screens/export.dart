@@ -5,3 +5,4 @@ export 'one_winner_select_screen.dart';
 export 'root_session_select_screen.dart';
 export 'session_start_screen.dart';
 export 'session_stop_screen.dart';
+export 'solo_result_screen.dart';

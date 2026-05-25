@@ -34,10 +34,12 @@ class _CountingTemplateFormFormState
   FirstPlayerStartTypeEnum? _selectedFirstPlayerStartType;
   ResultTypeEnum? _selectedResultType;
   PointTypeEnum? _selectedPointType;
+  AltVictoryTypeEnum? _selectedAltVictoryType;
   FirstPlayerRoundTypeEnum? _selectedFirstPlayerRoundType;
   // Состояния для отображения селектов
   bool _showFirstPlayerStartType = false;
   bool _showPointType = false;
+  bool _showAltVictoryType = false;
   bool _showFirstPlayerRoundType = false;
   // Загрузка
   bool _isLoading = false;
@@ -72,10 +74,13 @@ class _CountingTemplateFormFormState
       _selectedPointType = templateData['pointType'] != null
           ? PointTypeEnum.fromId(templateData['pointType'])
           : null;
+      _selectedAltVictoryType = templateData['altVictoryType'] != null
+          ? AltVictoryTypeEnum.fromId(templateData['altVictoryType'])
+          : null;
       _selectedFirstPlayerRoundType =
-          templateData['FirstPlayerRoundType'] != null
+          templateData['firstPlayerRoundType'] != null
           ? FirstPlayerRoundTypeEnum.fromId(
-              templateData['FirstPlayerRoundType'],
+              templateData['firstPlayerRoundType'],
             )
           : null;
     }
@@ -91,6 +96,9 @@ class _CountingTemplateFormFormState
     _showFirstPlayerStartType =
         _selectedGameType != null && _selectedGameType != GameTypeEnum.solo;
     _showPointType =
+        _selectedResultType != null &&
+        _selectedResultType != ResultTypeEnum.condition;
+    _showAltVictoryType =
         _selectedResultType != null &&
         _selectedResultType != ResultTypeEnum.condition;
     _showFirstPlayerRoundType =
@@ -131,6 +139,14 @@ class _CountingTemplateFormFormState
       );
       return;
     }
+    if (_showAltVictoryType && _selectedAltVictoryType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Укажите есть ли возможность победы другим путём'),
+        ),
+      );
+      return;
+    }
     if (_showFirstPlayerRoundType && _selectedFirstPlayerRoundType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -143,10 +159,11 @@ class _CountingTemplateFormFormState
     final templateDao = ref.read(countingTemplateDaoProvider);
     final Map<String, dynamic> templateData = {
       'gameType': _selectedGameType!.id,
-      'firstPlayerStartType': _selectedFirstPlayerStartType!.id,
+      'firstPlayerStartType': _selectedFirstPlayerStartType?.id,
       'resultType': _selectedResultType!.id,
       'pointType': _selectedPointType?.id,
-      'FirstPlayerRoundType': _selectedFirstPlayerRoundType?.id,
+      'altVictoryType': _selectedAltVictoryType?.id,
+      'firstPlayerRoundType': _selectedFirstPlayerRoundType?.id,
       'score_calc': null,
     };
     final CountingTemplatesCompanion templateCompanion =
@@ -240,7 +257,9 @@ class _CountingTemplateFormFormState
                       selected: _selectedGameType,
                       onChanged: (value) {
                         setState(() {
-                          _selectedGameType = value as GameTypeEnum;
+                          _selectedGameType = (value != null)
+                              ? value as GameTypeEnum
+                              : null;
                           // Сбрасываем зависимые поля
                           if (value == GameTypeEnum.solo) {
                             _selectedFirstPlayerStartType = null;
@@ -262,8 +281,9 @@ class _CountingTemplateFormFormState
                         selected: _selectedFirstPlayerStartType,
                         onChanged: (value) {
                           setState(() {
-                            _selectedFirstPlayerStartType =
-                                value as FirstPlayerStartTypeEnum;
+                            _selectedFirstPlayerStartType = (value != null)
+                                ? value as FirstPlayerStartTypeEnum
+                                : null;
                           });
                         },
                       ),
@@ -279,10 +299,13 @@ class _CountingTemplateFormFormState
                       selected: _selectedResultType,
                       onChanged: (value) {
                         setState(() {
-                          _selectedResultType = value as ResultTypeEnum;
+                          _selectedResultType = (value != null)
+                              ? value as ResultTypeEnum
+                              : null;
                           // Сбрасываем зависимые поля
                           if (value == ResultTypeEnum.condition) {
                             _selectedPointType = null;
+                            _selectedAltVictoryType = null;
                           }
                           if (value != ResultTypeEnum.round) {
                             _selectedFirstPlayerRoundType = null;
@@ -304,7 +327,28 @@ class _CountingTemplateFormFormState
                         selected: _selectedPointType,
                         onChanged: (value) {
                           setState(() {
-                            _selectedPointType = value as PointTypeEnum;
+                            _selectedPointType = (value != null)
+                                ? value as PointTypeEnum
+                                : null;
+                          });
+                        },
+                      ),
+                    ],
+                    if (_showAltVictoryType) ...[
+                      EnumSelector(
+                        label: 'Возможность победы другим путём *',
+                        choices: AltVictoryTypeEnum.values.map((val) {
+                          return DropdownMenuItem(
+                            value: val,
+                            child: Row(children: [Text(val.label)]),
+                          );
+                        }),
+                        selected: _selectedAltVictoryType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedAltVictoryType = (value != null)
+                                ? value as AltVictoryTypeEnum
+                                : null;
                           });
                         },
                       ),
@@ -321,8 +365,9 @@ class _CountingTemplateFormFormState
                         selected: _selectedFirstPlayerRoundType,
                         onChanged: (value) {
                           setState(() {
-                            _selectedFirstPlayerRoundType =
-                                value as FirstPlayerRoundTypeEnum;
+                            _selectedFirstPlayerRoundType = (value != null)
+                                ? value as FirstPlayerRoundTypeEnum
+                                : null;
                           });
                         },
                       ),

@@ -110,7 +110,34 @@ enum PointTypeEnum {
   }
 }
 
-// 5 Определение первого игрока между раундами
+// 5
+enum AltVictoryTypeEnum {
+  yes(1, 'есть'),
+  no(2, 'нет');
+
+  final int id;
+  final String label;
+
+  const AltVictoryTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static AltVictoryTypeEnum fromId(int id) {
+    return AltVictoryTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => AltVictoryTypeEnum.no,
+    );
+  }
+
+  // Получить enum по названию
+  static AltVictoryTypeEnum fromLabel(String label) {
+    return AltVictoryTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => AltVictoryTypeEnum.no,
+    );
+  }
+}
+
+// 6 Определение первого игрока между раундами
 enum FirstPlayerRoundTypeEnum {
   circle(1, 'По часовой стрелке'),
   leader(2, 'Победитель ходит первым'),

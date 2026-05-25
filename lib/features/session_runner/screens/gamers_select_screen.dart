@@ -1,13 +1,15 @@
-import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/add_gamer_modal_form.dart';
 import 'package:bg_tools/core/utils/gamer_fio_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
 class GamersSelectScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -62,7 +64,13 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
         await AppDataManager.loadLastSessionGamers();
     if (gamersData.isNotEmpty) {
       widget.data['gamers'].addAll(gamersData);
-      _fillTurnOrder();
+      if (widget.data['type'] == GameTypeEnum.solo.id) {
+        for (final Map<String, dynamic> gamerData in gamersData) {
+          gamerData['team'] = TeamsEnum.red.id;
+        }
+      } else {
+        _fillTurnOrder();
+      }
 
       setState(() {});
     }
@@ -93,7 +101,9 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
       'score': null,
       'place': null,
       'turnOrder': null,
-      'team': null,
+      'team': (widget.data['type'] == GameTypeEnum.solo.id)
+          ? TeamsEnum.red.id
+          : null,
     };
   }
 

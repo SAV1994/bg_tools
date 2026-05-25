@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
+import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:go_router/go_router.dart';
+import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
 
 class GamesCountingTemplatesSelectScreen<T> extends ConsumerStatefulWidget {
   final int gameId;
@@ -20,16 +23,16 @@ class GamesCountingTemplatesSelectScreen<T> extends ConsumerStatefulWidget {
 class _GamesCountingTemplatesSelectScreenState
     extends ConsumerState<GamesCountingTemplatesSelectScreen> {
   Future<void> _runSession(int gamesCountingTemplatesId) async {
-    final result = await context.pushNamed(
-      'counting-templates-update',
-      pathParameters: {
-        'gameId': widget.gameId.toString(),
-        'gamesCountingTemplatesId': gamesCountingTemplatesId.toString(),
-      },
+    final gamesCountingTemplatesDao = ref.read(
+      gamesCountingTemplatesDaoProvider,
     );
+    GamesCountingTemplatesData? templateData = await gamesCountingTemplatesDao
+        .getSingle(gamesCountingTemplatesId);
+    await initSessionData(templateData!);
 
-    if (result == true) {
-      ref.invalidate(gamesCountingTemplatesDataProvider); // Обновляем провайдер
+    if (mounted) {
+      await context.pushNamed('session-runner');
+      ref.invalidate(gameFullDataProvider); // Обновляем провайдер
     }
   }
 
