@@ -29,3 +29,32 @@ class SoloScenario {
     ],
   );
 }
+
+// Кооп
+class CoopScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      sessionStartStep,
+      sessionStopStep,
+      coopResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// Кооп (есть порядок ходов)
+class CoopScenarioFP {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      sessionStopStep,
+      coopResultStep,
+      finalStep,
+    ],
+  );
+}

@@ -19,6 +19,18 @@ final gamersSelectStep = ScenarioStep(
     if (data['gamers'].isEmpty) {
       throw Exception('Добавте игроков');
     }
+    final List<dynamic> gamersData = [];
+    for (final Map<String, dynamic> gamerData in data['gamers']) {
+      gamersData.add({
+        'id': gamerData['id'],
+        'username': gamerData['username'],
+        'fio': gamerData['fio'],
+        'score': null,
+        'place': null,
+        'turnOrder': null,
+        'team': null,
+      });
+    }
     AppDataManager.saveLastSessionGamers(data['gamers']);
   },
   initialData: {},
@@ -76,6 +88,14 @@ final soloResultStep = ScenarioStep(
   title: 'Результаты',
   description: 'Отметьте результаты партии',
   contentBuilder: (data) => SoloResultScreen(data: data),
+  validator: (data) {},
+  initialData: {},
+);
+
+final coopResultStep = ScenarioStep(
+  title: 'Результаты',
+  description: 'Отметьте результаты партии',
+  contentBuilder: (data) => CoopResultScreen(data: data),
   validator: (data) {},
   initialData: {},
 );

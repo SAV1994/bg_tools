@@ -30,8 +30,8 @@ enum GameTypeEnum {
 
 // 2 Определение первого игрока в начале игры
 enum FirstPlayerStartTypeEnum {
-  circle(1, 'Игроки ходят по очереди'),
-  realTime(2, 'Игра в реальном времени');
+  queue(1, 'Игроки ходят по очереди'),
+  sameTime(2, 'Порядок хода не важен');
 
   final int id;
   final String label;
@@ -42,7 +42,7 @@ enum FirstPlayerStartTypeEnum {
   static FirstPlayerStartTypeEnum fromId(int id) {
     return FirstPlayerStartTypeEnum.values.firstWhere(
       (e) => e.id == id,
-      orElse: () => FirstPlayerStartTypeEnum.circle,
+      orElse: () => FirstPlayerStartTypeEnum.queue,
     );
   }
 
@@ -50,7 +50,7 @@ enum FirstPlayerStartTypeEnum {
   static FirstPlayerStartTypeEnum fromLabel(String label) {
     return FirstPlayerStartTypeEnum.values.firstWhere(
       (e) => e.label == label,
-      orElse: () => FirstPlayerStartTypeEnum.circle,
+      orElse: () => FirstPlayerStartTypeEnum.queue,
     );
   }
 }
@@ -139,7 +139,7 @@ enum AltVictoryTypeEnum {
 
 // 6 Определение первого игрока между раундами
 enum FirstPlayerRoundTypeEnum {
-  circle(1, 'По часовой стрелке'),
+  queue(1, 'По часовой стрелке'),
   leader(2, 'Победитель ходит первым'),
   loser(3, 'Проигравший ходит первым'),
   leaderNext(4, 'Cледующий за победителем'),
@@ -154,7 +154,7 @@ enum FirstPlayerRoundTypeEnum {
   static FirstPlayerRoundTypeEnum fromId(int id) {
     return FirstPlayerRoundTypeEnum.values.firstWhere(
       (e) => e.id == id,
-      orElse: () => FirstPlayerRoundTypeEnum.circle,
+      orElse: () => FirstPlayerRoundTypeEnum.queue,
     );
   }
 
@@ -162,7 +162,7 @@ enum FirstPlayerRoundTypeEnum {
   static FirstPlayerRoundTypeEnum fromLabel(String label) {
     return FirstPlayerRoundTypeEnum.values.firstWhere(
       (e) => e.label == label,
-      orElse: () => FirstPlayerRoundTypeEnum.circle,
+      orElse: () => FirstPlayerRoundTypeEnum.queue,
     );
   }
 }

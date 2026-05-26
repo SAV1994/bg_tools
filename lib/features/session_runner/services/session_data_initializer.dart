@@ -16,13 +16,15 @@ Future<void> initSessionData(
 
   sessionData['type'] = countingTemplateData['gameType'];
   sessionData['resultType'] = countingTemplateData['resultType'];
+  sessionData['firstPlayerStartType'] =
+      countingTemplateData['firstPlayerStartType'];
   sessionData['pointType'] = countingTemplateData['pointType'];
   sessionData['altVictoryType'] = countingTemplateData['altVictoryType'];
   sessionData['firstPlayerRoundType'] =
       countingTemplateData['firstPlayerRoundType'];
 
   final String selector =
-      '${sessionData['type']}.${countingTemplateData['firstPlayerStartType'] ?? 0}.'
+      '${sessionData['type']}.${sessionData['firstPlayerStartType'] ?? 0}.'
       '${sessionData['resultType']}.${sessionData['pointType'] ?? 0}.'
       '${sessionData['altVictoryType'] ?? 0}.${sessionData['firstPlayerRoundType'] ?? 0}';
   final Scenario scenario = scenarioMapping[selector];

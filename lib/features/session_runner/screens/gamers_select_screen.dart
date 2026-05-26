@@ -1,12 +1,12 @@
-import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/utils/add_gamer_modal_form.dart';
+import 'package:bg_tools/core/utils/add_gamer_modal_form_builder.dart';
 import 'package:bg_tools/core/utils/gamer_fio_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
@@ -64,13 +64,16 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
         await AppDataManager.loadLastSessionGamers();
     if (gamersData.isNotEmpty) {
       widget.data['gamers'].addAll(gamersData);
-      if (widget.data['type'] == GameTypeEnum.solo.id) {
+      if ([
+        GameTypeEnum.solo.id,
+        GameTypeEnum.coop.id,
+      ].contains(widget.data['type'])) {
         for (final Map<String, dynamic> gamerData in gamersData) {
           gamerData['team'] = TeamsEnum.red.id;
         }
-      } else {
-        _fillTurnOrder();
       }
+
+      _fillTurnOrder();
 
       setState(() {});
     }
@@ -88,6 +91,11 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
   }
 
   void _fillTurnOrder() {
+    if (widget.data['firstPlayerStartType'] ==
+        FirstPlayerStartTypeEnum.sameTime.id) {
+      return;
+    }
+
     for (final entry in widget.data['gamers'].asMap().entries) {
       entry.value['turnOrder'] = entry.key + 1;
     }
@@ -101,7 +109,11 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
       'score': null,
       'place': null,
       'turnOrder': null,
-      'team': (widget.data['type'] == GameTypeEnum.solo.id)
+      'team':
+          ([
+            GameTypeEnum.solo.id,
+            GameTypeEnum.coop.id,
+          ].contains(widget.data['type']))
           ? TeamsEnum.red.id
           : null,
     };

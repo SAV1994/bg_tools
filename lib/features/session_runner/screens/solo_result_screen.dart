@@ -1,4 +1,5 @@
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/utils/win_toggle_btn_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class SoloResultScreen extends ConsumerStatefulWidget {
 class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
   bool _isVictory = false;
   // Контроллеры
-  late final TextEditingController _scoreController = TextEditingController();
+  final TextEditingController _scoreController = TextEditingController();
   // Загрузка
   bool _isLoading = false;
 
@@ -52,75 +53,6 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
     }
 
     setState(() {});
-  }
-
-  Widget _buildToggleButton() {
-    return GestureDetector(
-      onTap: _toggleResult,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        width: double.infinity,
-        height: 180,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: _isVictory
-                ? [Colors.green.shade400, Colors.green.shade700]
-                : [Colors.red.shade400, Colors.red.shade700],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: (_isVictory ? Colors.green : Colors.red).withValues(
-                alpha: 0.3,
-              ),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            // Центральный контент
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    _isVictory
-                        ? Icons.emoji_events
-                        : Icons.sentiment_very_dissatisfied,
-                    size: 64,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    _isVictory ? 'ПОБЕДА' : 'ПОРАЖЕНИЕ',
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _isVictory
-                        ? 'Нажмите чтобы изменить'
-                        : 'Нажмите чтобы изменить',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildScoreInput() {
@@ -198,7 +130,7 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      _isVictory ? Colors.green.shade50 : Colors.red.shade50,
+                      _isVictory ? Colors.green.shade200 : Colors.red.shade200,
                       Colors.white,
                     ],
                   ),
@@ -214,8 +146,9 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
                         if (widget.data['resultType'] !=
                             ResultTypeEnum.condition.id)
                           _buildScoreInput(),
+
                         // Кнопка-переключатель Победа/Поражение
-                        _buildToggleButton(),
+                        buildWinToggleBtn(_isVictory, _toggleResult),
                       ],
                     ),
                   ),

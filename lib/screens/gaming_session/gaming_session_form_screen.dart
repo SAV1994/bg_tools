@@ -1,4 +1,3 @@
-import 'package:bg_tools/core/utils/add_gamer_modal_form.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
@@ -9,6 +8,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/utils/add_gamer_modal_form_builder.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
