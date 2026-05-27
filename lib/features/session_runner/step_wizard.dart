@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,10 +87,19 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: _previousStep,
               )
-            : null,
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  ref.invalidate(sessionDataProvider);
+                  Navigator.pop(context);
+                },
+              ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              ref.invalidate(sessionDataProvider);
+              Navigator.pop(context);
+            },
             child: const Text('Выйти'),
           ),
         ],

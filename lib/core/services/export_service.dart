@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/services/image_service.dart';
 import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
@@ -21,10 +22,11 @@ class BackupService {
   // ЭКСПОРТ (Экспорт всех данных в ZIP файл)
   Future<String?> exportAllData() async {
     // Создаем временную папку
-    final tempDir = await getExternalStorageDirectory();
-    final exportDir = Directory(
+    final Directory? rootDir = await getExternalStorageDirectory();
+    final Directory tempDir = Directory(path.join(rootDir!.path, 'export'));
+    final Directory exportDir = Directory(
       path.join(
-        tempDir!.path,
+        tempDir.path,
         'export_${DateTime.now().millisecondsSinceEpoch}',
       ),
     );
@@ -388,6 +390,10 @@ class BackupService {
       await database.delete(database.gamingSessions).go();
       await database.delete(database.gamingSessionsExpansions).go();
       await database.delete(database.gamingSessionsGamers).go();
+
+      // в AppDataManager тоже
+      await AppDataManager.clearLastSessionGamers();
+      await AppDataManager.clearActiveSession();
 
       final artistsIds = <int, int>{};
       for (final artistJson in data['artists']) {

@@ -3,18 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/features/session_runner/categories.dart';
 
-class ScoreResultScreen extends ConsumerStatefulWidget {
+class NoScoreResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
 
-  const ScoreResultScreen({super.key, required this.data});
+  const NoScoreResultScreen({super.key, required this.data});
 
   @override
-  ConsumerState<ScoreResultScreen> createState() => _ScoreResultScreenState();
+  ConsumerState<NoScoreResultScreen> createState() =>
+      _NoScoreResultScreenState();
 }
 
-class _ScoreResultScreenState extends ConsumerState<ScoreResultScreen> {
+class _NoScoreResultScreenState extends ConsumerState<NoScoreResultScreen> {
+  bool isDraw = false;
   // Загрузка
   bool _isLoading = false;
 
@@ -26,23 +27,23 @@ class _ScoreResultScreenState extends ConsumerState<ScoreResultScreen> {
   }
 
   Future<void> _loadData() async {
-    _sortByWinCondition();
+    if (widget.data['gamers'][0]['place'] == null) {
+      _fillPlace();
+    } else {
+      isDraw = hasDraw();
+    }
 
     setState(() => _isLoading = false);
   }
 
-  void _sortByWinCondition() {
-    widget.data['gamers'].sort((a, b) {
-      final scoreA = a['score'] as int? ?? 0;
-      final scoreB = b['score'] as int? ?? 0;
-      if (widget.data['pointType'] == PointTypeEnum.max.id) {
-        return scoreB.compareTo(scoreA);
-      } else {
-        return scoreA.compareTo(scoreB);
+  bool hasDraw() {
+    for (int i = 0; i < widget.data['gamers'].length - 1; i++) {
+      if (widget.data['gamers'][i]['place'] ==
+          widget.data['gamers'][i + 1]['place']) {
+        return true; // Найдены одинаковые соседние значения
       }
-    });
-
-    _fillPlace();
+    }
+    return false; // Нет одинаковых соседних значений
   }
 
   void _reorder(int oldIndex, int newIndex) {
@@ -82,14 +83,13 @@ class _ScoreResultScreenState extends ConsumerState<ScoreResultScreen> {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
-          spacing: 8,
+          spacing: 10,
           children: [
             // Drag handle
-            if (widget.data['altVictoryType'] == AltVictoryTypeEnum.yes.id)
-              ReorderableDragStartListener(
-                index: index,
-                child: Icon(Icons.drag_handle, color: Colors.grey),
-              ),
+            ReorderableDragStartListener(
+              index: index,
+              child: Icon(Icons.drag_handle, color: Colors.grey),
+            ),
 
             // Позиция
             Container(
@@ -115,8 +115,6 @@ class _ScoreResultScreenState extends ConsumerState<ScoreResultScreen> {
               ),
             ),
 
-            const SizedBox(width: 12),
-
             // Имя игрока
             Expanded(
               child: Text(
@@ -124,23 +122,6 @@ class _ScoreResultScreenState extends ConsumerState<ScoreResultScreen> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-
-            // Очки
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.greenAccent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '${gamerData['score']}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
             ),

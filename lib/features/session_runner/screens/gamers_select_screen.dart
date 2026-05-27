@@ -83,8 +83,10 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final Map<String, dynamic> gamer = widget.data['gamers'].removeAt(oldIndex);
-    widget.data['gamers'].insert(newIndex, gamer);
+    final Map<String, dynamic> gamerData = widget.data['gamers'].removeAt(
+      oldIndex,
+    );
+    widget.data['gamers'].insert(newIndex, gamerData);
     _fillTurnOrder();
 
     setState(() {});

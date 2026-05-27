@@ -42,7 +42,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
         ),
       };
       if (gamerData['score'] != null) {
-        _totalScore += int.parse(gamerData['score']);
+        _totalScore += gamerData['score'] as int;
       }
     }
     _isVictory = gamersData[0]['place'] == 1;
@@ -157,8 +157,11 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                             padding: const EdgeInsets.all(16),
                             itemCount: widget.data['gamers'].length,
                             itemBuilder: (context, index) {
+                              final int gamerId =
+                                  widget.data['gamers'][index]['id'];
                               return buildGamerScoreCard(
-                                widget.data['gamers'][index],
+                                gamerId,
+                                _scoreControllers[gamerId],
                                 _updateScore,
                               );
                             },

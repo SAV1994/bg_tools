@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 Widget buildGamerScoreCard(
-  Map<String, dynamic> gamerData,
+  int gamerId,
+  Map<String, dynamic> controllerData,
   Function updateScore,
 ) {
   return Card(
@@ -16,7 +17,7 @@ Widget buildGamerScoreCard(
           // Имя игрока
           Expanded(
             child: Text(
-              gamerData['username'],
+              controllerData['username'],
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ),
@@ -26,7 +27,7 @@ Widget buildGamerScoreCard(
               SizedBox(
                 width: 120,
                 child: TextFormField(
-                  controller: gamerData['controller'],
+                  controller: controllerData['controller'],
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 18,
@@ -40,7 +41,7 @@ Widget buildGamerScoreCard(
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(vertical: 8),
                   ),
-                  onChanged: (value) => updateScore(gamerData['id'], value),
+                  onChanged: (value) => updateScore(gamerId, value),
                 ),
               ),
             ],

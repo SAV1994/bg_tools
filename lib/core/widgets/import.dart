@@ -100,6 +100,8 @@ class BackupButtons extends ConsumerWidget {
       ref.invalidate(gamingSessionFullDataProvider);
       ref.invalidate(notesForGameDataProvider);
       ref.invalidate(tagsDataProvider);
+      // AppDataManager
+      ref.invalidate(sessionDataProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

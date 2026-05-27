@@ -60,7 +60,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
 
       _formKey.currentState!.save();
 
-      await AppDataManager.clearSession();
+      await AppDataManager.clearActiveSession();
 
       ref.invalidate(sessionDataProvider);
 

@@ -25,8 +25,7 @@ Future<void> initSessionData(
 
   final String selector =
       '${sessionData['type']}.${sessionData['firstPlayerStartType'] ?? 0}.'
-      '${sessionData['resultType']}.${sessionData['pointType'] ?? 0}.'
-      '${sessionData['altVictoryType'] ?? 0}.${sessionData['firstPlayerRoundType'] ?? 0}';
+      '${sessionData['resultType']}.${sessionData['pointType'] ?? 0}';
   final Scenario scenario = scenarioMapping[selector];
   sessionData['selector'] = selector;
 

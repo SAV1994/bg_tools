@@ -100,6 +100,37 @@ final coopResultStep = ScenarioStep(
   initialData: {},
 );
 
+final scoreInputStep = ScenarioStep(
+  title: 'Ввод результатов партии',
+  description: 'Отметьте результаты партии',
+  contentBuilder: (data) => ScoreInputScreen(data: data),
+  validator: (data) {
+    for (final Map<String, dynamic> gamerData in data['gamers']) {
+      if (gamerData['score'] == null) {
+        throw Exception('Отметьте результаты каждого игрока');
+      }
+    }
+  },
+  initialData: {},
+);
+
+final scoreResultStep = ScenarioStep(
+  title: 'Результаты',
+  description:
+      'Итоги партии. Если в игре есть возможность альтернативной победы - определите места.',
+  contentBuilder: (data) => ScoreResultScreen(data: data),
+  validator: (data) {},
+  initialData: {},
+);
+
+final noScoreResultStep = ScenarioStep(
+  title: 'Результаты',
+  description: 'Определите места игроков',
+  contentBuilder: (data) => NoScoreResultScreen(data: data),
+  validator: (data) {},
+  initialData: {},
+);
+
 final finalStep = ScenarioStep(
   title: 'Комментарий',
   description: 'Можете добавить кооментарий к партии',

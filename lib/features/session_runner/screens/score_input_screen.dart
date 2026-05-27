@@ -84,8 +84,11 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
                           padding: const EdgeInsets.all(16),
                           itemCount: widget.data['gamers'].length,
                           itemBuilder: (context, index) {
+                            final int gamerId =
+                                widget.data['gamers'][index]['id'];
                             return buildGamerScoreCard(
-                              widget.data['gamers'][index],
+                              gamerId,
+                              _scoreControllers[gamerId],
                               _updateScore,
                             );
                           },

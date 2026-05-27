@@ -21,7 +21,7 @@ class AppDataManager {
   }
 
   // Удаление запущенной сессии
-  static Future<void> clearSession() async {
+  static Future<void> clearActiveSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(sessionKey);
   }
