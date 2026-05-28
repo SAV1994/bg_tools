@@ -114,19 +114,11 @@ final scoreInputStep = ScenarioStep(
   initialData: {},
 );
 
-final scoreResultStep = ScenarioStep(
+final resultStep = ScenarioStep(
   title: 'Результаты',
   description:
       'Итоги партии. Если в игре есть возможность альтернативной победы - определите места.',
-  contentBuilder: (data) => ScoreResultScreen(data: data),
-  validator: (data) {},
-  initialData: {},
-);
-
-final noScoreResultStep = ScenarioStep(
-  title: 'Результаты',
-  description: 'Определите места игроков',
-  contentBuilder: (data) => NoScoreResultScreen(data: data),
+  contentBuilder: (data) => ResultScreen(data: data),
   validator: (data) {},
   initialData: {},
 );

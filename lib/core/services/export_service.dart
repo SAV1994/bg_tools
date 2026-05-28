@@ -158,6 +158,7 @@ class BackupService {
             (gct) => {
               'id': gct.id,
               'name': gct.name,
+              'data': gct.data,
               'gameId': gct.gameId,
               'countingTemplateId': gct.countingTemplateId,
             },
@@ -197,6 +198,8 @@ class BackupService {
               'startedAt': gamingSession.startedAt.toIso8601String(),
               'finishedAt': gamingSession.finishedAt?.toIso8601String(),
               'comment': gamingSession.comment,
+              'gameType': gamingSession.gameType,
+              'data': gamingSession.data,
               'rootSessionId': gamingSession.rootSessionId,
             },
           )
@@ -218,6 +221,7 @@ class BackupService {
               'place': gg.place,
               'turnOrder': gg.turnOrder,
               'team': gg.team,
+              'data': gg.data,
             },
           )
           .toList(),
@@ -479,6 +483,7 @@ class BackupService {
             .insert(
               GamesCountingTemplatesCompanion(
                 name: Value(gamesCountingTemplatesJson['name']),
+                data: Value(gamesCountingTemplatesJson['data']),
                 gameId: Value(gamesIds[gamesCountingTemplatesJson['gameId']]!),
                 countingTemplateId: Value(
                   countingTemplatesIds[gamesCountingTemplatesJson['countingTemplateId']]!,
@@ -518,6 +523,8 @@ class BackupService {
                     ? Value(DateTime.parse(gamingSessionJson['finishedAt']))
                     : const Value(null),
                 comment: Value(gamingSessionJson['comment']),
+                gameType: Value(gamingSessionJson['gameType']),
+                data: Value(gamingSessionJson['data']),
                 rootSessionId: gamingSessionJson['rootSessionId'] != null
                     ? Value(
                         gamingSessionsIds[gamingSessionJson['rootSessionId']]!,
@@ -612,6 +619,7 @@ class BackupService {
                 place: Value(gsgJson['place']),
                 turnOrder: Value(gsgJson['turnOrder']),
                 team: Value(gsgJson['team']),
+                data: Value(gsgJson['data']),
               ),
             );
       }

@@ -9,14 +9,14 @@ class WithoutWPScenario {
       gamersSelectStep,
       sessionStartStep,
       sessionStopStep,
-      noScoreResultStep,
+      resultStep,
       finalStep,
     ],
   );
 }
 
 // Распределение по местам (есть порядок ходов)
-class WithoutWPScenarioFP {
+class WithoutWPFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -24,7 +24,7 @@ class WithoutWPScenarioFP {
       gamersTurnOrderStep,
       sessionStartStep,
       sessionStopStep,
-      noScoreResultStep,
+      resultStep,
       finalStep,
     ],
   );
@@ -39,14 +39,14 @@ class WPScenario {
       sessionStartStep,
       sessionStopStep,
       scoreInputStep,
-      scoreResultStep,
+      resultStep,
       finalStep,
     ],
   );
 }
 
 // Распределение по местам с ПО (есть порядок ходов)
-class WPScenarioFP {
+class WPFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -55,14 +55,28 @@ class WPScenarioFP {
       sessionStartStep,
       sessionStopStep,
       scoreInputStep,
-      scoreResultStep,
+      resultStep,
       finalStep,
     ],
   );
 }
 
-// Один победитель, без подсчёта очков
+// Один победитель
 class OneWinnerScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      sessionStartStep,
+      sessionStopStep,
+      oneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// Один победитель (есть порядок ходов)
+class OneWinnerFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -105,7 +119,7 @@ class CoopScenario {
 }
 
 // Кооп (есть порядок ходов)
-class CoopScenarioFP {
+class CoopFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,

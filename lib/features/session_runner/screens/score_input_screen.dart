@@ -86,9 +86,11 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
                           itemBuilder: (context, index) {
                             final int gamerId =
                                 widget.data['gamers'][index]['id'];
-                            return buildGamerScoreCard(
+                            return buildGamerInputCard(
+                              context,
                               gamerId,
                               _scoreControllers[gamerId],
+                              true,
                               _updateScore,
                             );
                           },

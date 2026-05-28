@@ -11,6 +11,8 @@ class GamingSessions extends Table {
   DateTimeColumn get finishedAt =>
       dateTime().nullable()(); // Время окончания игры
   TextColumn get comment => text().nullable()(); // Комментарий
+  IntColumn get gameType => integer().nullable()(); // Тип игры
+  TextColumn get data => text().nullable()(); // Данные (JSON)
   IntColumn get rootSessionId =>
       integer().nullable().references(GamingSessions, #id)();
 }

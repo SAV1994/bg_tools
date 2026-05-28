@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum SelectMode { single, multiple }
+enum _SelectMode { single, multiple }
 
 class OneWinnerSelectScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -16,7 +16,7 @@ class OneWinnerSelectScreen extends ConsumerStatefulWidget {
 }
 
 class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
-  late SelectMode _mode = SelectMode.single;
+  _SelectMode _mode = _SelectMode.single;
   late int? _singleSelected;
   late Set<int> _multipleSelected;
   // Загрузка
@@ -37,7 +37,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
         .toList();
     if (selectedItems.isNotEmpty) {
       if (selectedItems.length > 1) {
-        _mode = SelectMode.multiple;
+        _mode = _SelectMode.multiple;
         _singleSelected = null;
         _multipleSelected = selectedItems
             .map((gamerData) => gamerData['id'] as int)
@@ -55,14 +55,14 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
 
   void _toggleMode() {
     setState(() {
-      _mode = _mode == SelectMode.single
-          ? SelectMode.multiple
-          : SelectMode.single;
-      if (_mode == SelectMode.single && _multipleSelected.isNotEmpty) {
+      _mode = _mode == _SelectMode.single
+          ? _SelectMode.multiple
+          : _SelectMode.single;
+      if (_mode == _SelectMode.single && _multipleSelected.isNotEmpty) {
         _singleSelected = _multipleSelected.first;
         _updateData([_singleSelected!]);
         _multipleSelected.clear();
-      } else if (_mode == SelectMode.multiple && _singleSelected != null) {
+      } else if (_mode == _SelectMode.multiple && _singleSelected != null) {
         _multipleSelected.add(_singleSelected!);
         _updateData(_multipleSelected.toList());
         _singleSelected = null;
@@ -82,7 +82,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
 
   void _toggleItem(Map<String, dynamic> gamerData) {
     setState(() {
-      if (_mode == SelectMode.single) {
+      if (_mode == _SelectMode.single) {
         _singleSelected = gamerData['id'];
         _updateData([_singleSelected!]);
       } else {
@@ -97,7 +97,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
   }
 
   bool _isSelected(Map<String, dynamic> gamerData) {
-    return _mode == SelectMode.single
+    return _mode == _SelectMode.single
         ? _singleSelected == gamerData['id']
         : _multipleSelected.contains(gamerData['id']);
   }
@@ -140,7 +140,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
   }
 
   Widget _buildSelectionIndicator(bool isSelected) {
-    if (_mode == SelectMode.single) {
+    if (_mode == _SelectMode.single) {
       return Container(
         width: 24,
         height: 24,
@@ -156,23 +156,22 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
             ? const Icon(Icons.check, size: 16, color: Colors.white)
             : null,
       );
-    } else {
-      return Container(
-        width: 24,
-        height: 24,
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.transparent,
-          border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade400,
-            width: 2,
-          ),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: isSelected
-            ? const Icon(Icons.check, size: 16, color: Colors.white)
-            : null,
-      );
     }
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.blue : Colors.transparent,
+        border: Border.all(
+          color: isSelected ? Colors.blue : Colors.grey.shade400,
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: isSelected
+          ? const Icon(Icons.check, size: 16, color: Colors.white)
+          : null,
+    );
   }
 
   @override
@@ -185,21 +184,21 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
                 spacing: 12,
                 children: [
                   // Кнопка переключения режима
-                  SegmentedButton<SelectMode>(
+                  SegmentedButton<_SelectMode>(
                     segments: const [
                       ButtonSegment(
-                        value: SelectMode.single,
+                        value: _SelectMode.single,
                         label: Text('Один победитель'),
                         icon: Icon(Icons.radio_button_unchecked),
                       ),
                       ButtonSegment(
-                        value: SelectMode.multiple,
+                        value: _SelectMode.multiple,
                         label: Text('Ничья'),
                         icon: Icon(Icons.check_box_outline_blank),
                       ),
                     ],
                     selected: {_mode},
-                    onSelectionChanged: (Set<SelectMode> selection) {
+                    onSelectionChanged: (Set<_SelectMode> selection) {
                       _toggleMode();
                     },
                   ),
@@ -210,7 +209,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
                     child: Row(
                       children: [
                         Icon(
-                          _mode == SelectMode.single
+                          _mode == _SelectMode.single
                               ? Icons.radio_button_checked
                               : Icons.check_box,
                           color: Colors.blue,
@@ -218,7 +217,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            _mode == SelectMode.single
+                            _mode == _SelectMode.single
                                 ? 'Выберите одного победителя'
                                 : 'Выберите несколько победителей (${_multipleSelected.length} выбрано)',
                             style: const TextStyle(fontWeight: FontWeight.w500),

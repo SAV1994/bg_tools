@@ -1,3 +1,5 @@
+import 'package:bg_tools/core/widgets/enum_select_widget.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
@@ -41,6 +43,7 @@ class _GamingSessionFormScreenState
   List<Gamer> _allGamers = [];
   List<GamingSession> _gamingSessions = [];
   GamingSession? _selectedGamingSession;
+  GameTypeEnum? _selectedGameType;
   // Выбранные игроки
   final Map<int, GamingSessionGamerData> _selectedGamers = {};
   // Контроллеры
@@ -75,6 +78,9 @@ class _GamingSessionFormScreenState
       final List<GamingSessionGamerData?> gamersData =
           gamingSessionData!.gamers;
       final GamingSession gamingSession = gamingSessionData!.gamingSession;
+      _selectedGameType = gamingSession.gameType != null
+          ? GameTypeEnum.fromId(gamingSession.gameType!)
+          : null;
       _selectedGame = gamingSessionData!.game;
       if (gamingSession.rootSessionId == null) {
         _selectedGamingSession = null;
@@ -220,6 +226,7 @@ class _GamingSessionFormScreenState
         startedAt: Value(_startedAt),
         finishedAt: Value(_finishedAt),
         comment: Value(_commentController.text),
+        gameType: Value(_selectedGameType?.id),
         rootSessionId: Value(_selectedGamingSession?.id),
       );
       final List<GamingSessionGamerData?> gamersData = _selectedGamers.values
@@ -380,6 +387,23 @@ class _GamingSessionFormScreenState
                         getId: (expansion) => expansion.id,
                         searchHint: 'Поиск дополнений...',
                       ),
+                    EnumSelector(
+                      label: 'Тип игры',
+                      choices: GameTypeEnum.values.map((val) {
+                        return DropdownMenuItem(
+                          value: val,
+                          child: Row(children: [Text(val.label)]),
+                        );
+                      }),
+                      selected: _selectedGameType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedGameType = (value != null)
+                              ? value as GameTypeEnum
+                              : null;
+                        });
+                      },
+                    ),
                     InkWell(
                       onTap: () async {
                         _selectDateTime();

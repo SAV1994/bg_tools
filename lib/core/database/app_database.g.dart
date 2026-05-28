@@ -1744,6 +1744,15 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
   @override
   late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
@@ -1770,7 +1779,13 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
     ),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, name, gameId, countingTemplateId];
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    data,
+    gameId,
+    countingTemplateId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1793,6 +1808,12 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
     }
     if (data.containsKey('game_id')) {
       context.handle(
@@ -1830,6 +1851,10 @@ class $GamesCountingTemplatesTable extends GamesCountingTemplates
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      ),
       gameId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}game_id'],
@@ -1851,11 +1876,13 @@ class GamesCountingTemplate extends DataClass
     implements Insertable<GamesCountingTemplate> {
   final int id;
   final String name;
+  final String? data;
   final int gameId;
   final int countingTemplateId;
   const GamesCountingTemplate({
     required this.id,
     required this.name,
+    this.data,
     required this.gameId,
     required this.countingTemplateId,
   });
@@ -1864,6 +1891,9 @@ class GamesCountingTemplate extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || data != null) {
+      map['data'] = Variable<String>(data);
+    }
     map['game_id'] = Variable<int>(gameId);
     map['counting_template_id'] = Variable<int>(countingTemplateId);
     return map;
@@ -1873,6 +1903,7 @@ class GamesCountingTemplate extends DataClass
     return GamesCountingTemplatesCompanion(
       id: Value(id),
       name: Value(name),
+      data: data == null && nullToAbsent ? const Value.absent() : Value(data),
       gameId: Value(gameId),
       countingTemplateId: Value(countingTemplateId),
     );
@@ -1886,6 +1917,7 @@ class GamesCountingTemplate extends DataClass
     return GamesCountingTemplate(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      data: serializer.fromJson<String?>(json['data']),
       gameId: serializer.fromJson<int>(json['gameId']),
       countingTemplateId: serializer.fromJson<int>(json['countingTemplateId']),
     );
@@ -1896,6 +1928,7 @@ class GamesCountingTemplate extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'data': serializer.toJson<String?>(data),
       'gameId': serializer.toJson<int>(gameId),
       'countingTemplateId': serializer.toJson<int>(countingTemplateId),
     };
@@ -1904,11 +1937,13 @@ class GamesCountingTemplate extends DataClass
   GamesCountingTemplate copyWith({
     int? id,
     String? name,
+    Value<String?> data = const Value.absent(),
     int? gameId,
     int? countingTemplateId,
   }) => GamesCountingTemplate(
     id: id ?? this.id,
     name: name ?? this.name,
+    data: data.present ? data.value : this.data,
     gameId: gameId ?? this.gameId,
     countingTemplateId: countingTemplateId ?? this.countingTemplateId,
   );
@@ -1918,6 +1953,7 @@ class GamesCountingTemplate extends DataClass
     return GamesCountingTemplate(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      data: data.data.present ? data.data.value : this.data,
       gameId: data.gameId.present ? data.gameId.value : this.gameId,
       countingTemplateId: data.countingTemplateId.present
           ? data.countingTemplateId.value
@@ -1930,6 +1966,7 @@ class GamesCountingTemplate extends DataClass
     return (StringBuffer('GamesCountingTemplate(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('data: $data, ')
           ..write('gameId: $gameId, ')
           ..write('countingTemplateId: $countingTemplateId')
           ..write(')'))
@@ -1937,13 +1974,14 @@ class GamesCountingTemplate extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, name, gameId, countingTemplateId);
+  int get hashCode => Object.hash(id, name, data, gameId, countingTemplateId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is GamesCountingTemplate &&
           other.id == this.id &&
           other.name == this.name &&
+          other.data == this.data &&
           other.gameId == this.gameId &&
           other.countingTemplateId == this.countingTemplateId);
 }
@@ -1952,17 +1990,20 @@ class GamesCountingTemplatesCompanion
     extends UpdateCompanion<GamesCountingTemplate> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> data;
   final Value<int> gameId;
   final Value<int> countingTemplateId;
   const GamesCountingTemplatesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.data = const Value.absent(),
     this.gameId = const Value.absent(),
     this.countingTemplateId = const Value.absent(),
   });
   GamesCountingTemplatesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.data = const Value.absent(),
     required int gameId,
     required int countingTemplateId,
   }) : name = Value(name),
@@ -1971,12 +2012,14 @@ class GamesCountingTemplatesCompanion
   static Insertable<GamesCountingTemplate> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? data,
     Expression<int>? gameId,
     Expression<int>? countingTemplateId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (data != null) 'data': data,
       if (gameId != null) 'game_id': gameId,
       if (countingTemplateId != null)
         'counting_template_id': countingTemplateId,
@@ -1986,12 +2029,14 @@ class GamesCountingTemplatesCompanion
   GamesCountingTemplatesCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
+    Value<String?>? data,
     Value<int>? gameId,
     Value<int>? countingTemplateId,
   }) {
     return GamesCountingTemplatesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      data: data ?? this.data,
       gameId: gameId ?? this.gameId,
       countingTemplateId: countingTemplateId ?? this.countingTemplateId,
     );
@@ -2005,6 +2050,9 @@ class GamesCountingTemplatesCompanion
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
     }
     if (gameId.present) {
       map['game_id'] = Variable<int>(gameId.value);
@@ -2020,6 +2068,7 @@ class GamesCountingTemplatesCompanion
     return (StringBuffer('GamesCountingTemplatesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('data: $data, ')
           ..write('gameId: $gameId, ')
           ..write('countingTemplateId: $countingTemplateId')
           ..write(')'))
@@ -3389,6 +3438,26 @@ class $GamingSessionsTable extends GamingSessions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _gameTypeMeta = const VerificationMeta(
+    'gameType',
+  );
+  @override
+  late final GeneratedColumn<int> gameType = GeneratedColumn<int>(
+    'game_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _rootSessionIdMeta = const VerificationMeta(
     'rootSessionId',
   );
@@ -3410,6 +3479,8 @@ class $GamingSessionsTable extends GamingSessions
     startedAt,
     finishedAt,
     comment,
+    gameType,
+    data,
     rootSessionId,
   ];
   @override
@@ -3455,6 +3526,18 @@ class $GamingSessionsTable extends GamingSessions
         comment.isAcceptableOrUnknown(data['comment']!, _commentMeta),
       );
     }
+    if (data.containsKey('game_type')) {
+      context.handle(
+        _gameTypeMeta,
+        gameType.isAcceptableOrUnknown(data['game_type']!, _gameTypeMeta),
+      );
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    }
     if (data.containsKey('root_session_id')) {
       context.handle(
         _rootSessionIdMeta,
@@ -3493,6 +3576,14 @@ class $GamingSessionsTable extends GamingSessions
         DriftSqlType.string,
         data['${effectivePrefix}comment'],
       ),
+      gameType: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_type'],
+      ),
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      ),
       rootSessionId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}root_session_id'],
@@ -3512,6 +3603,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
   final DateTime startedAt;
   final DateTime? finishedAt;
   final String? comment;
+  final int? gameType;
+  final String? data;
   final int? rootSessionId;
   const GamingSession({
     required this.id,
@@ -3519,6 +3612,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     required this.startedAt,
     this.finishedAt,
     this.comment,
+    this.gameType,
+    this.data,
     this.rootSessionId,
   });
   @override
@@ -3532,6 +3627,12 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     }
     if (!nullToAbsent || comment != null) {
       map['comment'] = Variable<String>(comment);
+    }
+    if (!nullToAbsent || gameType != null) {
+      map['game_type'] = Variable<int>(gameType);
+    }
+    if (!nullToAbsent || data != null) {
+      map['data'] = Variable<String>(data);
     }
     if (!nullToAbsent || rootSessionId != null) {
       map['root_session_id'] = Variable<int>(rootSessionId);
@@ -3550,6 +3651,10 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       comment: comment == null && nullToAbsent
           ? const Value.absent()
           : Value(comment),
+      gameType: gameType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gameType),
+      data: data == null && nullToAbsent ? const Value.absent() : Value(data),
       rootSessionId: rootSessionId == null && nullToAbsent
           ? const Value.absent()
           : Value(rootSessionId),
@@ -3567,6 +3672,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       finishedAt: serializer.fromJson<DateTime?>(json['finishedAt']),
       comment: serializer.fromJson<String?>(json['comment']),
+      gameType: serializer.fromJson<int?>(json['gameType']),
+      data: serializer.fromJson<String?>(json['data']),
       rootSessionId: serializer.fromJson<int?>(json['rootSessionId']),
     );
   }
@@ -3579,6 +3686,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'finishedAt': serializer.toJson<DateTime?>(finishedAt),
       'comment': serializer.toJson<String?>(comment),
+      'gameType': serializer.toJson<int?>(gameType),
+      'data': serializer.toJson<String?>(data),
       'rootSessionId': serializer.toJson<int?>(rootSessionId),
     };
   }
@@ -3589,6 +3698,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     DateTime? startedAt,
     Value<DateTime?> finishedAt = const Value.absent(),
     Value<String?> comment = const Value.absent(),
+    Value<int?> gameType = const Value.absent(),
+    Value<String?> data = const Value.absent(),
     Value<int?> rootSessionId = const Value.absent(),
   }) => GamingSession(
     id: id ?? this.id,
@@ -3596,6 +3707,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     startedAt: startedAt ?? this.startedAt,
     finishedAt: finishedAt.present ? finishedAt.value : this.finishedAt,
     comment: comment.present ? comment.value : this.comment,
+    gameType: gameType.present ? gameType.value : this.gameType,
+    data: data.present ? data.value : this.data,
     rootSessionId: rootSessionId.present
         ? rootSessionId.value
         : this.rootSessionId,
@@ -3609,6 +3722,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           ? data.finishedAt.value
           : this.finishedAt,
       comment: data.comment.present ? data.comment.value : this.comment,
+      gameType: data.gameType.present ? data.gameType.value : this.gameType,
+      data: data.data.present ? data.data.value : this.data,
       rootSessionId: data.rootSessionId.present
           ? data.rootSessionId.value
           : this.rootSessionId,
@@ -3623,14 +3738,24 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
           ..write('comment: $comment, ')
+          ..write('gameType: $gameType, ')
+          ..write('data: $data, ')
           ..write('rootSessionId: $rootSessionId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, gameId, startedAt, finishedAt, comment, rootSessionId);
+  int get hashCode => Object.hash(
+    id,
+    gameId,
+    startedAt,
+    finishedAt,
+    comment,
+    gameType,
+    data,
+    rootSessionId,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3640,6 +3765,8 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           other.startedAt == this.startedAt &&
           other.finishedAt == this.finishedAt &&
           other.comment == this.comment &&
+          other.gameType == this.gameType &&
+          other.data == this.data &&
           other.rootSessionId == this.rootSessionId);
 }
 
@@ -3649,6 +3776,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
   final Value<DateTime> startedAt;
   final Value<DateTime?> finishedAt;
   final Value<String?> comment;
+  final Value<int?> gameType;
+  final Value<String?> data;
   final Value<int?> rootSessionId;
   const GamingSessionsCompanion({
     this.id = const Value.absent(),
@@ -3656,6 +3785,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     this.startedAt = const Value.absent(),
     this.finishedAt = const Value.absent(),
     this.comment = const Value.absent(),
+    this.gameType = const Value.absent(),
+    this.data = const Value.absent(),
     this.rootSessionId = const Value.absent(),
   });
   GamingSessionsCompanion.insert({
@@ -3664,6 +3795,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     required DateTime startedAt,
     this.finishedAt = const Value.absent(),
     this.comment = const Value.absent(),
+    this.gameType = const Value.absent(),
+    this.data = const Value.absent(),
     this.rootSessionId = const Value.absent(),
   }) : gameId = Value(gameId),
        startedAt = Value(startedAt);
@@ -3673,6 +3806,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     Expression<DateTime>? startedAt,
     Expression<DateTime>? finishedAt,
     Expression<String>? comment,
+    Expression<int>? gameType,
+    Expression<String>? data,
     Expression<int>? rootSessionId,
   }) {
     return RawValuesInsertable({
@@ -3681,6 +3816,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
       if (startedAt != null) 'started_at': startedAt,
       if (finishedAt != null) 'finished_at': finishedAt,
       if (comment != null) 'comment': comment,
+      if (gameType != null) 'game_type': gameType,
+      if (data != null) 'data': data,
       if (rootSessionId != null) 'root_session_id': rootSessionId,
     });
   }
@@ -3691,6 +3828,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     Value<DateTime>? startedAt,
     Value<DateTime?>? finishedAt,
     Value<String?>? comment,
+    Value<int?>? gameType,
+    Value<String?>? data,
     Value<int?>? rootSessionId,
   }) {
     return GamingSessionsCompanion(
@@ -3699,6 +3838,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
       startedAt: startedAt ?? this.startedAt,
       finishedAt: finishedAt ?? this.finishedAt,
       comment: comment ?? this.comment,
+      gameType: gameType ?? this.gameType,
+      data: data ?? this.data,
       rootSessionId: rootSessionId ?? this.rootSessionId,
     );
   }
@@ -3721,6 +3862,12 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     if (comment.present) {
       map['comment'] = Variable<String>(comment.value);
     }
+    if (gameType.present) {
+      map['game_type'] = Variable<int>(gameType.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
     if (rootSessionId.present) {
       map['root_session_id'] = Variable<int>(rootSessionId.value);
     }
@@ -3735,6 +3882,8 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
           ..write('comment: $comment, ')
+          ..write('gameType: $gameType, ')
+          ..write('data: $data, ')
           ..write('rootSessionId: $rootSessionId')
           ..write(')'))
         .toString();
@@ -4050,6 +4199,15 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     gamingSessionId,
@@ -4058,6 +4216,7 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
     place,
     turnOrder,
     team,
+    data,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4114,6 +4273,12 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
         team.isAcceptableOrUnknown(data['team']!, _teamMeta),
       );
     }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    }
     return context;
   }
 
@@ -4147,6 +4312,10 @@ class $GamingSessionsGamersTable extends GamingSessionsGamers
         DriftSqlType.int,
         data['${effectivePrefix}team'],
       ),
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      ),
     );
   }
 
@@ -4164,6 +4333,7 @@ class GamingSessionsGamer extends DataClass
   final int? place;
   final int? turnOrder;
   final int? team;
+  final String? data;
   const GamingSessionsGamer({
     required this.gamingSessionId,
     required this.gamerId,
@@ -4171,6 +4341,7 @@ class GamingSessionsGamer extends DataClass
     this.place,
     this.turnOrder,
     this.team,
+    this.data,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4189,6 +4360,9 @@ class GamingSessionsGamer extends DataClass
     if (!nullToAbsent || team != null) {
       map['team'] = Variable<int>(team);
     }
+    if (!nullToAbsent || data != null) {
+      map['data'] = Variable<String>(data);
+    }
     return map;
   }
 
@@ -4206,6 +4380,7 @@ class GamingSessionsGamer extends DataClass
           ? const Value.absent()
           : Value(turnOrder),
       team: team == null && nullToAbsent ? const Value.absent() : Value(team),
+      data: data == null && nullToAbsent ? const Value.absent() : Value(data),
     );
   }
 
@@ -4221,6 +4396,7 @@ class GamingSessionsGamer extends DataClass
       place: serializer.fromJson<int?>(json['place']),
       turnOrder: serializer.fromJson<int?>(json['turnOrder']),
       team: serializer.fromJson<int?>(json['team']),
+      data: serializer.fromJson<String?>(json['data']),
     );
   }
   @override
@@ -4233,6 +4409,7 @@ class GamingSessionsGamer extends DataClass
       'place': serializer.toJson<int?>(place),
       'turnOrder': serializer.toJson<int?>(turnOrder),
       'team': serializer.toJson<int?>(team),
+      'data': serializer.toJson<String?>(data),
     };
   }
 
@@ -4243,6 +4420,7 @@ class GamingSessionsGamer extends DataClass
     Value<int?> place = const Value.absent(),
     Value<int?> turnOrder = const Value.absent(),
     Value<int?> team = const Value.absent(),
+    Value<String?> data = const Value.absent(),
   }) => GamingSessionsGamer(
     gamingSessionId: gamingSessionId ?? this.gamingSessionId,
     gamerId: gamerId ?? this.gamerId,
@@ -4250,6 +4428,7 @@ class GamingSessionsGamer extends DataClass
     place: place.present ? place.value : this.place,
     turnOrder: turnOrder.present ? turnOrder.value : this.turnOrder,
     team: team.present ? team.value : this.team,
+    data: data.present ? data.value : this.data,
   );
   GamingSessionsGamer copyWithCompanion(GamingSessionsGamersCompanion data) {
     return GamingSessionsGamer(
@@ -4261,6 +4440,7 @@ class GamingSessionsGamer extends DataClass
       place: data.place.present ? data.place.value : this.place,
       turnOrder: data.turnOrder.present ? data.turnOrder.value : this.turnOrder,
       team: data.team.present ? data.team.value : this.team,
+      data: data.data.present ? data.data.value : this.data,
     );
   }
 
@@ -4272,14 +4452,22 @@ class GamingSessionsGamer extends DataClass
           ..write('score: $score, ')
           ..write('place: $place, ')
           ..write('turnOrder: $turnOrder, ')
-          ..write('team: $team')
+          ..write('team: $team, ')
+          ..write('data: $data')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(gamingSessionId, gamerId, score, place, turnOrder, team);
+  int get hashCode => Object.hash(
+    gamingSessionId,
+    gamerId,
+    score,
+    place,
+    turnOrder,
+    team,
+    data,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4289,7 +4477,8 @@ class GamingSessionsGamer extends DataClass
           other.score == this.score &&
           other.place == this.place &&
           other.turnOrder == this.turnOrder &&
-          other.team == this.team);
+          other.team == this.team &&
+          other.data == this.data);
 }
 
 class GamingSessionsGamersCompanion
@@ -4300,6 +4489,7 @@ class GamingSessionsGamersCompanion
   final Value<int?> place;
   final Value<int?> turnOrder;
   final Value<int?> team;
+  final Value<String?> data;
   final Value<int> rowid;
   const GamingSessionsGamersCompanion({
     this.gamingSessionId = const Value.absent(),
@@ -4308,6 +4498,7 @@ class GamingSessionsGamersCompanion
     this.place = const Value.absent(),
     this.turnOrder = const Value.absent(),
     this.team = const Value.absent(),
+    this.data = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GamingSessionsGamersCompanion.insert({
@@ -4317,6 +4508,7 @@ class GamingSessionsGamersCompanion
     this.place = const Value.absent(),
     this.turnOrder = const Value.absent(),
     this.team = const Value.absent(),
+    this.data = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : gamingSessionId = Value(gamingSessionId),
        gamerId = Value(gamerId);
@@ -4327,6 +4519,7 @@ class GamingSessionsGamersCompanion
     Expression<int>? place,
     Expression<int>? turnOrder,
     Expression<int>? team,
+    Expression<String>? data,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4336,6 +4529,7 @@ class GamingSessionsGamersCompanion
       if (place != null) 'place': place,
       if (turnOrder != null) 'turn_order': turnOrder,
       if (team != null) 'team': team,
+      if (data != null) 'data': data,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4347,6 +4541,7 @@ class GamingSessionsGamersCompanion
     Value<int?>? place,
     Value<int?>? turnOrder,
     Value<int?>? team,
+    Value<String?>? data,
     Value<int>? rowid,
   }) {
     return GamingSessionsGamersCompanion(
@@ -4356,6 +4551,7 @@ class GamingSessionsGamersCompanion
       place: place ?? this.place,
       turnOrder: turnOrder ?? this.turnOrder,
       team: team ?? this.team,
+      data: data ?? this.data,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4381,6 +4577,9 @@ class GamingSessionsGamersCompanion
     if (team.present) {
       map['team'] = Variable<int>(team.value);
     }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4396,6 +4595,7 @@ class GamingSessionsGamersCompanion
           ..write('place: $place, ')
           ..write('turnOrder: $turnOrder, ')
           ..write('team: $team, ')
+          ..write('data: $data, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8048,6 +8248,7 @@ typedef $$GamesCountingTemplatesTableCreateCompanionBuilder =
     GamesCountingTemplatesCompanion Function({
       Value<int> id,
       required String name,
+      Value<String?> data,
       required int gameId,
       required int countingTemplateId,
     });
@@ -8055,6 +8256,7 @@ typedef $$GamesCountingTemplatesTableUpdateCompanionBuilder =
     GamesCountingTemplatesCompanion Function({
       Value<int> id,
       Value<String> name,
+      Value<String?> data,
       Value<int> gameId,
       Value<int> countingTemplateId,
     });
@@ -8164,6 +8366,11 @@ class $$GamesCountingTemplatesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$GamesTableFilterComposer get gameId {
     final $$GamesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -8259,6 +8466,11 @@ class $$GamesCountingTemplatesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GamesTableOrderingComposer get gameId {
     final $$GamesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -8320,6 +8532,9 @@ class $$GamesCountingTemplatesTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
 
   $$GamesTableAnnotationComposer get gameId {
     final $$GamesTableAnnotationComposer composer = $composerBuilder(
@@ -8443,11 +8658,13 @@ class $$GamesCountingTemplatesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String?> data = const Value.absent(),
                 Value<int> gameId = const Value.absent(),
                 Value<int> countingTemplateId = const Value.absent(),
               }) => GamesCountingTemplatesCompanion(
                 id: id,
                 name: name,
+                data: data,
                 gameId: gameId,
                 countingTemplateId: countingTemplateId,
               ),
@@ -8455,11 +8672,13 @@ class $$GamesCountingTemplatesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
+                Value<String?> data = const Value.absent(),
                 required int gameId,
                 required int countingTemplateId,
               }) => GamesCountingTemplatesCompanion.insert(
                 id: id,
                 name: name,
+                data: data,
                 gameId: gameId,
                 countingTemplateId: countingTemplateId,
               ),
@@ -10229,6 +10448,8 @@ typedef $$GamingSessionsTableCreateCompanionBuilder =
       required DateTime startedAt,
       Value<DateTime?> finishedAt,
       Value<String?> comment,
+      Value<int?> gameType,
+      Value<String?> data,
       Value<int?> rootSessionId,
     });
 typedef $$GamingSessionsTableUpdateCompanionBuilder =
@@ -10238,6 +10459,8 @@ typedef $$GamingSessionsTableUpdateCompanionBuilder =
       Value<DateTime> startedAt,
       Value<DateTime?> finishedAt,
       Value<String?> comment,
+      Value<int?> gameType,
+      Value<String?> data,
       Value<int?> rootSessionId,
     });
 
@@ -10375,6 +10598,16 @@ class $$GamingSessionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get gameType => $composableBuilder(
+    column: $table.gameType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$GamesTableFilterComposer get gameId {
     final $$GamesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -10503,6 +10736,16 @@ class $$GamingSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get gameType => $composableBuilder(
+    column: $table.gameType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GamesTableOrderingComposer get gameId {
     final $$GamesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -10572,6 +10815,12 @@ class $$GamingSessionsTableAnnotationComposer
 
   GeneratedColumn<String> get comment =>
       $composableBuilder(column: $table.comment, builder: (column) => column);
+
+  GeneratedColumn<int> get gameType =>
+      $composableBuilder(column: $table.gameType, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
 
   $$GamesTableAnnotationComposer get gameId {
     final $$GamesTableAnnotationComposer composer = $composerBuilder(
@@ -10713,6 +10962,8 @@ class $$GamingSessionsTableTableManager
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> finishedAt = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
+                Value<int?> gameType = const Value.absent(),
+                Value<String?> data = const Value.absent(),
                 Value<int?> rootSessionId = const Value.absent(),
               }) => GamingSessionsCompanion(
                 id: id,
@@ -10720,6 +10971,8 @@ class $$GamingSessionsTableTableManager
                 startedAt: startedAt,
                 finishedAt: finishedAt,
                 comment: comment,
+                gameType: gameType,
+                data: data,
                 rootSessionId: rootSessionId,
               ),
           createCompanionCallback:
@@ -10729,6 +10982,8 @@ class $$GamingSessionsTableTableManager
                 required DateTime startedAt,
                 Value<DateTime?> finishedAt = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
+                Value<int?> gameType = const Value.absent(),
+                Value<String?> data = const Value.absent(),
                 Value<int?> rootSessionId = const Value.absent(),
               }) => GamingSessionsCompanion.insert(
                 id: id,
@@ -10736,6 +10991,8 @@ class $$GamingSessionsTableTableManager
                 startedAt: startedAt,
                 finishedAt: finishedAt,
                 comment: comment,
+                gameType: gameType,
+                data: data,
                 rootSessionId: rootSessionId,
               ),
           withReferenceMapper: (p0) => p0
@@ -11264,6 +11521,7 @@ typedef $$GamingSessionsGamersTableCreateCompanionBuilder =
       Value<int?> place,
       Value<int?> turnOrder,
       Value<int?> team,
+      Value<String?> data,
       Value<int> rowid,
     });
 typedef $$GamingSessionsGamersTableUpdateCompanionBuilder =
@@ -11274,6 +11532,7 @@ typedef $$GamingSessionsGamersTableUpdateCompanionBuilder =
       Value<int?> place,
       Value<int?> turnOrder,
       Value<int?> team,
+      Value<String?> data,
       Value<int> rowid,
     });
 
@@ -11360,6 +11619,11 @@ class $$GamingSessionsGamersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$GamingSessionsTableFilterComposer get gamingSessionId {
     final $$GamingSessionsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -11436,6 +11700,11 @@ class $$GamingSessionsGamersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GamingSessionsTableOrderingComposer get gamingSessionId {
     final $$GamingSessionsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -11503,6 +11772,9 @@ class $$GamingSessionsGamersTableAnnotationComposer
 
   GeneratedColumn<int> get team =>
       $composableBuilder(column: $table.team, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
 
   $$GamingSessionsTableAnnotationComposer get gamingSessionId {
     final $$GamingSessionsTableAnnotationComposer composer = $composerBuilder(
@@ -11593,6 +11865,7 @@ class $$GamingSessionsGamersTableTableManager
                 Value<int?> place = const Value.absent(),
                 Value<int?> turnOrder = const Value.absent(),
                 Value<int?> team = const Value.absent(),
+                Value<String?> data = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamingSessionsGamersCompanion(
                 gamingSessionId: gamingSessionId,
@@ -11601,6 +11874,7 @@ class $$GamingSessionsGamersTableTableManager
                 place: place,
                 turnOrder: turnOrder,
                 team: team,
+                data: data,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -11611,6 +11885,7 @@ class $$GamingSessionsGamersTableTableManager
                 Value<int?> place = const Value.absent(),
                 Value<int?> turnOrder = const Value.absent(),
                 Value<int?> team = const Value.absent(),
+                Value<String?> data = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GamingSessionsGamersCompanion.insert(
                 gamingSessionId: gamingSessionId,
@@ -11619,6 +11894,7 @@ class $$GamingSessionsGamersTableTableManager
                 place: place,
                 turnOrder: turnOrder,
                 team: team,
+                data: data,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

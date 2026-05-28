@@ -13,6 +13,7 @@ class GamingSessionsGamers extends Table {
   IntColumn get place => integer().nullable()(); // Занятое место
   IntColumn get turnOrder => integer().nullable()(); // Порядок хода
   IntColumn get team => integer().nullable()(); // Команда
+  TextColumn get data => text().nullable()(); // Данные (JSON)
 
   // Составной первичный ключ, чтобы избежать дублирования
   @override

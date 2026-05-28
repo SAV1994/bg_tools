@@ -1,9 +1,12 @@
+import 'package:bg_tools/core/widgets/score_calc_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-Widget buildGamerScoreCard(
+Widget buildGamerInputCard(
+  BuildContext context,
   int gamerId,
   Map<String, dynamic> controllerData,
+  bool addCalcBtn,
   Function updateScore,
 ) {
   return Card(
@@ -14,18 +17,69 @@ Widget buildGamerScoreCard(
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          // Имя игрока
           Expanded(
-            child: Text(
-              controllerData['username'],
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            child: Row(
+              spacing: 12,
+              children: [
+                // Имя игрока
+                Text(
+                  controllerData['username'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                // Дополнительная информация
+                if (controllerData['extraData'] != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.greenAccent,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      controllerData['extraData'].toString(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                // Кнопка вызова калькулятора
+                if (addCalcBtn)
+                  IconButton(
+                    onPressed: () {
+                      final TextEditingController controller =
+                          controllerData['controller'];
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ScoreCalcModal(
+                            title: controllerData['username'],
+                            value: int.tryParse(controller.text) ?? 0,
+                            onScoreChanged: (value) {
+                              final String score = value.toString();
+                              controller.text = score;
+                              updateScore(gamerId, score);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.iso),
+                  ),
+              ],
             ),
           ),
           // Поле ввода
           Row(
             children: [
               SizedBox(
-                width: 120,
+                width: 80,
                 child: TextFormField(
                   controller: controllerData['controller'],
                   textAlign: TextAlign.center,
