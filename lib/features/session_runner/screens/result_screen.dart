@@ -143,6 +143,7 @@ class _NoScoreResultScreenState extends ConsumerState<ResultScreen> {
                       gamerId,
                       _scoreControllers[gamerId],
                       false,
+                      true,
                       _updatPlace,
                     );
                   },

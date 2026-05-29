@@ -91,6 +91,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
                               gamerId,
                               _scoreControllers[gamerId],
                               true,
+                              false,
                               _updateScore,
                             );
                           },

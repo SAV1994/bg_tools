@@ -6,14 +6,12 @@ class ScenarioStep {
   final String description;
   final Widget Function(Map<String, dynamic> data) contentBuilder;
   final Function(Map<String, dynamic> data) validator;
-  final Map<String, dynamic> initialData;
 
   ScenarioStep({
     required this.title,
     required this.description,
     required this.contentBuilder,
     required this.validator,
-    required this.initialData,
   });
 }
 
@@ -42,5 +40,8 @@ const Map<String, dynamic> sessionInitialData = {
   'gamers': [],
   'round': 0,
   'totalRounds': null,
+  'onlyGeneralScore': false,
+  'generalScore': null,
+  'resulScreenMode': null,
   'data': {},
 };

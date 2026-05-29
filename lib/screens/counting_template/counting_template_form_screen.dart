@@ -97,13 +97,16 @@ class _CountingTemplateFormFormState
         _selectedGameType != null && _selectedGameType != GameTypeEnum.solo;
     _showPointType =
         _selectedResultType != null &&
-        _selectedResultType != ResultTypeEnum.condition;
+        _selectedResultType != ResultTypeEnum.condition &&
+        _selectedGameType != GameTypeEnum.solo;
     _showAltVictoryType =
         _selectedResultType != null &&
-        _selectedResultType != ResultTypeEnum.condition;
+        _selectedResultType != ResultTypeEnum.condition &&
+        _selectedGameType != GameTypeEnum.solo;
     _showFirstPlayerRoundType =
         _selectedResultType != null &&
-        _selectedResultType == ResultTypeEnum.round;
+        _selectedResultType == ResultTypeEnum.round &&
+        _selectedGameType != GameTypeEnum.solo;
 
     setState(() {});
   }

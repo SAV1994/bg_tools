@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
@@ -32,6 +34,9 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
           place: Value(gamerData.place),
           turnOrder: Value(gamerData.turnOrder),
           team: Value(gamerData.team),
+          data: Value(
+            (gamerData.data != null) ? jsonEncode(gamerData.data) : null,
+          ),
         ),
       );
     }
@@ -186,6 +191,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
         place: gamerInfo.place,
         turnOrder: gamerInfo.turnOrder,
         team: gamerInfo.team,
+        data: (gamerInfo.data != null) ? jsonDecode(gamerInfo.data!) : null,
       );
     }).toList();
 

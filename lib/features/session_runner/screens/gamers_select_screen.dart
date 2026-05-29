@@ -109,6 +109,7 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
       'username': gamer.username,
       'fio': getGamerFio(gamer),
       'score': null,
+      'scoreByrounds': [],
       'place': null,
       'turnOrder': null,
       'team':

@@ -15,6 +15,7 @@ class GamingSessionGamerData {
   final int? place;
   final int? turnOrder;
   final int? team;
+  final Map<String, dynamic>? data;
 
   GamingSessionGamerData({
     required this.gamer,
@@ -22,6 +23,7 @@ class GamingSessionGamerData {
     this.place,
     this.turnOrder,
     this.team,
+    this.data,
   });
 }
 

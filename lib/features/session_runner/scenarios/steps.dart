@@ -8,7 +8,17 @@ final rootSessionSelectStep = ScenarioStep(
       'Вы можете выбрать записанную ранее сессию для сохранения связи между серией игровых сессий. Может быть актуально для игр-компаний. Выбирайте имеено первую сессию серии.',
   contentBuilder: (data) => RootSessionSelectScreen(data: data),
   validator: (data) {},
-  initialData: {},
+);
+
+final numberRoundsStep = ScenarioStep(
+  title: 'Количество раундов',
+  description: 'Укажите количество раундов',
+  contentBuilder: (data) => NumberRoundsScreen(data: data),
+  validator: (data) {
+    if (data['totalRounds'] == null || data['totalRounds'] < 1) {
+      throw Exception('Укажите количкство раундов');
+    }
+  },
 );
 
 final gamersSelectStep = ScenarioStep(
@@ -26,6 +36,7 @@ final gamersSelectStep = ScenarioStep(
         'username': gamerData['username'],
         'fio': gamerData['fio'],
         'score': null,
+        'scoreByrounds': [],
         'place': null,
         'turnOrder': null,
         'team': null,
@@ -33,7 +44,6 @@ final gamersSelectStep = ScenarioStep(
     }
     AppDataManager.saveLastSessionGamers(data['gamers']);
   },
-  initialData: {},
 );
 
 final gamersTurnOrderStep = ScenarioStep(
@@ -41,7 +51,6 @@ final gamersTurnOrderStep = ScenarioStep(
   description: 'Определие порядок вручную или воспользуйтесь рандомайзером',
   contentBuilder: (data) => GamersTurnOrderScreen(data: data),
   validator: (data) {},
-  initialData: {},
 );
 
 final sessionStartStep = ScenarioStep(
@@ -53,7 +62,17 @@ final sessionStartStep = ScenarioStep(
       throw Exception('Запустите сессию');
     }
   },
-  initialData: {},
+);
+
+final roundsStep = ScenarioStep(
+  title: 'Подсчёт между раундами',
+  description: 'Заполните результаты',
+  contentBuilder: (data) => ScoreRoundScreen(data: data),
+  validator: (data) {
+    if (data['round'] != data['totalRounds']) {
+      throw Exception('Нужно завершить все раунды');
+    }
+  },
 );
 
 final sessionStopStep = ScenarioStep(
@@ -65,7 +84,6 @@ final sessionStopStep = ScenarioStep(
       throw Exception('Остановите сессию');
     }
   },
-  initialData: {},
 );
 
 final oneWinnerSelectStep = ScenarioStep(
@@ -81,7 +99,6 @@ final oneWinnerSelectStep = ScenarioStep(
       throw Exception('Выберите победителя');
     }
   },
-  initialData: {},
 );
 
 final soloResultStep = ScenarioStep(
@@ -89,7 +106,6 @@ final soloResultStep = ScenarioStep(
   description: 'Отметьте результаты партии',
   contentBuilder: (data) => SoloResultScreen(data: data),
   validator: (data) {},
-  initialData: {},
 );
 
 final coopResultStep = ScenarioStep(
@@ -97,7 +113,6 @@ final coopResultStep = ScenarioStep(
   description: 'Отметьте результаты партии',
   contentBuilder: (data) => CoopResultScreen(data: data),
   validator: (data) {},
-  initialData: {},
 );
 
 final scoreInputStep = ScenarioStep(
@@ -111,7 +126,6 @@ final scoreInputStep = ScenarioStep(
       }
     }
   },
-  initialData: {},
 );
 
 final resultStep = ScenarioStep(
@@ -120,7 +134,6 @@ final resultStep = ScenarioStep(
       'Итоги партии. Если в игре есть возможность альтернативной победы - определите места.',
   contentBuilder: (data) => ResultScreen(data: data),
   validator: (data) {},
-  initialData: {},
 );
 
 final finalStep = ScenarioStep(
@@ -128,5 +141,4 @@ final finalStep = ScenarioStep(
   description: 'Можете добавить кооментарий к партии',
   contentBuilder: (data) => FinalScreen(data: data),
   validator: (data) {},
-  initialData: {},
 );

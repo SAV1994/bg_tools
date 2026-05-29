@@ -7,6 +7,25 @@ import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/utils/win_toggle_btn_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
+enum _SelectMode {
+  max(1),
+  min(2),
+  sum(3),
+  multiple(4);
+
+  final int id;
+
+  const _SelectMode(this.id);
+
+  // Получить enum по id
+  static _SelectMode fromId(int id) {
+    return _SelectMode.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => _SelectMode.sum,
+    );
+  }
+}
+
 class CoopResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
 
@@ -17,6 +36,7 @@ class CoopResultScreen extends ConsumerStatefulWidget {
 }
 
 class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
+  _SelectMode _mode = _SelectMode.sum;
   bool _isVictory = false;
   // Контроллеры
   final Map<int, dynamic> _scoreControllers = {};
@@ -32,6 +52,12 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   }
 
   Future<void> _loadData() async {
+    if (widget.data['resulScreenMode'] == null) {
+      widget.data['resulScreenMode'] = _mode.id;
+    } else {
+      _mode = _SelectMode.fromId(widget.data['resulScreenMode']);
+    }
+
     List<Map<String, dynamic>> gamersData = widget.data['gamers']
         .cast<Map<String, dynamic>>();
     for (final Map<String, dynamic> gamerData in gamersData) {
@@ -41,11 +67,10 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
           text: gamerData['score']?.toString() ?? '',
         ),
       };
-      if (gamerData['score'] != null) {
-        _totalScore += gamerData['score'] as int;
-      }
     }
     _isVictory = gamersData[0]['place'] == 1;
+
+    _updateTotalScore();
 
     setState(() => _isLoading = false);
   }
@@ -60,17 +85,51 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   }
 
   void _updateScore(int gamerId, String value) {
-    int totalScore = 0;
     final newScore = int.tryParse(value);
     for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
       if (gamerData['id'] == gamerId) {
         gamerData['score'] = newScore;
       }
-      if (gamerData['score'] != null) {
-        totalScore += gamerData['score'] as int;
+
+      _updateTotalScore();
+
+      setState(() {});
+    }
+  }
+
+  void _updateTotalScore() {
+    bool isFirst = true;
+    _totalScore = (_mode == _SelectMode.multiple) ? 1 : 0;
+    for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
+      final int score = gamerData['score'] ?? 0;
+      if (_mode == _SelectMode.max) {
+        if (score > _totalScore) {
+          _totalScore = score;
+        }
+      } else if (_mode == _SelectMode.min) {
+        if (score < _totalScore) {
+          _totalScore = score;
+        }
+
+        if (isFirst) {
+          _totalScore = score;
+          isFirst = false;
+        }
+      } else if (_mode == _SelectMode.sum) {
+        _totalScore += score;
+      } else if (_mode == _SelectMode.multiple) {
+        _totalScore *= score;
       }
     }
-    _totalScore = totalScore;
+
+    widget.data['generalScore'] = _totalScore;
+  }
+
+  void _toggleMode(Set<_SelectMode> selection) {
+    _mode = selection.first;
+    widget.data['resulScreenMode'] = _mode.id;
+
+    _updateTotalScore();
 
     setState(() {});
   }
@@ -149,6 +208,35 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
                       children: [
+                        // Кнопка переключения режима
+                        SegmentedButton<_SelectMode>(
+                          segments: const [
+                            ButtonSegment(
+                              value: _SelectMode.sum,
+                              label: Text('+'),
+                              icon: Icon(Icons.radio_button_unchecked),
+                            ),
+                            ButtonSegment(
+                              value: _SelectMode.multiple,
+                              label: Text('x'),
+                              icon: Icon(Icons.check_box_outline_blank),
+                            ),
+                            ButtonSegment(
+                              value: _SelectMode.max,
+                              label: Text('MAX'),
+                              icon: Icon(Icons.check_box_outline_blank),
+                            ),
+                            ButtonSegment(
+                              value: _SelectMode.min,
+                              label: Text('MIN'),
+                              icon: Icon(Icons.check_box_outline_blank),
+                            ),
+                          ],
+                          selected: {_mode},
+                          onSelectionChanged: (Set<_SelectMode> selection) {
+                            _toggleMode(selection);
+                          },
+                        ),
                         // Список игроков
                         if (widget.data['resultType'] !=
                             ResultTypeEnum.condition.id)
@@ -164,6 +252,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                                 gamerId,
                                 _scoreControllers[gamerId],
                                 true,
+                                false,
                                 _updateScore,
                               );
                             },

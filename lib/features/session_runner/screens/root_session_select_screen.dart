@@ -61,22 +61,25 @@ class _RootSessionSelectScreenState
               children: _isLoading
                   ? [buildLoadingScreen()]
                   : [
-                      SelectWithSearch<GamingSession>(
-                        label: 'Первая сессия серии',
-                        items: _gamingSessions,
-                        selectedItem: _selectedGamingSession,
-                        onSelectionChanged: (gamingSession) {
-                          widget.data['rootSessionId'] = gamingSession?.id;
-                          setState(() {
-                            _selectedGamingSession = gamingSession;
-                          });
-                        },
-                        displayName: (gamingSession) =>
-                            '${DateFormats.formatDate(gamingSession.startedAt)} (${gamingSession.comment ?? emptyVal})',
-                        getId: (template) => template.id,
-                        searchHint: 'Поиск сессии...',
-                        isRequired: false,
-                        placeholder: 'Не выбрана',
+                      Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: SelectWithSearch<GamingSession>(
+                          label: 'Первая сессия серии',
+                          items: _gamingSessions,
+                          selectedItem: _selectedGamingSession,
+                          onSelectionChanged: (gamingSession) {
+                            widget.data['rootSessionId'] = gamingSession?.id;
+                            setState(() {
+                              _selectedGamingSession = gamingSession;
+                            });
+                          },
+                          displayName: (gamingSession) =>
+                              '${DateFormats.formatDate(gamingSession.startedAt)} (${gamingSession.comment ?? emptyVal})',
+                          getId: (template) => template.id,
+                          searchHint: 'Поиск сессии...',
+                          isRequired: false,
+                          placeholder: 'Не выбрана',
+                        ),
                       ),
                     ],
             ),

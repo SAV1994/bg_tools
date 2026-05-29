@@ -45,6 +45,23 @@ class WPScenario {
   );
 }
 
+// Распределение по местам с ПО + раунды
+class RoundsScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberRoundsStep,
+      gamersSelectStep,
+      sessionStartStep,
+      roundsStep,
+      sessionStopStep,
+      scoreInputStep,
+      resultStep,
+      finalStep,
+    ],
+  );
+}
+
 // Распределение по местам с ПО (есть порядок ходов)
 class WPFPScenario {
   static Scenario get scenario => Scenario(
@@ -53,6 +70,24 @@ class WPFPScenario {
       gamersSelectStep,
       gamersTurnOrderStep,
       sessionStartStep,
+      sessionStopStep,
+      scoreInputStep,
+      resultStep,
+      finalStep,
+    ],
+  );
+}
+
+// Распределение по местам с ПО (есть порядок ходов) + раунды
+class RoundsFPScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberRoundsStep,
+      gamersSelectStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      roundsStep,
       sessionStopStep,
       scoreInputStep,
       resultStep,
@@ -104,6 +139,22 @@ class SoloScenario {
   );
 }
 
+// Соло + раунды
+class SoloRoundsScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberRoundsStep,
+      gamersSelectStep,
+      sessionStartStep,
+      roundsStep,
+      sessionStopStep,
+      soloResultStep,
+      finalStep,
+    ],
+  );
+}
+
 // Кооп
 class CoopScenario {
   static Scenario get scenario => Scenario(
@@ -111,6 +162,22 @@ class CoopScenario {
       rootSessionSelectStep,
       gamersSelectStep,
       sessionStartStep,
+      sessionStopStep,
+      coopResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// Кооп + раунды
+class CoopRoundsScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberRoundsStep,
+      gamersSelectStep,
+      sessionStartStep,
+      roundsStep,
       sessionStopStep,
       coopResultStep,
       finalStep,
@@ -126,6 +193,23 @@ class CoopFPScenario {
       gamersSelectStep,
       gamersTurnOrderStep,
       sessionStartStep,
+      sessionStopStep,
+      coopResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// Кооп (есть порядок ходов) + раунды
+class CoopRoundsFPScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberRoundsStep,
+      gamersSelectStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      roundsStep,
       sessionStopStep,
       coopResultStep,
       finalStep,

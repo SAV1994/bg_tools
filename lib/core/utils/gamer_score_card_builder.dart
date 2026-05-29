@@ -7,6 +7,7 @@ Widget buildGamerInputCard(
   int gamerId,
   Map<String, dynamic> controllerData,
   bool addCalcBtn,
+  bool digitsOnly,
   Function updateScore,
 ) {
   return Card(
@@ -88,7 +89,9 @@ Widget buildGamerInputCard(
                     fontWeight: FontWeight.bold,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+                    (digitsOnly)
+                        ? FilteringTextInputFormatter.digitsOnly
+                        : FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
                   ],
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(

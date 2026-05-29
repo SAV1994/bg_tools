@@ -1,12 +1,14 @@
-import 'package:bg_tools/core/app_data.dart';
-import 'package:bg_tools/core/providers/data_providers.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 
 class FinalScreen extends ConsumerStatefulWidget {
@@ -32,7 +34,13 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
         startedAt: Value(DateTime.parse(widget.data['startedAt'])),
         finishedAt: Value(DateTime.parse(widget.data['finishedAt'])),
         comment: Value(_commentController.text),
+        gameType: Value(widget.data['type']),
         rootSessionId: Value(widget.data['rootSessionId']),
+        data: Value(
+          (widget.data['generalScore'] != null)
+              ? jsonEncode({'generalScore': widget.data['generalScore']})
+              : null,
+        ),
       );
       final List<GamingSessionGamerData?> gamersData = [];
       for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
@@ -43,7 +51,11 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
           place: gamerData['place'],
           turnOrder: gamerData['turnOrder'],
           team: gamerData['team'],
+          data: (gamerData['scoreByrounds'].isNotEmpty)
+              ? {'scoreByrounds': gamerData['scoreByrounds']}
+              : null,
         );
+
         gamersData.add(gamingSessionGamerData);
       }
 
@@ -83,30 +95,33 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return Form(
-          key: _formKey,
-          child: Column(
-            spacing: 20,
-            children: [
-              TextFormField(
-                controller: _commentController,
-                decoration: InputDecoration(
-                  labelText: 'Комментарий',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 6,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _submitForm,
-                      child: Text('Сохранить'),
-                    ),
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              spacing: 20,
+              children: [
+                TextFormField(
+                  controller: _commentController,
+                  decoration: InputDecoration(
+                    labelText: 'Комментарий',
+                    border: OutlineInputBorder(),
                   ),
-                ],
-              ),
-            ],
+                  maxLines: 6,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _submitForm,
+                        child: Text('Сохранить'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
