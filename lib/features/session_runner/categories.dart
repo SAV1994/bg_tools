@@ -84,7 +84,34 @@ enum ResultTypeEnum {
   }
 }
 
-// 4 Тип игровых очков (Что нужно для победы?)
+// 4 Тип игровых очков при командной игре
+enum TeamPointTypeEnum {
+  personal(1, 'Личные очков'),
+  general(2, 'Общие очков');
+
+  final int id;
+  final String label;
+
+  const TeamPointTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static TeamPointTypeEnum fromId(int id) {
+    return TeamPointTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => TeamPointTypeEnum.personal,
+    );
+  }
+
+  // Получить enum по названию
+  static TeamPointTypeEnum fromLabel(String label) {
+    return TeamPointTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => TeamPointTypeEnum.personal,
+    );
+  }
+}
+
+// 5 Тип игровых очков (Что нужно для победы?)
 enum PointTypeEnum {
   max(1, 'Максимум очков'),
   min(2, 'Минимум очков');
@@ -111,7 +138,7 @@ enum PointTypeEnum {
   }
 }
 
-// 5
+// 6 Алтернативные условия победы
 enum AltVictoryTypeEnum {
   yes(1, 'есть'),
   no(2, 'нет');
@@ -138,9 +165,9 @@ enum AltVictoryTypeEnum {
   }
 }
 
-// 6 Определение первого игрока между раундами
+// 7 Определение первого игрока между раундами
 enum FirstPlayerRoundTypeEnum {
-  queue(1, 'По часовой стрелке'),
+  queue(1, 'Следующий по часовой стрелке'),
   leader(2, 'Победитель ходит первым'),
   loser(3, 'Проигравший ходит первым'),
   leaderNext(4, 'Cледующий за победителем'),
@@ -156,6 +183,33 @@ enum FirstPlayerRoundTypeEnum {
     return FirstPlayerRoundTypeEnum.values.firstWhere(
       (e) => e.id == id,
       orElse: () => FirstPlayerRoundTypeEnum.queue,
+    );
+  }
+
+  // Получить enum по названию
+  static FirstPlayerRoundTypeEnum fromLabel(String label) {
+    return FirstPlayerRoundTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => FirstPlayerRoundTypeEnum.queue,
+    );
+  }
+}
+
+// 8 Тип последовательности ходов игроков
+enum SequencePlayersMovesTypeEnum {
+  clockwise(1, 'По часовой стрелке'),
+  random(2, 'Вразнобой');
+
+  final int id;
+  final String label;
+
+  const SequencePlayersMovesTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static SequencePlayersMovesTypeEnum fromId(int id) {
+    return SequencePlayersMovesTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => SequencePlayersMovesTypeEnum.clockwise,
     );
   }
 

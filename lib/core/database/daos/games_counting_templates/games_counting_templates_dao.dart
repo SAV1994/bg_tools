@@ -136,8 +136,10 @@ class GamesCountingTemplatesDao extends DatabaseAccessor<AppDatabase>
   // Cписок шаблонов партии игры (поток)
   Stream<List<GamesCountingTemplatesData>> watchAll(int gameId) {
     final query = _getQuery(gameId);
-    List<GamesCountingTemplatesData> result = [];
+
     return query.watch().asyncMap((rows) async {
+      List<GamesCountingTemplatesData> result = [];
+
       for (final row in rows) {
         final GamesCountingTemplate gamesCountingTemplate = row.readTable(
           gamesCountingTemplates,

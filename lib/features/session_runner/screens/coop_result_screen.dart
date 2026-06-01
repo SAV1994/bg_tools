@@ -208,35 +208,43 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
                       children: [
-                        // Кнопка переключения режима
-                        SegmentedButton<_SelectMode>(
-                          segments: const [
-                            ButtonSegment(
-                              value: _SelectMode.sum,
-                              label: Text('+'),
-                              icon: Icon(Icons.radio_button_unchecked),
-                            ),
-                            ButtonSegment(
-                              value: _SelectMode.multiple,
-                              label: Text('x'),
-                              icon: Icon(Icons.check_box_outline_blank),
-                            ),
-                            ButtonSegment(
-                              value: _SelectMode.max,
-                              label: Text('MAX'),
-                              icon: Icon(Icons.check_box_outline_blank),
-                            ),
-                            ButtonSegment(
-                              value: _SelectMode.min,
-                              label: Text('MIN'),
-                              icon: Icon(Icons.check_box_outline_blank),
-                            ),
-                          ],
-                          selected: {_mode},
-                          onSelectionChanged: (Set<_SelectMode> selection) {
-                            _toggleMode(selection);
-                          },
-                        ),
+                        if (widget.data['resultType'] !=
+                            ResultTypeEnum.condition.id)
+                          // Кнопка переключения режима
+                          SegmentedButton<_SelectMode>(
+                            segments: const [
+                              ButtonSegment(
+                                value: _SelectMode.sum,
+                                label: Text('+'),
+                                icon: Icon(Icons.radio_button_unchecked),
+                              ),
+                              ButtonSegment(
+                                value: _SelectMode.multiple,
+                                label: Text('x'),
+                                icon: Icon(Icons.check_box_outline_blank),
+                              ),
+                              ButtonSegment(
+                                value: _SelectMode.max,
+                                label: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text('MAX'),
+                                ),
+                                icon: Icon(Icons.check_box_outline_blank),
+                              ),
+                              ButtonSegment(
+                                value: _SelectMode.min,
+                                label: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text('MIN'),
+                                ),
+                                icon: Icon(Icons.check_box_outline_blank),
+                              ),
+                            ],
+                            selected: {_mode},
+                            onSelectionChanged: (Set<_SelectMode> selection) {
+                              _toggleMode(selection);
+                            },
+                          ),
                         // Список игроков
                         if (widget.data['resultType'] !=
                             ResultTypeEnum.condition.id)

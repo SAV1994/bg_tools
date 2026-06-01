@@ -213,7 +213,8 @@ class _NoScoreResultScreenState extends ConsumerState<ResultScreen> {
           spacing: 8,
           children: [
             // Drag handle
-            if (widget.data['altVictoryType'] == AltVictoryTypeEnum.yes.id)
+            if (widget.data['altVictoryType'] == AltVictoryTypeEnum.yes.id ||
+                widget.data['resultType'] == ResultTypeEnum.condition.id)
               ReorderableDragStartListener(
                 index: index,
                 child: Icon(Icons.drag_handle, color: Colors.grey),

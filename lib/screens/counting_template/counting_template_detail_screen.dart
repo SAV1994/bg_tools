@@ -153,6 +153,14 @@ class _CountingTemplateDetailScreenState
                                     : null,
                               ),
                               _buildInfoRow(
+                                'Тип игровых очков при командной игре',
+                                templateData['teamPointType'] != null
+                                    ? TeamPointTypeEnum.fromId(
+                                        templateData['teamPointType'],
+                                      ).label
+                                    : null,
+                              ),
+                              _buildInfoRow(
                                 'Тип определения результативности',
                                 templateData['resultType'] != null
                                     ? ResultTypeEnum.fromId(
@@ -181,6 +189,14 @@ class _CountingTemplateDetailScreenState
                                 templateData['firstPlayerRoundType'] != null
                                     ? FirstPlayerRoundTypeEnum.fromId(
                                         templateData['firstPlayerRoundType'],
+                                      ).label
+                                    : null,
+                              ),
+                              _buildInfoRow(
+                                'Тип последовательности ходов игроков',
+                                templateData['sequencePlayersMovesType'] != null
+                                    ? SequencePlayersMovesTypeEnum.fromId(
+                                        templateData['sequencePlayersMovesType'],
                                       ).label
                                     : null,
                               ),

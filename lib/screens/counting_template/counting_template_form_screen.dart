@@ -33,14 +33,18 @@ class _CountingTemplateFormFormState
   GameTypeEnum? _selectedGameType;
   FirstPlayerStartTypeEnum? _selectedFirstPlayerStartType;
   ResultTypeEnum? _selectedResultType;
+  TeamPointTypeEnum? _selectedTeamPointType;
   PointTypeEnum? _selectedPointType;
   AltVictoryTypeEnum? _selectedAltVictoryType;
   FirstPlayerRoundTypeEnum? _selectedFirstPlayerRoundType;
+  SequencePlayersMovesTypeEnum? _selectedSequencePlayersMovesType;
   // Состояния для отображения селектов
   bool _showFirstPlayerStartType = false;
   bool _showPointType = false;
+  bool _showTeamPointType = false;
   bool _showAltVictoryType = false;
   bool _showFirstPlayerRoundType = false;
+  bool _showSequencePlayersMovesType = false;
   // Загрузка
   bool _isLoading = false;
 
@@ -71,6 +75,9 @@ class _CountingTemplateFormFormState
       _selectedResultType = templateData['resultType'] != null
           ? ResultTypeEnum.fromId(templateData['resultType'])
           : null;
+      _selectedTeamPointType = templateData['teamPointType'] != null
+          ? TeamPointTypeEnum.fromId(templateData['teamPointType'])
+          : null;
       _selectedPointType = templateData['pointType'] != null
           ? PointTypeEnum.fromId(templateData['pointType'])
           : null;
@@ -81,6 +88,12 @@ class _CountingTemplateFormFormState
           templateData['firstPlayerRoundType'] != null
           ? FirstPlayerRoundTypeEnum.fromId(
               templateData['firstPlayerRoundType'],
+            )
+          : null;
+      _selectedSequencePlayersMovesType =
+          templateData['sequencePlayersMovesType'] != null
+          ? SequencePlayersMovesTypeEnum.fromId(
+              templateData['sequencePlayersMovesType'],
             )
           : null;
     }
@@ -95,10 +108,14 @@ class _CountingTemplateFormFormState
   void _updateSelectorsVisibility() {
     _showFirstPlayerStartType =
         _selectedGameType != null && _selectedGameType != GameTypeEnum.solo;
+    _showTeamPointType =
+        _selectedGameType != null &&
+        [GameTypeEnum.team, GameTypeEnum.coop].contains(_selectedGameType) &&
+        _selectedResultType != null &&
+        _selectedResultType != ResultTypeEnum.condition;
     _showPointType =
         _selectedResultType != null &&
-        _selectedResultType != ResultTypeEnum.condition &&
-        _selectedGameType != GameTypeEnum.solo;
+        _selectedResultType != ResultTypeEnum.condition;
     _showAltVictoryType =
         _selectedResultType != null &&
         _selectedResultType != ResultTypeEnum.condition &&
@@ -107,6 +124,13 @@ class _CountingTemplateFormFormState
         _selectedResultType != null &&
         _selectedResultType == ResultTypeEnum.round &&
         _selectedGameType != GameTypeEnum.solo;
+    _showSequencePlayersMovesType =
+        _selectedFirstPlayerRoundType != null &&
+        [
+          FirstPlayerRoundTypeEnum.leader,
+          FirstPlayerRoundTypeEnum.loser,
+          FirstPlayerRoundTypeEnum.leaderNext,
+        ].contains(_selectedFirstPlayerRoundType);
 
     setState(() {});
   }
@@ -136,6 +160,14 @@ class _CountingTemplateFormFormState
       );
       return;
     }
+    if (_showTeamPointType && _selectedTeamPointType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Выберите тип игровых очков при командной игре'),
+        ),
+      );
+      return;
+    }
     if (_showPointType && _selectedPointType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Выберите тип игровых очков')),
@@ -158,15 +190,26 @@ class _CountingTemplateFormFormState
       );
       return;
     }
+    if (_showSequencePlayersMovesType &&
+        _selectedSequencePlayersMovesType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Выберите тип последовательности ходов игроков'),
+        ),
+      );
+      return;
+    }
 
     final templateDao = ref.read(countingTemplateDaoProvider);
     final Map<String, dynamic> templateData = {
       'gameType': _selectedGameType!.id,
       'firstPlayerStartType': _selectedFirstPlayerStartType?.id,
       'resultType': _selectedResultType!.id,
+      'teamPointType': _selectedTeamPointType?.id,
       'pointType': _selectedPointType?.id,
       'altVictoryType': _selectedAltVictoryType?.id,
       'firstPlayerRoundType': _selectedFirstPlayerRoundType?.id,
+      'sequencePlayersMovesType': _selectedSequencePlayersMovesType?.id,
       'score_calc': null,
     };
     final CountingTemplatesCompanion templateCompanion =
@@ -196,9 +239,11 @@ class _CountingTemplateFormFormState
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
@@ -266,6 +311,15 @@ class _CountingTemplateFormFormState
                           // Сбрасываем зависимые поля
                           if (value == GameTypeEnum.solo) {
                             _selectedFirstPlayerStartType = null;
+                            _selectedFirstPlayerRoundType = null;
+                            _selectedSequencePlayersMovesType = null;
+                            _selectedAltVictoryType = null;
+                          }
+                          if (![
+                            GameTypeEnum.coop,
+                            GameTypeEnum.team,
+                          ].contains(value)) {
+                            _selectedTeamPointType = null;
                           }
                         });
 
@@ -309,15 +363,36 @@ class _CountingTemplateFormFormState
                           if (value == ResultTypeEnum.condition) {
                             _selectedPointType = null;
                             _selectedAltVictoryType = null;
+                            _selectedTeamPointType = null;
                           }
                           if (value != ResultTypeEnum.round) {
                             _selectedFirstPlayerRoundType = null;
+                            _selectedSequencePlayersMovesType = null;
                           }
                         });
 
                         _updateSelectorsVisibility();
                       },
                     ),
+                    if (_showTeamPointType) ...[
+                      EnumSelector(
+                        label: 'Тип игровых очков при командной игре *',
+                        choices: TeamPointTypeEnum.values.map((val) {
+                          return DropdownMenuItem(
+                            value: val,
+                            child: Row(children: [Text(val.label)]),
+                          );
+                        }),
+                        selected: _selectedTeamPointType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedTeamPointType = (value != null)
+                                ? value as TeamPointTypeEnum
+                                : null;
+                          });
+                        },
+                      ),
+                    ],
                     if (_showPointType) ...[
                       EnumSelector(
                         label: 'Тип игровых очков *',
@@ -370,6 +445,34 @@ class _CountingTemplateFormFormState
                           setState(() {
                             _selectedFirstPlayerRoundType = (value != null)
                                 ? value as FirstPlayerRoundTypeEnum
+                                : null;
+                          });
+
+                          if ([
+                            FirstPlayerRoundTypeEnum.queue,
+                            FirstPlayerRoundTypeEnum.manually,
+                          ].contains(value)) {
+                            _selectedSequencePlayersMovesType = null;
+                          }
+
+                          _updateSelectorsVisibility();
+                        },
+                      ),
+                    ],
+                    if (_showSequencePlayersMovesType) ...[
+                      EnumSelector(
+                        label: 'Тип последовательности ходов игроков *',
+                        choices: SequencePlayersMovesTypeEnum.values.map((val) {
+                          return DropdownMenuItem(
+                            value: val,
+                            child: Row(children: [Text(val.label)]),
+                          );
+                        }),
+                        selected: _selectedSequencePlayersMovesType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedSequencePlayersMovesType = (value != null)
+                                ? value as SequencePlayersMovesTypeEnum
                                 : null;
                           });
                         },

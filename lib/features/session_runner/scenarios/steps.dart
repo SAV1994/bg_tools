@@ -42,7 +42,7 @@ final gamersSelectStep = ScenarioStep(
         'team': null,
       });
     }
-    AppDataManager.saveLastSessionGamers(data['gamers']);
+    AppDataManager.saveLastSessionGamers(gamersData);
   },
 );
 

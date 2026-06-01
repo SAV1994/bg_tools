@@ -1,3 +1,4 @@
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/widgets/score_calc_modal.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class ScoreRoundScreen extends ConsumerStatefulWidget {
 }
 
 class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
+  String? _lastRoundFirstPlayer;
   // Контроллеры
   List<Map<String, dynamic>> _scoreControllers = [];
   // Загрузка
@@ -44,7 +46,11 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
     setState(() => _isLoading = false);
   }
 
-  void _nextRound() {
+  Future<void> _nextRound() async {
+    setState(() => _isLoading = true);
+
+    _lastRoundFirstPlayer = widget.data['gamers'][0]['username'];
+
     for (int i = 0; i < _scoreControllers.length; i++) {
       final Map<String, dynamic> controllerData = _scoreControllers[i];
       final Map<String, dynamic> gamerData = widget.data['gamers'][i];
@@ -59,7 +65,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
         gamerData['score'] = newScore;
       }
 
-      gamerData['scoreByrounds'].add(gamerData['score']);
+      gamerData['scoreByrounds'].add(newScore);
       controllerData['score'] = gamerData['score'];
     }
 
@@ -67,25 +73,81 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
 
     _sortByCondition();
 
-    setState(() {});
+    await AppDataManager.saveActiveSession(widget.data);
+
+    setState(() => _isLoading = false);
   }
 
   void _sortByCondition() {
     if (widget.data['firstPlayerRoundType'] ==
         FirstPlayerRoundTypeEnum.queue.id) {
-      _sortByQueueCondition();
+      _sortByClockwise(1);
     } else if (widget.data['firstPlayerRoundType'] ==
         FirstPlayerRoundTypeEnum.leader.id) {
       _sortByLeaderCondition();
     } else if (widget.data['firstPlayerRoundType'] ==
         FirstPlayerRoundTypeEnum.loser.id) {
+      if (widget.data['sequencePlayersMovesType'] ==
+          SequencePlayersMovesTypeEnum.random.id) {
+        widget.data['gamers'].sort((a, b) {
+          final scoreA = a['score'] as int? ?? 0;
+          final scoreB = b['score'] as int? ?? 0;
+          if (widget.data['pointType'] == PointTypeEnum.max.id) {
+            return scoreA.compareTo(scoreB);
+          } else {
+            return scoreB.compareTo(scoreA);
+          }
+        });
+
+        _scoreControllers.sort((a, b) {
+          final scoreA = a['score'] as int? ?? 0;
+          final scoreB = b['score'] as int? ?? 0;
+          if (widget.data['pointType'] == PointTypeEnum.max.id) {
+            return scoreA.compareTo(scoreB);
+          } else {
+            return scoreB.compareTo(scoreA);
+          }
+        });
+      } else {
+        final int loserIndex = widget.data['gamers'].asMap().entries.fold(
+          null,
+          (fixed, current) {
+            final int currentScore = current.value['score'] ?? 0;
+            final int fixedScore = fixed?.value['score'] ?? 0;
+
+            if (widget.data['pointType'] == PointTypeEnum.max.id) {
+              if (fixed == null || currentScore < fixedScore) {
+                return current;
+              }
+            } else {
+              if (fixed == null || currentScore > fixedScore) {
+                return current;
+              }
+            }
+
+            return fixed;
+          },
+        )?.key;
+
+        _sortByClockwise(loserIndex);
+      }
+    } else if (widget.data['firstPlayerRoundType'] ==
+        FirstPlayerRoundTypeEnum.leaderNext.id) {
+      _sortByLeaderCondition();
+      _sortByClockwise(1);
+    }
+  }
+
+  void _sortByLeaderCondition() {
+    if (widget.data['sequencePlayersMovesType'] ==
+        SequencePlayersMovesTypeEnum.random.id) {
       widget.data['gamers'].sort((a, b) {
         final scoreA = a['score'] as int? ?? 0;
         final scoreB = b['score'] as int? ?? 0;
         if (widget.data['pointType'] == PointTypeEnum.max.id) {
-          return scoreA.compareTo(scoreB);
-        } else {
           return scoreB.compareTo(scoreA);
+        } else {
+          return scoreA.compareTo(scoreB);
         }
       });
 
@@ -93,47 +155,44 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
         final scoreA = a['score'] as int? ?? 0;
         final scoreB = b['score'] as int? ?? 0;
         if (widget.data['pointType'] == PointTypeEnum.max.id) {
-          return scoreA.compareTo(scoreB);
-        } else {
           return scoreB.compareTo(scoreA);
+        } else {
+          return scoreA.compareTo(scoreB);
         }
       });
-    } else if (widget.data['firstPlayerRoundType'] ==
-        FirstPlayerRoundTypeEnum.leaderNext.id) {
-      _sortByLeaderCondition();
-      _sortByQueueCondition();
+    } else {
+      final int leaderIndex = widget.data['gamers'].asMap().entries.fold(null, (
+        fixed,
+        current,
+      ) {
+        final int currentScore = current.value['score'] ?? 0;
+        final int fixedScore = fixed?.value['score'] ?? 0;
+
+        if (widget.data['pointType'] == PointTypeEnum.max.id) {
+          if (fixed == null || currentScore > fixedScore) {
+            return current;
+          }
+        } else {
+          if (fixed == null || currentScore < fixedScore) {
+            return current;
+          }
+        }
+
+        return fixed;
+      })?.key;
+
+      _sortByClockwise(leaderIndex);
     }
   }
 
-  void _sortByLeaderCondition() {
-    widget.data['gamers'].sort((a, b) {
-      final scoreA = a['score'] as int? ?? 0;
-      final scoreB = b['score'] as int? ?? 0;
-      if (widget.data['pointType'] == PointTypeEnum.max.id) {
-        return scoreB.compareTo(scoreA);
-      } else {
-        return scoreA.compareTo(scoreB);
-      }
-    });
-
-    _scoreControllers.sort((a, b) {
-      final scoreA = a['score'] as int? ?? 0;
-      final scoreB = b['score'] as int? ?? 0;
-      if (widget.data['pointType'] == PointTypeEnum.max.id) {
-        return scoreB.compareTo(scoreA);
-      } else {
-        return scoreA.compareTo(scoreB);
-      }
-    });
-  }
-
-  void _sortByQueueCondition() {
+  void _sortByClockwise(int index) {
     final List<dynamic> reorderGamers =
-        widget.data['gamers'].sublist(1) + widget.data['gamers'].sublist(0, 1);
+        widget.data['gamers'].sublist(index) +
+        widget.data['gamers'].sublist(0, index);
     widget.data['gamers'] = reorderGamers;
 
     final List<dynamic> reorderControllers =
-        _scoreControllers.sublist(1) + _scoreControllers.sublist(0, 1);
+        _scoreControllers.sublist(index) + _scoreControllers.sublist(0, index);
     _scoreControllers = reorderControllers as List<Map<String, dynamic>>;
   }
 
@@ -289,6 +348,14 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                     padding: const EdgeInsets.all(5.0),
                     child: Column(
                       children: [
+                        if (_lastRoundFirstPlayer != null)
+                          Text(
+                            'Предыдущий раунд ходил первым: $_lastRoundFirstPlayer',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         Text(
                           (widget.data['round'] < widget.data['totalRounds'])
                               ? 'Раунд ${widget.data['round'] + 1} из ${widget.data['totalRounds']}'

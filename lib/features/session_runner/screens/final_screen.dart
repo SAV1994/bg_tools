@@ -29,6 +29,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
     if (_formKey.currentState!.validate()) {
       final gamingSessionDao = ref.read(gamingSessionDaoProvider);
       final gamerDao = ref.read(gamerDaoProvider);
+      final Map<String, dynamic>? sessionData = _getSessionData();
       final gamingSessionComp = GamingSessionsCompanion(
         gameId: Value(widget.data['gameId']),
         startedAt: Value(DateTime.parse(widget.data['startedAt'])),
@@ -36,11 +37,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
         comment: Value(_commentController.text),
         gameType: Value(widget.data['type']),
         rootSessionId: Value(widget.data['rootSessionId']),
-        data: Value(
-          (widget.data['generalScore'] != null)
-              ? jsonEncode({'generalScore': widget.data['generalScore']})
-              : null,
-        ),
+        data: Value((sessionData != null) ? jsonEncode(sessionData) : null),
       );
       final List<GamingSessionGamerData?> gamersData = [];
       for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
@@ -83,6 +80,18 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
         );
       }
     }
+  }
+
+  Map<String, dynamic>? _getSessionData() {
+    final Map<String, dynamic> data = {};
+    if (widget.data['generalScore'] != null) {
+      data['generalScore'] = widget.data['generalScore'];
+    }
+    if (widget.data['pointType'] != null) {
+      data['pointType'] = widget.data['pointType'];
+    }
+
+    return (data.isNotEmpty) ? data : null;
   }
 
   @override

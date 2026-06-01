@@ -15,13 +15,16 @@ Future<void> initSessionData(
   );
 
   sessionData['type'] = countingTemplateData['gameType'];
-  sessionData['resultType'] = countingTemplateData['resultType'];
   sessionData['firstPlayerStartType'] =
       countingTemplateData['firstPlayerStartType'];
+  sessionData['resultType'] = countingTemplateData['resultType'];
+  sessionData['teamPointType'] = countingTemplateData['teamPointType'];
   sessionData['pointType'] = countingTemplateData['pointType'];
   sessionData['altVictoryType'] = countingTemplateData['altVictoryType'];
   sessionData['firstPlayerRoundType'] =
       countingTemplateData['firstPlayerRoundType'];
+  sessionData['sequencePlayersMovesType'] =
+      countingTemplateData['sequencePlayersMovesType'];
 
   final String selector =
       '${sessionData['type']}.${sessionData['firstPlayerStartType'] ?? 0}.'
