@@ -7,7 +7,7 @@ import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/add_gamer_modal_form_builder.dart';
-import 'package:bg_tools/core/utils/gamer_fio_builder.dart';
+import 'package:bg_tools/core/utils/gamer_session_data_getter.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
@@ -54,8 +54,19 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
 
     // Показываем диалог игрока
     buildAddGamerModal(context, notSelectedGamers, (gamer) {
-      widget.data['gamers'].add(getGamerData(gamer));
-      setState(() {});
+      setState(() {
+        widget.data['gamers'].add(
+          getGamerData(
+            gamer,
+            ([
+                  GameTypeEnum.solo.id,
+                  GameTypeEnum.coop.id,
+                ].contains(widget.data['type']))
+                ? TeamsEnum.red.id
+                : null,
+          ),
+        );
+      });
     });
   }
 
@@ -101,25 +112,6 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
     for (final entry in widget.data['gamers'].asMap().entries) {
       entry.value['turnOrder'] = entry.key + 1;
     }
-  }
-
-  Map<String, dynamic> getGamerData(Gamer gamer) {
-    return {
-      'id': gamer.id,
-      'username': gamer.username,
-      'fio': getGamerFio(gamer),
-      'score': null,
-      'scoreByrounds': [],
-      'place': null,
-      'turnOrder': null,
-      'team':
-          ([
-            GameTypeEnum.solo.id,
-            GameTypeEnum.coop.id,
-          ].contains(widget.data['type']))
-          ? TeamsEnum.red.id
-          : null,
-    };
   }
 
   @override

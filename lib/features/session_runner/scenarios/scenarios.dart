@@ -50,6 +50,8 @@ class RoundsScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
+      // numberTeamsStep,
+      // teamManagementStep,
       numberRoundsStep,
       gamersSelectStep,
       sessionStartStep,

@@ -123,14 +123,18 @@ class _CountingTemplateFormFormState
     _showFirstPlayerRoundType =
         _selectedResultType != null &&
         _selectedResultType == ResultTypeEnum.round &&
-        _selectedGameType != GameTypeEnum.solo;
+        _selectedGameType != GameTypeEnum.solo &&
+        (_selectedTeamPointType == null ||
+            _selectedTeamPointType == TeamPointTypeEnum.personal);
     _showSequencePlayersMovesType =
         _selectedFirstPlayerRoundType != null &&
         [
           FirstPlayerRoundTypeEnum.leader,
           FirstPlayerRoundTypeEnum.loser,
           FirstPlayerRoundTypeEnum.leaderNext,
-        ].contains(_selectedFirstPlayerRoundType);
+        ].contains(_selectedFirstPlayerRoundType) &&
+        (_selectedTeamPointType == null ||
+            _selectedTeamPointType == TeamPointTypeEnum.personal);
 
     setState(() {});
   }
@@ -390,6 +394,14 @@ class _CountingTemplateFormFormState
                                 ? value as TeamPointTypeEnum
                                 : null;
                           });
+
+                          // Сбрасываем зависимые поля
+                          if (value == TeamPointTypeEnum.general) {
+                            _selectedFirstPlayerRoundType = null;
+                            _selectedSequencePlayersMovesType = null;
+                          }
+
+                          _updateSelectorsVisibility();
                         },
                       ),
                     ],

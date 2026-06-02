@@ -14,20 +14,20 @@ Future<void> initSessionData(
     gamesCountingTemplatesData.countingTemplate.data,
   );
 
-  sessionData['type'] = countingTemplateData['gameType'];
+  sessionData['type'] = countingTemplateData['gameType'] ?? 0;
   sessionData['firstPlayerStartType'] =
-      countingTemplateData['firstPlayerStartType'];
-  sessionData['resultType'] = countingTemplateData['resultType'];
-  sessionData['teamPointType'] = countingTemplateData['teamPointType'];
-  sessionData['pointType'] = countingTemplateData['pointType'];
-  sessionData['altVictoryType'] = countingTemplateData['altVictoryType'];
+      countingTemplateData['firstPlayerStartType'] ?? 0;
+  sessionData['resultType'] = countingTemplateData['resultType'] ?? 0;
+  sessionData['teamPointType'] = countingTemplateData['teamPointType'] ?? 0;
+  sessionData['pointType'] = countingTemplateData['pointType'] ?? 0;
+  sessionData['altVictoryType'] = countingTemplateData['altVictoryType'] ?? 0;
   sessionData['firstPlayerRoundType'] =
-      countingTemplateData['firstPlayerRoundType'];
+      countingTemplateData['firstPlayerRoundType'] ?? 0;
   sessionData['sequencePlayersMovesType'] =
-      countingTemplateData['sequencePlayersMovesType'];
+      countingTemplateData['sequencePlayersMovesType'] ?? 0;
 
   final String selector =
-      '${sessionData['type']}.${sessionData['firstPlayerStartType'] ?? 0}.'
+      '${sessionData['type']}.${sessionData['firstPlayerStartType']}.'
       '${sessionData['resultType']}';
   final Scenario scenario = scenarioMapping[selector];
   sessionData['selector'] = selector;

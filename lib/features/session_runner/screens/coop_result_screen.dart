@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,6 +40,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   _SelectMode _mode = _SelectMode.sum;
   bool _isVictory = false;
   // Контроллеры
+  late final TextEditingController _generalScoreController;
   final Map<int, dynamic> _scoreControllers = {};
   int _totalScore = 0;
   // Загрузка
@@ -52,25 +54,31 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   }
 
   Future<void> _loadData() async {
-    if (widget.data['resulScreenMode'] == null) {
-      widget.data['resulScreenMode'] = _mode.id;
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      _generalScoreController = TextEditingController(
+        text: widget.data['generalScore']?.toString(),
+      );
     } else {
-      _mode = _SelectMode.fromId(widget.data['resulScreenMode']);
-    }
+      if (widget.data['resulScreenMode'] == null) {
+        widget.data['resulScreenMode'] = _mode.id;
+      } else {
+        _mode = _SelectMode.fromId(widget.data['resulScreenMode']);
+      }
 
-    List<Map<String, dynamic>> gamersData = widget.data['gamers']
-        .cast<Map<String, dynamic>>();
-    for (final Map<String, dynamic> gamerData in gamersData) {
-      _scoreControllers[gamerData['id']] = {
-        'username': gamerData['username'],
-        'controller': TextEditingController(
-          text: gamerData['score']?.toString() ?? '',
-        ),
-      };
-    }
-    _isVictory = gamersData[0]['place'] == 1;
+      List<Map<String, dynamic>> gamersData = widget.data['gamers']
+          .cast<Map<String, dynamic>>();
+      for (final Map<String, dynamic> gamerData in gamersData) {
+        _scoreControllers[gamerData['id']] = {
+          'username': gamerData['username'],
+          'controller': TextEditingController(
+            text: gamerData['score']?.toString() ?? '',
+          ),
+        };
+      }
+      _isVictory = gamersData[0]['place'] == 1;
 
-    _updateTotalScore();
+      _updateTotalScore();
+    }
 
     setState(() => _isLoading = false);
   }
@@ -134,6 +142,141 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
     setState(() {});
   }
 
+  Widget _buildScrean() {
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              _isVictory ? Colors.green.shade200 : Colors.red.shade200,
+              Colors.white,
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            spacing: 20,
+            children: [
+              Text(
+                'Общий счёт',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              TextFormField(
+                controller: _generalScoreController,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+                ],
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(vertical: 8),
+                ),
+                onChanged: (value) {
+                  widget.data['generalScore'] = value;
+                },
+              ),
+
+              // Кнопка-переключатель Победа/Поражение
+              buildWinToggleBtn(_isVictory, _toggleResult),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            _isVictory ? Colors.green.shade200 : Colors.red.shade200,
+            Colors.white,
+          ],
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              if (widget.data['resultType'] != ResultTypeEnum.condition.id)
+                // Кнопка переключения режима
+                SegmentedButton<_SelectMode>(
+                  segments: const [
+                    ButtonSegment(
+                      value: _SelectMode.sum,
+                      label: Text('+'),
+                      icon: Icon(Icons.radio_button_unchecked),
+                    ),
+                    ButtonSegment(
+                      value: _SelectMode.multiple,
+                      label: Text('x'),
+                      icon: Icon(Icons.check_box_outline_blank),
+                    ),
+                    ButtonSegment(
+                      value: _SelectMode.max,
+                      label: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text('MAX'),
+                      ),
+                      icon: Icon(Icons.check_box_outline_blank),
+                    ),
+                    ButtonSegment(
+                      value: _SelectMode.min,
+                      label: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text('MIN'),
+                      ),
+                      icon: Icon(Icons.check_box_outline_blank),
+                    ),
+                  ],
+                  selected: {_mode},
+                  onSelectionChanged: (Set<_SelectMode> selection) {
+                    _toggleMode(selection);
+                  },
+                ),
+
+              // Карточка общей суммы
+              if (widget.data['resultType'] != ResultTypeEnum.condition.id)
+                _buildTotalScoreCard(),
+
+              // Список игроков
+              if (widget.data['resultType'] != ResultTypeEnum.condition.id)
+                ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: widget.data['gamers'].length,
+                  itemBuilder: (context, index) {
+                    final int gamerId = widget.data['gamers'][index]['id'];
+                    return buildGamerInputCard(
+                      context,
+                      gamerId,
+                      _scoreControllers[gamerId],
+                      true,
+                      false,
+                      _updateScore,
+                    );
+                  },
+                ),
+
+              // Кнопка-переключатель Победа/Поражение
+              buildWinToggleBtn(_isVictory, _toggleResult),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTotalScoreCard() {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -183,6 +326,9 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
         in _scoreControllers.values) {
       controllerData['controller'].dispose();
     }
+
+    _generalScoreController.clear();
+
     super.dispose();
   }
 
@@ -190,94 +336,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return _isLoading
-            ? buildLoadingScreen()
-            : Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      _isVictory ? Colors.green.shade200 : Colors.red.shade200,
-                      Colors.white,
-                    ],
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        if (widget.data['resultType'] !=
-                            ResultTypeEnum.condition.id)
-                          // Кнопка переключения режима
-                          SegmentedButton<_SelectMode>(
-                            segments: const [
-                              ButtonSegment(
-                                value: _SelectMode.sum,
-                                label: Text('+'),
-                                icon: Icon(Icons.radio_button_unchecked),
-                              ),
-                              ButtonSegment(
-                                value: _SelectMode.multiple,
-                                label: Text('x'),
-                                icon: Icon(Icons.check_box_outline_blank),
-                              ),
-                              ButtonSegment(
-                                value: _SelectMode.max,
-                                label: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text('MAX'),
-                                ),
-                                icon: Icon(Icons.check_box_outline_blank),
-                              ),
-                              ButtonSegment(
-                                value: _SelectMode.min,
-                                label: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text('MIN'),
-                                ),
-                                icon: Icon(Icons.check_box_outline_blank),
-                              ),
-                            ],
-                            selected: {_mode},
-                            onSelectionChanged: (Set<_SelectMode> selection) {
-                              _toggleMode(selection);
-                            },
-                          ),
-                        // Список игроков
-                        if (widget.data['resultType'] !=
-                            ResultTypeEnum.condition.id)
-                          ListView.builder(
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.all(16),
-                            itemCount: widget.data['gamers'].length,
-                            itemBuilder: (context, index) {
-                              final int gamerId =
-                                  widget.data['gamers'][index]['id'];
-                              return buildGamerInputCard(
-                                context,
-                                gamerId,
-                                _scoreControllers[gamerId],
-                                true,
-                                false,
-                                _updateScore,
-                              );
-                            },
-                          ),
-
-                        // Карточка общей суммы
-                        if (widget.data['resultType'] !=
-                            ResultTypeEnum.condition.id)
-                          _buildTotalScoreCard(),
-
-                        // Кнопка-переключатель Победа/Поражение
-                        buildWinToggleBtn(_isVictory, _toggleResult),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+        return _isLoading ? buildLoadingScreen() : _buildScrean();
       },
     );
   }

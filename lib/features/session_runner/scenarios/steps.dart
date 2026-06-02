@@ -21,6 +21,28 @@ final numberRoundsStep = ScenarioStep(
   },
 );
 
+final numberTeamsStep = ScenarioStep(
+  title: 'Количество команд',
+  description: 'Укажите количество команд',
+  contentBuilder: (data) => NumberTeamsScreen(data: data),
+  validator: (data) {
+    if (data['numberTeams'] == null) {
+      throw Exception('Укажите количкство команд');
+    }
+  },
+);
+
+final teamManagementStep = ScenarioStep(
+  title: 'Определение команд',
+  description: 'Распределите игроков между командами',
+  contentBuilder: (data) => TeamManagementScreen(data: data),
+  validator: (data) {
+    if (data['gamers'].isEmpty) {
+      throw Exception('Добавте игроков');
+    }
+  },
+);
+
 final gamersSelectStep = ScenarioStep(
   title: 'Игроки',
   description: 'Выбирать игроков лучше в том же порядке, как они сидят',
