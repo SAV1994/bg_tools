@@ -40,6 +40,14 @@ final teamManagementStep = ScenarioStep(
     if (data['gamers'].isEmpty) {
       throw Exception('Добавте игроков');
     }
+
+    Set<int> teamIds = {};
+    for (final Map<String, dynamic> gamerData in data['gamers']) {
+      teamIds.add(gamerData['team']);
+    }
+    if (data['numberTeams'] - teamIds.length > 0) {
+      throw Exception('Не все команды заполненны');
+    }
   },
 );
 

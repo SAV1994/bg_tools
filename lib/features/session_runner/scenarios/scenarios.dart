@@ -1,7 +1,7 @@
 import 'package:bg_tools/features/session_runner/scenarios/steps.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 
-// Распределение по местам
+// 1 Распределение по местам
 class WithoutWPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -15,7 +15,7 @@ class WithoutWPScenario {
   );
 }
 
-// Распределение по местам (есть порядок ходов)
+// 1 Распределение по местам (есть порядок ходов)
 class WithoutWPFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -30,7 +30,7 @@ class WithoutWPFPScenario {
   );
 }
 
-// Распределение по местам с ПО
+// 1 Распределение по местам с ПО
 class WPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -45,13 +45,11 @@ class WPScenario {
   );
 }
 
-// Распределение по местам с ПО + раунды
+// 1 Распределение по местам с ПО + раунды
 class RoundsScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
-      // numberTeamsStep,
-      // teamManagementStep,
       numberRoundsStep,
       gamersSelectStep,
       sessionStartStep,
@@ -64,7 +62,7 @@ class RoundsScenario {
   );
 }
 
-// Распределение по местам с ПО (есть порядок ходов)
+// 1 Распределение по местам с ПО (есть порядок ходов)
 class WPFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -80,7 +78,7 @@ class WPFPScenario {
   );
 }
 
-// Распределение по местам с ПО (есть порядок ходов) + раунды
+// 1 Распределение по местам с ПО (есть порядок ходов) + раунды
 class RoundsFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -98,7 +96,7 @@ class RoundsFPScenario {
   );
 }
 
-// Один победитель
+// 2 Один победитель
 class OneWinnerScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -112,7 +110,7 @@ class OneWinnerScenario {
   );
 }
 
-// Один победитель (есть порядок ходов)
+// 2 Один победитель (есть порядок ходов)
 class OneWinnerFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -127,37 +125,26 @@ class OneWinnerFPScenario {
   );
 }
 
-// Соло
-class SoloScenario {
-  static Scenario get scenario => Scenario(
-    steps: [
-      rootSessionSelectStep,
-      gamersSelectStep,
-      sessionStartStep,
-      sessionStopStep,
-      soloResultStep,
-      finalStep,
-    ],
-  );
-}
-
-// Соло + раунды
-class SoloRoundsScenario {
+// 3 Распределение по местам с ПО (есть порядок ходов) + раунды
+class TeamScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
       numberRoundsStep,
-      gamersSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      gamersTurnOrderStep,
       sessionStartStep,
       roundsStep,
       sessionStopStep,
-      soloResultStep,
+      scoreInputStep,
+      resultStep,
       finalStep,
     ],
   );
 }
 
-// Кооп
+// 4 Кооп
 class CoopScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -171,7 +158,7 @@ class CoopScenario {
   );
 }
 
-// Кооп + раунды
+// 4 Кооп + раунды
 class CoopRoundsScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -187,7 +174,7 @@ class CoopRoundsScenario {
   );
 }
 
-// Кооп (есть порядок ходов)
+// 4 Кооп (есть порядок ходов)
 class CoopFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -202,7 +189,7 @@ class CoopFPScenario {
   );
 }
 
-// Кооп (есть порядок ходов) + раунды
+// 4 Кооп (есть порядок ходов) + раунды
 class CoopRoundsFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -214,6 +201,36 @@ class CoopRoundsFPScenario {
       roundsStep,
       sessionStopStep,
       coopResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 5 Соло
+class SoloScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      sessionStartStep,
+      sessionStopStep,
+      soloResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 5 Соло + раунды
+class SoloRoundsScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberRoundsStep,
+      gamersSelectStep,
+      sessionStartStep,
+      roundsStep,
+      sessionStopStep,
+      soloResultStep,
       finalStep,
     ],
   );

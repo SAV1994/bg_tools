@@ -1,3 +1,4 @@
+import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -56,7 +57,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   Future<void> _loadData() async {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
       _generalScoreController = TextEditingController(
-        text: widget.data['generalScore']?.toString(),
+        text: widget.data['teamScores'][TeamsEnum.red.id]?.toString(),
       );
     } else {
       if (widget.data['resulScreenMode'] == null) {
@@ -130,7 +131,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
       }
     }
 
-    widget.data['generalScore'] = _totalScore;
+    widget.data['teamScores'][TeamsEnum.red.id] = _totalScore;
   }
 
   void _toggleMode(Set<_SelectMode> selection) {
@@ -180,7 +181,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                   contentPadding: EdgeInsets.symmetric(vertical: 8),
                 ),
                 onChanged: (value) {
-                  widget.data['generalScore'] = value;
+                  widget.data['teamScores'][TeamsEnum.red.id] = value;
                 },
               ),
 

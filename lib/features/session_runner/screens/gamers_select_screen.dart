@@ -54,18 +54,16 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
 
     // Показываем диалог игрока
     buildAddGamerModal(context, notSelectedGamers, (gamer) {
+      final Map<String, dynamic> gamerData = getGamerData(gamer);
+      if ([
+        GameTypeEnum.solo.id,
+        GameTypeEnum.coop.id,
+      ].contains(widget.data['type'])) {
+        gamerData['team'] = TeamsEnum.red.id;
+      }
+
       setState(() {
-        widget.data['gamers'].add(
-          getGamerData(
-            gamer,
-            ([
-                  GameTypeEnum.solo.id,
-                  GameTypeEnum.coop.id,
-                ].contains(widget.data['type']))
-                ? TeamsEnum.red.id
-                : null,
-          ),
-        );
+        widget.data['gamers'].add(gamerData);
       });
     });
   }

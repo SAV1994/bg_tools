@@ -52,7 +52,7 @@ const Map<String, dynamic> sessionInitialData = {
   'lastRoundFirstPlayer': null,
   'totalRounds': null,
 
-  'generalScore': null,
+  'teamScores': {},
 
   'resulScreenMode': null,
 };

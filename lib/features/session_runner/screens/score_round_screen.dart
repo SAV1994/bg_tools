@@ -1,12 +1,13 @@
-import 'package:bg_tools/core/app_data.dart';
-import 'package:bg_tools/core/widgets/score_calc_modal.dart';
-import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/score_calc_modal.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
 class ScoreRoundScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -35,9 +36,11 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
 
   Future<void> _loadData() async {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
-      _generalScoreController = TextEditingController(
-        text: widget.data['generalScore']?.toString(),
-      );
+      if (widget.data['type'] == GameTypeEnum.coop.id) {
+        _generalScoreController = TextEditingController(
+          text: widget.data['teamScores'][TeamsEnum.red.id]?.toString(),
+        );
+      }
     } else {
       List<Map<String, dynamic>> gamersData = widget.data['gamers']
           .cast<Map<String, dynamic>>();
@@ -90,10 +93,12 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
     final newScore = int.tryParse(_generalScoreController.text) ?? 0;
     _generalScoreController.clear();
 
-    if (widget.data['generalScore'] != null) {
-      widget.data['generalScore'] += newScore;
-    } else {
-      widget.data['generalScore'] = newScore;
+    if (widget.data['type'] == GameTypeEnum.coop.id) {
+      if (widget.data['teamScores'][TeamsEnum.red.id] != null) {
+        widget.data['teamScores'][TeamsEnum.red.id] += newScore;
+      } else {
+        widget.data['teamScores'][TeamsEnum.red.id] = newScore;
+      }
     }
 
     widget.data['round']++;
@@ -262,10 +267,11 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
 
-              Text(
-                'Всего: ${widget.data['generalScore'] ?? 0}',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
+              if (widget.data['type'] == GameTypeEnum.coop.id)
+                Text(
+                  'Всего: ${widget.data['teamScores'][TeamsEnum.red.id] ?? 0}',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
 
               TextFormField(
                 enabled: widget.data['round'] < widget.data['totalRounds'],

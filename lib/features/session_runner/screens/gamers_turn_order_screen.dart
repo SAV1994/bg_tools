@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -107,7 +109,13 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
                           child: Card(
                             child: ListTile(
                               leading: CircleAvatar(
-                                child: Text('${index + 1}'),
+                                backgroundColor: (gamerData['team'] != null)
+                                    ? TeamsEnum.fromId(gamerData['team']).color
+                                    : Colors.red,
+                                child: Text(
+                                  '${index + 1}',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                               title: Text(gamerData['username']),
                               subtitle: Text(gamerData['fio']),
@@ -141,14 +149,36 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
                       child: OutlinedButton.icon(
                         onPressed: _reorderRandom,
                         icon: const Icon(Icons.priority_high),
-                        label: const Text(
-                          'Полный рандом (нужно будет пересесть)',
-                        ),
+                        label: const Text('Полный рандом'),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 40),
                         ),
                       ),
                     ),
+                    if (widget.data['type'] == GameTypeEnum.team.id)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: OutlinedButton.icon(
+                          onPressed: _reorderRandom,
+                          icon: const Icon(Icons.priority_high),
+                          label: const Text('Чередовать команды'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 40),
+                          ),
+                        ),
+                      ),
+                    if (widget.data['type'] == GameTypeEnum.team.id)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: OutlinedButton.icon(
+                          onPressed: _reorderRandom,
+                          icon: const Icon(Icons.priority_high),
+                          label: const Text('Команды по порядку'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 40),
+                          ),
+                        ),
+                      ),
                   ],
           ),
         );

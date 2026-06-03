@@ -16,6 +16,13 @@ final Map<String, dynamic> scenarioMapping = {
   '2.2.1': WPScenario.scenario,
   '2.2.2': RoundsScenario.scenario,
   '2.2.3': OneWinnerScenario.scenario,
+  // Командная игра
+  '3.1.1': TeamScenario.scenario,
+  '3.1.2': TeamScenario.scenario,
+  '3.1.3': TeamScenario.scenario,
+  '3.2.1': TeamScenario.scenario,
+  '3.2.2': TeamScenario.scenario,
+  '3.2.3': TeamScenario.scenario,
   // Кооператив
   '4.1.1': CoopFPScenario.scenario,
   '4.1.2': CoopRoundsFPScenario.scenario,
