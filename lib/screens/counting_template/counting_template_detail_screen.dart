@@ -177,6 +177,14 @@ class _CountingTemplateDetailScreenState
                                     : null,
                               ),
                               _buildInfoRow(
+                                'Тип раундов',
+                                templateData['roundsType'] != null
+                                    ? RoundsTypeEnum.fromId(
+                                        templateData['roundsType'],
+                                      ).label
+                                    : null,
+                              ),
+                              _buildInfoRow(
                                 'Возможность победы другим путём',
                                 templateData['altVictoryType'] != null
                                     ? AltVictoryTypeEnum.fromId(

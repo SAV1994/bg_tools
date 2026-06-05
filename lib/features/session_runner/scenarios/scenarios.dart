@@ -50,7 +50,6 @@ class RoundsScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
-      numberRoundsStep,
       gamersSelectStep,
       sessionStartStep,
       roundsStep,
@@ -83,7 +82,6 @@ class RoundsFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
-      numberRoundsStep,
       gamersSelectStep,
       gamersTurnOrderStep,
       sessionStartStep,
@@ -125,19 +123,15 @@ class OneWinnerFPScenario {
   );
 }
 
-// 3 Распределение по местам с ПО (есть порядок ходов) + раунды
+// 3 Командная игра
 class TeamScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
-      numberRoundsStep,
       numberTeamsStep,
       teamManagementStep,
-      gamersTurnOrderStep,
       sessionStartStep,
-      roundsStep,
       sessionStopStep,
-      scoreInputStep,
       resultStep,
       finalStep,
     ],
@@ -163,7 +157,6 @@ class CoopRoundsScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
-      numberRoundsStep,
       gamersSelectStep,
       sessionStartStep,
       roundsStep,
@@ -194,7 +187,6 @@ class CoopRoundsFPScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
-      numberRoundsStep,
       gamersSelectStep,
       gamersTurnOrderStep,
       sessionStartStep,
@@ -225,7 +217,6 @@ class SoloRoundsScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
-      numberRoundsStep,
       gamersSelectStep,
       sessionStartStep,
       roundsStep,

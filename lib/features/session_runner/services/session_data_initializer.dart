@@ -13,6 +13,9 @@ Future<void> initSessionData(
   final Map<String, dynamic> countingTemplateData = jsonDecode(
     gamesCountingTemplatesData.countingTemplate.data,
   );
+  final Map<String, dynamic> gameData = jsonDecode(
+    gamesCountingTemplatesData.gamesCountingTemplate.data!,
+  );
 
   sessionData['type'] = countingTemplateData['gameType'] ?? 0;
   sessionData['firstPlayerStartType'] =
@@ -20,11 +23,14 @@ Future<void> initSessionData(
   sessionData['resultType'] = countingTemplateData['resultType'] ?? 0;
   sessionData['teamPointType'] = countingTemplateData['teamPointType'] ?? 0;
   sessionData['pointType'] = countingTemplateData['pointType'] ?? 0;
+  sessionData['roundsType'] = countingTemplateData['roundsType'] ?? 0;
   sessionData['altVictoryType'] = countingTemplateData['altVictoryType'] ?? 0;
   sessionData['firstPlayerRoundType'] =
       countingTemplateData['firstPlayerRoundType'] ?? 0;
   sessionData['sequencePlayersMovesType'] =
       countingTemplateData['sequencePlayersMovesType'] ?? 0;
+
+  sessionData['roundsScoreLimit'] = gameData['roundsScoreLimit'];
 
   final String selector =
       '${sessionData['type']}.${sessionData['firstPlayerStartType']}.'

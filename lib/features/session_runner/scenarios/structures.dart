@@ -51,6 +51,7 @@ const Map<String, dynamic> sessionInitialData = {
   'round': 0,
   'lastRoundFirstPlayer': null,
   'totalRounds': null,
+  'roundsScoreLimit': null,
 
   'teamScores': {},
 

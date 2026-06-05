@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 const String appName = '🎲 BGTools';
+// Условное число обозначающее неограниченное количество раундов
+const int infNumRounds = 999999;
 // Затычка на случай, если поле пустое
 const String emptyVal = '—';
 // Варианты строк для виджета загрузки

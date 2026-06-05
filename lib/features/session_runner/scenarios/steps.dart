@@ -1,22 +1,23 @@
 import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 import 'package:bg_tools/features/session_runner/screens/export.dart';
 
 final rootSessionSelectStep = ScenarioStep(
-  title: 'Первая сессия',
+  title: 'Базовые параметры сессиии',
   description:
       'Вы можете выбрать записанную ранее сессию для сохранения связи между серией игровых сессий. Может быть актуально для игр-компаний. Выбирайте имеено первую сессию серии.',
-  contentBuilder: (data) => RootSessionSelectScreen(data: data),
-  validator: (data) {},
-);
-
-final numberRoundsStep = ScenarioStep(
-  title: 'Количество раундов',
-  description: 'Укажите количество раундов',
-  contentBuilder: (data) => NumberRoundsScreen(data: data),
+  contentBuilder: (data) => FirstScreen(data: data),
   validator: (data) {
-    if (data['totalRounds'] == null || data['totalRounds'] < 1) {
+    if (data['roundsType'] == RoundsTypeEnum.fix.id &&
+        (data['totalRounds'] == null || data['totalRounds'] < 1)) {
       throw Exception('Укажите количкство раундов');
+    } else if ([
+      RoundsTypeEnum.dynamic.id,
+      RoundsTypeEnum.condition.id,
+    ].contains(data['roundsType'])) {
+      data['totalRounds'] = infNumRounds;
     }
   },
 );
@@ -99,8 +100,34 @@ final roundsStep = ScenarioStep(
   description: 'Заполните результаты',
   contentBuilder: (data) => ScoreRoundScreen(data: data),
   validator: (data) {
-    if (data['round'] != data['totalRounds']) {
-      throw Exception('Нужно завершить все раунды');
+    if (data['roundsType'] == RoundsTypeEnum.fix.id) {
+      if (data['round'] != data['totalRounds']) {
+        throw Exception('Нужно завершить все раунды');
+      }
+    } else if (data['roundsType'] == RoundsTypeEnum.condition.id) {
+      final int roundsScoreLimit = data['roundsScoreLimit'];
+      if (data['teamPointType'] == TeamPointTypeEnum.general.id) {
+        final int? generalScore = data['teamScores'][TeamsEnum.red.id];
+        if (generalScore == null ||
+            (roundsScoreLimit < 0 && generalScore > roundsScoreLimit ||
+                roundsScoreLimit >= 0 && generalScore < roundsScoreLimit)) {
+          throw Exception('Не выполнено граничное условие');
+        }
+      } else {
+        bool isFinished = false;
+        for (final Map<String, dynamic> gamerData in data['gamers']) {
+          if (isFinished == false && gamerData['score'] != null) {
+            isFinished =
+                roundsScoreLimit < 0 &&
+                    gamerData['score'] <= roundsScoreLimit ||
+                roundsScoreLimit >= 0 && gamerData['score'] >= roundsScoreLimit;
+          }
+        }
+
+        if (!isFinished) {
+          throw Exception('Не выполнено граничное условие');
+        }
+      }
     }
   },
 );

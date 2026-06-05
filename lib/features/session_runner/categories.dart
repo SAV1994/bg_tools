@@ -2,10 +2,11 @@
 enum GameTypeEnum {
   classic(1, 'Распределение по местам'),
   oneWinner(2, 'Один победитель'),
-  team(3, 'Командная игра'),
+  team(3, 'Командная игра (есть 2 место)'),
   coop(4, 'Кооператив'),
   solo(5, 'Соло'),
-  secretRoles(6, 'Тайные роли');
+  teamOneWinner(6, 'Командная игра'),
+  secretRoles(7, 'Тайные роли');
 
   final int id;
   final String label;
@@ -138,7 +139,35 @@ enum PointTypeEnum {
   }
 }
 
-// 6 Алтернативные условия победы
+// 6 Тип раундов
+enum RoundsTypeEnum {
+  fix(1, 'Фиксированное количество раундов'),
+  dynamic(2, 'Произвольное количество раундов'),
+  condition(3, 'По достижению лимита очков');
+
+  final int id;
+  final String label;
+
+  const RoundsTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static RoundsTypeEnum fromId(int id) {
+    return RoundsTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => RoundsTypeEnum.fix,
+    );
+  }
+
+  // Получить enum по названию
+  static RoundsTypeEnum fromLabel(String label) {
+    return RoundsTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => RoundsTypeEnum.fix,
+    );
+  }
+}
+
+// 7 Алтернативные условия победы
 enum AltVictoryTypeEnum {
   yes(1, 'есть'),
   no(2, 'нет');
@@ -165,7 +194,7 @@ enum AltVictoryTypeEnum {
   }
 }
 
-// 7 Определение первого игрока между раундами
+// 8 Определение первого игрока между раундами
 enum FirstPlayerRoundTypeEnum {
   queue(1, 'Следующий по часовой стрелке'),
   leader(2, 'Победитель ходит первым'),
@@ -195,7 +224,7 @@ enum FirstPlayerRoundTypeEnum {
   }
 }
 
-// 8 Тип последовательности ходов игроков
+// 9 Тип последовательности ходов игроков
 enum SequencePlayersMovesTypeEnum {
   clockwise(1, 'По часовой стрелке'),
   random(2, 'Вразнобой');

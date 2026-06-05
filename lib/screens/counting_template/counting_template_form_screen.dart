@@ -35,6 +35,7 @@ class _CountingTemplateFormFormState
   ResultTypeEnum? _selectedResultType;
   TeamPointTypeEnum? _selectedTeamPointType;
   PointTypeEnum? _selectedPointType;
+  RoundsTypeEnum? _selectedRoundsType;
   AltVictoryTypeEnum? _selectedAltVictoryType;
   FirstPlayerRoundTypeEnum? _selectedFirstPlayerRoundType;
   SequencePlayersMovesTypeEnum? _selectedSequencePlayersMovesType;
@@ -42,6 +43,7 @@ class _CountingTemplateFormFormState
   bool _showFirstPlayerStartType = false;
   bool _showPointType = false;
   bool _showTeamPointType = false;
+  bool _showRoundsType = false;
   bool _showAltVictoryType = false;
   bool _showFirstPlayerRoundType = false;
   bool _showSequencePlayersMovesType = false;
@@ -81,6 +83,9 @@ class _CountingTemplateFormFormState
       _selectedPointType = templateData['pointType'] != null
           ? PointTypeEnum.fromId(templateData['pointType'])
           : null;
+      _selectedRoundsType = templateData['roundsType'] != null
+          ? RoundsTypeEnum.fromId(templateData['roundsType'])
+          : null;
       _selectedAltVictoryType = templateData['altVictoryType'] != null
           ? AltVictoryTypeEnum.fromId(templateData['altVictoryType'])
           : null;
@@ -106,37 +111,40 @@ class _CountingTemplateFormFormState
   }
 
   void _updateSelectorsVisibility() {
-    _showFirstPlayerStartType =
-        _selectedGameType != null && _selectedGameType != GameTypeEnum.solo;
-    _showTeamPointType =
-        _selectedGameType != null &&
-        [GameTypeEnum.team, GameTypeEnum.coop].contains(_selectedGameType) &&
-        _selectedResultType != null &&
-        _selectedResultType != ResultTypeEnum.condition;
-    _showPointType =
-        _selectedResultType != null &&
-        _selectedResultType != ResultTypeEnum.condition;
-    _showAltVictoryType =
-        _selectedResultType != null &&
-        _selectedResultType != ResultTypeEnum.condition &&
-        _selectedGameType != GameTypeEnum.solo;
-    _showFirstPlayerRoundType =
-        _selectedResultType != null &&
-        _selectedResultType == ResultTypeEnum.round &&
-        _selectedGameType != GameTypeEnum.solo &&
-        (_selectedTeamPointType == null ||
-            _selectedTeamPointType == TeamPointTypeEnum.personal);
-    _showSequencePlayersMovesType =
-        _selectedFirstPlayerRoundType != null &&
-        [
-          FirstPlayerRoundTypeEnum.leader,
-          FirstPlayerRoundTypeEnum.loser,
-          FirstPlayerRoundTypeEnum.leaderNext,
-        ].contains(_selectedFirstPlayerRoundType) &&
-        (_selectedTeamPointType == null ||
-            _selectedTeamPointType == TeamPointTypeEnum.personal);
-
-    setState(() {});
+    setState(() {
+      _showFirstPlayerStartType =
+          _selectedGameType != null && _selectedGameType != GameTypeEnum.solo;
+      _showTeamPointType =
+          _selectedGameType != null &&
+          [GameTypeEnum.team, GameTypeEnum.coop].contains(_selectedGameType) &&
+          _selectedResultType != null &&
+          _selectedResultType != ResultTypeEnum.condition;
+      _showPointType =
+          _selectedResultType != null &&
+          _selectedResultType != ResultTypeEnum.condition;
+      _showRoundsType =
+          _selectedResultType != null &&
+          _selectedResultType == ResultTypeEnum.round;
+      _showAltVictoryType =
+          _selectedResultType != null &&
+          _selectedResultType != ResultTypeEnum.condition &&
+          _selectedGameType != GameTypeEnum.solo;
+      _showFirstPlayerRoundType =
+          _selectedResultType != null &&
+          _selectedResultType == ResultTypeEnum.round &&
+          _selectedGameType != GameTypeEnum.solo &&
+          (_selectedTeamPointType == null ||
+              _selectedTeamPointType == TeamPointTypeEnum.personal);
+      _showSequencePlayersMovesType =
+          _selectedFirstPlayerRoundType != null &&
+          [
+            FirstPlayerRoundTypeEnum.leader,
+            FirstPlayerRoundTypeEnum.loser,
+            FirstPlayerRoundTypeEnum.leaderNext,
+          ].contains(_selectedFirstPlayerRoundType) &&
+          (_selectedTeamPointType == null ||
+              _selectedTeamPointType == TeamPointTypeEnum.personal);
+    });
   }
 
   Future<void> _save() async {
@@ -178,6 +186,12 @@ class _CountingTemplateFormFormState
       );
       return;
     }
+    if (_showRoundsType && _selectedRoundsType == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Выберите тип раундов')));
+      return;
+    }
     if (_showAltVictoryType && _selectedAltVictoryType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -211,6 +225,7 @@ class _CountingTemplateFormFormState
       'resultType': _selectedResultType!.id,
       'teamPointType': _selectedTeamPointType?.id,
       'pointType': _selectedPointType?.id,
+      'roundsType': _selectedRoundsType?.id,
       'altVictoryType': _selectedAltVictoryType?.id,
       'firstPlayerRoundType': _selectedFirstPlayerRoundType?.id,
       'sequencePlayersMovesType': _selectedSequencePlayersMovesType?.id,
@@ -370,6 +385,7 @@ class _CountingTemplateFormFormState
                             _selectedTeamPointType = null;
                           }
                           if (value != ResultTypeEnum.round) {
+                            _selectedRoundsType = null;
                             _selectedFirstPlayerRoundType = null;
                             _selectedSequencePlayersMovesType = null;
                           }
@@ -419,6 +435,25 @@ class _CountingTemplateFormFormState
                           setState(() {
                             _selectedPointType = (value != null)
                                 ? value as PointTypeEnum
+                                : null;
+                          });
+                        },
+                      ),
+                    ],
+                    if (_showRoundsType) ...[
+                      EnumSelector(
+                        label: 'Тип раундов *',
+                        choices: RoundsTypeEnum.values.map((val) {
+                          return DropdownMenuItem(
+                            value: val,
+                            child: Row(children: [Text(val.label)]),
+                          );
+                        }),
+                        selected: _selectedRoundsType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedRoundsType = (value != null)
+                                ? value as RoundsTypeEnum
                                 : null;
                           });
                         },

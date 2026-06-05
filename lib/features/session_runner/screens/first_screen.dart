@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,22 +9,22 @@ import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/select_with_search.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
-class RootSessionSelectScreen extends ConsumerStatefulWidget {
+class FirstScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
 
-  const RootSessionSelectScreen({super.key, required this.data});
+  const FirstScreen({super.key, required this.data});
 
   @override
-  ConsumerState<RootSessionSelectScreen> createState() =>
-      _RootSessionSelectScreenState();
+  ConsumerState<FirstScreen> createState() => _FirstScreenState();
 }
 
-class _RootSessionSelectScreenState
-    extends ConsumerState<RootSessionSelectScreen> {
+class _FirstScreenState extends ConsumerState<FirstScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<GamingSession> _gamingSessions = [];
   GamingSession? _selectedGamingSession;
+  late TextEditingController _numberRoundsController;
   // Загрузка
   bool _isLoading = false;
 
@@ -45,7 +46,17 @@ class _RootSessionSelectScreenState
       );
     }
 
+    _numberRoundsController = TextEditingController(
+      text: widget.data['totalRounds']?.toString() ?? '',
+    );
+
     setState(() => _isLoading = false);
+  }
+
+  @override
+  void dispose() {
+    _numberRoundsController.dispose();
+    super.dispose();
   }
 
   @override
@@ -81,6 +92,26 @@ class _RootSessionSelectScreenState
                           placeholder: 'Не выбрана',
                         ),
                       ),
+                      if (widget.data['roundsType'] == RoundsTypeEnum.fix.id)
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: TextFormField(
+                            controller: _numberRoundsController,
+                            decoration: InputDecoration(
+                              labelText: 'Количество раундов',
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType:
+                                TextInputType.number, // Цифровая клавиатура
+                            inputFormatters: [
+                              FilteringTextInputFormatter
+                                  .digitsOnly, // Только цифры
+                            ],
+                            onChanged: (value) {
+                              widget.data['totalRounds'] = int.tryParse(value);
+                            },
+                          ),
+                        ),
                     ],
             ),
           ),

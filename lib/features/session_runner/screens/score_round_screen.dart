@@ -21,6 +21,8 @@ class ScoreRoundScreen extends ConsumerStatefulWidget {
 class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   String? _lastRoundFirstPlayer;
   int? _lastRoundGeneralScore;
+  bool _isFinished = false;
+  late final int? _roundsScoreLimit;
   // Контроллеры
   List<Map<String, dynamic>> _scoreControllers = [];
   late final TextEditingController _generalScoreController;
@@ -35,11 +37,19 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   }
 
   Future<void> _loadData() async {
+    _roundsScoreLimit = widget.data['roundsScoreLimit'];
+
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
       if (widget.data['type'] == GameTypeEnum.coop.id) {
+        final int? generalScore = widget.data['teamScores'][TeamsEnum.red.id];
         _generalScoreController = TextEditingController(
-          text: widget.data['teamScores'][TeamsEnum.red.id]?.toString(),
+          text: generalScore?.toString(),
         );
+        _isFinished =
+            generalScore != null &&
+            _roundsScoreLimit != null &&
+            (_roundsScoreLimit < 0 && generalScore <= _roundsScoreLimit ||
+                _roundsScoreLimit >= 0 && generalScore >= _roundsScoreLimit);
       }
     } else {
       List<Map<String, dynamic>> gamersData = widget.data['gamers']
@@ -49,6 +59,15 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
           'controller': TextEditingController(),
           'score': gamerData['score'],
         });
+
+        if (_isFinished == false &&
+            _roundsScoreLimit != null &&
+            gamerData['score'] != null) {
+          _isFinished =
+              _roundsScoreLimit < 0 &&
+                  gamerData['score'] <= _roundsScoreLimit ||
+              _roundsScoreLimit >= 0 && gamerData['score'] >= _roundsScoreLimit;
+        }
       }
 
       _sortByCondition();
@@ -78,11 +97,20 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
 
       gamerData['scoreByrounds'].add(newScore);
       controllerData['score'] = gamerData['score'];
+      if (_isFinished == false && _roundsScoreLimit != null) {
+        if (_roundsScoreLimit < 0) {
+          _isFinished = gamerData['score'] <= _roundsScoreLimit;
+        } else {
+          _isFinished = gamerData['score'] >= _roundsScoreLimit;
+        }
+      }
     }
 
-    widget.data['round']++;
+    if (!_isFinished) {
+      widget.data['round']++;
 
-    _sortByCondition();
+      _sortByCondition();
+    }
 
     await AppDataManager.saveActiveSession(widget.data);
 
@@ -101,7 +129,19 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
       }
     }
 
-    widget.data['round']++;
+    if (_isFinished == false && _roundsScoreLimit != null) {
+      if (_roundsScoreLimit < 0) {
+        _isFinished =
+            widget.data['teamScores'][TeamsEnum.red.id] <= _roundsScoreLimit;
+      } else {
+        _isFinished =
+            widget.data['teamScores'][TeamsEnum.red.id] >= _roundsScoreLimit;
+      }
+    }
+
+    if (!_isFinished) {
+      widget.data['round']++;
+    }
 
     _lastRoundGeneralScore = newScore;
 
@@ -274,7 +314,9 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                 ),
 
               TextFormField(
-                enabled: widget.data['round'] < widget.data['totalRounds'],
+                enabled:
+                    widget.data['round'] < widget.data['totalRounds'] &&
+                    _isFinished == false,
                 controller: _generalScoreController,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
@@ -291,7 +333,8 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                 ),
               ),
 
-              if (widget.data['round'] < widget.data['totalRounds'])
+              if (widget.data['round'] < widget.data['totalRounds'] &&
+                  _isFinished == false)
                 Row(
                   children: [
                     Expanded(
@@ -326,8 +369,10 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               Text(
-                (widget.data['round'] < widget.data['totalRounds'])
-                    ? 'Раунд ${widget.data['round'] + 1} из ${widget.data['totalRounds']}'
+                (widget.data['round'] < widget.data['totalRounds'] &&
+                        _isFinished == false)
+                    ? 'Раунд ${widget.data['round'] + 1} из '
+                          '${(widget.data['totalRounds'] == infNumRounds) ? '∞' : widget.data['totalRounds']}'
                     : 'По итогу всех раундов',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -360,7 +405,8 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                 }),
               ),
 
-              if (widget.data['round'] < widget.data['totalRounds'])
+              if (widget.data['round'] < widget.data['totalRounds'] &&
+                  _isFinished == false)
                 Row(
                   children: [
                     Expanded(
@@ -427,7 +473,8 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                         ),
                       ),
                     ),
-                  if (widget.data['round'] < widget.data['totalRounds'])
+                  if (widget.data['round'] < widget.data['totalRounds'] &&
+                      _isFinished == false)
                     // Кнопка вызова калькулятора
                     IconButton(
                       onPressed: () {
@@ -458,7 +505,9 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                 SizedBox(
                   width: 80,
                   child: TextFormField(
-                    enabled: widget.data['round'] < widget.data['totalRounds'],
+                    enabled:
+                        widget.data['round'] < widget.data['totalRounds'] &&
+                        _isFinished == false,
                     controller: controllerData['controller'],
                     textAlign: TextAlign.center,
                     style: const TextStyle(

@@ -59,6 +59,80 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
     setState(() => _isLoading = false);
   }
 
+  Future<void> _reorderTeamTakeTurns() async {
+    setState(() => _isLoading = true);
+
+    final List<Map<String, dynamic>> gamers = [];
+
+    final int totalGamers = widget.data['gamers'].length;
+
+    List<List<Map<String, dynamic>>> teams = _getTeamsList();
+    teams.sort((a, b) => b.length.compareTo(a.length));
+
+    int i = 0;
+    while (gamers.length < totalGamers) {
+      if (teams[i].isNotEmpty) {
+        final Map<String, dynamic> gamerData = teams[i].removeAt(0);
+        gamers.add(gamerData);
+      }
+
+      if (i == widget.data['numberTeams'] - 1) {
+        i = 0;
+      } else {
+        i++;
+      }
+    }
+
+    widget.data['gamers'] = gamers;
+    _fillTurnOrder();
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Порядок хода изменён')));
+
+    setState(() => _isLoading = false);
+  }
+
+  List<List<Map<String, dynamic>>> _getTeamsList() {
+    List<List<Map<String, dynamic>>> teams = [];
+
+    for (int i = 0; i < widget.data['numberTeams']; i++) {
+      teams.add([]);
+    }
+    for (Map<String, dynamic> gamerData in widget.data['gamers']) {
+      teams[gamerData['team'] - 1].add(gamerData);
+    }
+    for (int i = 0; i < widget.data['numberTeams']; i++) {
+      teams[i].shuffle();
+    }
+
+    return teams;
+  }
+
+  Future<void> _reorderOneTeamFirst() async {
+    setState(() => _isLoading = true);
+
+    final List<Map<String, dynamic>> gamers = [];
+
+    final int totalGamers = widget.data['gamers'].length;
+
+    List<List<Map<String, dynamic>>> teams = _getTeamsList();
+    teams.shuffle();
+
+    for (List<Map<String, dynamic>> teamData in teams) {
+      gamers.addAll(teamData);
+    }
+
+    widget.data['gamers'] = gamers;
+    _fillTurnOrder();
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Порядок хода изменён')));
+
+    setState(() => _isLoading = false);
+  }
+
   void _reorder(int oldIndex, int newIndex) {
     if (oldIndex < newIndex) {
       newIndex -= 1;
@@ -159,7 +233,7 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: OutlinedButton.icon(
-                          onPressed: _reorderRandom,
+                          onPressed: _reorderTeamTakeTurns,
                           icon: const Icon(Icons.priority_high),
                           label: const Text('Чередовать команды'),
                           style: OutlinedButton.styleFrom(
@@ -171,7 +245,7 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: OutlinedButton.icon(
-                          onPressed: _reorderRandom,
+                          onPressed: _reorderOneTeamFirst,
                           icon: const Icon(Icons.priority_high),
                           label: const Text('Команды по порядку'),
                           style: OutlinedButton.styleFrom(

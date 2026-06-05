@@ -14,10 +14,10 @@ class ResultScreen extends ConsumerStatefulWidget {
   const ResultScreen({super.key, required this.data});
 
   @override
-  ConsumerState<ResultScreen> createState() => _NoScoreResultScreenState();
+  ConsumerState<ResultScreen> createState() => _ResultScreenState();
 }
 
-class _NoScoreResultScreenState extends ConsumerState<ResultScreen> {
+class _ResultScreenState extends ConsumerState<ResultScreen> {
   _SelectMode _mode = _SelectMode.single;
   // Контроллеры
   final Map<int, dynamic> _scoreControllers = {};

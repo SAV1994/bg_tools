@@ -1,7 +1,9 @@
-import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
@@ -9,7 +11,9 @@ import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.d
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
 import 'package:bg_tools/core/widgets/select_with_search.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
 class GamesCountingTemplatesModalForm extends ConsumerStatefulWidget {
   final int gameId;
@@ -36,8 +40,10 @@ class _GamesCountingTemplatesModalFormState
   CountingTemplate? _selectedCountingTemplate;
   List<Game> _expansions = [];
   Set<int> _selectedExpansionIds = {};
+  bool _showRoundsScoreLimitInput = false;
   // Контроллеры
   late final TextEditingController _nameController;
+  late TextEditingController _roundsScoreLimitController;
   // Загрузка
   bool _isLoading = false;
   // Ошибка
@@ -58,6 +64,8 @@ class _GamesCountingTemplatesModalFormState
     final gameDao = ref.read(gameDaoProvider);
     _expansions = await gameDao.getExpansions(widget.gameId);
 
+    int? roundsScoreLimit;
+
     if (widget.gamesCountingTemplatesId == null) {
       gamesCountingTemplatesData = null;
     } else {
@@ -69,7 +77,23 @@ class _GamesCountingTemplatesModalFormState
       );
       _selectedCountingTemplate = gamesCountingTemplatesData!.countingTemplate;
       _selectedExpansionIds = gamesCountingTemplatesData!.selectedexpansionIds;
+
+      final Map<String, dynamic> templatesData = jsonDecode(
+        _selectedCountingTemplate!.data,
+      );
+
+      if (templatesData['roundsType'] == RoundsTypeEnum.condition.id) {
+        final Map<String, dynamic> gameData = jsonDecode(
+          gamesCountingTemplatesData!.gamesCountingTemplate.data!,
+        );
+        roundsScoreLimit = gameData['roundsScoreLimit'];
+        _showRoundsScoreLimitInput = true;
+      }
     }
+
+    _roundsScoreLimitController = TextEditingController(
+      text: roundsScoreLimit?.toString(),
+    );
 
     _nameController = TextEditingController(
       text: gamesCountingTemplatesData?.gamesCountingTemplate.name,
@@ -83,11 +107,17 @@ class _GamesCountingTemplatesModalFormState
       final gamesCountingTemplatesDao = ref.read(
         gamesCountingTemplatesDaoProvider,
       );
+
+      final Map<String, dynamic> data = {
+        'roundsScoreLimit': int.tryParse(_roundsScoreLimitController.text),
+      };
+
       final GamesCountingTemplatesCompanion gamesCountingTemplatesComp =
           GamesCountingTemplatesCompanion(
             gameId: Value(widget.gameId),
             name: Value(_nameController.text),
             countingTemplateId: Value(_selectedCountingTemplate!.id),
+            data: Value(jsonEncode(data)),
           );
       try {
         if (widget.gamesCountingTemplatesId == null) {
@@ -222,8 +252,24 @@ class _GamesCountingTemplatesModalFormState
                       items: _countingTemplates,
                       selectedItem: _selectedCountingTemplate,
                       onSelectionChanged: (template) {
+                        bool showRoundsScoreLimitInput = false;
+                        if (template != null) {
+                          final Map<String, dynamic> templateData = jsonDecode(
+                            template.data,
+                          );
+                          if (templateData['roundsType'] ==
+                              RoundsTypeEnum.condition.id) {
+                            showRoundsScoreLimitInput = true;
+                          } else {
+                            showRoundsScoreLimitInput = false;
+                            _roundsScoreLimitController.clear();
+                          }
+                        }
+
                         setState(() {
                           _selectedCountingTemplate = template;
+                          _showRoundsScoreLimitInput =
+                              showRoundsScoreLimitInput;
                         });
                       },
                       displayName: (template) =>
@@ -233,6 +279,25 @@ class _GamesCountingTemplatesModalFormState
                       isRequired: true,
                       placeholder: 'Не выбран',
                     ),
+                    if (_showRoundsScoreLimitInput)
+                      TextFormField(
+                        controller: _roundsScoreLimitController,
+                        decoration: InputDecoration(
+                          labelText: 'Граничное значение очков для раундов *',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType:
+                            TextInputType.number, // Цифровая клавиатура
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Пожалуйста, введите ограничитель';
+                          }
+                          return null;
+                        },
+                      ),
                     Row(
                       children: [
                         Expanded(
