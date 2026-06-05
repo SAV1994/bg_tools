@@ -7,7 +7,7 @@ import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/add_gamer_modal_form_builder.dart';
-import 'package:bg_tools/core/utils/gamer_session_data_getter.dart';
+import 'package:bg_tools/core/utils/gamer_session_data.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 

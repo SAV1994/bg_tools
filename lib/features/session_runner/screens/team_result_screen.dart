@@ -1,348 +1,520 @@
-// import 'dart:convert';
+import 'package:flutter/material.dart';
 
-// import 'package:bg_tools/core/consts.dart';
-// import 'package:bg_tools/core/utils/gamer_score_card_builder.dart';
-// import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-// import 'package:bg_tools/features/session_runner/categories.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// enum _SelectMode { single, draw }
+import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
-// class TeamResultScreen extends ConsumerStatefulWidget {
-//   final Map<String, dynamic> data;
+enum _SelectMode { single, draw }
 
-//   const TeamResultScreen({super.key, required this.data});
+enum _SelectScoreMode {
+  max(1),
+  min(2),
+  sum(3),
+  multiple(4);
 
-//   @override
-//   ConsumerState<TeamResultScreen> createState() => _TeamResultScreenState();
-// }
+  final int id;
 
-// class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
-//   _SelectMode _mode = _SelectMode.single;
-//   final Map<TeamsEnum, dynamic> _teams = {};
-//   List<TeamsEnum> teamPlaces = [];
-//   // Загрузка
-//   bool _isLoading = false;
+  const _SelectScoreMode(this.id);
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _isLoading = true;
-//     _loadData();
-//   }
+  // Получить enum по id
+  static _SelectScoreMode fromId(int id) {
+    return _SelectScoreMode.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => _SelectScoreMode.sum,
+    );
+  }
+}
 
-//   Future<void> _loadData() async {
-//     if (widget.data['gamers'][0]['place'] == null) {
-//       _sortByWinCondition();
-//       _fillPlace();
-//     } else if (hasDraw()) {
-//       _mode = _SelectMode.draw;
-//     }
+class TeamResultScreen extends ConsumerStatefulWidget {
+  final Map<String, dynamic> data;
 
-//     for (int i = 1; i <= widget.data['numberTeams']; i++) {
-//       final teamEnum = TeamsEnum.fromId(i);
-//       _teams[teamEnum] = {
-//         'gamers': [],
-//         'controller': TextEditingController(
-//           text: widget.data['teamScores'][i]?.toString(),
-//         ),
-//         'score':
-//       };
-//     }
+  const TeamResultScreen({super.key, required this.data});
 
-//     for (Map<String, dynamic> gamerData in widget.data['gamers']) {
-//       _teams[TeamsEnum.fromId(gamerData['team'])]!.add(gamerData);
-//     }
+  @override
+  ConsumerState<TeamResultScreen> createState() => _TeamResultScreenState();
+}
 
-//     for (final Map<String, dynamic> gamerData in gamersData) {
-//       _scoreControllers[gamerData['id']] = {
-//         'username': gamerData['username'],
-//         'controller': TextEditingController(
-//           text: gamerData['place']?.toString() ?? '',
-//         ),
-//         'extraData': (widget.data['resultType'] != ResultTypeEnum.condition.id)
-//             ? gamerData['score']
-//             : null,
-//       };
-//     }
+class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
+  _SelectMode _mode = _SelectMode.single;
+  _SelectScoreMode _scoreMode = _SelectScoreMode.sum;
+  final List<Map<String, dynamic>> _teams = [];
+  // Загрузка
+  bool _isLoading = false;
 
-//     setState(() => _isLoading = false);
-//   }
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _loadData();
+  }
 
-//   void _sortByWinCondition() {
-//     widget.data['gamers'].sort((a, b) {
-//       final scoreA = a['score'] as int? ?? 0;
-//       final scoreB = b['score'] as int? ?? 0;
-//       if (widget.data['pointType'] == PointTypeEnum.max.id) {
-//         return scoreB.compareTo(scoreA);
-//       } else {
-//         return scoreA.compareTo(scoreB);
-//       }
-//     });
+  Future<void> _loadData() async {
+    for (int i = 1; i <= widget.data['numberTeams']; i++) {
+      final teamEnum = TeamsEnum.fromId(i);
+      _teams.add({
+        'team': teamEnum,
+        'gamers': [],
+        'controller': null,
+        'score': null,
+        'showTeam': false,
+      });
+    }
 
-//     _fillPlace();
-//   }
+    for (Map<String, dynamic> gamerData in widget.data['gamers']) {
+      _teams[gamerData['team'] - 1]['gamers'].add(gamerData);
+    }
 
-//   bool hasDraw() {
-//     List<int> teams = [];
-//     Set<int> teamPlaces = {};
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
+      for (final teamData in _teams) {
+        _updateTeamScore(teamData);
+      }
+    } else {
+      for (final teamData in _teams) {
+        teamData['score'] =
+            widget.data['teamsData'][teamData['team'].id.toString()]['score'];
+      }
+    }
 
-//     for (Map<String, dynamic> gamerData in widget.data['gamers']) {
-//       if (!teams.contains(gamerData['team'])) {
-//         teams.add(gamerData['team']);
-//         teamPlaces.add(gamerData['place']);
-//       }
-//     }
+    Set<int> places = {};
+    for (final teamData in widget.data['teamsData'].values) {
+      if (teamData['place'] != null) {
+        places.add(teamData['place']);
+      }
+    }
 
-//     return teams.length != teamPlaces.length;
-//   }
+    if (places.isEmpty) {
+      _sortByWinCondition();
+    } else if (places.length != _teams.length) {
+      _mode = _SelectMode.draw;
+      for (final entry in widget.data['teamsData'].asMap().entries) {
+        _setTeamPlace(int.parse(entry.key), entry.value['place']);
+      }
+    }
 
-//   void _toggleMode() {
-//     setState(() {
-//       _mode = _mode == _SelectMode.single
-//           ? _SelectMode.draw
-//           : _SelectMode.single;
-//       if (_mode == _SelectMode.single) {
-//         _fillPlace();
-//       }
-//     });
-//   }
+    for (final entry in _teams.asMap().entries) {
+      entry.value['controller'] = TextEditingController(
+        text: (entry.key + 1).toString(),
+      );
+    }
 
-//   void _reorder(int oldIndex, int newIndex) {
-//     setState(() {
-//       if (oldIndex < newIndex) {
-//         newIndex -= 1;
-//       }
-//       final Map<String, dynamic> gamerData = widget.data['gamers'].removeAt(
-//         oldIndex,
-//       );
-//       widget.data['gamers'].insert(newIndex, gamerData);
-//     });
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
+      if (widget.data['resulScreenMode'] == null) {
+        widget.data['resulScreenMode'] = _scoreMode.id;
+      } else {
+        _scoreMode = _SelectScoreMode.fromId(widget.data['resulScreenMode']);
+      }
+    }
 
-//     _fillPlace();
+    setState(() => _isLoading = false);
+  }
 
-//     setState(() {});
-//   }
+  void _setTeamPlace(int teamId, int place) {
+    final TeamsEnum teamEnum = TeamsEnum.fromId(teamId);
 
-//   void _fillPlace() {
-//     for (final entry in widget.data['gamers'].asMap().entries) {
-//       if (widget.data['type'] != GameTypeEnum.oneWinner.id || entry == 0) {
-//         entry.value['place'] = entry.key + 1;
-//       } else {
-//         entry.value['place'] = null;
-//       }
-//     }
-//   }
+    final teamData = _teams.firstWhere((td) => td['team'].id == teamEnum.id);
+    teamData['controller'] = TextEditingController(text: place.toString());
+    for (final Map<String, dynamic> gamerData in teamData['gamers']) {
+      gamerData['place'] = place;
+    }
+  }
 
-//   Widget _buildPlacePositionsWidget() {
-//     if (_mode == _SelectMode.draw) {
-//       return Container(
-//         decoration: BoxDecoration(
-//           gradient: LinearGradient(
-//             begin: Alignment.topCenter,
-//             end: Alignment.bottomCenter,
-//             colors: [Colors.deepPurple.shade200, Colors.white],
-//           ),
-//         ),
-//         child: SingleChildScrollView(
-//           child: Padding(
-//             padding: const EdgeInsets.all(24.0),
-//             child: Column(
-//               children: [
-//                 ListView.builder(
-//                   shrinkWrap: true,
-//                   padding: const EdgeInsets.all(16),
-//                   itemCount: widget.data['gamers'].length,
-//                   itemBuilder: (context, index) {
-//                     final int gamerId = widget.data['gamers'][index]['id'];
-//                     return buildGamerInputCard(
-//                       context,
-//                       gamerId,
-//                       _scoreControllers[gamerId],
-//                       false,
-//                       true,
-//                       _updatPlace,
-//                     );
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       );
-//     }
-//     return ReorderableListView(
-//       padding: const EdgeInsets.all(16),
-//       onReorder: _reorder,
-//       children: List.generate(widget.data['gamers'].length, (index) {
-//         final Map<String, dynamic> gamerData = widget.data['gamers'][index];
+  void _updateTeamScore(Map<String, dynamic> teamData) {
+    bool isFirst = true;
+    int teamScore = (_scoreMode == _SelectScoreMode.multiple) ? 1 : 0;
+    for (final Map<String, dynamic> gamerData in teamData['gamers']) {
+      final int score = gamerData['score'] ?? 0;
+      if (_scoreMode == _SelectScoreMode.max) {
+        if (score > teamScore) {
+          teamScore = score;
+        }
+      } else if (_scoreMode == _SelectScoreMode.min) {
+        if (score < teamScore) {
+          teamScore = score;
+        }
 
-//         return Container(
-//           key: Key('${gamerData['id']}_$index'),
-//           margin: const EdgeInsets.only(bottom: 12),
-//           decoration: BoxDecoration(
-//             borderRadius: BorderRadius.circular(16),
-//             boxShadow: [
-//               BoxShadow(
-//                 color: Colors.grey.withValues(alpha: 0.1),
-//                 blurRadius: 8,
-//                 offset: const Offset(0, 2),
-//               ),
-//             ],
-//           ),
-//           child: Material(
-//             color: Colors.transparent,
-//             child: _buildPlayerCard(index, gamerData),
-//           ),
-//         );
-//       }),
-//     );
-//   }
+        if (isFirst) {
+          teamScore = score;
+          isFirst = false;
+        }
+      } else if (_scoreMode == _SelectScoreMode.sum) {
+        teamScore += score;
+      } else if (_scoreMode == _SelectScoreMode.multiple) {
+        teamScore *= score;
+      }
+    }
 
-//   void _updatPlace(int gamerId, String value) {
-//     int? newScore = int.tryParse(value);
-//     for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
-//       if (gamerData['id'] == gamerId) {
-//         if (widget.data['type'] != GameTypeEnum.oneWinner.id || newScore == 1) {
-//           gamerData['place'] = newScore;
-//         } else {
-//           gamerData['place'] = null;
-//         }
-//       }
-//     }
-//   }
+    widget.data['teamsData'][teamData['team'].id.toString()]['score'] =
+        teamScore;
+    teamData['score'] = teamScore;
+  }
 
-//   Widget _buildPlayerCard(int index, Map<String, dynamic> gamerData) {
-//     final isTop3 = index < 3;
+  void _sortByWinCondition() {
+    _teams.sort((a, b) {
+      final scoreA = a['score'] as int? ?? 0;
+      final scoreB = b['score'] as int? ?? 0;
+      if (widget.data['pointType'] == PointTypeEnum.max.id) {
+        return scoreB.compareTo(scoreA);
+      } else {
+        return scoreA.compareTo(scoreB);
+      }
+    });
 
-//     return Card(
-//       elevation: 2,
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(12),
-//         side: BorderSide(
-//           color: isTop3 ? Colors.amber.shade300 : Colors.grey.shade200,
-//           width: isTop3 ? 2 : 1,
-//         ),
-//       ),
-//       child: Padding(
-//         padding: const EdgeInsets.all(12),
-//         child: Row(
-//           spacing: 8,
-//           children: [
-//             // Drag handle
-//             if (widget.data['altVictoryType'] == AltVictoryTypeEnum.yes.id ||
-//                 widget.data['resultType'] == ResultTypeEnum.condition.id)
-//               ReorderableDragStartListener(
-//                 index: index,
-//                 child: Icon(Icons.drag_handle, color: Colors.grey),
-//               ),
+    _fillPlace();
+  }
 
-//             // Позиция
-//             Container(
-//               width: 40,
-//               height: 40,
-//               decoration: BoxDecoration(
-//                 color: isTop3
-//                     ? Colors.amber.withValues(alpha: 0.2)
-//                     : Colors.grey.shade200,
-//                 borderRadius: BorderRadius.circular(10),
-//               ),
-//               child: Center(
-//                 child: Text(
-//                   '${index + 1}',
-//                   style: TextStyle(
-//                     fontSize: 18,
-//                     fontWeight: FontWeight.bold,
-//                     color: isTop3
-//                         ? Colors.amber.shade700
-//                         : Colors.grey.shade600,
-//                   ),
-//                 ),
-//               ),
-//             ),
+  void _fillPlace() {
+    for (final entry in _teams.asMap().entries) {
+      widget.data['teamsData'][entry.value['team'].id.toString()]['place'] =
+          entry.key + 1;
 
-//             const SizedBox(width: 12),
+      for (Map<String, dynamic> gamerData in entry.value['gamers']) {
+        gamerData['place'] = entry.key + 1;
+      }
+    }
+  }
 
-//             // Имя игрока
-//             Expanded(
-//               child: Text(
-//                 gamerData['username'],
-//                 style: const TextStyle(
-//                   fontSize: 16,
-//                   fontWeight: FontWeight.w500,
-//                 ),
-//               ),
-//             ),
+  void _fillPlaceDraw() {
+    for (final entry in _teams.asMap().entries) {
+      final int? place = (entry.value['controller'].text != null)
+          ? int.tryParse(entry.value['controller'].text)
+          : null;
 
-//             // Очки
-//             if (widget.data['resultType'] != ResultTypeEnum.condition.id)
-//               Container(
-//                 padding: const EdgeInsets.symmetric(
-//                   horizontal: 12,
-//                   vertical: 6,
-//                 ),
-//                 decoration: BoxDecoration(
-//                   color: Colors.greenAccent,
-//                   borderRadius: BorderRadius.circular(20),
-//                 ),
-//                 child: Text(
-//                   '${gamerData['score']}',
-//                   style: const TextStyle(
-//                     fontSize: 16,
-//                     fontWeight: FontWeight.bold,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+      widget.data['teamsData'][entry.value['team'].id.toString()]['place'] =
+          place;
 
-//   @override
-//   void dispose() {
-//     for (final Map<String, dynamic> controllerData
-//         in _scoreControllers.values) {
-//       controllerData['controller'].dispose();
-//     }
-//     super.dispose();
-//   }
+      for (Map<String, dynamic> gamerData in entry.value['gamers']) {
+        gamerData['place'] = place;
+      }
+    }
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer(
-//       builder: (context, ref, child) {
-//         return _isLoading
-//             ? buildLoadingScreen()
-//             : Column(
-//                 spacing: 12,
-//                 children: [
-//                   // Кнопка переключения режима
-//                   SegmentedButton<_SelectMode>(
-//                     segments: const [
-//                       ButtonSegment(
-//                         value: _SelectMode.single,
-//                         label: Text('1 игрок - 1 место'),
-//                         icon: Icon(Icons.radio_button_unchecked),
-//                       ),
-//                       ButtonSegment(
-//                         value: _SelectMode.draw,
-//                         label: Text('Ничья'),
-//                         icon: Icon(Icons.check_box_outline_blank),
-//                       ),
-//                     ],
-//                     selected: {_mode},
-//                     onSelectionChanged: (Set<_SelectMode> selection) {
-//                       _toggleMode();
-//                     },
-//                   ),
+  void _toggleMode() {
+    setState(() {
+      _mode = _mode == _SelectMode.single
+          ? _SelectMode.draw
+          : _SelectMode.single;
+      if (_mode == _SelectMode.single) {
+        _fillPlace();
+      }
+    });
+  }
 
-//                   Flexible(child: _buildPlacePositionsWidget()),
-//                 ],
-//               );
-//       },
-//     );
-//   }
-// }
+  void _toggleScoreMode(Set<_SelectScoreMode> selection) {
+    _scoreMode = selection.first;
+    widget.data['resulScreenMode'] = _scoreMode.id;
+
+    for (var teamData in _teams) {
+      _updateTeamScore(teamData);
+    }
+
+    _sortByWinCondition();
+
+    setState(() {});
+  }
+
+  void _reorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final Map<String, dynamic> teamData = _teams.removeAt(oldIndex);
+      _teams.insert(newIndex, teamData);
+    });
+
+    _fillPlace();
+
+    setState(() {});
+  }
+
+  void _updatePlace(Map<String, dynamic> teamData, String place) {
+    _teams.sort((a, b) {
+      final scoreA = a['controller'].text as String? ?? '0';
+      final scoreB = b['controller'].text as String? ?? '0';
+      return scoreA.compareTo(scoreB);
+    });
+
+    _fillPlaceDraw();
+  }
+
+  Widget _buildDragAndDropMode() {
+    return ReorderableListView.builder(
+      padding: const EdgeInsets.all(16),
+      onReorder: _reorder,
+      itemCount: _teams.length,
+      itemBuilder: (context, index) {
+        final Map<String, dynamic> teamData = _teams[index];
+        return Container(
+          key: Key('${teamData['team'].color}_$index'),
+          margin: const EdgeInsets.only(bottom: 16),
+          child: _buildTeamCard(teamData, index + 1),
+        );
+      },
+    );
+  }
+
+  Widget _buildManualMode() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _teams.length,
+      itemBuilder: (context, index) {
+        final team = _teams[index];
+        return _buildTeamCard(team, index + 1, showPlaceInput: true);
+      },
+    );
+  }
+
+  Widget _buildTeamCard(
+    Map<String, dynamic> teamData,
+    int currentPlace, {
+    bool showPlaceInput = false,
+  }) {
+    final TeamsEnum team = teamData['team'];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: team.color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: team.color, width: 2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Заголовок команды
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: team.color,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(14),
+                topRight: Radius.circular(14),
+              ),
+            ),
+            child: Row(
+              children: [
+                // Место
+                if (showPlaceInput)
+                  _buildPlaceInput(teamData, currentPlace)
+                else
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$currentPlace',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: team.color,
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    spacing: 4,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        team.label,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      if (widget.data['resultType'] !=
+                          ResultTypeEnum.condition.id)
+                        Text(
+                          'Сумма очков: ${teamData['score']}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                // Drag handle для режима перетаскивания
+                if (_mode == _SelectMode.single &&
+                    (widget.data['altVictoryType'] ==
+                            AltVictoryTypeEnum.yes.id ||
+                        (widget.data['resultType']) ==
+                            ResultTypeEnum.condition.id))
+                  ReorderableDragStartListener(
+                    index: _teams.indexOf(teamData),
+                    child: Icon(Icons.drag_handle, color: Colors.white),
+                  ),
+              ],
+            ),
+          ),
+
+          // Список игроков
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: teamData['gamers'].map<Widget>((gamer) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor: team.color,
+                        child: Text(
+                          gamer['username'][0].toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          gamer['username'],
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      if (widget.data['teamPointType'] ==
+                          TeamPointTypeEnum.personal.id)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${gamer['score']}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceInput(Map<String, dynamic> teamData, int place) {
+    return SizedBox(
+      width: 60,
+      child: TextFormField(
+        controller: teamData['controller'],
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: teamData['team'].color,
+        ),
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+        ),
+        onChanged: (value) {
+          _updatePlace(teamData, value);
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final Map<String, dynamic> teamData in _teams) {
+      teamData['controller']?.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+        return _isLoading
+            ? buildLoadingScreen()
+            : Column(
+                spacing: 12,
+                children: [
+                  // Кнопка переключения режима
+                  SegmentedButton<_SelectMode>(
+                    segments: const [
+                      ButtonSegment(
+                        value: _SelectMode.single,
+                        label: Text('1 команда - 1 место'),
+                        icon: Icon(Icons.radio_button_unchecked),
+                      ),
+                      ButtonSegment(
+                        value: _SelectMode.draw,
+                        label: Text('Ничья'),
+                        icon: Icon(Icons.check_box_outline_blank),
+                      ),
+                    ],
+                    selected: {_mode},
+                    onSelectionChanged: (Set<_SelectMode> selection) {
+                      _toggleMode();
+                    },
+                  ),
+
+                  // Кнопка переключение режима командных очков
+                  if (widget.data['teamPointType'] ==
+                      TeamPointTypeEnum.personal.id)
+                    SegmentedButton<_SelectScoreMode>(
+                      segments: const [
+                        ButtonSegment(
+                          value: _SelectScoreMode.sum,
+                          label: Text('+'),
+                          icon: Icon(Icons.radio_button_unchecked),
+                        ),
+                        ButtonSegment(
+                          value: _SelectScoreMode.multiple,
+                          label: Text('x'),
+                          icon: Icon(Icons.check_box_outline_blank),
+                        ),
+                        ButtonSegment(
+                          value: _SelectScoreMode.max,
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('MAX'),
+                          ),
+                          icon: Icon(Icons.check_box_outline_blank),
+                        ),
+                        ButtonSegment(
+                          value: _SelectScoreMode.min,
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('MIN'),
+                          ),
+                          icon: Icon(Icons.check_box_outline_blank),
+                        ),
+                      ],
+                      selected: {_scoreMode},
+                      onSelectionChanged: (Set<_SelectScoreMode> selection) {
+                        _toggleScoreMode(selection);
+                      },
+                    ),
+
+                  (_mode == _SelectMode.single)
+                      ? Flexible(child: _buildDragAndDropMode())
+                      : Flexible(child: _buildManualMode()),
+                ],
+              );
+      },
+    );
+  }
+}

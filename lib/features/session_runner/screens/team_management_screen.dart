@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/add_gamer_modal_form_builder.dart';
-import 'package:bg_tools/core/utils/gamer_session_data_getter.dart';
+import 'package:bg_tools/core/utils/gamer_session_data.dart';
+import 'package:bg_tools/core/utils/initial_team_data.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class TeamManagementScreen extends ConsumerStatefulWidget {
@@ -41,6 +43,9 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
     for (int i = 1; i <= widget.data['numberTeams']; i++) {
       final teamEnum = TeamsEnum.fromId(i);
       _teams[teamEnum] = [];
+      if (widget.data['teamsData'][teamEnum.id.toString()] == null) {
+        setIniialTeamData(widget.data['teamsData'], teamEnum);
+      }
     }
 
     for (Map<String, dynamic> gamerData in widget.data['gamers']) {
@@ -72,6 +77,27 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
         _teams[team]!.add(gamerData);
       });
     });
+  }
+
+  Future<void> _addLastSessionTeams() async {
+    setState(() => _isLoading = true);
+
+    final List<dynamic> gamersData =
+        await AppDataManager.loadLastSessionTeams();
+
+    if (gamersData.isNotEmpty) {
+      widget.data['gamers'].addAll(gamersData);
+
+      for (Map<String, dynamic> gamerData in widget.data['gamers']) {
+        if (_teams[TeamsEnum.fromId(gamerData['team'])] == null) {
+          _teams[TeamsEnum.fromId(1)]!.add(gamerData);
+        } else {
+          _teams[TeamsEnum.fromId(gamerData['team'])]!.add(gamerData);
+        }
+      }
+    }
+
+    setState(() => _isLoading = false);
   }
 
   void _removePlayer(Map<String, dynamic> gamerData) {
@@ -372,6 +398,20 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
                           ),
                         ),
                       ),
+                      if (widget.data['gamers'].isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: OutlinedButton.icon(
+                            onPressed: _addLastSessionTeams,
+                            icon: const Icon(Icons.group),
+                            label: const Text(
+                              'Добавить игроков из прошлой сессии',
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 40),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),

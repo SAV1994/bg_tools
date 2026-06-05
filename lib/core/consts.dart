@@ -53,5 +53,6 @@ enum TeamsEnum {
 // Ключи для данных в shared_preferences
 const String sessionKey = 'session';
 const String gamersOfLastSessionKey = 'gamersOfLastSession';
+const String teamssOfLastSessionKey = 'teamssOfLastSession';
 const String settingsKey = 'settings';
 const String ratingKey = 'rating';

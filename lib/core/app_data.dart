@@ -45,4 +45,24 @@ class AppDataManager {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(gamersOfLastSessionKey);
   }
+
+  // Запись команд последней сессии (JSON)
+  static Future<void> saveLastSessionTeams(List<dynamic> gamersData) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(teamssOfLastSessionKey, jsonEncode(gamersData));
+  }
+
+  // Получение команд последней сессии (JSON)
+  static Future<List<dynamic>> loadLastSessionTeams() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString(teamssOfLastSessionKey);
+
+    return (json == null) ? [] : jsonDecode(json);
+  }
+
+  // Удаление команд последней сессии (JSON)
+  static Future<void> clearLastSessionTeams() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(teamssOfLastSessionKey);
+  }
 }

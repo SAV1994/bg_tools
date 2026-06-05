@@ -84,12 +84,8 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
 
   Map<String, dynamic>? _getSessionData() {
     final Map<String, dynamic> data = {};
-    if (widget.data['teamScores'].isNotEmpty) {
-      data['teamScores'] = widget.data['teamScores'];
-    }
-    if (widget.data['pointType'] != null) {
-      data['pointType'] = widget.data['pointType'];
-    }
+    data['teamsData'] = widget.data['teamsData'];
+    data['pointType'] = widget.data['pointType'];
 
     return (data.isNotEmpty) ? data : null;
   }

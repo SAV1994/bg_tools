@@ -1,5 +1,6 @@
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/utils/initial_gamers_data.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 import 'package:bg_tools/features/session_runner/screens/export.dart';
@@ -49,6 +50,9 @@ final teamManagementStep = ScenarioStep(
     if (data['numberTeams'] - teamIds.length > 0) {
       throw Exception('Не все команды заполненны');
     }
+
+    final List<dynamic> claenedGamersData = cleanGamersData(data['gamers']);
+    AppDataManager.saveLastSessionTeams(claenedGamersData);
   },
 );
 
@@ -60,20 +64,9 @@ final gamersSelectStep = ScenarioStep(
     if (data['gamers'].isEmpty) {
       throw Exception('Добавте игроков');
     }
-    final List<dynamic> gamersData = [];
-    for (final Map<String, dynamic> gamerData in data['gamers']) {
-      gamersData.add({
-        'id': gamerData['id'],
-        'username': gamerData['username'],
-        'fio': gamerData['fio'],
-        'score': null,
-        'scoreByrounds': [],
-        'place': null,
-        'turnOrder': null,
-        'team': null,
-      });
-    }
-    AppDataManager.saveLastSessionGamers(gamersData);
+
+    final List<dynamic> claenedGamersData = cleanGamersData(data['gamers']);
+    AppDataManager.saveLastSessionGamers(claenedGamersData);
   },
 );
 
@@ -107,11 +100,53 @@ final roundsStep = ScenarioStep(
     } else if (data['roundsType'] == RoundsTypeEnum.condition.id) {
       final int roundsScoreLimit = data['roundsScoreLimit'];
       if (data['teamPointType'] == TeamPointTypeEnum.general.id) {
-        final int? generalScore = data['teamScores'][TeamsEnum.red.id];
+        final int? generalScore =
+            data['teamsData'][TeamsEnum.red.id.toString()]['score'];
         if (generalScore == null ||
             (roundsScoreLimit < 0 && generalScore > roundsScoreLimit ||
                 roundsScoreLimit >= 0 && generalScore < roundsScoreLimit)) {
           throw Exception('Не выполнено граничное условие');
+        }
+      } else {
+        bool isFinished = false;
+        for (final Map<String, dynamic> gamerData in data['gamers']) {
+          if (isFinished == false && gamerData['score'] != null) {
+            isFinished =
+                roundsScoreLimit < 0 &&
+                    gamerData['score'] <= roundsScoreLimit ||
+                roundsScoreLimit >= 0 && gamerData['score'] >= roundsScoreLimit;
+          }
+        }
+
+        if (!isFinished) {
+          throw Exception('Не выполнено граничное условие');
+        }
+      }
+    }
+  },
+);
+
+final teamRoundsStep = ScenarioStep(
+  title: 'Подсчёт между раундами',
+  description: 'Заполните результаты',
+  contentBuilder: (data) => TeamScoreRoundScreen(data: data),
+  validator: (data) {
+    if (data['roundsType'] == RoundsTypeEnum.fix.id) {
+      if (data['round'] != data['totalRounds']) {
+        throw Exception('Нужно завершить все раунды');
+      }
+    } else if (data['roundsType'] == RoundsTypeEnum.condition.id) {
+      final int roundsScoreLimit = data['roundsScoreLimit'];
+      if (data['teamPointType'] == TeamPointTypeEnum.general.id) {
+        bool isFinished = false;
+        for (final Map<String, dynamic> teamData in data['teamsData'].values) {
+          if (isFinished == false) {
+            isFinished =
+                roundsScoreLimit < 0 &&
+                    teamData['score'] != null &&
+                    teamData['score'] <= roundsScoreLimit ||
+                roundsScoreLimit >= 0 && teamData['score'] >= roundsScoreLimit;
+          }
         }
       } else {
         bool isFinished = false;
@@ -158,6 +193,25 @@ final oneWinnerSelectStep = ScenarioStep(
   },
 );
 
+final teamOneWinnerSelectStep = ScenarioStep(
+  title: 'Выбор победителя',
+  description: 'Выберите победителя',
+  contentBuilder: (data) => TeamOneWinnerSelectScreen(data: data),
+  validator: (data) {
+    bool isSelected = false;
+    for (final Map<String, dynamic> teamData in data['teamsData'].values) {
+      if (teamData['place'] == 1) {
+        isSelected = true;
+        break;
+      }
+    }
+
+    if (!isSelected) {
+      throw Exception('Выберите победителя');
+    }
+  },
+);
+
 final soloResultStep = ScenarioStep(
   title: 'Результаты',
   description: 'Отметьте результаты партии',
@@ -172,14 +226,29 @@ final coopResultStep = ScenarioStep(
   validator: (data) {},
 );
 
+final teamResultStep = ScenarioStep(
+  title: 'Результаты',
+  description: 'Отметьте результаты партии',
+  contentBuilder: (data) => TeamResultScreen(data: data),
+  validator: (data) {},
+);
+
 final scoreInputStep = ScenarioStep(
   title: 'Ввод результатов партии',
   description: 'Отметьте результаты партии',
   contentBuilder: (data) => ScoreInputScreen(data: data),
   validator: (data) {
-    for (final Map<String, dynamic> gamerData in data['gamers']) {
-      if (gamerData['score'] == null) {
-        throw Exception('Отметьте результаты каждого игрока');
+    if (data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      for (int i = 1; i <= data['numberTeams']; i++) {
+        if (data['teamsData'][i.toString()]?['score'] == null) {
+          throw Exception('Отметьте результаты каждой команды');
+        }
+      }
+    } else {
+      for (final Map<String, dynamic> gamerData in data['gamers']) {
+        if (gamerData['score'] == null) {
+          throw Exception('Отметьте результаты каждого игрока');
+        }
       }
     }
   },

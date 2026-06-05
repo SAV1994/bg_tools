@@ -56,6 +56,7 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
   Future<void> _nextStep() async {
     try {
       // Валидация текущего шага
+      await _saveProgress();
       _currentScenarioStep.validator(sessionData);
       sessionData['step']++;
       _generalError = null;

@@ -12,3 +12,6 @@ export 'session_start_screen.dart';
 export 'session_stop_screen.dart';
 export 'solo_result_screen.dart';
 export 'team_management_screen.dart';
+export 'team_one_winner_select_screen.dart';
+export 'team_result_screen.dart';
+export 'team_score_round_screen.dart';

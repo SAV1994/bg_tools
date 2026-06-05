@@ -116,7 +116,11 @@ class _CountingTemplateFormFormState
           _selectedGameType != null && _selectedGameType != GameTypeEnum.solo;
       _showTeamPointType =
           _selectedGameType != null &&
-          [GameTypeEnum.team, GameTypeEnum.coop].contains(_selectedGameType) &&
+          [
+            GameTypeEnum.team,
+            GameTypeEnum.coop,
+            GameTypeEnum.teamOneWinner,
+          ].contains(_selectedGameType) &&
           _selectedResultType != null &&
           _selectedResultType != ResultTypeEnum.condition;
       _showPointType =
@@ -337,6 +341,7 @@ class _CountingTemplateFormFormState
                           if (![
                             GameTypeEnum.coop,
                             GameTypeEnum.team,
+                            GameTypeEnum.teamOneWinner,
                           ].contains(value)) {
                             _selectedTeamPointType = null;
                           }

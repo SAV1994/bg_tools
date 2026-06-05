@@ -2,7 +2,7 @@ import 'package:bg_tools/features/session_runner/scenarios/steps.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 
 // 1 Распределение по местам
-class WithoutWPScenario {
+class ClassicScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -16,7 +16,7 @@ class WithoutWPScenario {
 }
 
 // 1 Распределение по местам (есть порядок ходов)
-class WithoutWPFPScenario {
+class FpClassicScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -31,7 +31,7 @@ class WithoutWPFPScenario {
 }
 
 // 1 Распределение по местам с ПО
-class WPScenario {
+class WpClassicScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -46,7 +46,7 @@ class WPScenario {
 }
 
 // 1 Распределение по местам с ПО + раунды
-class RoundsScenario {
+class RoundsClassicScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -62,7 +62,7 @@ class RoundsScenario {
 }
 
 // 1 Распределение по местам с ПО (есть порядок ходов)
-class WPFPScenario {
+class WpFpClassicScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -78,7 +78,7 @@ class WPFPScenario {
 }
 
 // 1 Распределение по местам с ПО (есть порядок ходов) + раунды
-class RoundsFPScenario {
+class RoundsFpClassicScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -109,7 +109,7 @@ class OneWinnerScenario {
 }
 
 // 2 Один победитель (есть порядок ходов)
-class OneWinnerFPScenario {
+class FpOneWinnerScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -123,7 +123,7 @@ class OneWinnerFPScenario {
   );
 }
 
-// 3 Командная игра
+// 3 Командная игра (есть 2 место)
 class TeamScenario {
   static Scenario get scenario => Scenario(
     steps: [
@@ -132,7 +132,91 @@ class TeamScenario {
       teamManagementStep,
       sessionStartStep,
       sessionStopStep,
-      resultStep,
+      teamResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 3 Командная игра (есть 2 место) (есть порядок ходов)
+class FpTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      sessionStopStep,
+      teamResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 3 Командная игра (есть 2 место) с ПО
+class WpTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      sessionStartStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 3 Командная игра (есть 2 место) с ПО (есть порядок ходов)
+class WpFpTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 3 Командная игра (есть 2 место) + раунды
+class RoundsTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      sessionStartStep,
+      teamRoundsStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 3 Командная игра (есть 2 место) + раунды (есть порядок ходов)
+class RoundsFpTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      teamRoundsStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamResultStep,
       finalStep,
     ],
   );
@@ -153,7 +237,7 @@ class CoopScenario {
 }
 
 // 4 Кооп + раунды
-class CoopRoundsScenario {
+class RoundsCoopScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -168,7 +252,7 @@ class CoopRoundsScenario {
 }
 
 // 4 Кооп (есть порядок ходов)
-class CoopFPScenario {
+class FpCoopScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -183,7 +267,7 @@ class CoopFPScenario {
 }
 
 // 4 Кооп (есть порядок ходов) + раунды
-class CoopRoundsFPScenario {
+class RoundsFpCoopScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -213,7 +297,7 @@ class SoloScenario {
 }
 
 // 5 Соло + раунды
-class SoloRoundsScenario {
+class RoundsSoloScenario {
   static Scenario get scenario => Scenario(
     steps: [
       rootSessionSelectStep,
@@ -222,6 +306,105 @@ class SoloRoundsScenario {
       roundsStep,
       sessionStopStep,
       soloResultStep,
+      finalStep,
+    ],
+  );
+}
+
+// 6 Командная игра (1 победитель)
+class OneTeamWinScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      sessionStartStep,
+      sessionStopStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 6 Командная игра (1 победитель) (есть порядок ходов)
+class FpOneTeamWinScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      sessionStopStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 6 Командная игра (1 победитель) с ПО
+class WpOneTeamWinScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      sessionStartStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 6 Командная игра (1 победитель) с ПО (есть порядок ходов)
+class WpFpOneTeamWinScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 6 Командная игра (1 победитель) + раунды
+class RoundsOneTeamWinScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      sessionStartStep,
+      teamRoundsStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 6 Командная игра (1 победитель) + раунды (есть порядок ходов)
+class RoundsFpOneTeamWinScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      numberTeamsStep,
+      teamManagementStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      teamRoundsStep,
+      sessionStopStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
       finalStep,
     ],
   );

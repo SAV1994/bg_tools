@@ -9,23 +9,23 @@ import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/score_calc_modal.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
-class ScoreRoundScreen extends ConsumerStatefulWidget {
+class TeamScoreRoundScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
 
-  const ScoreRoundScreen({super.key, required this.data});
+  const TeamScoreRoundScreen({super.key, required this.data});
 
   @override
-  ConsumerState<ScoreRoundScreen> createState() => _ScoreRoundScreenState();
+  ConsumerState<TeamScoreRoundScreen> createState() =>
+      _TeamScoreRoundScreenState();
 }
 
-class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
-  String? _lastRoundFirstPlayer;
-  int? _lastRoundGeneralScore;
+class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
+  String? _lastRoundFirst;
   bool _isFinished = false;
   late final int? _roundsScoreLimit;
   // Контроллеры
   List<Map<String, dynamic>> _scoreControllers = [];
-  TextEditingController? _generalScoreController;
+  List<Map<String, dynamic>> _teamScoreControllers = [];
   // Загрузка
   bool _isLoading = false;
 
@@ -40,16 +40,29 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
     _roundsScoreLimit = widget.data['roundsScoreLimit'];
 
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
-      final int? generalScore =
-          widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'];
-      _generalScoreController = TextEditingController(
-        text: generalScore?.toString(),
-      );
-      _isFinished =
-          generalScore != null &&
-          _roundsScoreLimit != null &&
-          (_roundsScoreLimit < 0 && generalScore <= _roundsScoreLimit ||
-              _roundsScoreLimit >= 0 && generalScore >= _roundsScoreLimit);
+      for (int i = 1; i <= widget.data['numberTeams']; i++) {
+        final teamEnum = TeamsEnum.fromId(i);
+        final int? score = widget.data['teamsData'][i.toString()]['score'];
+        _teamScoreControllers.add({
+          'team': teamEnum,
+          'controller': TextEditingController(),
+          'gamers': [],
+          'score': score,
+          'show': false,
+        });
+
+        if (_isFinished == false &&
+            _roundsScoreLimit != null &&
+            score != null) {
+          _isFinished =
+              _roundsScoreLimit < 0 && score <= _roundsScoreLimit ||
+              _roundsScoreLimit >= 0 && score >= _roundsScoreLimit;
+        }
+      }
+
+      for (Map<String, dynamic> gamerData in widget.data['gamers']) {
+        _teamScoreControllers[gamerData['team'] - 1]['gamers'].add(gamerData);
+      }
     } else {
       List<Map<String, dynamic>> gamersData = widget.data['gamers']
           .cast<Map<String, dynamic>>();
@@ -68,9 +81,9 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
               _roundsScoreLimit >= 0 && gamerData['score'] >= _roundsScoreLimit;
         }
       }
-
-      _sortByCondition();
     }
+
+    _sortByCondition();
 
     setState(() => _isLoading = false);
   }
@@ -78,7 +91,19 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   Future<void> _nextRound() async {
     setState(() => _isLoading = true);
 
-    _lastRoundFirstPlayer = widget.data['gamers'][0]['username'];
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      _nextRoundTeams();
+    } else {
+      _nextRoundPlayers();
+    }
+
+    await AppDataManager.saveActiveSession(widget.data);
+
+    setState(() => _isLoading = false);
+  }
+
+  void _nextRoundPlayers() {
+    _lastRoundFirst = widget.data['gamers'][0]['username'];
     List<(int, int)> roundResults = [];
 
     for (int i = 0; i < _scoreControllers.length; i++) {
@@ -123,46 +148,65 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
 
       _sortByCondition();
     }
-
-    await AppDataManager.saveActiveSession(widget.data);
-
-    setState(() => _isLoading = false);
   }
 
-  Future<void> _nextRoundGeneralScore() async {
-    final newScore = int.tryParse(_generalScoreController!.text) ?? 0;
-    _generalScoreController!.clear();
+  void _nextRoundTeams() {
+    _lastRoundFirst = _teamScoreControllers[0]['team'].label;
+    List<(String, int)> roundResults = [];
 
-    if (widget.data['type'] == GameTypeEnum.coop.id) {
-      if (widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] !=
-          null) {
-        widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] +=
-            newScore;
+    for (final controllerData in _teamScoreControllers) {
+      final TeamsEnum team = controllerData['team'];
+
+      final newScore = int.tryParse(controllerData['controller'].text) ?? 0;
+
+      controllerData['controller'].clear();
+
+      roundResults.add((team.id.toString(), newScore));
+
+      if (widget.data['teamsData'][team.id.toString()]['score'] != null) {
+        widget.data['teamsData'][team.id.toString()]['score'] += newScore;
       } else {
-        widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] =
-            newScore;
+        widget.data['teamsData'][team.id.toString()]['score'] = newScore;
+      }
+      widget.data['teamsData'][team.id.toString()]['scoreByrounds'].add(
+        newScore,
+      );
+
+      controllerData['score'] =
+          widget.data['teamsData'][team.id.toString()]['score'];
+      if (_isFinished == false && _roundsScoreLimit != null) {
+        if (_roundsScoreLimit < 0) {
+          _isFinished =
+              widget.data['teamsData'][team.id.toString()]['score'] <=
+              _roundsScoreLimit;
+        } else {
+          _isFinished =
+              widget.data['teamsData'][team.id.toString()]['score'] >=
+              _roundsScoreLimit;
+        }
       }
     }
 
-    if (_isFinished == false && _roundsScoreLimit != null) {
-      if (_roundsScoreLimit < 0) {
-        _isFinished =
-            widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] <=
-            _roundsScoreLimit;
+    if (widget.data['pointType'] == PointTypeEnum.max.id) {
+      roundResults.sort((a, b) => b.$2.compareTo(a.$2));
+    } else {
+      roundResults.sort((a, b) => a.$2.compareTo(b.$2));
+    }
+    // Засчитываем победу в раунде только если не было ничьей
+    if (roundResults[0].$2 != roundResults[1].$2) {
+      if (widget.data['teamsData'][roundResults[0].$1]['numWInRounds'] !=
+          null) {
+        widget.data['teamsData'][roundResults[0].$1]['numWInRounds'] += 1;
       } else {
-        _isFinished =
-            widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] >=
-            _roundsScoreLimit;
+        widget.data['teamsData'][roundResults[0].$1]['numWInRounds'] = 1;
       }
     }
 
     if (!_isFinished) {
       widget.data['round']++;
+
+      _sortByCondition();
     }
-
-    _lastRoundGeneralScore = newScore;
-
-    setState(() {});
   }
 
   void _sortByCondition() {
@@ -174,9 +218,16 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
       _sortByLeaderCondition();
     } else if (widget.data['firstPlayerRoundType'] ==
         FirstPlayerRoundTypeEnum.loser.id) {
+      late final data;
+      if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+        data = _teamScoreControllers;
+      } else {
+        data = widget.data['gamers'];
+      }
+
       if (widget.data['sequencePlayersMovesType'] ==
           SequencePlayersMovesTypeEnum.random.id) {
-        widget.data['gamers'].sort((a, b) {
+        data.sort((a, b) {
           final scoreA = a['score'] as int? ?? 0;
           final scoreB = b['score'] as int? ?? 0;
           if (widget.data['pointType'] == PointTypeEnum.max.id) {
@@ -186,35 +237,37 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
           }
         });
 
-        _scoreControllers.sort((a, b) {
-          final scoreA = a['score'] as int? ?? 0;
-          final scoreB = b['score'] as int? ?? 0;
-          if (widget.data['pointType'] == PointTypeEnum.max.id) {
-            return scoreA.compareTo(scoreB);
-          } else {
-            return scoreB.compareTo(scoreA);
-          }
-        });
-      } else {
-        final int loserIndex = widget.data['gamers'].asMap().entries.fold(
-          null,
-          (fixed, current) {
-            final int currentScore = current.value['score'] ?? 0;
-            final int fixedScore = fixed?.value['score'] ?? 0;
-
+        if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
+          _scoreControllers.sort((a, b) {
+            final scoreA = a['score'] as int? ?? 0;
+            final scoreB = b['score'] as int? ?? 0;
             if (widget.data['pointType'] == PointTypeEnum.max.id) {
-              if (fixed == null || currentScore < fixedScore) {
-                return current;
-              }
+              return scoreA.compareTo(scoreB);
             } else {
-              if (fixed == null || currentScore > fixedScore) {
-                return current;
-              }
+              return scoreB.compareTo(scoreA);
             }
+          });
+        }
+      } else {
+        final int loserIndex = data.asMap().entries.fold(null, (
+          fixed,
+          current,
+        ) {
+          final int currentScore = current.value['score'] ?? 0;
+          final int fixedScore = fixed?.value['score'] ?? 0;
 
-            return fixed;
-          },
-        )?.key;
+          if (widget.data['pointType'] == PointTypeEnum.max.id) {
+            if (fixed == null || currentScore < fixedScore) {
+              return current;
+            }
+          } else {
+            if (fixed == null || currentScore > fixedScore) {
+              return current;
+            }
+          }
+
+          return fixed;
+        })?.key;
 
         _sortByClockwise(loserIndex);
       }
@@ -226,9 +279,16 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   }
 
   void _sortByLeaderCondition() {
+    late final data;
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      data = _teamScoreControllers;
+    } else {
+      data = widget.data['gamers'];
+    }
+
     if (widget.data['sequencePlayersMovesType'] ==
         SequencePlayersMovesTypeEnum.random.id) {
-      widget.data['gamers'].sort((a, b) {
+      data.sort((a, b) {
         final scoreA = a['score'] as int? ?? 0;
         final scoreB = b['score'] as int? ?? 0;
         if (widget.data['pointType'] == PointTypeEnum.max.id) {
@@ -238,20 +298,19 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
         }
       });
 
-      _scoreControllers.sort((a, b) {
-        final scoreA = a['score'] as int? ?? 0;
-        final scoreB = b['score'] as int? ?? 0;
-        if (widget.data['pointType'] == PointTypeEnum.max.id) {
-          return scoreB.compareTo(scoreA);
-        } else {
-          return scoreA.compareTo(scoreB);
-        }
-      });
+      if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
+        _scoreControllers.sort((a, b) {
+          final scoreA = a['score'] as int? ?? 0;
+          final scoreB = b['score'] as int? ?? 0;
+          if (widget.data['pointType'] == PointTypeEnum.max.id) {
+            return scoreB.compareTo(scoreA);
+          } else {
+            return scoreA.compareTo(scoreB);
+          }
+        });
+      }
     } else {
-      final int leaderIndex = widget.data['gamers'].asMap().entries.fold(null, (
-        fixed,
-        current,
-      ) {
+      final int leaderIndex = data.asMap().entries.fold(null, (fixed, current) {
         final int currentScore = current.value['score'] ?? 0;
         final int fixedScore = fixed?.value['score'] ?? 0;
 
@@ -273,14 +332,24 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   }
 
   void _sortByClockwise(int index) {
-    final List<dynamic> reorderGamers =
-        widget.data['gamers'].sublist(index) +
-        widget.data['gamers'].sublist(0, index);
-    widget.data['gamers'] = reorderGamers;
+    late final List<Map<String, dynamic>> data;
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      data = _teamScoreControllers;
+    } else {
+      data = widget.data['gamers'].cast<Map<String, dynamic>>();
+    }
 
-    final List<dynamic> reorderControllers =
-        _scoreControllers.sublist(index) + _scoreControllers.sublist(0, index);
-    _scoreControllers = reorderControllers as List<Map<String, dynamic>>;
+    final List<Map<String, dynamic>> reorderGamers =
+        data.sublist(index) + data.sublist(0, index);
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      _teamScoreControllers = reorderGamers;
+    } else {
+      widget.data['gamers'] = reorderGamers;
+      final List<dynamic> reorderControllers =
+          _scoreControllers.sublist(index) +
+          _scoreControllers.sublist(0, index);
+      _scoreControllers = reorderControllers as List<Map<String, dynamic>>;
+    }
   }
 
   void _reorder(int oldIndex, int newIndex) {
@@ -313,56 +382,52 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
             colors: [Colors.deepPurple.shade200, Colors.white],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            spacing: 20,
-            children: [
-              if (_lastRoundFirstPlayer != null)
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Column(
+              children: [
+                if (_lastRoundFirst != null)
+                  Text(
+                    'Предыдущий раунд ходила первой: $_lastRoundFirst',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 Text(
-                  'Предыдущий раунд: $_lastRoundGeneralScore',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  (widget.data['round'] < widget.data['totalRounds'] &&
+                          _isFinished == false)
+                      ? 'Раунд ${widget.data['round'] + 1} из '
+                            '${(widget.data['totalRounds'] == infNumRounds) ? '∞' : widget.data['totalRounds']}'
+                      : 'По итогу всех раундов',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                ReorderableListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(16),
+                  onReorder: _reorder,
+                  children: List.generate(_teamScoreControllers.length, (
+                    index,
+                  ) {
+                    final Map<String, dynamic> teamData =
+                        _teamScoreControllers[index];
+
+                    return _buildTeamCard(teamData);
+                  }),
                 ),
 
-              if (widget.data['type'] == GameTypeEnum.coop.id)
-                Text(
-                  'Всего: ${widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] ?? 0}',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                ),
-
-              TextFormField(
-                enabled:
-                    widget.data['round'] < widget.data['totalRounds'] &&
-                    _isFinished == false,
-                controller: _generalScoreController,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
-                ],
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 8),
-                ),
-              ),
-
-              if (widget.data['round'] < widget.data['totalRounds'] &&
-                  _isFinished == false)
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _nextRoundGeneralScore,
-                        child: Text('Следующий раунд'),
+                if (widget.data['round'] < widget.data['totalRounds'] &&
+                    _isFinished == false)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _nextRound,
+                          child: Text('Следующий раунд'),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-            ],
+                    ],
+                  ),
+              ],
+            ),
           ),
         ),
       );
@@ -381,9 +446,9 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
           padding: const EdgeInsets.all(5.0),
           child: Column(
             children: [
-              if (_lastRoundFirstPlayer != null)
+              if (_lastRoundFirst != null)
                 Text(
-                  'Предыдущий раунд ходил первым: $_lastRoundFirstPlayer',
+                  'Предыдущий раунд ходил первым: $_lastRoundFirst',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               Text(
@@ -424,7 +489,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
               ),
 
               if (widget.data['round'] < widget.data['totalRounds'] &&
-                  _isFinished == false)
+                  !_isFinished)
                 Row(
                   children: [
                     Expanded(
@@ -438,6 +503,156 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTeamCard(Map<String, dynamic> teamData) {
+    return Card(
+      key: Key('${teamData['team'].id}'),
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        children: [
+          // Заголовок команды
+          InkWell(
+            onTap: () => setState(() {
+              teamData['show'] = !teamData['show'];
+            }),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  // Цвет команды
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: teamData['team'].color,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                      child: Text(
+                        widget
+                            .data['teamsData'][teamData['team'].id
+                                .toString()]['numWInRounds']
+                            .toString(),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Информация о команде
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          teamData['team'].label,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Счки: ${teamData['score'] ?? '...'}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Поле ввода очков
+                  SizedBox(
+                    width: 100,
+                    child: TextFormField(
+                      enabled:
+                          widget.data['round'] < widget.data['totalRounds'] &&
+                          !_isFinished,
+                      controller: teamData['controller'],
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: teamData['team'].color,
+                      ),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Список игроков (сворачиваемый)
+          if (teamData['show'])
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+              child: Column(
+                children: teamData['gamers'].map<Widget>((gamer) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: teamData['team'].color.withOpacity(
+                            0.2,
+                          ),
+                          child: Text(
+                            gamer['username'][0].toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: teamData['team'].color,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            gamer['username'],
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -575,7 +790,9 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
     for (final Map<String, dynamic> controllerData in _scoreControllers) {
       controllerData['controller'].dispose();
     }
-    _generalScoreController?.dispose();
+    for (final Map<String, dynamic> controllerData in _teamScoreControllers) {
+      controllerData['controller'].dispose();
+    }
     super.dispose();
   }
 

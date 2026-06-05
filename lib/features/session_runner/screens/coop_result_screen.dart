@@ -57,7 +57,8 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   Future<void> _loadData() async {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
       _generalScoreController = TextEditingController(
-        text: widget.data['teamScores'][TeamsEnum.red.id]?.toString(),
+        text: widget.data['teamsData'][TeamsEnum.red.id.toString()]['score']
+            ?.toString(),
       );
     } else {
       if (widget.data['resulScreenMode'] == null) {
@@ -131,7 +132,8 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
       }
     }
 
-    widget.data['teamScores'][TeamsEnum.red.id] = _totalScore;
+    widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] =
+        _totalScore;
   }
 
   void _toggleMode(Set<_SelectMode> selection) {
@@ -181,7 +183,9 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                   contentPadding: EdgeInsets.symmetric(vertical: 8),
                 ),
                 onChanged: (value) {
-                  widget.data['teamScores'][TeamsEnum.red.id] = value;
+                  widget.data['teamsData'][TeamsEnum.red.id
+                          .toString()]['score'] =
+                      value;
                 },
               ),
 

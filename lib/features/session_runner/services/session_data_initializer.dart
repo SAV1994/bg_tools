@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
+import 'package:bg_tools/core/utils/initial_team_data.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/scenario_mapping.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 
@@ -43,6 +46,14 @@ Future<void> initSessionData(
       gamesCountingTemplatesData.gamesCountingTemplate.gameId;
   sessionData['expansionIds'] = gamesCountingTemplatesData.selectedexpansionIds
       .toList();
+
+  if ([
+    GameTypeEnum.solo.id,
+    GameTypeEnum.coop.id,
+  ].contains(sessionData['type'])) {
+    final TeamsEnum teamEnum = TeamsEnum.red;
+    setIniialTeamData(sessionData['teamsData'], teamEnum);
+  }
 
   await AppDataManager.saveActiveSession(sessionData);
 }

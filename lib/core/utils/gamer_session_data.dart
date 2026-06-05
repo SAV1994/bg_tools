@@ -8,6 +8,7 @@ Map<String, dynamic> getGamerData(Gamer gamer) {
     'fio': getGamerFio(gamer),
     'score': null,
     'scoreByrounds': [],
+    'numWInRounds': 0,
     'place': null,
     'turnOrder': null,
     'team': null,

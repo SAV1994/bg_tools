@@ -34,7 +34,6 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   Future<void> _loadData() async {
     if (widget.data['gamers'][0]['place'] == null) {
       _sortByWinCondition();
-      _fillPlace();
     } else if (hasDraw()) {
       _mode = _SelectMode.draw;
     }
@@ -117,6 +116,19 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     }
   }
 
+  void _updatePlace(int gamerId, String value) {
+    int? newPlace = int.tryParse(value);
+    for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
+      if (gamerData['id'] == gamerId) {
+        if (widget.data['type'] != GameTypeEnum.oneWinner.id || newPlace == 1) {
+          gamerData['place'] = newPlace;
+        } else {
+          gamerData['place'] = null;
+        }
+      }
+    }
+  }
+
   Widget _buildPlacePositionsWidget() {
     if (_mode == _SelectMode.draw) {
       return Container(
@@ -144,7 +156,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       _scoreControllers[gamerId],
                       false,
                       true,
-                      _updatPlace,
+                      _updatePlace,
                     );
                   },
                 ),
@@ -180,19 +192,6 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         );
       }),
     );
-  }
-
-  void _updatPlace(int gamerId, String value) {
-    int? newScore = int.tryParse(value);
-    for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
-      if (gamerData['id'] == gamerId) {
-        if (widget.data['type'] != GameTypeEnum.oneWinner.id || newScore == 1) {
-          gamerData['place'] = newScore;
-        } else {
-          gamerData['place'] = null;
-        }
-      }
-    }
   }
 
   Widget _buildPlayerCard(int index, Map<String, dynamic> gamerData) {

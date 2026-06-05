@@ -47,13 +47,12 @@ const Map<String, dynamic> sessionInitialData = {
   'gamers': [],
 
   'numberTeams': null,
+  'teamsData': {},
 
   'round': 0,
   'lastRoundFirstPlayer': null,
   'totalRounds': null,
   'roundsScoreLimit': null,
-
-  'teamScores': {},
 
   'resulScreenMode': null,
 };

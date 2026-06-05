@@ -114,8 +114,6 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
 
     final List<Map<String, dynamic>> gamers = [];
 
-    final int totalGamers = widget.data['gamers'].length;
-
     List<List<Map<String, dynamic>>> teams = _getTeamsList();
     teams.shuffle();
 

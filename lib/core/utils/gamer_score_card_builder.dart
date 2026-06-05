@@ -8,10 +8,12 @@ Widget buildGamerInputCard(
   Map<String, dynamic> controllerData,
   bool addCalcBtn,
   bool digitsOnly,
-  Function updateScore,
-) {
+  Function updateScore, [
+  Color? color,
+]) {
   return Card(
     margin: const EdgeInsets.only(bottom: 12),
+    color: (color == null) ? Colors.red : color,
     elevation: 2,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     child: Padding(
@@ -28,6 +30,7 @@ Widget buildGamerInputCard(
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: Colors.white,
                   ),
                 ),
                 // Дополнительная информация
@@ -38,7 +41,7 @@ Widget buildGamerInputCard(
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.greenAccent,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -46,7 +49,7 @@ Widget buildGamerInputCard(
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -72,6 +75,7 @@ Widget buildGamerInputCard(
                       );
                     },
                     icon: Icon(Icons.iso),
+                    color: Colors.white,
                   ),
               ],
             ),
