@@ -62,18 +62,27 @@ class _TeamOneWinnerSelectScreenState
       }
     }
 
-    for (int i = 1; i <= widget.data['numberTeams']; i++) {
-      final teamEnum = TeamsEnum.fromId(i);
-      _teams.add({
-        'team': teamEnum,
-        'gamers': [],
-        'controller': null,
-        'score': widget.data['teamsData'][i.toString()]['score'],
-      });
+    final Map<String, dynamic> gamersMap = {};
+    for (Map<String, dynamic> gamerData in widget.data['gamers']) {
+      if (gamerData['team'] != null) {
+        gamersMap
+            .putIfAbsent(gamerData['team'].toString(), () => [])
+            .add(gamerData);
+      }
     }
 
-    for (Map<String, dynamic> gamerData in widget.data['gamers']) {
-      _teams[gamerData['team'] - 1]['gamers'].add(gamerData);
+    for (final teamData in widget.data['teamsData'].entries) {
+      final teamEnum = TeamsEnum.fromId(int.parse(teamData.key));
+      final String teamName =
+          widget.data['teamsData'][teamData.key]['name'] ?? teamEnum.label;
+
+      _teams.add({
+        'team': teamEnum,
+        'name': teamName,
+        'gamers': gamersMap[teamData.key],
+        'controller': null,
+        'score': teamData.value['score'],
+      });
     }
 
     if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
@@ -213,7 +222,7 @@ class _TeamOneWinnerSelectScreenState
         : _multipleSelected.contains(teamId);
   }
 
-  Widget _buildItemTile(Map<String, dynamic> teamData, bool isSelected) {
+  Widget _buildTeamTile(Map<String, dynamic> teamData, bool isSelected) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       elevation: 0,
@@ -236,44 +245,49 @@ class _TeamOneWinnerSelectScreenState
                   // Индикатор выбора
                   _buildSelectionIndicator(isSelected),
                   const SizedBox(width: 16),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: teamData['team'].color,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text(
-                        widget
-                                .data['teamsData'][teamData['team'].id
-                                    .toString()]['numWInRounds']
-                                ?.toString() ??
-                            '0',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                  if (widget.data['type'] != GameTypeEnum.secretRoles.id) ...[
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: teamData['team'].color,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget
+                                  .data['teamsData'][teamData['team'].id
+                                      .toString()]['numWInRounds']
+                                  ?.toString() ??
+                              '0',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
+                    const SizedBox(width: 12),
+                  ],
                   // Информация о команде
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          teamData['team'].label,
-                          style: const TextStyle(
+                          teamData['name'],
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: teamData['team'].color,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Очки: ${widget.data['teamsData'][teamData['team'].id.toString()]['score'] ?? 0}',
+                          (widget.data['type'] != GameTypeEnum.secretRoles.id)
+                              ? 'Очки: ${widget.data['teamsData'][teamData['team'].id.toString()]['score'] ?? 0}'
+                              : 'Количество игроков: ${teamData['gamers'].length}',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade600,
@@ -290,7 +304,6 @@ class _TeamOneWinnerSelectScreenState
           // Список игроков
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(16),
                 bottomRight: Radius.circular(16),
@@ -336,7 +349,9 @@ class _TeamOneWinnerSelectScreenState
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          '${gamer['score'] ?? 0}',
+                          (widget.data['type'] != GameTypeEnum.secretRoles.id)
+                              ? '${gamer['score'] ?? 0}'
+                              : '${gamer['role']['roleName']}${gamer['role']['groupName'] != null ? ' (${gamer['role']['groupName']})' : ''}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: teamData['team'].color,
@@ -437,28 +452,28 @@ class _TeamOneWinnerSelectScreenState
                     ),
 
                   // Кнопка переключения режима
-                  SegmentedButton<_SelectMode>(
-                    segments: const [
-                      ButtonSegment(
-                        value: _SelectMode.single,
-                        label: Text('Один победитель'),
-                        icon: Icon(Icons.radio_button_unchecked),
-                      ),
-                      ButtonSegment(
-                        value: _SelectMode.multiple,
-                        label: Text('Ничья'),
-                        icon: Icon(Icons.check_box_outline_blank),
-                      ),
-                    ],
-                    selected: {_mode},
-                    onSelectionChanged: (Set<_SelectMode> selection) {
-                      _toggleMode();
-                    },
-                  ),
+                  if (widget.data['type'] != GameTypeEnum.secretRoles.id)
+                    SegmentedButton<_SelectMode>(
+                      segments: const [
+                        ButtonSegment(
+                          value: _SelectMode.single,
+                          label: Text('Один победитель'),
+                          icon: Icon(Icons.radio_button_unchecked),
+                        ),
+                        ButtonSegment(
+                          value: _SelectMode.multiple,
+                          label: Text('Ничья'),
+                          icon: Icon(Icons.check_box_outline_blank),
+                        ),
+                      ],
+                      selected: {_mode},
+                      onSelectionChanged: (Set<_SelectMode> selection) {
+                        _toggleMode();
+                      },
+                    ),
                   // Информационная панель
                   Container(
                     padding: const EdgeInsets.all(16),
-                    color: Colors.blue.shade50,
                     child: Row(
                       children: [
                         Icon(
@@ -489,7 +504,7 @@ class _TeamOneWinnerSelectScreenState
                         final teamData = _teams[index];
                         final isSelected = _isSelected(teamData['team'].id);
 
-                        return _buildItemTile(teamData, isSelected);
+                        return _buildTeamTile(teamData, isSelected);
                       },
                     ),
                   ),

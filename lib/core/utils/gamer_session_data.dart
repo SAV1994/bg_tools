@@ -12,5 +12,6 @@ Map<String, dynamic> getGamerData(Gamer gamer) {
     'place': null,
     'turnOrder': null,
     'team': null,
+    'role': {},
   };
 }

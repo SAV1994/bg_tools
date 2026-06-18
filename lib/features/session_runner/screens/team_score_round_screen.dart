@@ -1,13 +1,11 @@
-import 'package:bg_tools/core/utils/player_round_score_card_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/score_calc_modal.dart';
+import 'package:bg_tools/core/utils/player_round_score_card_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 class TeamScoreRoundScreen extends ConsumerStatefulWidget {
@@ -464,6 +462,13 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(16),
                 onReorder: _reorder,
+                proxyDecorator: (child, index, animation) {
+                  return Material(
+                    elevation: 8,
+                    color: Colors.transparent,
+                    child: child,
+                  );
+                },
                 children: List.generate(widget.data['gamers'].length, (index) {
                   final Map<String, dynamic> gamerData =
                       widget.data['gamers'][index];

@@ -1,9 +1,11 @@
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/initial_gamers_data.dart';
+import 'package:bg_tools/core/utils/initial_team_data.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 import 'package:bg_tools/features/session_runner/screens/export.dart';
+import 'package:bg_tools/features/session_runner/utils/secret_roles_randomizer.dart';
 
 final rootSessionSelectStep = ScenarioStep(
   title: 'Базовые параметры сессиии',
@@ -13,12 +15,17 @@ final rootSessionSelectStep = ScenarioStep(
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id &&
         (data['totalRounds'] == null || data['totalRounds'] < 1)) {
-      throw Exception('Укажите количкство раундов');
+      throw Exception('Укажите количество раундов');
     } else if ([
       RoundsTypeEnum.dynamic.id,
       RoundsTypeEnum.condition.id,
     ].contains(data['roundsType'])) {
       data['totalRounds'] = infNumRounds;
+    }
+
+    if (data['gameHostType'] == GameHostTypeEnum.master.id &&
+        data['master'] == null) {
+      throw Exception('Укажите ведущего');
     }
   },
 );
@@ -51,7 +58,10 @@ final teamManagementStep = ScenarioStep(
       throw Exception('Не все команды заполненны');
     }
 
-    final List<dynamic> claenedGamersData = cleanGamersData(data['gamers']);
+    final List<dynamic> claenedGamersData = cleanGamersData(
+      data['gamers'],
+      saveTeam: true,
+    );
     AppDataManager.saveLastSessionTeams(claenedGamersData);
   },
 );
@@ -260,6 +270,77 @@ final resultStep = ScenarioStep(
       'Итоги партии. Если в игре есть возможность альтернативной победы - определите места.',
   contentBuilder: (data) => ResultScreen(data: data),
   validator: (data) {},
+);
+
+final secretRoleManagementStep = ScenarioStep(
+  title: 'Набор ролей',
+  description: 'Выберети роли, которые будут участвовать в партии',
+  contentBuilder: (data) => SecretRolesManagementScreen(data: data),
+  validator: (data) {
+    int playersCount = data['gamers'].length;
+    if (data['master'] != null) {
+      playersCount--;
+    }
+
+    if (data['secretRoles'].length < playersCount) {
+      throw Exception(
+        'Количество ролей не может быть меньше количества игроков.',
+      );
+    }
+
+    if (data['secretRoles'].where((role) => role['isRequired'] == true).length >
+        playersCount) {
+      throw Exception(
+        'Количество обязательных ролей не может быть больше количества игроков.',
+      );
+    }
+
+    if (data['secretRolesDistributionType'] ==
+        SecretRolesDistributionTypeEnum.auto.id) {
+      distributeSecretRoles(data);
+    }
+  },
+);
+
+final playerRolesViewStep = ScenarioStep(
+  title: 'Ознакомление с ролью',
+  description: 'Посмотри и запомни роль, затем передай следующему игроку',
+  contentBuilder: (data) =>
+      PlayerRolesViewScreen.PlayerRolesViewScreen(data: data),
+  validator: (data) {},
+);
+
+final secretRolesViewStep = ScenarioStep(
+  title: 'Ознакомление ведущим',
+  description: 'Ведущий ознакамливается с ролями игроков',
+  contentBuilder: (data) => SecretRolesViewScreen(data: data),
+  validator: (data) {},
+);
+
+final roleAssignmentStep = ScenarioStep(
+  title: 'Распределение уже назначенных ролей',
+  description: 'Укажите роли игроков',
+  contentBuilder: (data) => RoleAssignmentScreen(data: data),
+  validator: (data) {
+    final int masterId = data['master'] ?? 0;
+    final List<dynamic> playesrWithoutRole = data['gamers']
+        .where((player) => player['team'] == null && player['id'] != masterId)
+        .toList();
+    if (playesrWithoutRole.isNotEmpty) {
+      throw Exception('Нужно закрепить роли за всеми игроками');
+    }
+
+    data['teamsData'] = {};
+    for (final Map<String, dynamic> playerData in data['gamers']) {
+      if (playerData['team'] != null &&
+          data['teamsData'][playerData['team'].toString()] == null) {
+        setIniialTeamData(data['teamsData'], playerData['team']);
+        data['teamsData'][playerData['team'].toString()]['name'] =
+            playerData['role']['teamName'];
+      }
+    }
+    data['numberTeams'] = data['teamsData'].length;
+  },
 );
 
 final finalStep = ScenarioStep(

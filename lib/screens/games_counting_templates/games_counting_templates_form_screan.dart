@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:drift/drift.dart' show Value;
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
@@ -40,8 +41,13 @@ class _GamesCountingTemplatesModalFormState
   CountingTemplate? _selectedCountingTemplate;
   List<Game> _expansions = [];
   Set<int> _selectedExpansionIds = {};
+
   bool _showRoundsScoreLimitInput = false;
+
+  List<dynamic> _secretRolesConfig = [];
+  bool _showSecretRolesConfig = false;
   // Контроллеры
+  final TextEditingController _controllerForModal = TextEditingController();
   late final TextEditingController _nameController;
   late TextEditingController _roundsScoreLimitController;
   // Загрузка
@@ -82,6 +88,15 @@ class _GamesCountingTemplatesModalFormState
         _selectedCountingTemplate!.data,
       );
 
+      if (templatesData['gameType'] == GameTypeEnum.secretRoles.id) {
+        GamesCountingTemplate gamesCountingTemplate =
+            gamesCountingTemplatesData!.gamesCountingTemplate;
+        _secretRolesConfig = json.decode(
+          gamesCountingTemplate.data!,
+        )['secretRolesConfig'];
+        _showSecretRolesConfig = true;
+      }
+
       if (templatesData['roundsType'] == RoundsTypeEnum.condition.id) {
         final Map<String, dynamic> gameData = jsonDecode(
           gamesCountingTemplatesData!.gamesCountingTemplate.data!,
@@ -110,6 +125,7 @@ class _GamesCountingTemplatesModalFormState
 
       final Map<String, dynamic> data = {
         'roundsScoreLimit': int.tryParse(_roundsScoreLimitController.text),
+        'secretRolesConfig': _secretRolesConfig,
       };
 
       final GamesCountingTemplatesCompanion gamesCountingTemplatesComp =
@@ -156,14 +172,510 @@ class _GamesCountingTemplatesModalFormState
     }
   }
 
+  Widget _buildTeamCard(Map<String, dynamic> teamData, int index) {
+    final List<dynamic> groups = teamData['groups'];
+    final List<dynamic> roles = teamData['roles'];
+    final team = TeamsEnum.fromId(teamData['team']);
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: team.color, width: 2),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Заголовок команды
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: team.color,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      teamData['name'][0].toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    teamData['name'],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                // Кнопки действий
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () => _showTeamModalForm(index),
+                      tooltip: 'Редактировать команду',
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => setState(() {
+                        _secretRolesConfig.removeAt(index);
+                      }),
+                      tooltip: 'Удалить команду',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Кнопки добавления групп и ролей
+            Row(
+              spacing: 8,
+              children: [
+                if (roles.isEmpty)
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showGroupModalForm(groups),
+                      icon: const Icon(Icons.supervised_user_circle, size: 18),
+                      label: const Text('Добавить группу'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    ),
+                  ),
+                if (groups.isEmpty)
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showRoleModalForm(roles),
+                      icon: const Icon(Icons.person, size: 18),
+                      label: const Text('Добавить роль'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            // Список групп
+            if (groups.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 8),
+              ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(16),
+                itemCount: groups.length,
+                itemBuilder: (context, index) {
+                  return _buildGroupCard(groups, index);
+                },
+              ),
+            ],
+
+            // Список ролей
+            if (roles.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 8),
+              ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(16),
+                itemCount: roles.length,
+                itemBuilder: (context, index) {
+                  return _buildRoleTile(roles, index);
+                },
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGroupCard(List<dynamic> groups, int index) {
+    final Map<String, dynamic> group = groups[index];
+    final List<dynamic> roles = group['roles'];
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      color: Colors.grey.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Заголовок группы
+            Row(
+              children: [
+                const Icon(
+                  Icons.supervised_user_circle,
+                  size: 18,
+                  color: Colors.blue,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _showGroupModalForm(groups, index),
+                    child: Text(
+                      group['name'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 16, color: Colors.blue),
+                  onPressed: () => _showGroupModalForm(groups, index),
+                  tooltip: 'Редактировать группу',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 16, color: Colors.red),
+                  onPressed: () {
+                    setState(() {
+                      groups.removeAt(index);
+                    });
+                  },
+                  tooltip: 'Удалить группу',
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            // Кнопка добавления роли в группу
+            OutlinedButton.icon(
+              onPressed: () => _showRoleModalForm(roles),
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Добавить роль'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.green,
+                side: const BorderSide(color: Colors.green),
+                padding: const EdgeInsets.all(4),
+              ),
+            ),
+
+            // Список ролей в типе
+            if (roles.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(16),
+                itemCount: roles.length,
+                itemBuilder: (context, index) {
+                  return _buildRoleTile(roles, index);
+                },
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleTile(List<dynamic> roles, int index) {
+    final Map<String, dynamic> role = roles[index];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.person, size: 16, color: Colors.grey),
+          const SizedBox(width: 8),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => _showRoleModalForm(roles, index),
+              child: Text(role['name'], style: const TextStyle(fontSize: 14)),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit, size: 14, color: Colors.blue),
+            onPressed: () => _showRoleModalForm(roles, index),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, size: 14, color: Colors.red),
+            onPressed: () {
+              setState(() {
+                roles.removeAt(index);
+              });
+            },
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTeamModalForm([int? index]) {
+    TeamsEnum? selectedTeam;
+    final Set<TeamsEnum> availableTeams = {};
+
+    if (index != null) {
+      final team = _secretRolesConfig[index];
+      _controllerForModal.text = team['name'];
+      selectedTeam = TeamsEnum.fromId(team['team']);
+      availableTeams.add(selectedTeam);
+    }
+
+    List<int> selectedTeamIds = _secretRolesConfig
+        .map((team) => team['team'] as int)
+        .toList();
+    for (final TeamsEnum team in TeamsEnum.values) {
+      if (!selectedTeamIds.contains(team.id)) {
+        selectedTeam ??= team;
+        availableTeams.add(team);
+      }
+    }
+
+    print(availableTeams);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(
+          (index == null) ? 'Новая команда' : 'Ркдактирование команды',
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<TeamsEnum>(
+              decoration: const InputDecoration(
+                labelText: 'Цвет команды *',
+                border: OutlineInputBorder(),
+              ),
+              initialValue: selectedTeam,
+              items: availableTeams.map((team) {
+                return DropdownMenuItem(
+                  value: team,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: team.color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(team.label),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) selectedTeam = value;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _controllerForModal,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Название команды *',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _controllerForModal.clear();
+              FocusScope.of(context).unfocus();
+            },
+            child: const Text('Отмена'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (_controllerForModal.text.isNotEmpty) {
+                Navigator.pop(context);
+
+                setState(() {
+                  if (index == null) {
+                    _secretRolesConfig.add({
+                      'name': _controllerForModal.text,
+                      'team': selectedTeam!.id,
+                      'groups': [],
+                      'roles': [],
+                    });
+                  } else {
+                    _secretRolesConfig[index]['name'] =
+                        _controllerForModal.text;
+                    _secretRolesConfig[index]['team'] = selectedTeam!.id;
+                  }
+                });
+
+                _controllerForModal.clear();
+                FocusScope.of(context).unfocus();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Заполните обязательные поля'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('Сохранить'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showGroupModalForm(List<dynamic> groups, [int? index]) {
+    if (index != null) {
+      final group = groups[index];
+      _controllerForModal.text = group['name'];
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text((index == null) ? 'Новая группа' : 'Редактирование группы'),
+        content: TextField(
+          controller: _controllerForModal,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Название группы *',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _controllerForModal.clear();
+              FocusScope.of(context).unfocus();
+            },
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (_controllerForModal.text.isNotEmpty) {
+                Navigator.pop(context);
+
+                setState(() {
+                  if (index == null) {
+                    groups.add({'name': _controllerForModal.text, 'roles': []});
+                  } else {
+                    groups[index]['name'] = _controllerForModal.text;
+                  }
+                });
+
+                _controllerForModal.clear();
+                FocusScope.of(context).unfocus();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Заполните обязательные поля'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('Сохранить'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRoleModalForm(List<dynamic> roles, [int? index]) {
+    if (index != null) {
+      final role = roles[index];
+      _controllerForModal.text = role['name'];
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text((index == null) ? 'Новая роль' : 'Редактирование роли'),
+        content: TextField(
+          controller: _controllerForModal,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Название роли *',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _controllerForModal.clear();
+              FocusScope.of(context).unfocus();
+            },
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (_controllerForModal.text.isNotEmpty) {
+                Navigator.pop(context);
+
+                setState(() {
+                  if (index == null) {
+                    roles.add({'name': _controllerForModal.text});
+                  } else {
+                    roles[index]['name'] = _controllerForModal.text;
+                  }
+                });
+
+                _controllerForModal.clear();
+                FocusScope.of(context).unfocus();
+              }
+            },
+            child: const Text('Сохранить'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
+    _controllerForModal.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic>? templatesData =
+        (_selectedCountingTemplate != null)
+        ? jsonDecode(_selectedCountingTemplate!.data)
+        : null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -172,6 +684,14 @@ class _GamesCountingTemplatesModalFormState
               : 'Редактирование шаблона',
         ),
         actions: [
+          if (templatesData != null &&
+              templatesData['gameType'] == GameTypeEnum.secretRoles.id &&
+              _secretRolesConfig.length < 4)
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () => _showTeamModalForm(),
+            ),
+
           if (widget.gamesCountingTemplatesId != null)
             IconButton(
               icon: const Icon(Icons.delete_outlined),
@@ -253,10 +773,13 @@ class _GamesCountingTemplatesModalFormState
                       selectedItem: _selectedCountingTemplate,
                       onSelectionChanged: (template) {
                         bool showRoundsScoreLimitInput = false;
+                        bool showSecretRolesConfig = false;
+
                         if (template != null) {
                           final Map<String, dynamic> templateData = jsonDecode(
                             template.data,
                           );
+
                           if (templateData['roundsType'] ==
                               RoundsTypeEnum.condition.id) {
                             showRoundsScoreLimitInput = true;
@@ -264,12 +787,21 @@ class _GamesCountingTemplatesModalFormState
                             showRoundsScoreLimitInput = false;
                             _roundsScoreLimitController.clear();
                           }
+
+                          if (templateData['gameType'] ==
+                              GameTypeEnum.secretRoles.id) {
+                            showSecretRolesConfig = true;
+                          } else {
+                            showSecretRolesConfig = false;
+                            _secretRolesConfig.clear();
+                          }
                         }
 
                         setState(() {
                           _selectedCountingTemplate = template;
                           _showRoundsScoreLimitInput =
                               showRoundsScoreLimitInput;
+                          _showSecretRolesConfig = showSecretRolesConfig;
                         });
                       },
                       displayName: (template) =>
@@ -279,6 +811,7 @@ class _GamesCountingTemplatesModalFormState
                       isRequired: true,
                       placeholder: 'Не выбран',
                     ),
+
                     if (_showRoundsScoreLimitInput)
                       TextFormField(
                         controller: _roundsScoreLimitController,
@@ -298,6 +831,44 @@ class _GamesCountingTemplatesModalFormState
                           return null;
                         },
                       ),
+
+                    if (_showSecretRolesConfig)
+                      _secretRolesConfig.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.people_outline,
+                                    size: 64,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Нет команд',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextButton.icon(
+                                    onPressed: () => _showTeamModalForm(),
+                                    icon: const Icon(Icons.add),
+                                    label: const Text('Добавить команду'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.all(16),
+                              itemCount: _secretRolesConfig.length,
+                              itemBuilder: (context, index) {
+                                final team = _secretRolesConfig[index];
+                                return _buildTeamCard(team, index);
+                              },
+                            ),
+
                     Row(
                       children: [
                         Expanded(

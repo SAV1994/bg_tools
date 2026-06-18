@@ -46,6 +46,9 @@ const Map<String, dynamic> sessionInitialData = {
 
   'gamers': [],
 
+  'master': null,
+  'secretRoles': [],
+
   'numberTeams': null,
   'teamsData': {},
 

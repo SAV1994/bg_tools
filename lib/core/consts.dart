@@ -61,3 +61,9 @@ const String gamersOfLastSessionKey = 'gamersOfLastSession';
 const String teamssOfLastSessionKey = 'teamssOfLastSession';
 const String settingsKey = 'settings';
 const String ratingKey = 'rating';
+
+// Тема
+const firstColor = Colors.black;
+const secondColor = Color.fromARGB(255, 0, 45, 1);
+const borderColor = Colors.green;
+const textColor = Colors.white70;

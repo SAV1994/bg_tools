@@ -42,5 +42,8 @@ final Map<String, dynamic> scenarioMapping = {
   '6.2.2': RoundsOneTeamWinScenario.scenario,
   '6.2.3': OneTeamWinScenario.scenario,
   // Тайные роли
-  '7.0.0': SoloScenario.scenario,
+  '7.1.1': DistributionMasterSecretRolesScenario.scenario,
+  '7.1.2': SecretRolesScenario.scenario,
+  '7.2.1': DistributionSecretRolesScenario.scenario,
+  '7.2.2': SecretRolesScenario.scenario,
 };

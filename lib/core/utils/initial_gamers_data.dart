@@ -1,4 +1,7 @@
-List<dynamic> cleanGamersData(List<dynamic> gamersData) {
+List<dynamic> cleanGamersData(
+  List<dynamic> gamersData, {
+  bool saveTeam = false,
+}) {
   final List<dynamic> claenedGamersData = [];
   for (final Map<String, dynamic> gamerData in gamersData) {
     claenedGamersData.add({
@@ -10,7 +13,8 @@ List<dynamic> cleanGamersData(List<dynamic> gamersData) {
       'numWInRounds': 0,
       'place': null,
       'turnOrder': null,
-      'team': gamerData['team'],
+      'team': saveTeam ? gamerData['team'] : null,
+      'role': {},
     });
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:bg_tools/core/consts.dart';
+
 class EnumSelector extends StatelessWidget {
   final String label;
   final Iterable<DropdownMenuItem<Enum>> choices;
@@ -29,7 +31,7 @@ class EnumSelector extends StatelessWidget {
           value: null,
           child: Row(
             children: [
-              Icon(Icons.clear, size: 18, color: Colors.grey),
+              Icon(Icons.clear, size: 18, color: textColor),
               SizedBox(width: 8),
               Text('Не выбрано'),
             ],

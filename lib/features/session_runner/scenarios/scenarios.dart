@@ -409,3 +409,52 @@ class RoundsFpOneTeamWinScenario {
     ],
   );
 }
+
+// 7 Тайные роли с ведущим (определяется приложением)
+class DistributionMasterSecretRolesScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      secretRoleManagementStep,
+      sessionStartStep,
+      playerRolesViewStep,
+      secretRolesViewStep,
+      sessionStopStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 7 Тайные роли (определяется приложением)
+class DistributionSecretRolesScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      secretRoleManagementStep,
+      sessionStartStep,
+      playerRolesViewStep,
+      sessionStopStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 7 Тайные роли
+class SecretRolesScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      secretRoleManagementStep,
+      sessionStartStep,
+      sessionStopStep,
+      roleAssignmentStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}

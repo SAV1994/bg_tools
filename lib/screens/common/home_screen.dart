@@ -27,8 +27,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final ButtonStyle btnStyle = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 30),
-      foregroundColor: Colors.black,
-      backgroundColor: Colors.grey,
+      foregroundColor: textColor,
+      backgroundColor: secondColor,
+      side: const BorderSide(color: borderColor, width: 1.5),
       fixedSize: Size(350, 50),
       iconSize: 30,
     );

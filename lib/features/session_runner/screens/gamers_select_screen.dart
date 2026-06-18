@@ -72,7 +72,7 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
     final List<dynamic> gamersData =
         await AppDataManager.loadLastSessionGamers();
     if (gamersData.isNotEmpty) {
-      widget.data['gamers'].addAll(gamersData);
+      widget.data['gamers'] = gamersData;
       if ([
         GameTypeEnum.solo.id,
         GameTypeEnum.coop.id,
@@ -161,13 +161,15 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
                                     index: index,
                                     child: Icon(Icons.drag_handle),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.close, size: 20),
-                                    onPressed: () {
-                                      widget.data['gamers'].removeAt(index);
-                                      setState(() => {});
-                                    },
-                                  ),
+                                  if (widget.data['master'] == null ||
+                                      widget.data['master'] != gamerData['id'])
+                                    IconButton(
+                                      icon: const Icon(Icons.close, size: 20),
+                                      onPressed: () {
+                                        widget.data['gamers'].removeAt(index);
+                                        setState(() => {});
+                                      },
+                                    ),
                                 ],
                               ),
                             ),
@@ -186,7 +188,9 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
                         ),
                       ),
                     ),
-                    if (widget.data['gamers'].isEmpty)
+                    if (widget.data['gamers'].isEmpty ||
+                        (widget.data['master'] != null &&
+                            widget.data['gamers'].length == 1))
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: OutlinedButton.icon(

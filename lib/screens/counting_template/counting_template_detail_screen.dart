@@ -208,6 +208,23 @@ class _CountingTemplateDetailScreenState
                                       ).label
                                     : null,
                               ),
+                              _buildInfoRow(
+                                'Тип организации игры',
+                                templateData['gameHostType'] != null
+                                    ? GameHostTypeEnum.fromId(
+                                        templateData['gameHostType'],
+                                      ).label
+                                    : null,
+                              ),
+                              _buildInfoRow(
+                                'Способ распределения ролей',
+                                templateData['secretRolesDistributionType'] !=
+                                        null
+                                    ? SecretRolesDistributionTypeEnum.fromId(
+                                        templateData['secretRolesDistributionType'],
+                                      ).label
+                                    : null,
+                              ),
                             ],
                           ),
                         ),

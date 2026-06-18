@@ -44,7 +44,7 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
       final teamEnum = TeamsEnum.fromId(i);
       _teams[teamEnum] = [];
       if (widget.data['teamsData'][teamEnum.id.toString()] == null) {
-        setIniialTeamData(widget.data['teamsData'], teamEnum);
+        setIniialTeamData(widget.data['teamsData'], teamEnum.id);
       }
     }
 

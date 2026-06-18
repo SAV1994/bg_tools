@@ -1,4 +1,5 @@
 // widgets/multi_select_with_search.dart
+import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -105,7 +106,7 @@ class _MultiSelectWithSearchState<T>
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 8),
@@ -120,7 +121,6 @@ class _MultiSelectWithSearchState<T>
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade400),
               borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
             ),
             child: Row(
               children: [
@@ -128,9 +128,7 @@ class _MultiSelectWithSearchState<T>
                   child: Text(
                     _getSelectedNames(),
                     style: TextStyle(
-                      color: _selectedIds.isEmpty
-                          ? Colors.grey.shade500
-                          : Colors.black87,
+                      color: _selectedIds.isEmpty ? textColor : Colors.green,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -151,7 +149,6 @@ class _MultiSelectWithSearchState<T>
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
             ),
             child: Column(
               children: [

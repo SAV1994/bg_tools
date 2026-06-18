@@ -1,10 +1,9 @@
-import 'package:bg_tools/core/consts.dart';
-
-void setIniialTeamData(Map<String, dynamic> teamsData, TeamsEnum team) {
-  teamsData[team.id.toString()] = {
+void setIniialTeamData(Map teamsData, int teamId) {
+  teamsData[teamId.toString()] = {
     'score': null,
     'scoreByrounds': [],
     'numWInRounds': 0,
     'place': null,
+    'name': null,
   };
 }

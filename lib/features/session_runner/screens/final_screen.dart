@@ -48,9 +48,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
           place: gamerData['place'],
           turnOrder: gamerData['turnOrder'],
           team: gamerData['team'],
-          data: (gamerData['scoreByrounds'].isNotEmpty)
-              ? {'scoreByrounds': gamerData['scoreByrounds']}
-              : null,
+          data: _getGamerSessionData(gamerData),
         );
 
         gamersData.add(gamingSessionGamerData);
@@ -82,12 +80,21 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
     }
   }
 
+  Map<String, dynamic>? _getGamerSessionData(Map<String, dynamic> gamerData) {
+    final Map<String, dynamic> data = {};
+    data['scoreByrounds'] = gamerData['scoreByrounds'];
+    data['role'] = gamerData['role'];
+
+    return data;
+  }
+
   Map<String, dynamic>? _getSessionData() {
     final Map<String, dynamic> data = {};
     data['teamsData'] = widget.data['teamsData'];
     data['pointType'] = widget.data['pointType'];
+    data['master'] = widget.data['master'];
 
-    return (data.isNotEmpty) ? data : null;
+    return data;
   }
 
   @override

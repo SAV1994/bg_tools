@@ -250,3 +250,57 @@ enum SequencePlayersMovesTypeEnum {
     );
   }
 }
+
+// 10 Тип организации игры
+enum GameHostTypeEnum {
+  master(1, 'Есть ведущий'),
+  noMaster(2, 'Без ведущего');
+
+  final int id;
+  final String label;
+
+  const GameHostTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static GameHostTypeEnum fromId(int id) {
+    return GameHostTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => GameHostTypeEnum.noMaster,
+    );
+  }
+
+  // Получить enum по названию
+  static GameHostTypeEnum fromLabel(String label) {
+    return GameHostTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => GameHostTypeEnum.noMaster,
+    );
+  }
+}
+
+// 11 Способ распределения ролей
+enum SecretRolesDistributionTypeEnum {
+  auto(1, 'Определяются приложением'),
+  manually(2, 'Определяются вручную');
+
+  final int id;
+  final String label;
+
+  const SecretRolesDistributionTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static SecretRolesDistributionTypeEnum fromId(int id) {
+    return SecretRolesDistributionTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => SecretRolesDistributionTypeEnum.auto,
+    );
+  }
+
+  // Получить enum по названию
+  static SecretRolesDistributionTypeEnum fromLabel(String label) {
+    return SecretRolesDistributionTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => SecretRolesDistributionTypeEnum.auto,
+    );
+  }
+}

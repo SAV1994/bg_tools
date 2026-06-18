@@ -1,4 +1,5 @@
 // widgets/single_select_with_search.dart
+import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 
 // Селект с возможностью поиска
@@ -106,7 +107,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                 width: _isDropdownOpen ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
+              color: secondColor,
             ),
             child: Row(
               children: [
@@ -114,9 +115,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                   child: Text(
                     _getSelectedName(),
                     style: TextStyle(
-                      color: _selectedItem == null
-                          ? Colors.grey.shade500
-                          : Colors.black87,
+                      color: _selectedItem == null ? Colors.red : textColor,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -135,9 +134,9 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
           Container(
             margin: const EdgeInsets.only(top: 8),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(color: borderColor),
               borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
+              color: secondColor,
             ),
             child: Column(
               children: [
@@ -239,9 +238,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
     return InkWell(
       onTap: () => _selectItem(item),
       child: Container(
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.shade50 : null,
-        ),
+        decoration: BoxDecoration(color: isSelected ? firstColor : null),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(

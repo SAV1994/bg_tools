@@ -32,12 +32,24 @@ Future<void> initSessionData(
       countingTemplateData['firstPlayerRoundType'] ?? 0;
   sessionData['sequencePlayersMovesType'] =
       countingTemplateData['sequencePlayersMovesType'] ?? 0;
+  sessionData['gameHostType'] = countingTemplateData['gameHostType'] ?? 0;
+  sessionData['secretRolesDistributionType'] =
+      countingTemplateData['secretRolesDistributionType'] ?? 0;
 
   sessionData['roundsScoreLimit'] = gameData['roundsScoreLimit'];
+  sessionData['secretRolesConfig'] = gameData['secretRolesConfig'];
 
-  final String selector =
-      '${sessionData['type']}.${sessionData['firstPlayerStartType']}.'
-      '${sessionData['resultType']}';
+  late final String selector;
+  if (sessionData['type'] == GameTypeEnum.secretRoles.id) {
+    selector =
+        '${sessionData['type']}.${sessionData['gameHostType']}.'
+        '${sessionData['secretRolesDistributionType']}';
+  } else {
+    selector =
+        '${sessionData['type']}.${sessionData['firstPlayerStartType']}.'
+        '${sessionData['resultType']}';
+  }
+
   final Scenario scenario = scenarioMapping[selector];
   sessionData['selector'] = selector;
 
@@ -52,7 +64,7 @@ Future<void> initSessionData(
     GameTypeEnum.coop.id,
   ].contains(sessionData['type'])) {
     final TeamsEnum teamEnum = TeamsEnum.red;
-    setIniialTeamData(sessionData['teamsData'], teamEnum);
+    setIniialTeamData(sessionData['teamsData'], teamEnum.id);
   }
 
   await AppDataManager.saveActiveSession(sessionData);
