@@ -21,10 +21,15 @@ String getLoadingMsg() {
 
 // Команды для игровой сессии
 enum TeamsEnum {
-  red(1, 'Красная команда', Colors.red, Color(0xFFEF5350)),
-  blue(2, 'Синяя команда', Colors.blue, Color(0xFF42A5F5)),
-  green(3, 'Зеленая команда', Colors.green, Color(0xFF66BB6A)),
-  purple(4, 'Фиолетовая команда', Colors.purple, Color(0xFFAB47BC));
+  red(1, 'Красная команда', Colors.red, Color.fromRGBO(255, 158, 158, 1)),
+  blue(2, 'Синяя команда', Colors.blue, Color.fromARGB(255, 149, 207, 255)),
+  green(3, 'Зеленая команда', Colors.green, Color.fromARGB(255, 160, 255, 165)),
+  purple(
+    4,
+    'Фиолетовая команда',
+    Colors.purple,
+    Color.fromARGB(255, 239, 147, 255),
+  );
 
   final int id;
   final String label;

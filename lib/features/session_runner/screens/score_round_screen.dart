@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/score_calc_modal.dart';
+import 'package:bg_tools/core/utils/player_round_score_card_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 class ScoreRoundScreen extends ConsumerStatefulWidget {
@@ -396,15 +396,22 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
               ),
               ReorderableListView(
                 shrinkWrap: true,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(2),
                 onReorder: _reorder,
+                proxyDecorator: (child, index, animation) {
+                  return Material(
+                    elevation: 8,
+                    color: Colors.transparent,
+                    child: child,
+                  );
+                },
                 children: List.generate(widget.data['gamers'].length, (index) {
                   final Map<String, dynamic> gamerData =
                       widget.data['gamers'][index];
 
                   return Container(
                     key: Key('${gamerData['id']}_$index'),
-                    margin: const EdgeInsets.only(bottom: 12),
+                    margin: const EdgeInsets.only(bottom: 5),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
@@ -417,7 +424,13 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                     ),
                     child: Material(
                       color: Colors.transparent,
-                      child: _buildGamerInputCard(index),
+                      child: buildPlayerRoundScoreInputCard(
+                        context,
+                        index,
+                        _scoreControllers,
+                        widget.data,
+                        _isFinished,
+                      ),
                     ),
                   );
                 }),
@@ -437,134 +450,6 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGamerInputCard(int index) {
-    final Map<String, dynamic> controllerData = _scoreControllers[index];
-    final Map<String, dynamic> gamerData = widget.data['gamers'][index];
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Row(
-                spacing: 12,
-                children: [
-                  // Drag handle
-                  ReorderableDragStartListener(
-                    index: index,
-                    child: Icon(Icons.drag_handle, color: Colors.grey),
-                  ),
-                  // Имя игрока
-                  Text(
-                    gamerData['username'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  // Победы в раундах
-                  if (gamerData['numWInRounds'] != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        gamerData['numWInRounds'].toString(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  // Уже набранные очки
-                  if (gamerData['score'] != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.greenAccent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        gamerData['score'].toString(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  if (widget.data['round'] < widget.data['totalRounds'] &&
-                      _isFinished == false)
-                    // Кнопка вызова калькулятора
-                    IconButton(
-                      onPressed: () {
-                        final TextEditingController controller =
-                            controllerData['controller'];
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ScoreCalcModal(
-                              title: gamerData['username'],
-                              value: int.tryParse(controller.text) ?? 0,
-                              onScoreChanged: (value) {
-                                final String score = value.toString();
-                                controller.text = score;
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.iso),
-                    ),
-                ],
-              ),
-            ),
-            // Поле ввода
-            Row(
-              children: [
-                SizedBox(
-                  width: 80,
-                  child: TextFormField(
-                    enabled:
-                        widget.data['round'] < widget.data['totalRounds'] &&
-                        _isFinished == false,
-                    controller: controllerData['controller'],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
-                    ],
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 8),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );

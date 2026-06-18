@@ -1,11 +1,11 @@
-import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bg_tools/core/utils/gamer_score_card_builder.dart';
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/utils/player_score_card_builder.dart';
 import 'package:bg_tools/core/utils/win_toggle_btn_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 

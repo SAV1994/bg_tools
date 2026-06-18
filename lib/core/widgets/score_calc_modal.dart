@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:bg_tools/core/consts.dart';
 
 class ScoreCalcModal extends ConsumerStatefulWidget {
   final String title;
   final int value;
   final Function(int) onScoreChanged;
+  final TeamsEnum? team;
 
   const ScoreCalcModal({
     super.key,
     required this.title,
     required this.value,
     required this.onScoreChanged,
+    this.team,
   });
 
   @override
@@ -82,13 +87,17 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.blue.shade100,
+                  backgroundColor: (widget.team != null)
+                      ? widget.team!.bgColor
+                      : Colors.deepOrange.shade100,
                   child: Text(
                     widget.title[0],
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade700,
+                      color: (widget.team != null)
+                          ? widget.team!.color
+                          : Colors.deepOrange.shade700,
                     ),
                   ),
                 ),
