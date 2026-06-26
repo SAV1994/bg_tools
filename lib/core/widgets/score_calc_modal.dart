@@ -117,7 +117,6 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
             // Поле ввода
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
@@ -130,7 +129,8 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
-                  hintText: 'Введите Значение',
+                  hintText: '...',
+                  hintStyle: TextStyle(color: textColor),
                 ),
                 onChanged: _updateAmount,
               ),
@@ -145,8 +145,12 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
                     icon: const Icon(Icons.remove),
                     label: const Text('Вычесть'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
+                      foregroundColor: redColor,
                       padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(
+                        color: redColor, // Яркий зеленый
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -157,8 +161,9 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
                     icon: const Icon(Icons.add),
                     label: const Text('Добавить'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.green,
+                      foregroundColor: greenColor,
                       padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: greenColor, width: 1.5),
                     ),
                   ),
                 ),
@@ -210,10 +215,6 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _confirm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
                     child: const Text('ОК'),
                   ),
                 ),

@@ -305,151 +305,130 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
 
   Widget _buildScrean() {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.deepPurple.shade200, Colors.white],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            spacing: 20,
-            children: [
-              if (_lastRoundFirstPlayer != null)
-                Text(
-                  'Предыдущий раунд: $_lastRoundGeneralScore',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-
-              if (widget.data['type'] == GameTypeEnum.coop.id)
-                Text(
-                  'Всего: ${widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] ?? 0}',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                ),
-
-              TextFormField(
-                enabled:
-                    widget.data['round'] < widget.data['totalRounds'] &&
-                    _isFinished == false,
-                controller: _generalScoreController,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
-                ],
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 8),
-                ),
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          spacing: 20,
+          children: [
+            if (_lastRoundFirstPlayer != null)
+              Text(
+                'Предыдущий раунд: $_lastRoundGeneralScore',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
 
-              if (widget.data['round'] < widget.data['totalRounds'] &&
-                  _isFinished == false)
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _nextRoundGeneralScore,
-                        child: Text('Следующий раунд'),
-                      ),
+            if (widget.data['type'] == GameTypeEnum.coop.id)
+              Text(
+                'Всего: ${widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] ?? 0}',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+
+            TextFormField(
+              enabled:
+                  widget.data['round'] < widget.data['totalRounds'] &&
+                  _isFinished == false,
+              controller: _generalScoreController,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+              ],
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(vertical: 8),
+              ),
+            ),
+
+            if (widget.data['round'] < widget.data['totalRounds'] &&
+                _isFinished == false)
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _nextRoundGeneralScore,
+                      child: Text('Следующий раунд'),
                     ),
-                  ],
-                ),
-            ],
-          ),
+                  ),
+                ],
+              ),
+          ],
         ),
       );
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.deepPurple.shade200, Colors.white],
-        ),
-      ),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            children: [
-              if (_lastRoundFirstPlayer != null)
-                Text(
-                  'Предыдущий раунд ходил первым: $_lastRoundFirstPlayer',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          children: [
+            if (_lastRoundFirstPlayer != null)
               Text(
-                (widget.data['round'] < widget.data['totalRounds'] &&
-                        _isFinished == false)
-                    ? 'Раунд ${widget.data['round'] + 1} из '
-                          '${(widget.data['totalRounds'] == infNumRounds) ? '∞' : widget.data['totalRounds']}'
-                    : 'По итогу всех раундов',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                'Предыдущий раунд ходил первым: $_lastRoundFirstPlayer',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
-              ReorderableListView(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(2),
-                onReorder: _reorder,
-                proxyDecorator: (child, index, animation) {
-                  return Material(
-                    elevation: 8,
+            Text(
+              (widget.data['round'] < widget.data['totalRounds'] &&
+                      _isFinished == false)
+                  ? 'Раунд ${widget.data['round'] + 1} из '
+                        '${(widget.data['totalRounds'] == infNumRounds) ? '∞' : widget.data['totalRounds']}'
+                  : 'По итогу всех раундов',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            ReorderableListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(2),
+              onReorder: _reorder,
+              proxyDecorator: (child, index, animation) {
+                return Material(
+                  elevation: 0,
+                  color: Colors.transparent,
+                  child: child,
+                );
+              },
+              children: List.generate(widget.data['gamers'].length, (index) {
+                final Map<String, dynamic> gamerData =
+                    widget.data['gamers'][index];
+
+                return Container(
+                  key: Key('${gamerData['id']}_$index'),
+                  margin: const EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Material(
                     color: Colors.transparent,
-                    child: child,
-                  );
-                },
-                children: List.generate(widget.data['gamers'].length, (index) {
-                  final Map<String, dynamic> gamerData =
-                      widget.data['gamers'][index];
+                    child: buildPlayerRoundScoreInputCard(
+                      context,
+                      index,
+                      _scoreControllers,
+                      widget.data,
+                      _isFinished,
+                    ),
+                  ),
+                );
+              }),
+            ),
 
-                  return Container(
-                    key: Key('${gamerData['id']}_$index'),
-                    margin: const EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+            if (widget.data['round'] < widget.data['totalRounds'] &&
+                _isFinished == false)
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _nextRound,
+                      child: Text('Следующий раунд'),
                     ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: buildPlayerRoundScoreInputCard(
-                        context,
-                        index,
-                        _scoreControllers,
-                        widget.data,
-                        _isFinished,
-                      ),
-                    ),
-                  );
-                }),
+                  ),
+                ],
               ),
-
-              if (widget.data['round'] < widget.data['totalRounds'] &&
-                  _isFinished == false)
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _nextRound,
-                        child: Text('Следующий раунд'),
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
+          ],
         ),
       ),
     );

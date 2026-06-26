@@ -79,7 +79,6 @@ class _GamingSessionListScreenState
               );
 
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   leading: Icon(Icons.assignment),
                   title: Text(game.name),

@@ -79,9 +79,8 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen> {
               }
 
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
-                  leading: Icon(Icons.layers),
+                  leading: Icon(Icons.layers, color: borderColor),
                   title: Text(game.name),
                   subtitle: Text(gameInfo),
                   trailing: Icon(Icons.arrow_forward_ios),

@@ -259,7 +259,7 @@ class _SecretRolesManagementScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
+            child: const Text('Отмена', style: TextStyle(color: textColor)),
           ),
         ],
       ),

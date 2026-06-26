@@ -66,7 +66,6 @@ class _CountingTemplateListScreenListScreenState
               final CountingTemplate template = templates[index];
 
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   leading: Icon(Icons.build),
                   title: Text(template.name),

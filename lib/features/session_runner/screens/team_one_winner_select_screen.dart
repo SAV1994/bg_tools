@@ -1,10 +1,10 @@
-import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
 enum _SelectMode { single, multiple }
 
@@ -288,10 +288,7 @@ class _TeamOneWinnerSelectScreenState
                           (widget.data['type'] != GameTypeEnum.secretRoles.id)
                               ? 'Очки: ${widget.data['teamsData'][teamData['team'].id.toString()]['score'] ?? 0}'
                               : 'Количество игроков: ${teamData['gamers'].length}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
+                          style: TextStyle(fontSize: 14, color: titleColor),
                         ),
                       ],
                     ),
@@ -411,7 +408,6 @@ class _TeamOneWinnerSelectScreenState
         return _isLoading
             ? buildLoadingScreen()
             : Column(
-                spacing: 12,
                 children: [
                   // Кнопка переключение режима командных очков
                   if (widget.data['teamPointType'] ==

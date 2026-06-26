@@ -242,6 +242,9 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
     return ReorderableListView.builder(
       padding: const EdgeInsets.all(16),
       onReorder: _reorder,
+      proxyDecorator: (child, index, animation) {
+        return Material(elevation: 0, color: Colors.transparent, child: child);
+      },
       itemCount: _teams.length,
       itemBuilder: (context, index) {
         final Map<String, dynamic> teamData = _teams[index];

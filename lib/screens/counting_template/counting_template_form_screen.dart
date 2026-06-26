@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
@@ -364,7 +365,14 @@ class _CountingTemplateFormFormState
                       choices: GameTypeEnum.values.map((val) {
                         return DropdownMenuItem(
                           value: val,
-                          child: Row(children: [Text(val.label)]),
+                          child: Row(
+                            children: [
+                              Text(
+                                val.label,
+                                style: TextStyle(color: textColor),
+                              ),
+                            ],
+                          ),
                         );
                       }),
                       selected: _selectedGameType,
@@ -405,7 +413,14 @@ class _CountingTemplateFormFormState
                         choices: FirstPlayerStartTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedFirstPlayerStartType,
@@ -424,7 +439,14 @@ class _CountingTemplateFormFormState
                         choices: ResultTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedResultType,
@@ -456,7 +478,14 @@ class _CountingTemplateFormFormState
                         choices: TeamPointTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedTeamPointType,
@@ -483,7 +512,14 @@ class _CountingTemplateFormFormState
                         choices: PointTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedPointType,
@@ -502,7 +538,14 @@ class _CountingTemplateFormFormState
                         choices: RoundsTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedRoundsType,
@@ -521,7 +564,14 @@ class _CountingTemplateFormFormState
                         choices: AltVictoryTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedAltVictoryType,
@@ -540,7 +590,14 @@ class _CountingTemplateFormFormState
                         choices: FirstPlayerRoundTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedFirstPlayerRoundType,
@@ -568,7 +625,14 @@ class _CountingTemplateFormFormState
                         choices: SequencePlayersMovesTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedSequencePlayersMovesType,
@@ -587,7 +651,14 @@ class _CountingTemplateFormFormState
                         choices: GameHostTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedGameHostType,
@@ -608,7 +679,14 @@ class _CountingTemplateFormFormState
                         ) {
                           return DropdownMenuItem(
                             value: val,
-                            child: Row(children: [Text(val.label)]),
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
                           );
                         }),
                         selected: _selectedSecretRolesDistributionType,

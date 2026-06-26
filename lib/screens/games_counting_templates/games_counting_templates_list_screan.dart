@@ -79,7 +79,6 @@ class _GamesCountingTemplateslistScreenState
                   .join(', ');
 
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   leading: Icon(Icons.build),
                   title: Text(gamesCountingTemplate.name),

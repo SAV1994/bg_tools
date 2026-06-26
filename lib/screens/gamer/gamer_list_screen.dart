@@ -30,7 +30,6 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
       'gamers-update',
       pathParameters: {'gamerId': gamerId.toString()},
     );
-    ;
 
     if (result == true) {
       ref.invalidate(gameDaoProvider); // Обновляем провайдер
@@ -84,7 +83,6 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
               }
 
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   leading: Icon(Icons.wc),
                   title: Text(gamer.username),

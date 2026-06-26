@@ -44,7 +44,7 @@ void buildAddGamerModal(
                 children: [
                   // Поле поиска в диалоге
                   TextField(
-                    autofocus: true,
+                    autofocus: false,
                     decoration: InputDecoration(
                       hintText: 'Поиск...',
                       prefixIcon: const Icon(Icons.search),

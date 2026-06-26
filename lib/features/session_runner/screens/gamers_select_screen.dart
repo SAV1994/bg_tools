@@ -137,6 +137,13 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
                         ),
                       ),
                       onReorder: _reorder,
+                      proxyDecorator: (child, index, animation) {
+                        return Material(
+                          elevation: 0,
+                          color: Colors.transparent,
+                          child: child,
+                        );
+                      },
                       itemCount: widget.data['gamers'].length,
                       itemBuilder: (context, index) {
                         final Map<String, dynamic> gamerData =

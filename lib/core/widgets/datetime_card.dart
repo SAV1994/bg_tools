@@ -1,5 +1,7 @@
-import 'package:bg_tools/core/utils/dateformats.dart';
+import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
+
+import 'package:bg_tools/core/utils/dateformats.dart';
 
 class DateTimeDisplay extends StatelessWidget {
   final DateTime dateTime;
@@ -20,7 +22,7 @@ class DateTimeDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? duration = null;
+    String? duration;
     if (secondDateTime != null) {
       final Duration difference;
       if (dateTime.isBefore(secondDateTime!)) {
@@ -32,7 +34,6 @@ class DateTimeDisplay extends StatelessWidget {
       // Вычисляем общее количество часов и оставшиеся минуты
       final hours = difference.inHours;
       final minutes = difference.inMinutes.remainder(60);
-      print(difference);
       duration = '$hours ч. $minutes мин.';
     }
 
@@ -45,6 +46,7 @@ class DateTimeDisplay extends StatelessWidget {
           spacing: 10,
           children: [
             Row(
+              spacing: 10,
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
@@ -64,7 +66,7 @@ class DateTimeDisplay extends StatelessWidget {
                     children: [
                       const Text(
                         'Дата',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        style: TextStyle(fontSize: 12, color: titleColor),
                       ),
                       Text(
                         _formattedDate,
@@ -80,6 +82,7 @@ class DateTimeDisplay extends StatelessWidget {
             ),
             if (showTime) ...[
               Row(
+                spacing: 10,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
@@ -99,7 +102,7 @@ class DateTimeDisplay extends StatelessWidget {
                       children: [
                         const Text(
                           'Время',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          style: TextStyle(fontSize: 12, color: titleColor),
                         ),
                         Text(
                           _formattedTime,
@@ -115,6 +118,7 @@ class DateTimeDisplay extends StatelessWidget {
               ),
               if (duration != null)
                 Row(
+                  spacing: 10,
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
@@ -134,7 +138,7 @@ class DateTimeDisplay extends StatelessWidget {
                         children: [
                           const Text(
                             'Продолжительность',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            style: TextStyle(fontSize: 12, color: titleColor),
                           ),
                           Text(
                             duration,

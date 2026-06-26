@@ -19,6 +19,7 @@ class EnumSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<Enum>(
+      dropdownColor: secondColor,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(),
@@ -33,7 +34,7 @@ class EnumSelector extends StatelessWidget {
             children: [
               Icon(Icons.clear, size: 18, color: textColor),
               SizedBox(width: 8),
-              Text('Не выбрано'),
+              Text('Не выбрано', style: TextStyle(color: redColor)),
             ],
           ),
         ),

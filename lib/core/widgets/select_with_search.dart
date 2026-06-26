@@ -145,7 +145,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: _searchController,
-                    autofocus: true,
+                    autofocus: false,
                     decoration: InputDecoration(
                       hintText: widget.searchHint ?? 'Поиск...',
                       prefixIcon: const Icon(Icons.search, size: 20),

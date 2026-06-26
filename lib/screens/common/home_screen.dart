@@ -32,6 +32,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       side: const BorderSide(color: borderColor, width: 1.5),
       fixedSize: Size(350, 50),
       iconSize: 30,
+      iconColor: borderColor,
     );
 
     return Scaffold(
@@ -67,7 +68,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: Icon(Icons.more_vert),
             itemBuilder: (context) => [
               PopupMenuItem(
-                child: Text('Выйти'),
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.power_settings_new,
+                    size: 18,
+                    color: redColor,
+                  ),
+                  title: const Text('Выйти'),
+                  dense: true,
+                ),
                 onTap: () => SystemNavigator.pop(),
               ),
             ],

@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           backgroundColor: secondColor, // Глобальный цвет для всех AppBar
-          foregroundColor: Colors.white, // Цвет текста и иконок по умолчанию
+          foregroundColor: textColor, // Цвет текста и иконок по умолчанию
         ),
         textTheme: const TextTheme(
           bodySmall: TextStyle(color: textColor),
@@ -27,12 +27,12 @@ class MyApp extends StatelessWidget {
         ),
         listTileTheme: const ListTileThemeData(
           textColor: textColor, // Цвет для основного текста и подзаголовков
-          iconColor: textColor, // Цвет для иконок (по желанию)
+          iconColor: borderColor, // Цвет для иконок (по желанию)
         ),
         dialogTheme: const DialogThemeData(
           backgroundColor: secondColor, // Цвет фона диалога
           titleTextStyle: TextStyle(
-            color: Colors.white, // Цвет заголовка
+            color: titleColor, // Цвет заголовка
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -41,20 +41,43 @@ class MyApp extends StatelessWidget {
             fontSize: 16,
           ),
         ),
-        cardTheme: CardThemeData(color: secondColor),
+        cardTheme: CardThemeData(
+          color: secondColor,
+          margin: EdgeInsets.only(left: 8, right: 8, top: 5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: borderColor, width: 1.5),
+          ),
+        ),
+        dividerTheme: const DividerThemeData(
+          color: borderColor,
+          thickness: 1.5,
+          space: 0,
+        ),
         chipTheme: ChipThemeData(
           backgroundColor: secondColor,
           padding: EdgeInsets.all(2.0),
           labelStyle: TextStyle(color: textColor),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: borderColor, width: 1.5),
+          ),
         ),
         inputDecorationTheme: const InputDecorationTheme(
           labelStyle: TextStyle(color: textColor),
           fillColor: borderColor,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: secondColor, width: 2),
+            borderSide: BorderSide(color: borderColor, width: 2),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: borderColor, width: 2),
+          ),
+        ),
+        popupMenuTheme: PopupMenuThemeData(
+          color: secondColor,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: borderColor, width: 2),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         scaffoldBackgroundColor: firstColor,

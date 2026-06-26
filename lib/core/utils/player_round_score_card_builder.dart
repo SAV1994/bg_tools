@@ -20,7 +20,7 @@ Widget buildPlayerRoundScoreInputCard(
     key: Key(gamerData['id'].toString()),
     padding: const EdgeInsets.all(5),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: secondColor,
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
@@ -31,7 +31,7 @@ Widget buildPlayerRoundScoreInputCard(
       ],
     ),
     child: Row(
-      spacing: 3,
+      spacing: 5,
       children: [
         // Имя игрока (можно перетаскивать по имени)
         Expanded(
@@ -87,34 +87,34 @@ Widget buildPlayerRoundScoreInputCard(
           ),
 
         // Поле ввода очков с кнопкой калькулятора
-        Container(
-          width: 110,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(8),
-          ),
+        SizedBox(
+          width: 135,
           child: Row(
             spacing: 2,
             children: [
               // Кнопка калькулятора (слева)
               IconButton(
                 onPressed: () {
-                  final TextEditingController controller =
-                      controllerData['controller'];
-                  showDialog(
-                    context: context,
-                    builder: (context) => ScoreCalcModal(
-                      title: gamerData['username'],
-                      value: int.tryParse(controller.text) ?? 0,
-                      onScoreChanged: (value) {
-                        final String score = value.toString();
-                        controller.text = score;
-                      },
-                      team: team,
-                    ),
-                  );
+                  if (sessionData['round'] < sessionData['totalRounds'] &&
+                      isFinished == false) {
+                    final TextEditingController controller =
+                        controllerData['controller'];
+                    showDialog(
+                      context: context,
+                      builder: (context) => ScoreCalcModal(
+                        title: gamerData['username'],
+                        value: int.tryParse(controller.text) ?? 0,
+                        onScoreChanged: (value) {
+                          final String score = value.toString();
+                          controller.text = score;
+                        },
+                        team: team,
+                      ),
+                    );
+                  }
                 },
                 icon: Icon(Icons.iso),
+                color: goldColor,
               ),
               // Поле ввода
               Expanded(
@@ -128,7 +128,7 @@ Widget buildPlayerRoundScoreInputCard(
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: textColor,
                   ),
                   decoration: const InputDecoration(
                     border: InputBorder.none,

@@ -26,8 +26,6 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
   late bool isLastStep;
   // Загрузка
   bool _isLoading = false;
-  // Ошибка
-  String? _generalError;
 
   @override
   void initState() {
@@ -59,12 +57,23 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
       await _saveProgress();
       _currentScenarioStep.validator(sessionData);
       sessionData['step']++;
-      _generalError = null;
       await _saveProgress();
     } catch (e) {
-      setState(() {
-        _generalError = e.toString();
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '! ${e.toString()}',
+              style: TextStyle(
+                color: textColor,
+                fontSize: 20,
+                fontWeight: FontWeight(800),
+              ),
+            ),
+            backgroundColor: redColor,
+          ),
+        );
+      }
     }
     _loadProgress();
   }
@@ -72,7 +81,6 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
   Future<void> _previousStep() async {
     if (_currentStep > 0) {
       sessionData['step']--;
-      _generalError = null;
       await _saveProgress();
       _loadProgress();
     }
@@ -101,7 +109,7 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
               ref.invalidate(sessionDataProvider);
               Navigator.pop(context);
             },
-            child: const Text('Выйти'),
+            child: const Text('Выйти', style: TextStyle(color: redColor)),
           ),
         ],
       ),
@@ -117,66 +125,53 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
                 // Заголовок
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Text(
-                    _currentScenarioStep.title,
-                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-                  ),
-                ),
-
-                // Описание шага
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    _currentScenarioStep.description,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: (_currentStep >= 1)
+                            ? Icon(Icons.arrow_back_ios, color: goldColor)
+                            : Icon(Icons.do_not_disturb, color: redColor),
+                        onPressed: () {
+                          if (_currentStep >= 1) {
+                            _previousStep();
+                          }
+                        },
+                      ),
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            _currentScenarioStep.title,
+                            style: TextStyle(fontSize: 16, color: titleColor),
+                          ),
+                          Tooltip(
+                            message: _currentScenarioStep.description,
+                            child: const Icon(
+                              Icons.info_outline,
+                              size: 25,
+                              color: titleColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: (isLastStep)
+                            ? Icon(Icons.arrow_forward_ios, color: goldColor)
+                            : Icon(Icons.do_not_disturb, color: redColor),
+                        onPressed: () {
+                          if (isLastStep) {
+                            _nextStep();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
 
                 // Основной контент
                 Expanded(
                   child: _currentScenarioStep.contentBuilder(sessionData),
-                ),
-
-                // Кнопки навигации
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      if (_generalError != null)
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            _generalError!,
-                            style: TextStyle(color: Colors.red.shade700),
-                          ),
-                        ),
-                      Row(
-                        children: [
-                          if (_currentStep >= 1) ...[
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: _previousStep,
-                                child: const Text('Назад'),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                          ],
-                          if (isLastStep)
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _nextStep,
-                                child: Text('Далее'),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ),
               ],
       ),

@@ -243,41 +243,32 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
           );
         }
 
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.deepPurple.shade200, Colors.white],
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: widget.data['gamers'].length,
-                    itemBuilder: (context, index) {
-                      final Map<String, dynamic> gamerData =
-                          widget.data['gamers'][index];
-                      return buildGamerInputCard(
-                        context,
-                        gamerData['id'],
-                        _scoreControllers[gamerData['id']],
-                        true,
-                        false,
-                        _updateScore,
-                        (gamerData['team'] != null)
-                            ? TeamsEnum.fromId(gamerData['team']).color
-                            : null,
-                      );
-                    },
-                  ),
-                ],
-              ),
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: widget.data['gamers'].length,
+                  itemBuilder: (context, index) {
+                    final Map<String, dynamic> gamerData =
+                        widget.data['gamers'][index];
+                    return buildGamerInputCard(
+                      context,
+                      gamerData['id'],
+                      _scoreControllers[gamerData['id']],
+                      true,
+                      false,
+                      _updateScore,
+                      (gamerData['team'] != null)
+                          ? TeamsEnum.fromId(gamerData['team']).color
+                          : null,
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         );

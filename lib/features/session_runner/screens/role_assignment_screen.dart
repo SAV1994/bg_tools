@@ -238,7 +238,10 @@ class _RoleAssignmentScreenState extends State<RoleAssignmentScreen> {
     final int masterId = widget.data['master'] ?? 0;
     // Список доступных игроков для селекта
     final List<DropdownMenuItem<int?>> availablePlayers = [
-      const DropdownMenuItem<int>(value: null, child: Text('Не назначен')),
+      const DropdownMenuItem<int>(
+        value: null,
+        child: Text('Не назначен', style: TextStyle(color: redColor)),
+      ),
       ...widget.data['gamers']
           .where(
             (player) =>
@@ -248,7 +251,11 @@ class _RoleAssignmentScreenState extends State<RoleAssignmentScreen> {
           .map((player) {
             return DropdownMenuItem<int>(
               value: player['id'],
-              child: Row(children: [Text(player['username'])]),
+              child: Row(
+                children: [
+                  Text(player['username'], style: TextStyle(color: textColor)),
+                ],
+              ),
             );
           }),
     ];
@@ -295,8 +302,10 @@ class _RoleAssignmentScreenState extends State<RoleAssignmentScreen> {
               initialValue: role['gamer']?['id'],
               isExpanded: true,
               hint: const Text('Выбрать'),
+              dropdownColor: secondColor,
               decoration: InputDecoration(
                 filled: true,
+                fillColor: secondColor,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 8,
                   vertical: 4,
@@ -308,12 +317,13 @@ class _RoleAssignmentScreenState extends State<RoleAssignmentScreen> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: isAssigned ? Colors.green : Colors.grey.shade300,
+                    color: isAssigned ? borderColor : textColor,
+                    width: 2,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.blue),
+                  borderSide: const BorderSide(color: goldColor),
                 ),
               ),
               items: availablePlayers,
@@ -322,11 +332,7 @@ class _RoleAssignmentScreenState extends State<RoleAssignmentScreen> {
                 _assignPlayerToRole(role, playerId: value);
               },
               icon: isAssigned
-                  ? const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 18,
-                    )
+                  ? const Icon(Icons.check_circle, color: borderColor, size: 18)
                   : null,
             ),
           ),

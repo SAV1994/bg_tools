@@ -63,7 +63,11 @@ const String settingsKey = 'settings';
 const String ratingKey = 'rating';
 
 // Тема
-const firstColor = Colors.black;
-const secondColor = Color.fromARGB(255, 0, 45, 1);
-const borderColor = Colors.green;
-const textColor = Colors.white70;
+const Color firstColor = Color(0xFF0A1410);
+const Color secondColor = Color(0xFF006B4D);
+const Color borderColor = Color(0xFF00E676);
+const Color textColor = Color(0xFFF5F5F5);
+const Color titleColor = Colors.lightGreenAccent;
+const Color greenColor = Color(0xFF69F0AE);
+const Color redColor = Color(0xFFFF5252);
+const Color goldColor = Color(0xFFFFD700);

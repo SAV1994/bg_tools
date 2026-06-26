@@ -1,3 +1,4 @@
+import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -128,19 +129,13 @@ class BackupButtons extends ConsumerWidget {
           onPressed: () => _exportData(context, ref),
           icon: const Icon(Icons.save_alt),
           label: const Text('Экспорт'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            foregroundColor: Colors.white,
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: greenColor),
         ),
         ElevatedButton.icon(
           onPressed: () => _importData(context, ref),
           icon: const Icon(Icons.restore),
           label: const Text('Импорт'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            foregroundColor: Colors.white,
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: titleColor),
         ),
       ],
     );

@@ -119,7 +119,7 @@ class _MultiSelectWithSearchState<T>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade400),
+              border: Border.all(color: borderColor, width: 2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -157,7 +157,7 @@ class _MultiSelectWithSearchState<T>
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: _searchController,
-                    autofocus: true,
+                    autofocus: false,
                     decoration: InputDecoration(
                       hintText: widget.searchHint ?? 'Поиск...',
                       prefixIcon: const Icon(Icons.search, size: 20),
@@ -286,7 +286,12 @@ class _MultiSelectWithSearchState<T>
                 return Chip(
                   label: Text(widget.displayName(item)),
                   onDeleted: () => _toggleSelection(id),
-                  deleteIcon: const Icon(Icons.close, size: 16),
+                  deleteIcon: const Icon(
+                    Icons.close,
+                    size: 20,
+                    color: redColor,
+                  ),
+
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 );
               }).toList(),

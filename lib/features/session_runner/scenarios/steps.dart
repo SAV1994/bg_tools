@@ -1,5 +1,6 @@
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/custom_exceptions.dart';
 import 'package:bg_tools/core/utils/initial_gamers_data.dart';
 import 'package:bg_tools/core/utils/initial_team_data.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
@@ -8,14 +9,14 @@ import 'package:bg_tools/features/session_runner/screens/export.dart';
 import 'package:bg_tools/features/session_runner/utils/secret_roles_randomizer.dart';
 
 final rootSessionSelectStep = ScenarioStep(
-  title: 'Базовые параметры сессиии',
+  title: 'Базовые параметры',
   description:
       'Вы можете выбрать записанную ранее сессию для сохранения связи между серией игровых сессий. Может быть актуально для игр-компаний. Выбирайте имеено первую сессию серии.',
   contentBuilder: (data) => FirstScreen(data: data),
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id &&
         (data['totalRounds'] == null || data['totalRounds'] < 1)) {
-      throw Exception('Укажите количество раундов');
+      throw StepWizardException('Укажите количество раундов');
     } else if ([
       RoundsTypeEnum.dynamic.id,
       RoundsTypeEnum.condition.id,
@@ -25,7 +26,7 @@ final rootSessionSelectStep = ScenarioStep(
 
     if (data['gameHostType'] == GameHostTypeEnum.master.id &&
         data['master'] == null) {
-      throw Exception('Укажите ведущего');
+      throw StepWizardException('Укажите ведущего');
     }
   },
 );
@@ -36,7 +37,7 @@ final numberTeamsStep = ScenarioStep(
   contentBuilder: (data) => NumberTeamsScreen(data: data),
   validator: (data) {
     if (data['numberTeams'] == null) {
-      throw Exception('Укажите количкство команд');
+      throw StepWizardException('Укажите количество команд');
     }
   },
 );
@@ -47,7 +48,7 @@ final teamManagementStep = ScenarioStep(
   contentBuilder: (data) => TeamManagementScreen(data: data),
   validator: (data) {
     if (data['gamers'].isEmpty) {
-      throw Exception('Добавте игроков');
+      throw StepWizardException('Добавте игроков');
     }
 
     Set<int> teamIds = {};
@@ -55,7 +56,7 @@ final teamManagementStep = ScenarioStep(
       teamIds.add(gamerData['team']);
     }
     if (data['numberTeams'] - teamIds.length > 0) {
-      throw Exception('Не все команды заполненны');
+      throw StepWizardException('Не все команды заполненны');
     }
 
     final List<dynamic> claenedGamersData = cleanGamersData(
@@ -72,7 +73,7 @@ final gamersSelectStep = ScenarioStep(
   contentBuilder: (data) => GamersSelectScreen(data: data),
   validator: (data) {
     if (data['gamers'].isEmpty) {
-      throw Exception('Добавте игроков');
+      throw StepWizardException('Добавте игроков');
     }
 
     final List<dynamic> claenedGamersData = cleanGamersData(data['gamers']);
@@ -93,19 +94,19 @@ final sessionStartStep = ScenarioStep(
   contentBuilder: (data) => SessionStartScreen(data: data),
   validator: (data) {
     if (data['startedAt'] == null) {
-      throw Exception('Запустите сессию');
+      throw StepWizardException('Запустите сессию');
     }
   },
 );
 
 final roundsStep = ScenarioStep(
-  title: 'Подсчёт между раундами',
+  title: 'Подсчёт по раундами',
   description: 'Заполните результаты',
   contentBuilder: (data) => ScoreRoundScreen(data: data),
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id) {
       if (data['round'] != data['totalRounds']) {
-        throw Exception('Нужно завершить все раунды');
+        throw StepWizardException('Нужно завершить все раунды');
       }
     } else if (data['roundsType'] == RoundsTypeEnum.condition.id) {
       final int roundsScoreLimit = data['roundsScoreLimit'];
@@ -115,7 +116,7 @@ final roundsStep = ScenarioStep(
         if (generalScore == null ||
             (roundsScoreLimit < 0 && generalScore > roundsScoreLimit ||
                 roundsScoreLimit >= 0 && generalScore < roundsScoreLimit)) {
-          throw Exception('Не выполнено граничное условие');
+          throw StepWizardException('Не выполнено граничное условие');
         }
       } else {
         bool isFinished = false;
@@ -129,7 +130,7 @@ final roundsStep = ScenarioStep(
         }
 
         if (!isFinished) {
-          throw Exception('Не выполнено граничное условие');
+          throw StepWizardException('Не выполнено граничное условие');
         }
       }
     }
@@ -137,13 +138,13 @@ final roundsStep = ScenarioStep(
 );
 
 final teamRoundsStep = ScenarioStep(
-  title: 'Подсчёт между раундами',
+  title: 'Подсчёт по раундами',
   description: 'Заполните результаты',
   contentBuilder: (data) => TeamScoreRoundScreen(data: data),
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id) {
       if (data['round'] != data['totalRounds']) {
-        throw Exception('Нужно завершить все раунды');
+        throw StepWizardException('Нужно завершить все раунды');
       }
     } else if (data['roundsType'] == RoundsTypeEnum.condition.id) {
       final int roundsScoreLimit = data['roundsScoreLimit'];
@@ -170,7 +171,7 @@ final teamRoundsStep = ScenarioStep(
         }
 
         if (!isFinished) {
-          throw Exception('Не выполнено граничное условие');
+          throw StepWizardException('Не выполнено граничное условие');
         }
       }
     }
@@ -183,7 +184,7 @@ final sessionStopStep = ScenarioStep(
   contentBuilder: (data) => SessionStopScreen(data: data),
   validator: (data) {
     if (data['finishedAt'] == null) {
-      throw Exception('Остановите сессию');
+      throw StepWizardException('Остановите сессию');
     }
   },
 );
@@ -198,7 +199,7 @@ final oneWinnerSelectStep = ScenarioStep(
       orElse: () => null,
     );
     if (winner == null) {
-      throw Exception('Выберите победителя');
+      throw StepWizardException('Выберите победителя');
     }
   },
 );
@@ -217,7 +218,7 @@ final teamOneWinnerSelectStep = ScenarioStep(
     }
 
     if (!isSelected) {
-      throw Exception('Выберите победителя');
+      throw StepWizardException('Выберите победителя');
     }
   },
 );
@@ -244,20 +245,20 @@ final teamResultStep = ScenarioStep(
 );
 
 final scoreInputStep = ScenarioStep(
-  title: 'Ввод результатов партии',
+  title: 'Результаты',
   description: 'Отметьте результаты партии',
   contentBuilder: (data) => ScoreInputScreen(data: data),
   validator: (data) {
     if (data['teamPointType'] == TeamPointTypeEnum.general.id) {
       for (int i = 1; i <= data['numberTeams']; i++) {
         if (data['teamsData'][i.toString()]?['score'] == null) {
-          throw Exception('Отметьте результаты каждой команды');
+          throw StepWizardException('Отметьте результаты каждой команды');
         }
       }
     } else {
       for (final Map<String, dynamic> gamerData in data['gamers']) {
         if (gamerData['score'] == null) {
-          throw Exception('Отметьте результаты каждого игрока');
+          throw StepWizardException('Отметьте результаты каждого игрока');
         }
       }
     }
@@ -283,14 +284,14 @@ final secretRoleManagementStep = ScenarioStep(
     }
 
     if (data['secretRoles'].length < playersCount) {
-      throw Exception(
+      throw StepWizardException(
         'Количество ролей не может быть меньше количества игроков.',
       );
     }
 
     if (data['secretRoles'].where((role) => role['isRequired'] == true).length >
         playersCount) {
-      throw Exception(
+      throw StepWizardException(
         'Количество обязательных ролей не может быть больше количества игроков.',
       );
     }
@@ -318,7 +319,7 @@ final secretRolesViewStep = ScenarioStep(
 );
 
 final roleAssignmentStep = ScenarioStep(
-  title: 'Распределение уже назначенных ролей',
+  title: 'Распределение ролей',
   description: 'Укажите роли игроков',
   contentBuilder: (data) => RoleAssignmentScreen(data: data),
   validator: (data) {
@@ -327,7 +328,7 @@ final roleAssignmentStep = ScenarioStep(
         .where((player) => player['team'] == null && player['id'] != masterId)
         .toList();
     if (playesrWithoutRole.isNotEmpty) {
-      throw Exception('Нужно закрепить роли за всеми игроками');
+      throw StepWizardException('Нужно закрепить роли за всеми игроками');
     }
 
     data['teamsData'] = {};

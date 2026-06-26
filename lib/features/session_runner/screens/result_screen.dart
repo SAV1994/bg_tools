@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/utils/player_score_card_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum _SelectMode { single, draw }
 
@@ -131,37 +130,28 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
 
   Widget _buildPlacePositionsWidget() {
     if (_mode == _SelectMode.draw) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.deepPurple.shade200, Colors.white],
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: widget.data['gamers'].length,
-                  itemBuilder: (context, index) {
-                    final int gamerId = widget.data['gamers'][index]['id'];
-                    return buildGamerInputCard(
-                      context,
-                      gamerId,
-                      _scoreControllers[gamerId],
-                      false,
-                      true,
-                      _updatePlace,
-                    );
-                  },
-                ),
-              ],
-            ),
+      SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(16),
+                itemCount: widget.data['gamers'].length,
+                itemBuilder: (context, index) {
+                  final int gamerId = widget.data['gamers'][index]['id'];
+                  return buildGamerInputCard(
+                    context,
+                    gamerId,
+                    _scoreControllers[gamerId],
+                    false,
+                    true,
+                    _updatePlace,
+                  );
+                },
+              ),
+            ],
           ),
         ),
       );
@@ -202,7 +192,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: isTop3 ? Colors.amber.shade300 : Colors.grey.shade200,
+          color: isTop3 ? goldColor : Colors.grey.shade200,
           width: isTop3 ? 2 : 1,
         ),
       ),

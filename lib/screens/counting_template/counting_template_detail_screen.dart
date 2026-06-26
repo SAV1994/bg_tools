@@ -44,7 +44,7 @@ class _CountingTemplateDetailScreenState
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: TextStyle(color: Colors.grey.shade600)),
+            child: Text(label, style: TextStyle(color: titleColor)),
           ),
           Expanded(
             child: Text(

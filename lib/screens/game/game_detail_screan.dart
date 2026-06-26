@@ -60,7 +60,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: TextStyle(color: Colors.grey.shade600)),
+            child: Text(label, style: TextStyle(color: titleColor)),
           ),
           Expanded(
             child: Text(
@@ -114,7 +114,6 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
         children: [
           // Заголовок с именем
           Card(
