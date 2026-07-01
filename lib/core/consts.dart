@@ -21,22 +21,48 @@ String getLoadingMsg() {
 
 // Команды для игровой сессии
 enum TeamsEnum {
-  red(1, 'Красная команда', Colors.red, Color.fromRGBO(255, 158, 158, 1)),
-  blue(2, 'Синяя команда', Colors.blue, Color.fromARGB(255, 149, 207, 255)),
-  green(3, 'Зеленая команда', Colors.green, Color.fromARGB(255, 160, 255, 165)),
+  red(
+    1,
+    'Красная команда',
+    Color(0xFFFF5252),
+    Color(0x1FFF5252),
+    Color(0x33FF5252),
+  ),
+  blue(
+    2,
+    'Синяя команда',
+    Color(0xFF42A5F5),
+    Color(0x1F42A5F5),
+    Color(0x3342A5F5),
+  ),
+  green(
+    3,
+    'Зеленая команда',
+    Color(0xFF66BB6A),
+    Color(0x1F66BB6A),
+    Color(0x3366BB6A),
+  ),
   purple(
     4,
     'Фиолетовая команда',
-    Colors.purple,
-    Color.fromARGB(255, 239, 147, 255),
+    Color(0xFFAB47BC),
+    Color(0x1FAB47BC),
+    Color(0x33AB47BC),
   );
 
   final int id;
   final String label;
   final Color color;
   final Color bgColor;
+  final Color bgColorLight;
 
-  const TeamsEnum(this.id, this.label, this.color, this.bgColor);
+  const TeamsEnum(
+    this.id,
+    this.label,
+    this.color,
+    this.bgColor,
+    this.bgColorLight,
+  );
 
   // Получить enum по id
   static TeamsEnum fromId(int id) {

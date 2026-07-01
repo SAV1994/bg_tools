@@ -373,14 +373,71 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
 
   Widget _buildScrean() {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
-      return SingleChildScrollView(
+      return Scrollbar(
+        thumbVisibility: true,
+        interactive: true,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Column(
+              children: [
+                if (_lastRoundFirst != null)
+                  Text(
+                    'Предыдущий раунд ходила первой: $_lastRoundFirst',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                Text(
+                  (widget.data['round'] < widget.data['totalRounds'] &&
+                          _isFinished == false)
+                      ? 'Раунд ${widget.data['round'] + 1} из '
+                            '${(widget.data['totalRounds'] == infNumRounds) ? '∞' : widget.data['totalRounds']}'
+                      : 'По итогу всех раундов',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                ReorderableListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(16),
+                  onReorder: _reorder,
+                  children: List.generate(_teamScoreControllers.length, (
+                    index,
+                  ) {
+                    final Map<String, dynamic> teamData =
+                        _teamScoreControllers[index];
+
+                    return _buildTeamCard(teamData);
+                  }),
+                ),
+
+                if (widget.data['round'] < widget.data['totalRounds'] &&
+                    _isFinished == false)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _nextRound,
+                          child: Text('Следующий раунд'),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Scrollbar(
+      thumbVisibility: true,
+      interactive: true,
+      child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(5.0),
           child: Column(
             children: [
               if (_lastRoundFirst != null)
                 Text(
-                  'Предыдущий раунд ходила первой: $_lastRoundFirst',
+                  'Предыдущий раунд ходил первым: $_lastRoundFirst',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               Text(
@@ -395,16 +452,46 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(16),
                 onReorder: _reorder,
-                children: List.generate(_teamScoreControllers.length, (index) {
-                  final Map<String, dynamic> teamData =
-                      _teamScoreControllers[index];
+                proxyDecorator: (child, index, animation) {
+                  return Material(
+                    elevation: 0,
+                    color: Colors.transparent,
+                    child: child,
+                  );
+                },
+                children: List.generate(widget.data['gamers'].length, (index) {
+                  final Map<String, dynamic> gamerData =
+                      widget.data['gamers'][index];
 
-                  return _buildTeamCard(teamData);
+                  return Container(
+                    key: Key('${gamerData['id']}_$index'),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withValues(alpha: 0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: buildPlayerRoundScoreInputCard(
+                        context,
+                        index,
+                        _scoreControllers,
+                        widget.data,
+                        _isFinished,
+                      ),
+                    ),
+                  );
                 }),
               ),
 
               if (widget.data['round'] < widget.data['totalRounds'] &&
-                  _isFinished == false)
+                  !_isFinished)
                 Row(
                   children: [
                     Expanded(
@@ -418,83 +505,6 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
             ],
           ),
         ),
-      );
-    }
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Column(
-          children: [
-            if (_lastRoundFirst != null)
-              Text(
-                'Предыдущий раунд ходил первым: $_lastRoundFirst',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-            Text(
-              (widget.data['round'] < widget.data['totalRounds'] &&
-                      _isFinished == false)
-                  ? 'Раунд ${widget.data['round'] + 1} из '
-                        '${(widget.data['totalRounds'] == infNumRounds) ? '∞' : widget.data['totalRounds']}'
-                  : 'По итогу всех раундов',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            ReorderableListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(16),
-              onReorder: _reorder,
-              proxyDecorator: (child, index, animation) {
-                return Material(
-                  elevation: 0,
-                  color: Colors.transparent,
-                  child: child,
-                );
-              },
-              children: List.generate(widget.data['gamers'].length, (index) {
-                final Map<String, dynamic> gamerData =
-                    widget.data['gamers'][index];
-
-                return Container(
-                  key: Key('${gamerData['id']}_$index'),
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: buildPlayerRoundScoreInputCard(
-                      context,
-                      index,
-                      _scoreControllers,
-                      widget.data,
-                      _isFinished,
-                    ),
-                  ),
-                );
-              }),
-            ),
-
-            if (widget.data['round'] < widget.data['totalRounds'] &&
-                !_isFinished)
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _nextRound,
-                      child: Text('Следующий раунд'),
-                    ),
-                  ),
-                ],
-              ),
-          ],
-        ),
       ),
     );
   }
@@ -505,6 +515,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: teamData['team'].bgColor,
       child: Column(
         children: [
           // Заголовок команды
@@ -559,10 +570,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                         const SizedBox(height: 4),
                         Text(
                           'Счки: ${teamData['score'] ?? '...'}',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey.shade600,
-                          ),
+                          style: TextStyle(fontSize: 20),
                         ),
                       ],
                     ),
@@ -602,7 +610,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
           if (teamData['show'])
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: teamData['team'].bgColor,
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(16),
                   bottomRight: Radius.circular(16),
@@ -619,9 +627,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                       children: [
                         CircleAvatar(
                           radius: 16,
-                          backgroundColor: teamData['team'].color.withOpacity(
-                            0.2,
-                          ),
+                          backgroundColor: teamData['team'].bgColor,
                           child: Text(
                             gamer['username'][0].toUpperCase(),
                             style: TextStyle(

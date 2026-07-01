@@ -398,6 +398,7 @@ class BackupService {
       // в AppDataManager тоже
       await AppDataManager.clearLastSessionGamers();
       await AppDataManager.clearActiveSession();
+      await AppDataManager.clearLastSessionTeams();
 
       final artistsIds = <int, int>{};
       for (final artistJson in data['artists']) {

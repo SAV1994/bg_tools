@@ -393,6 +393,12 @@ class _CountingTemplateFormFormState
                           }
                           if (value == GameTypeEnum.secretRoles) {
                             _selectedResultType = null;
+                            _selectedPointType = null;
+                            _selectedRoundsType = null;
+                          }
+                          if (value != GameTypeEnum.secretRoles) {
+                            _selectedGameHostType = null;
+                            _selectedSecretRolesDistributionType = null;
                           }
                           if (![
                             GameTypeEnum.coop,

@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide(color: borderColor, width: 2),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: borderColor, width: 2),
+            borderSide: BorderSide(color: goldColor, width: 2),
           ),
         ),
         popupMenuTheme: PopupMenuThemeData(
@@ -78,6 +78,21 @@ class MyApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             side: BorderSide(color: borderColor, width: 2),
             borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: greenColor,
+            backgroundColor: Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
+            ),
           ),
         ),
         scaffoldBackgroundColor: firstColor,

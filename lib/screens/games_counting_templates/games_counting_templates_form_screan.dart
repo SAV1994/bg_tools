@@ -253,8 +253,8 @@ class _GamesCountingTemplatesModalFormState
                       icon: const Icon(Icons.supervised_user_circle, size: 18),
                       label: const Text('Добавить группу'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
+                        backgroundColor: goldColor,
+                        foregroundColor: firstColor,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     ),
@@ -266,7 +266,7 @@ class _GamesCountingTemplatesModalFormState
                       icon: const Icon(Icons.person, size: 18),
                       label: const Text('Добавить роль'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: redColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
@@ -339,6 +339,7 @@ class _GamesCountingTemplatesModalFormState
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: goldColor,
                       ),
                     ),
                   ),
@@ -368,8 +369,8 @@ class _GamesCountingTemplatesModalFormState
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Добавить роль'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.green,
-                side: const BorderSide(color: Colors.green),
+                foregroundColor: redColor,
+                side: const BorderSide(color: redColor),
                 padding: const EdgeInsets.all(4),
               ),
             ),
@@ -409,7 +410,10 @@ class _GamesCountingTemplatesModalFormState
           Expanded(
             child: GestureDetector(
               onTap: () => _showRoleModalForm(roles, index),
-              child: Text(role['name'], style: const TextStyle(fontSize: 14)),
+              child: Text(
+                role['name'],
+                style: const TextStyle(fontSize: 14, color: redColor),
+              ),
             ),
           ),
           IconButton(
@@ -707,179 +711,184 @@ class _GamesCountingTemplatesModalFormState
             ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            spacing: 16,
-            mainAxisSize: MainAxisSize.min,
-            children: _isLoading
-                ? [buildLoadingScreen()]
-                : [
-                    if (_generalError != null)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(8),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.shade200),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.error,
-                              color: Colors.red.shade700,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _generalError!,
-                                style: TextStyle(color: Colors.red.shade700),
+      body: Scrollbar(
+        thumbVisibility: true,
+        interactive: true,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              spacing: 16,
+              mainAxisSize: MainAxisSize.min,
+              children: _isLoading
+                  ? [buildLoadingScreen()]
+                  : [
+                      if (_generalError != null)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.error,
+                                color: Colors.red.shade700,
+                                size: 20,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Название *',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 6,
-                      validator: (v) =>
-                          v?.isEmpty == true ? 'Введите название' : null,
-                    ),
-                    MultiSelectWithSearch<Game>(
-                      label: 'Дополнения',
-                      items: _expansions,
-                      selectedIds: _selectedExpansionIds,
-                      onSelectionChanged: (newSelected) {
-                        setState(() {
-                          _selectedExpansionIds = newSelected;
-                        });
-                      },
-                      displayName: (expansion) => expansion.name,
-                      getId: (expansion) => expansion.id,
-                      searchHint: 'Поиск дополнений...',
-                    ),
-                    SelectWithSearch<CountingTemplate>(
-                      label: 'Шаблон *',
-                      items: _countingTemplates,
-                      selectedItem: _selectedCountingTemplate,
-                      onSelectionChanged: (template) {
-                        bool showRoundsScoreLimitInput = false;
-                        bool showSecretRolesConfig = false;
-
-                        if (template != null) {
-                          final Map<String, dynamic> templateData = jsonDecode(
-                            template.data,
-                          );
-
-                          if (templateData['roundsType'] ==
-                              RoundsTypeEnum.condition.id) {
-                            showRoundsScoreLimitInput = true;
-                          } else {
-                            showRoundsScoreLimitInput = false;
-                            _roundsScoreLimitController.clear();
-                          }
-
-                          if (templateData['gameType'] ==
-                              GameTypeEnum.secretRoles.id) {
-                            showSecretRolesConfig = true;
-                          } else {
-                            showSecretRolesConfig = false;
-                            _secretRolesConfig.clear();
-                          }
-                        }
-
-                        setState(() {
-                          _selectedCountingTemplate = template;
-                          _showRoundsScoreLimitInput =
-                              showRoundsScoreLimitInput;
-                          _showSecretRolesConfig = showSecretRolesConfig;
-                        });
-                      },
-                      displayName: (template) =>
-                          '${template.name} (${template.description})',
-                      getId: (template) => template.id,
-                      searchHint: 'Поиск шаблона...',
-                      isRequired: true,
-                      placeholder: 'Не выбран',
-                    ),
-
-                    if (_showRoundsScoreLimitInput)
-                      TextFormField(
-                        controller: _roundsScoreLimitController,
-                        decoration: InputDecoration(
-                          labelText: 'Граничное значение очков для раундов *',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType:
-                            TextInputType.number, // Цифровая клавиатура
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
-                        ],
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Пожалуйста, введите ограничитель';
-                          }
-                          return null;
-                        },
-                      ),
-
-                    if (_showSecretRolesConfig)
-                      _secretRolesConfig.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.people_outline,
-                                    size: 64,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'Нет команд',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  TextButton.icon(
-                                    onPressed: () => _showTeamModalForm(),
-                                    icon: const Icon(Icons.add),
-                                    label: const Text('Добавить команду'),
-                                  ),
-                                ],
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _generalError!,
+                                  style: TextStyle(color: Colors.red.shade700),
+                                ),
                               ),
-                            )
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              padding: const EdgeInsets.all(16),
-                              itemCount: _secretRolesConfig.length,
-                              itemBuilder: (context, index) {
-                                final team = _secretRolesConfig[index];
-                                return _buildTeamCard(team, index);
-                              },
-                            ),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _submitForm,
-                            child: Text('Сохранить'),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Название *',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 6,
+                        validator: (v) =>
+                            v?.isEmpty == true ? 'Введите название' : null,
+                      ),
+                      MultiSelectWithSearch<Game>(
+                        label: 'Дополнения',
+                        items: _expansions,
+                        selectedIds: _selectedExpansionIds,
+                        onSelectionChanged: (newSelected) {
+                          setState(() {
+                            _selectedExpansionIds = newSelected;
+                          });
+                        },
+                        displayName: (expansion) => expansion.name,
+                        getId: (expansion) => expansion.id,
+                        searchHint: 'Поиск дополнений...',
+                      ),
+                      SelectWithSearch<CountingTemplate>(
+                        label: 'Шаблон *',
+                        items: _countingTemplates,
+                        selectedItem: _selectedCountingTemplate,
+                        onSelectionChanged: (template) {
+                          bool showRoundsScoreLimitInput = false;
+                          bool showSecretRolesConfig = false;
+
+                          if (template != null) {
+                            final Map<String, dynamic> templateData =
+                                jsonDecode(template.data);
+
+                            if (templateData['roundsType'] ==
+                                RoundsTypeEnum.condition.id) {
+                              showRoundsScoreLimitInput = true;
+                            } else {
+                              showRoundsScoreLimitInput = false;
+                              _roundsScoreLimitController.clear();
+                            }
+
+                            if (templateData['gameType'] ==
+                                GameTypeEnum.secretRoles.id) {
+                              showSecretRolesConfig = true;
+                            } else {
+                              showSecretRolesConfig = false;
+                              _secretRolesConfig.clear();
+                            }
+                          }
+
+                          setState(() {
+                            _selectedCountingTemplate = template;
+                            _showRoundsScoreLimitInput =
+                                showRoundsScoreLimitInput;
+                            _showSecretRolesConfig = showSecretRolesConfig;
+                          });
+                        },
+                        displayName: (template) =>
+                            '${template.name} (${template.description})',
+                        getId: (template) => template.id,
+                        searchHint: 'Поиск шаблона...',
+                        isRequired: true,
+                        placeholder: 'Не выбран',
+                      ),
+
+                      if (_showRoundsScoreLimitInput)
+                        TextFormField(
+                          controller: _roundsScoreLimitController,
+                          decoration: InputDecoration(
+                            labelText: 'Граничное значение очков для раундов *',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType:
+                              TextInputType.number, // Цифровая клавиатура
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d*'),
+                            ),
+                          ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Пожалуйста, введите ограничитель';
+                            }
+                            return null;
+                          },
+                        ),
+
+                      if (_showSecretRolesConfig)
+                        _secretRolesConfig.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.people_outline,
+                                      size: 64,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Нет команд',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextButton.icon(
+                                      onPressed: () => _showTeamModalForm(),
+                                      icon: const Icon(Icons.add),
+                                      label: const Text('Добавить команду'),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _secretRolesConfig.length,
+                                itemBuilder: (context, index) {
+                                  final team = _secretRolesConfig[index];
+                                  return _buildTeamCard(team, index);
+                                },
+                              ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _submitForm,
+                              child: Text('Сохранить'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+            ),
           ),
         ),
       ),
