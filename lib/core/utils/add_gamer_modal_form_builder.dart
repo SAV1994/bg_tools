@@ -79,25 +79,31 @@ void buildAddGamerModal(
                               ],
                             ),
                           )
-                        : ListView.builder(
-                            itemCount: localFiltered.length,
-                            itemBuilder: (context, index) {
-                              final gamer = localFiltered[index];
+                        : Scrollbar(
+                            thumbVisibility: true,
+                            interactive: true,
+                            child: ListView.builder(
+                              itemCount: localFiltered.length,
+                              itemBuilder: (context, index) {
+                                final gamer = localFiltered[index];
 
-                              String fio = getGamerFio(gamer);
+                                String fio = getGamerFio(gamer);
 
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  child: Text(gamer.username[0].toUpperCase()),
-                                ),
-                                title: Text(gamer.username),
-                                subtitle: Text(fio),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  onSelect(gamer);
-                                },
-                              );
-                            },
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text(
+                                      gamer.username[0].toUpperCase(),
+                                    ),
+                                  ),
+                                  title: Text(gamer.username),
+                                  subtitle: Text(fio),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    onSelect(gamer);
+                                  },
+                                );
+                              },
+                            ),
                           ),
                   ),
                 ],

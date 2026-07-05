@@ -205,7 +205,7 @@ class _GamesCountingTemplatesModalFormState
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -224,12 +224,12 @@ class _GamesCountingTemplatesModalFormState
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      icon: const Icon(Icons.edit, color: borderColor),
                       onPressed: () => _showTeamModalForm(index),
                       tooltip: 'Редактировать команду',
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
+                      icon: const Icon(Icons.delete, color: redColor),
                       onPressed: () => setState(() {
                         _secretRolesConfig.removeAt(index);
                       }),
@@ -266,8 +266,8 @@ class _GamesCountingTemplatesModalFormState
                       icon: const Icon(Icons.person, size: 18),
                       label: const Text('Добавить роль'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: redColor,
-                        foregroundColor: Colors.white,
+                        backgroundColor: borderColor,
+                        foregroundColor: textColor,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     ),
@@ -316,7 +316,7 @@ class _GamesCountingTemplatesModalFormState
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      color: Colors.grey.shade50,
+      color: firstColor,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -328,7 +328,7 @@ class _GamesCountingTemplatesModalFormState
                 const Icon(
                   Icons.supervised_user_circle,
                   size: 18,
-                  color: Colors.blue,
+                  color: goldColor,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -345,12 +345,12 @@ class _GamesCountingTemplatesModalFormState
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.edit, size: 16, color: Colors.blue),
+                  icon: const Icon(Icons.edit, size: 16, color: borderColor),
                   onPressed: () => _showGroupModalForm(groups, index),
                   tooltip: 'Редактировать группу',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, size: 16, color: Colors.red),
+                  icon: const Icon(Icons.close, size: 16, color: redColor),
                   onPressed: () {
                     setState(() {
                       groups.removeAt(index);
@@ -400,30 +400,31 @@ class _GamesCountingTemplatesModalFormState
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: secondColor,
+        border: BoxBorder.all(color: borderColor),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.person, size: 16, color: Colors.grey),
+          const Icon(Icons.person, size: 16, color: textColor),
           const SizedBox(width: 8),
           Expanded(
             child: GestureDetector(
               onTap: () => _showRoleModalForm(roles, index),
               child: Text(
                 role['name'],
-                style: const TextStyle(fontSize: 14, color: redColor),
+                style: const TextStyle(fontSize: 14, color: textColor),
               ),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.edit, size: 14, color: Colors.blue),
+            icon: const Icon(Icons.edit, size: 14, color: borderColor),
             onPressed: () => _showRoleModalForm(roles, index),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
           IconButton(
-            icon: const Icon(Icons.close, size: 14, color: Colors.red),
+            icon: const Icon(Icons.close, size: 14, color: redColor),
             onPressed: () {
               setState(() {
                 roles.removeAt(index);
@@ -458,14 +459,12 @@ class _GamesCountingTemplatesModalFormState
       }
     }
 
-    print(availableTeams);
-
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(
-          (index == null) ? 'Новая команда' : 'Ркдактирование команды',
+          (index == null) ? 'Новая команда' : 'Редактирование команды',
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -545,7 +544,7 @@ class _GamesCountingTemplatesModalFormState
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Заполните обязательные поля'),
-                    backgroundColor: Colors.red,
+                    backgroundColor: redColor,
                   ),
                 );
               }
@@ -603,7 +602,7 @@ class _GamesCountingTemplatesModalFormState
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Заполните обязательные поля'),
-                    backgroundColor: Colors.red,
+                    backgroundColor: redColor,
                   ),
                 );
               }

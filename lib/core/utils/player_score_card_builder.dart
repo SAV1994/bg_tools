@@ -10,9 +10,10 @@ Widget buildGamerInputCard(
   Map<String, dynamic> controllerData,
   bool addCalcBtn,
   bool digitsOnly,
-  Function updateScore, [
+  Function updateScore, {
   Color? color,
-]) {
+  String? label,
+}) {
   return Card(
     margin: const EdgeInsets.only(bottom: 12),
     color: (color == null) ? secondColor : color,
@@ -97,7 +98,8 @@ Widget buildGamerInputCard(
                             ),
                     ],
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
+                      labelText: label,
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.symmetric(vertical: 8),
                     ),

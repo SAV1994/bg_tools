@@ -262,7 +262,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
                       true,
                       false,
                       _updateScore,
-                      (gamerData['team'] != null)
+                      color: (gamerData['team'] != null)
                           ? TeamsEnum.fromId(gamerData['team']).color
                           : null,
                     );

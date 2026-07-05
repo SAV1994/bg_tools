@@ -68,8 +68,6 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
               _roundsScoreLimit >= 0 && gamerData['score'] >= _roundsScoreLimit;
         }
       }
-
-      _sortByCondition();
     }
 
     setState(() => _isLoading = false);

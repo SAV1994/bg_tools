@@ -107,7 +107,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
 
   void _fillPlace() {
     for (final entry in widget.data['gamers'].asMap().entries) {
-      if (widget.data['type'] != GameTypeEnum.oneWinner.id || entry == 0) {
+      if (widget.data['type'] != GameTypeEnum.oneWinner.id || entry.key == 0) {
         entry.value['place'] = entry.key + 1;
       } else {
         entry.value['place'] = null;
@@ -130,7 +130,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
 
   Widget _buildPlacePositionsWidget() {
     if (_mode == _SelectMode.draw) {
-      SingleChildScrollView(
+      return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -148,6 +148,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                     false,
                     true,
                     _updatePlace,
+                    label: 'Занятое место',
                   );
                 },
               ),
