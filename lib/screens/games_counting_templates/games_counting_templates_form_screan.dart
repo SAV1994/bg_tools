@@ -712,7 +712,6 @@ class _GamesCountingTemplatesModalFormState
       ),
       body: Scrollbar(
         thumbVisibility: true,
-        interactive: true,
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16),
           child: Form(

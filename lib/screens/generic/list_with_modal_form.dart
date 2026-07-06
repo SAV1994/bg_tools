@@ -213,6 +213,7 @@ class _ModalFormState extends ConsumerState<ModalForm> {
                       ),
                     ),
                   TextFormField(
+                    autofocus: true,
                     controller: _nameController,
                     decoration: InputDecoration(
                       labelText: widget.config.imputName,

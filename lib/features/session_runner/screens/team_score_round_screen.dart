@@ -375,7 +375,6 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
       return Scrollbar(
         thumbVisibility: true,
-        interactive: true,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(5.0),
@@ -429,7 +428,6 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
 
     return Scrollbar(
       thumbVisibility: true,
-      interactive: true,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(5.0),

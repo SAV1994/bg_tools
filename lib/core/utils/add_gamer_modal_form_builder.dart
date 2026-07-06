@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/utils/gamer_fio_builder.dart';
 
@@ -47,7 +48,7 @@ void buildAddGamerModal(
                     autofocus: false,
                     decoration: InputDecoration(
                       hintText: 'Поиск...',
-                      prefixIcon: const Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search, color: greenColor),
                       suffixIcon: searchQuery.isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.clear),
@@ -69,11 +70,7 @@ void buildAddGamerModal(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.search_off,
-                                  size: 48,
-                                  color: Colors.grey,
-                                ),
+                                Icon(Icons.search_off, size: 48),
                                 SizedBox(height: 8),
                                 Text('Ничего не найдено'),
                               ],
@@ -81,7 +78,6 @@ void buildAddGamerModal(
                           )
                         : Scrollbar(
                             thumbVisibility: true,
-                            interactive: true,
                             child: ListView.builder(
                               itemCount: localFiltered.length,
                               itemBuilder: (context, index) {

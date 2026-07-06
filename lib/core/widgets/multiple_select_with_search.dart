@@ -241,28 +241,32 @@ class _MultiSelectWithSearchState<T>
                             ),
                           ),
                         )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: _filteredItems.length,
-                          itemBuilder: (context, index) {
-                            final item = _filteredItems[index];
-                            final id = widget.getId(item);
-                            final isSelected = _selectedIds.contains(id);
-                            final isEnabled =
-                                widget.isEnabled?.call(item) ?? true;
+                      : Scrollbar(
+                          thumbVisibility: true,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _filteredItems.length,
+                            itemBuilder: (context, index) {
+                              final item = _filteredItems[index];
+                              final id = widget.getId(item);
+                              final isSelected = _selectedIds.contains(id);
+                              final isEnabled =
+                                  widget.isEnabled?.call(item) ?? true;
 
-                            return CheckboxListTile(
-                              title: widget.customItemBuilder != null
-                                  ? widget.customItemBuilder!(item)
-                                  : Text(widget.displayName(item)),
-                              value: isSelected && isEnabled,
-                              onChanged: isEnabled
-                                  ? (selected) => _toggleSelection(id)
-                                  : null,
-                              controlAffinity: ListTileControlAffinity.leading,
-                              dense: true,
-                            );
-                          },
+                              return CheckboxListTile(
+                                title: widget.customItemBuilder != null
+                                    ? widget.customItemBuilder!(item)
+                                    : Text(widget.displayName(item)),
+                                value: isSelected && isEnabled,
+                                onChanged: isEnabled
+                                    ? (selected) => _toggleSelection(id)
+                                    : null,
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                dense: true,
+                              );
+                            },
+                          ),
                         ),
                 ),
               ],

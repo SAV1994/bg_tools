@@ -72,6 +72,12 @@ class MyApp extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: goldColor, width: 2),
           ),
+          hintStyle: TextStyle(color: textColor),
+        ),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: greenColor,
+          selectionColor: greenColor.withValues(alpha: 0.3),
+          selectionHandleColor: greenColor,
         ),
         popupMenuTheme: PopupMenuThemeData(
           color: secondColor,
@@ -94,6 +100,19 @@ class MyApp extends StatelessWidget {
               letterSpacing: 0.5,
             ),
           ),
+        ),
+        bottomSheetTheme: BottomSheetThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+          ),
+          modalBackgroundColor: secondColor,
+        ),
+        scrollbarTheme: ScrollbarThemeData(
+          thumbColor: WidgetStateProperty.all(greenColor),
+          thickness: WidgetStateProperty.all(8.0),
+          radius: const Radius.circular(10),
+          minThumbLength: 30,
+          interactive: true,
         ),
         scaffoldBackgroundColor: firstColor,
         colorScheme: ColorScheme.fromSeed(seedColor: firstColor),

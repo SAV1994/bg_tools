@@ -200,15 +200,18 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                             ),
                           ),
                         )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: _filteredItems.length,
-                          itemBuilder: (context, index) {
-                            final item = _filteredItems[index];
-                            final isSelected = _selectedItem == item;
+                      : Scrollbar(
+                          thumbVisibility: true,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _filteredItems.length,
+                            itemBuilder: (context, index) {
+                              final item = _filteredItems[index];
+                              final isSelected = _selectedItem == item;
 
-                            return _buildListItem(item, isSelected);
-                          },
+                              return _buildListItem(item, isSelected);
+                            },
+                          ),
                         ),
                 ),
 

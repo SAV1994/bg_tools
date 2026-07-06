@@ -392,7 +392,14 @@ class _GamingSessionFormScreenState
                       choices: GameTypeEnum.values.map((val) {
                         return DropdownMenuItem(
                           value: val,
-                          child: Row(children: [Text(val.label)]),
+                          child: Row(
+                            children: [
+                              Text(
+                                val.label,
+                                style: TextStyle(color: textColor),
+                              ),
+                            ],
+                          ),
                         );
                       }),
                       selected: _selectedGameType,
