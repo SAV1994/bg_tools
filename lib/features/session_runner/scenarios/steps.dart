@@ -55,8 +55,15 @@ final teamManagementStep = ScenarioStep(
     for (final Map<String, dynamic> gamerData in data['gamers']) {
       teamIds.add(gamerData['team']);
     }
+
     if (data['numberTeams'] - teamIds.length > 0) {
-      throw StepWizardException('Не все команды заполненны');
+      if (data['type'] == GameTypeEnum.secretTeams.id) {
+        data['teamsData'].removeWhere(
+          (key, value) => !teamIds.contains(int.parse(key)),
+        );
+      } else {
+        throw StepWizardException('Не все команды заполненны');
+      }
     }
 
     final List<dynamic> claenedGamersData = cleanGamersData(
@@ -216,8 +223,7 @@ final teamOneWinnerSelectStep = ScenarioStep(
         break;
       }
     }
-
-    if (!isSelected) {
+    if (data['type'] != GameTypeEnum.secretTeams.id && !isSelected) {
       throw StepWizardException('Выберите победителя');
     }
   },

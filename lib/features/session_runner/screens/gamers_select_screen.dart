@@ -76,9 +76,17 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
       if ([
         GameTypeEnum.solo.id,
         GameTypeEnum.coop.id,
+        GameTypeEnum.secretTeams.id,
       ].contains(widget.data['type'])) {
+        late final int team;
+        if (widget.data['type'] == GameTypeEnum.secretTeams.id) {
+          team = int.parse(widget.data['teamsData'].keys.first);
+        } else {
+          team = TeamsEnum.red.id;
+        }
+
         for (final Map<String, dynamic> gamerData in gamersData) {
-          gamerData['team'] = TeamsEnum.red.id;
+          gamerData['team'] = team;
         }
       }
 

@@ -84,8 +84,8 @@ class ImageService {
   static Future<File?> compressAndSaveImage(File imageFile) async {
     try {
       // Получаем директорию для приложения
-      final appDir = await getApplicationDocumentsDirectory();
-      final gameImagesDir = Directory(path.join(appDir.path, _imageFolder));
+      final appDir = await getExternalStorageDirectory();
+      final gameImagesDir = Directory(path.join(appDir!.path, _imageFolder));
 
       // Создаем папку если не существует
       if (!await gameImagesDir.exists()) {

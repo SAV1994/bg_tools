@@ -63,6 +63,7 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
 
   void _confirm() {
     widget.onScoreChanged(_tempScore);
+    FocusScope.of(context).unfocus();
     Navigator.pop(context);
   }
 
@@ -120,6 +121,7 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
+                autofocus: true,
                 controller: _amountController,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
@@ -208,7 +210,10 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
               children: [
                 Expanded(
                   child: TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.pop(context);
+                    },
                     child: const Text('Отмена'),
                   ),
                 ),

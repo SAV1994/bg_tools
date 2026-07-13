@@ -202,7 +202,7 @@ class _GamingSessionDetailScreenState
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: expansions.length,
-                  separatorBuilder: (_, __) => const Divider(),
+                  separatorBuilder: (_, _) => const Divider(),
                   itemBuilder: (context, index) {
                     final expansion = expansions[index];
                     return ListTile(

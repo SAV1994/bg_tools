@@ -1,9 +1,9 @@
-void setIniialTeamData(Map teamsData, int teamId) {
+void setIniialTeamData(Map teamsData, int teamId, {String? name}) {
   teamsData[teamId.toString()] = {
     'score': null,
     'scoreByrounds': [],
     'numWInRounds': 0,
     'place': null,
-    'name': null,
+    'name': name,
   };
 }

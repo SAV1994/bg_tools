@@ -142,6 +142,7 @@ class _CountingTemplateFormFormState
             GameTypeEnum.team,
             GameTypeEnum.coop,
             GameTypeEnum.teamOneWinner,
+            GameTypeEnum.secretTeams,
           ].contains(_selectedGameType) &&
           _selectedResultType != null &&
           _selectedResultType != ResultTypeEnum.condition;
@@ -404,6 +405,7 @@ class _CountingTemplateFormFormState
                             GameTypeEnum.coop,
                             GameTypeEnum.team,
                             GameTypeEnum.teamOneWinner,
+                            GameTypeEnum.secretTeams,
                           ].contains(value)) {
                             _selectedTeamPointType = null;
                           }

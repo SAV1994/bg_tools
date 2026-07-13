@@ -458,3 +458,102 @@ class SecretRolesScenario {
     ],
   );
 }
+
+// 8 Скрытые команды
+class SecretTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      sessionStartStep,
+      sessionStopStep,
+      teamManagementStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 8 Скрытые команды (есть порядок ходов)
+class FpSecretTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      sessionStopStep,
+      teamManagementStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 8 Скрытые команды с ПО
+class WpSecretTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      sessionStartStep,
+      sessionStopStep,
+      teamManagementStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 8 Скрытые команды с ПО (есть порядок ходов)
+class WpFpSecretTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      sessionStopStep,
+      teamManagementStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 8 Скрытые команды + раунды
+class RoundsSecretTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      sessionStartStep,
+      roundsStep,
+      sessionStopStep,
+      teamManagementStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}
+
+// 8 Скрытые команды + раунды (есть порядок ходов)
+class RoundsFpSecretTeamScenario {
+  static Scenario get scenario => Scenario(
+    steps: [
+      rootSessionSelectStep,
+      gamersSelectStep,
+      gamersTurnOrderStep,
+      sessionStartStep,
+      roundsStep,
+      sessionStopStep,
+      teamManagementStep,
+      scoreInputStep,
+      teamOneWinnerSelectStep,
+      finalStep,
+    ],
+  );
+}

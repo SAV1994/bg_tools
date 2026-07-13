@@ -16,6 +16,8 @@ import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
 import 'package:bg_tools/core/widgets/select_with_search.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
+enum _SelectMode { classic, onlyTeams, teamsFull }
+
 class GamesCountingTemplatesModalForm extends ConsumerStatefulWidget {
   final int gameId;
   final int? gamesCountingTemplatesId;
@@ -35,6 +37,8 @@ class _GamesCountingTemplatesModalFormState
     extends ConsumerState<GamesCountingTemplatesModalForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  _SelectMode _mode = _SelectMode.classic;
+
   late final GamesCountingTemplatesData? gamesCountingTemplatesData;
   // Локальное состояние формы
   List<CountingTemplate> _countingTemplates = [];
@@ -45,7 +49,7 @@ class _GamesCountingTemplatesModalFormState
   bool _showRoundsScoreLimitInput = false;
 
   List<dynamic> _secretRolesConfig = [];
-  bool _showSecretRolesConfig = false;
+
   // Контроллеры
   final TextEditingController _controllerForModal = TextEditingController();
   late final TextEditingController _nameController;
@@ -87,14 +91,20 @@ class _GamesCountingTemplatesModalFormState
       final Map<String, dynamic> templatesData = jsonDecode(
         _selectedCountingTemplate!.data,
       );
-
-      if (templatesData['gameType'] == GameTypeEnum.secretRoles.id) {
+      if ([
+        GameTypeEnum.secretRoles.id,
+        GameTypeEnum.secretTeams.id,
+      ].contains(templatesData['gameType'])) {
+        if (templatesData['gameType'] == GameTypeEnum.secretRoles.id) {
+          _mode = _SelectMode.teamsFull;
+        } else {
+          _mode = _SelectMode.onlyTeams;
+        }
         GamesCountingTemplate gamesCountingTemplate =
             gamesCountingTemplatesData!.gamesCountingTemplate;
         _secretRolesConfig = json.decode(
           gamesCountingTemplate.data!,
         )['secretRolesConfig'];
-        _showSecretRolesConfig = true;
       }
 
       if (templatesData['roundsType'] == RoundsTypeEnum.condition.id) {
@@ -164,7 +174,6 @@ class _GamesCountingTemplatesModalFormState
           );
         }
       } catch (e) {
-        print(e);
         setState(() {
           _generalError = 'Ошибка';
         });
@@ -239,41 +248,44 @@ class _GamesCountingTemplatesModalFormState
                 ),
               ],
             ),
-
-            const SizedBox(height: 12),
+            if (_mode == _SelectMode.teamsFull) const SizedBox(height: 12),
 
             // Кнопки добавления групп и ролей
-            Row(
-              spacing: 8,
-              children: [
-                if (roles.isEmpty)
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => _showGroupModalForm(groups),
-                      icon: const Icon(Icons.supervised_user_circle, size: 18),
-                      label: const Text('Добавить группу'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: goldColor,
-                        foregroundColor: firstColor,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+            if (_mode == _SelectMode.teamsFull)
+              Row(
+                spacing: 8,
+                children: [
+                  if (roles.isEmpty)
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showGroupModalForm(groups),
+                        icon: const Icon(
+                          Icons.supervised_user_circle,
+                          size: 18,
+                        ),
+                        label: const Text('Добавить группу'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: goldColor,
+                          foregroundColor: firstColor,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
                       ),
                     ),
-                  ),
-                if (groups.isEmpty)
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => _showRoleModalForm(roles),
-                      icon: const Icon(Icons.person, size: 18),
-                      label: const Text('Добавить роль'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: borderColor,
-                        foregroundColor: textColor,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                  if (groups.isEmpty)
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showRoleModalForm(roles),
+                        icon: const Icon(Icons.person, size: 18),
+                        label: const Text('Добавить роль'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: borderColor,
+                          foregroundColor: textColor,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                ],
+              ),
 
             // Список групп
             if (groups.isNotEmpty) ...[
@@ -674,11 +686,6 @@ class _GamesCountingTemplatesModalFormState
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? templatesData =
-        (_selectedCountingTemplate != null)
-        ? jsonDecode(_selectedCountingTemplate!.data)
-        : null;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -687,8 +694,7 @@ class _GamesCountingTemplatesModalFormState
               : 'Редактирование шаблона',
         ),
         actions: [
-          if (templatesData != null &&
-              templatesData['gameType'] == GameTypeEnum.secretRoles.id &&
+          if ([_SelectMode.onlyTeams, _SelectMode.teamsFull].contains(_mode) &&
               _secretRolesConfig.length < 4)
             IconButton(
               icon: const Icon(Icons.add),
@@ -778,7 +784,7 @@ class _GamesCountingTemplatesModalFormState
                         selectedItem: _selectedCountingTemplate,
                         onSelectionChanged: (template) {
                           bool showRoundsScoreLimitInput = false;
-                          bool showSecretRolesConfig = false;
+                          _SelectMode mode = _SelectMode.classic;
 
                           if (template != null) {
                             final Map<String, dynamic> templateData =
@@ -791,12 +797,13 @@ class _GamesCountingTemplatesModalFormState
                               showRoundsScoreLimitInput = false;
                               _roundsScoreLimitController.clear();
                             }
-
                             if (templateData['gameType'] ==
                                 GameTypeEnum.secretRoles.id) {
-                              showSecretRolesConfig = true;
+                              mode = _SelectMode.teamsFull;
+                            } else if (templateData['gameType'] ==
+                                GameTypeEnum.secretTeams.id) {
+                              mode = _SelectMode.onlyTeams;
                             } else {
-                              showSecretRolesConfig = false;
                               _secretRolesConfig.clear();
                             }
                           }
@@ -805,7 +812,7 @@ class _GamesCountingTemplatesModalFormState
                             _selectedCountingTemplate = template;
                             _showRoundsScoreLimitInput =
                                 showRoundsScoreLimitInput;
-                            _showSecretRolesConfig = showSecretRolesConfig;
+                            _mode = mode;
                           });
                         },
                         displayName: (template) =>
@@ -838,7 +845,10 @@ class _GamesCountingTemplatesModalFormState
                           },
                         ),
 
-                      if (_showSecretRolesConfig)
+                      if ([
+                        _SelectMode.onlyTeams,
+                        _SelectMode.teamsFull,
+                      ].contains(_mode))
                         _secretRolesConfig.isEmpty
                             ? Center(
                                 child: Column(

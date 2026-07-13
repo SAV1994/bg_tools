@@ -32,6 +32,25 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
 
   Future<void> _loadData() async {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      if (widget.data['type'] == GameTypeEnum.secretTeams.id &&
+          widget.data['teamsData'].values.every(
+            (element) => element['score'] == null,
+          )) {
+        List<Map<String, dynamic>> gamersData = widget.data['gamers']
+            .cast<Map<String, dynamic>>();
+        for (final Map<String, dynamic> gamerData in gamersData) {
+          Map<String, dynamic> teamData =
+              widget.data['teamsData'][gamerData['team'].toString()];
+          if (gamerData['score'] != null) {
+            if (teamData['score'] == null) {
+              teamData['score'] = gamerData['score'];
+            } else {
+              teamData['score'] += gamerData['score'];
+            }
+          }
+        }
+      }
+
       for (int i = 1; i <= widget.data['numberTeams']; i++) {
         final teamEnum = TeamsEnum.fromId(i);
         _generalScoreController[teamEnum] = ({

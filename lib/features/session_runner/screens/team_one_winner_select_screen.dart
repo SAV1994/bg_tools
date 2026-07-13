@@ -6,7 +6,7 @@ import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
-enum _SelectMode { single, multiple }
+enum _SelectMode { single, multiple, none }
 
 enum _SelectScoreMode {
   max(1),
@@ -111,11 +111,9 @@ class _TeamOneWinnerSelectScreenState
     setState(() => _isLoading = false);
   }
 
-  void _toggleMode() {
+  void _toggleMode(_SelectMode selectedMode) {
     setState(() {
-      _mode = _mode == _SelectMode.single
-          ? _SelectMode.multiple
-          : _SelectMode.single;
+      _mode = selectedMode;
       if (_mode == _SelectMode.single && _multipleSelected.isNotEmpty) {
         _singleSelected = _multipleSelected.first;
         _updateData([_singleSelected!]);
@@ -124,6 +122,10 @@ class _TeamOneWinnerSelectScreenState
         _multipleSelected.add(_singleSelected!);
         _updateData(_multipleSelected.toList());
         _singleSelected = null;
+      } else if (_mode == _SelectMode.none) {
+        _singleSelected = null;
+        _multipleSelected.clear();
+        _updateData([]);
       }
     });
   }
@@ -243,8 +245,11 @@ class _TeamOneWinnerSelectScreenState
               child: Row(
                 children: [
                   // Индикатор выбора
-                  _buildSelectionIndicator(isSelected),
-                  const SizedBox(width: 16),
+                  if (_mode != _SelectMode.none) ...[
+                    _buildSelectionIndicator(isSelected),
+                    const SizedBox(width: 16),
+                  ],
+
                   if (widget.data['type'] != GameTypeEnum.secretRoles.id) ...[
                     Container(
                       width: 40,
@@ -411,7 +416,8 @@ class _TeamOneWinnerSelectScreenState
                 children: [
                   // Кнопка переключение режима командных очков
                   if (widget.data['teamPointType'] ==
-                      TeamPointTypeEnum.personal.id)
+                          TeamPointTypeEnum.personal.id &&
+                      _mode != _SelectMode.none)
                     SegmentedButton<_SelectScoreMode>(
                       segments: const [
                         ButtonSegment(
@@ -461,35 +467,44 @@ class _TeamOneWinnerSelectScreenState
                           label: Text('Ничья'),
                           icon: Icon(Icons.check_box_outline_blank),
                         ),
+                        ButtonSegment(
+                          value: _SelectMode.none,
+                          label: Text('Поражение'),
+                          icon: Icon(Icons.sentiment_very_dissatisfied),
+                        ),
                       ],
                       selected: {_mode},
                       onSelectionChanged: (Set<_SelectMode> selection) {
-                        _toggleMode();
+                        _toggleMode(selection.first);
                       },
                     ),
-                  // Информационная панель
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _mode == _SelectMode.single
-                              ? Icons.radio_button_checked
-                              : Icons.check_box,
-                          color: Colors.blue,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
+
+                  if (_mode != _SelectMode.none)
+                    // Информационная панель
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Icon(
                             _mode == _SelectMode.single
-                                ? 'Выберите одного победителя'
-                                : 'Выберите несколько победителей (${_multipleSelected.length} выбрано)',
-                            style: const TextStyle(fontWeight: FontWeight.w500),
+                                ? Icons.radio_button_checked
+                                : Icons.check_box,
+                            color: Colors.blue,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _mode == _SelectMode.single
+                                  ? 'Выберите одного победителя'
+                                  : 'Выберите несколько победителей (${_multipleSelected.length} выбрано)',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
 
                   // Список элементов
                   Expanded(

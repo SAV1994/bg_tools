@@ -67,5 +67,17 @@ Future<void> initSessionData(
     setIniialTeamData(sessionData['teamsData'], teamEnum.id);
   }
 
+  if (sessionData['type'] == GameTypeEnum.secretTeams.id) {
+    for (final Map<String, dynamic> teamData
+        in sessionData['secretRolesConfig']) {
+      setIniialTeamData(
+        sessionData['teamsData'],
+        teamData['team'],
+        name: teamData['name'],
+      );
+      sessionData['numberTeams'] = sessionData['teamsData'].keys.length;
+    }
+  }
+
   await AppDataManager.saveActiveSession(sessionData);
 }

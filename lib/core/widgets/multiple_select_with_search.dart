@@ -36,6 +36,8 @@ class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {
 class _MultiSelectWithSearchState<T>
     extends ConsumerState<MultiSelectWithSearch<T>> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
   String _searchQuery = '';
   bool _isDropdownOpen = false;
 
@@ -92,6 +94,7 @@ class _MultiSelectWithSearchState<T>
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -243,7 +246,9 @@ class _MultiSelectWithSearchState<T>
                         )
                       : Scrollbar(
                           thumbVisibility: true,
+                          controller: _scrollController,
                           child: ListView.builder(
+                            controller: _scrollController,
                             shrinkWrap: true,
                             itemCount: _filteredItems.length,
                             itemBuilder: (context, index) {

@@ -35,6 +35,8 @@ class SelectWithSearch<T> extends StatefulWidget {
 
 class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
   String _searchQuery = '';
   bool _isDropdownOpen = false;
 
@@ -69,6 +71,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -201,8 +204,10 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                           ),
                         )
                       : Scrollbar(
+                          controller: _scrollController,
                           thumbVisibility: true,
                           child: ListView.builder(
+                            controller: _scrollController,
                             shrinkWrap: true,
                             itemCount: _filteredItems.length,
                             itemBuilder: (context, index) {

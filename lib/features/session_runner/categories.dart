@@ -6,7 +6,8 @@ enum GameTypeEnum {
   coop(4, 'Кооператив'),
   solo(5, 'Соло'),
   teamOneWinner(6, 'Командная игра (1 победитель)'),
-  secretRoles(7, 'Тайные роли');
+  secretRoles(7, 'Тайные роли'),
+  secretTeams(8, 'Скрытые команды / С предателем');
 
   final int id;
   final String label;

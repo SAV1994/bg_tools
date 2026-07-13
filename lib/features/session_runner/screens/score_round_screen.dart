@@ -39,7 +39,8 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   Future<void> _loadData() async {
     _roundsScoreLimit = widget.data['roundsScoreLimit'];
 
-    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+    if (widget.data['type'] != GameTypeEnum.secretTeams.id &&
+        widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
       final int? generalScore =
           widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'];
       _generalScoreController = TextEditingController(
@@ -302,7 +303,8 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   }
 
   Widget _buildScrean() {
-    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+    if (widget.data['type'] != GameTypeEnum.secretTeams.id &&
+        widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
       return Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

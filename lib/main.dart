@@ -101,6 +101,31 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
+        segmentedButtonTheme: SegmentedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return blueColor;
+              }
+              return secondColor;
+            }),
+            foregroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return textColor;
+              }
+              return titleColor;
+            }),
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            padding: WidgetStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+            textStyle: WidgetStateProperty.all(
+              const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
         bottomSheetTheme: BottomSheetThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
