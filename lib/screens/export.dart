@@ -1,5 +1,6 @@
 export 'artist/artist_list_screen.dart';
 export 'common/home_screen.dart';
+export 'common/settings_screen.dart';
 export 'counting_template/counting_template_detail_screen.dart';
 export 'counting_template/counting_template_form_screen.dart';
 export 'counting_template/counting_template_list_screen.dart';

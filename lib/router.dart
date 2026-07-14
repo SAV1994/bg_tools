@@ -16,6 +16,14 @@ final GoRouter goRouter = GoRouter(
           const HomeScreen(),
     ),
 
+    // Настройки
+    GoRoute(
+      path: '/settings',
+      name: 'settings',
+      builder: (BuildContext context, GoRouterState state) =>
+          const SettingsScreen(),
+    ),
+
     // Настольные игры
     GoRoute(
       path: '/games',

@@ -87,6 +87,8 @@ const String gamersOfLastSessionKey = 'gamersOfLastSession';
 const String teamssOfLastSessionKey = 'teamssOfLastSession';
 const String settingsKey = 'settings';
 const String ratingKey = 'rating';
+// Настройки
+const String pageLimitKey = 'pageLimit';
 
 // Тема
 const Color firstColor = Color(0xFF0A1410);
@@ -94,7 +96,11 @@ const Color secondColor = Color(0xFF006B4D);
 const Color borderColor = Color(0xFF00E676);
 const Color textColor = Color(0xFFF5F5F5);
 const Color titleColor = Colors.lightGreenAccent;
+const Color shadowColor = Colors.black;
 const Color greenColor = Color(0xFF69F0AE);
 const Color redColor = Color(0xFFFF5252);
 const Color goldColor = Color(0xFFFFD700);
 const Color blueColor = Color(0xFF29B6F6);
+
+// Пагинация
+const int pageSize = 25;

@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
-import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,12 +8,16 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/core/consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
+import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/utils/checkbox_view_builder.dart';
+import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/error_screen_builder.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
+import 'package:bg_tools/screens/game/mixins/update_is_favorite.dart';
 
 class GamesDetailScreen extends ConsumerStatefulWidget {
   final int gameId;
@@ -26,7 +28,8 @@ class GamesDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<GamesDetailScreen> createState() => _GamesDetailScreenState();
 }
 
-class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
+class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
+    with UpdateIsFaforiteMixin {
   Future<void> _openNewScreen(String pathName) async {
     await context.pushNamed(
       pathName,
@@ -59,7 +62,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
+            width: 160,
             child: Text(label, style: TextStyle(color: titleColor)),
           ),
           Expanded(
@@ -148,12 +151,19 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
                         Text(
                           game.name,
                           style: const TextStyle(
-                            fontSize: 24,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      game.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: game.isFavorite ? goldColor : borderColor,
+                    ),
+                    onPressed: () => updateIsFavorite(game),
                   ),
                 ],
               ),
@@ -183,9 +193,14 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
                     game.maxPlayers?.toString(),
                   ),
                   const Divider(),
-                  ListTile(
-                    title: Text('Наличие в коллекции'),
-                    trailing: buildCheckboxView(game.isInCollection),
+                  _buildInfoRow(
+                    'Наличие в коллекции',
+                    convertBoolToStr(game.isInCollection),
+                  ),
+                  const Divider(),
+                  _buildInfoRow(
+                    'Самодостаточность',
+                    convertBoolToStr(game.isStandalone),
                   ),
                   const Divider(),
                   _buildInfoRow('Описание', game.description),
@@ -225,7 +240,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: items.length,
-                  separatorBuilder: (_, __) => const Divider(),
+                  separatorBuilder: (_, _) => const Divider(),
                   itemBuilder: (context, index) {
                     final item = items[index];
                     return ListTile(
@@ -301,7 +316,10 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen> {
                       gameDaoProvider,
                       mounted,
                       game,
-                      () => {ref.invalidate(gamingSessionFullDataProvider)},
+                      () {
+                        ref.invalidate(gamingSessionFullDataProvider);
+                        ref.read(gamesPaginatedProvider.notifier).refresh();
+                      },
                     );
                   },
                 ),

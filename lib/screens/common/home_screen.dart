@@ -70,6 +70,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               PopupMenuItem(
                 child: ListTile(
                   leading: const Icon(
+                    Icons.settings,
+                    size: 18,
+                    color: goldColor,
+                  ),
+                  title: const Text('Настройки'),
+                  dense: true,
+                ),
+                onTap: () => context.pushNamed('settings'),
+              ),
+
+              PopupMenuItem(
+                child: ListTile(
+                  leading: const Icon(
                     Icons.power_settings_new,
                     size: 18,
                     color: redColor,

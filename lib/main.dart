@@ -19,6 +19,8 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: secondColor, // Глобальный цвет для всех AppBar
           foregroundColor: textColor, // Цвет текста и иконок по умолчанию
+          elevation: 4,
+          shadowColor: shadowColor,
         ),
         textTheme: const TextTheme(
           bodySmall: TextStyle(color: textColor),
@@ -134,7 +136,7 @@ class MyApp extends StatelessWidget {
         ),
         scrollbarTheme: ScrollbarThemeData(
           thumbColor: WidgetStateProperty.all(greenColor),
-          thickness: WidgetStateProperty.all(8.0),
+          thickness: WidgetStateProperty.all(5.0),
           radius: const Radius.circular(10),
           minThumbLength: 30,
           interactive: true,

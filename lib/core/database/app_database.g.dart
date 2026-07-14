@@ -798,6 +798,30 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
+  @override
+  late final GeneratedColumn<int> rating = GeneratedColumn<int>(
+    'rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isStandaloneMeta = const VerificationMeta(
+    'isStandalone',
+  );
+  @override
+  late final GeneratedColumn<bool> isStandalone = GeneratedColumn<bool>(
+    'is_standalone',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_standalone" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _imagePathMeta = const VerificationMeta(
     'imagePath',
   );
@@ -819,6 +843,8 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
     maxPlayers,
     isInCollection,
     isFavorite,
+    rating,
+    isStandalone,
     imagePath,
   ];
   @override
@@ -886,6 +912,21 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
         isFavorite.isAcceptableOrUnknown(data['is_favorite']!, _isFavoriteMeta),
       );
     }
+    if (data.containsKey('rating')) {
+      context.handle(
+        _ratingMeta,
+        rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta),
+      );
+    }
+    if (data.containsKey('is_standalone')) {
+      context.handle(
+        _isStandaloneMeta,
+        isStandalone.isAcceptableOrUnknown(
+          data['is_standalone']!,
+          _isStandaloneMeta,
+        ),
+      );
+    }
     if (data.containsKey('image_path')) {
       context.handle(
         _imagePathMeta,
@@ -933,6 +974,14 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
         DriftSqlType.bool,
         data['${effectivePrefix}is_favorite'],
       )!,
+      rating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rating'],
+      ),
+      isStandalone: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_standalone'],
+      )!,
       imagePath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}image_path'],
@@ -955,6 +1004,8 @@ class Game extends DataClass implements Insertable<Game> {
   final int? maxPlayers;
   final bool isInCollection;
   final bool isFavorite;
+  final int? rating;
+  final bool isStandalone;
   final String? imagePath;
   const Game({
     required this.id,
@@ -965,6 +1016,8 @@ class Game extends DataClass implements Insertable<Game> {
     this.maxPlayers,
     required this.isInCollection,
     required this.isFavorite,
+    this.rating,
+    required this.isStandalone,
     this.imagePath,
   });
   @override
@@ -986,6 +1039,10 @@ class Game extends DataClass implements Insertable<Game> {
     }
     map['is_in_collection'] = Variable<bool>(isInCollection);
     map['is_favorite'] = Variable<bool>(isFavorite);
+    if (!nullToAbsent || rating != null) {
+      map['rating'] = Variable<int>(rating);
+    }
+    map['is_standalone'] = Variable<bool>(isStandalone);
     if (!nullToAbsent || imagePath != null) {
       map['image_path'] = Variable<String>(imagePath);
     }
@@ -1008,6 +1065,10 @@ class Game extends DataClass implements Insertable<Game> {
           : Value(maxPlayers),
       isInCollection: Value(isInCollection),
       isFavorite: Value(isFavorite),
+      rating: rating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rating),
+      isStandalone: Value(isStandalone),
       imagePath: imagePath == null && nullToAbsent
           ? const Value.absent()
           : Value(imagePath),
@@ -1028,6 +1089,8 @@ class Game extends DataClass implements Insertable<Game> {
       maxPlayers: serializer.fromJson<int?>(json['maxPlayers']),
       isInCollection: serializer.fromJson<bool>(json['isInCollection']),
       isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      rating: serializer.fromJson<int?>(json['rating']),
+      isStandalone: serializer.fromJson<bool>(json['isStandalone']),
       imagePath: serializer.fromJson<String?>(json['imagePath']),
     );
   }
@@ -1043,6 +1106,8 @@ class Game extends DataClass implements Insertable<Game> {
       'maxPlayers': serializer.toJson<int?>(maxPlayers),
       'isInCollection': serializer.toJson<bool>(isInCollection),
       'isFavorite': serializer.toJson<bool>(isFavorite),
+      'rating': serializer.toJson<int?>(rating),
+      'isStandalone': serializer.toJson<bool>(isStandalone),
       'imagePath': serializer.toJson<String?>(imagePath),
     };
   }
@@ -1056,6 +1121,8 @@ class Game extends DataClass implements Insertable<Game> {
     Value<int?> maxPlayers = const Value.absent(),
     bool? isInCollection,
     bool? isFavorite,
+    Value<int?> rating = const Value.absent(),
+    bool? isStandalone,
     Value<String?> imagePath = const Value.absent(),
   }) => Game(
     id: id ?? this.id,
@@ -1066,6 +1133,8 @@ class Game extends DataClass implements Insertable<Game> {
     maxPlayers: maxPlayers.present ? maxPlayers.value : this.maxPlayers,
     isInCollection: isInCollection ?? this.isInCollection,
     isFavorite: isFavorite ?? this.isFavorite,
+    rating: rating.present ? rating.value : this.rating,
+    isStandalone: isStandalone ?? this.isStandalone,
     imagePath: imagePath.present ? imagePath.value : this.imagePath,
   );
   Game copyWithCompanion(GamesCompanion data) {
@@ -1088,6 +1157,10 @@ class Game extends DataClass implements Insertable<Game> {
       isFavorite: data.isFavorite.present
           ? data.isFavorite.value
           : this.isFavorite,
+      rating: data.rating.present ? data.rating.value : this.rating,
+      isStandalone: data.isStandalone.present
+          ? data.isStandalone.value
+          : this.isStandalone,
       imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
     );
   }
@@ -1103,6 +1176,8 @@ class Game extends DataClass implements Insertable<Game> {
           ..write('maxPlayers: $maxPlayers, ')
           ..write('isInCollection: $isInCollection, ')
           ..write('isFavorite: $isFavorite, ')
+          ..write('rating: $rating, ')
+          ..write('isStandalone: $isStandalone, ')
           ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
@@ -1118,6 +1193,8 @@ class Game extends DataClass implements Insertable<Game> {
     maxPlayers,
     isInCollection,
     isFavorite,
+    rating,
+    isStandalone,
     imagePath,
   );
   @override
@@ -1132,6 +1209,8 @@ class Game extends DataClass implements Insertable<Game> {
           other.maxPlayers == this.maxPlayers &&
           other.isInCollection == this.isInCollection &&
           other.isFavorite == this.isFavorite &&
+          other.rating == this.rating &&
+          other.isStandalone == this.isStandalone &&
           other.imagePath == this.imagePath);
 }
 
@@ -1144,6 +1223,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
   final Value<int?> maxPlayers;
   final Value<bool> isInCollection;
   final Value<bool> isFavorite;
+  final Value<int?> rating;
+  final Value<bool> isStandalone;
   final Value<String?> imagePath;
   const GamesCompanion({
     this.id = const Value.absent(),
@@ -1154,6 +1235,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
     this.maxPlayers = const Value.absent(),
     this.isInCollection = const Value.absent(),
     this.isFavorite = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.isStandalone = const Value.absent(),
     this.imagePath = const Value.absent(),
   });
   GamesCompanion.insert({
@@ -1165,6 +1248,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
     this.maxPlayers = const Value.absent(),
     this.isInCollection = const Value.absent(),
     this.isFavorite = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.isStandalone = const Value.absent(),
     this.imagePath = const Value.absent(),
   }) : name = Value(name);
   static Insertable<Game> custom({
@@ -1176,6 +1261,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Expression<int>? maxPlayers,
     Expression<bool>? isInCollection,
     Expression<bool>? isFavorite,
+    Expression<int>? rating,
+    Expression<bool>? isStandalone,
     Expression<String>? imagePath,
   }) {
     return RawValuesInsertable({
@@ -1187,6 +1274,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
       if (maxPlayers != null) 'max_players': maxPlayers,
       if (isInCollection != null) 'is_in_collection': isInCollection,
       if (isFavorite != null) 'is_favorite': isFavorite,
+      if (rating != null) 'rating': rating,
+      if (isStandalone != null) 'is_standalone': isStandalone,
       if (imagePath != null) 'image_path': imagePath,
     });
   }
@@ -1200,6 +1289,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Value<int?>? maxPlayers,
     Value<bool>? isInCollection,
     Value<bool>? isFavorite,
+    Value<int?>? rating,
+    Value<bool>? isStandalone,
     Value<String?>? imagePath,
   }) {
     return GamesCompanion(
@@ -1211,6 +1302,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
       maxPlayers: maxPlayers ?? this.maxPlayers,
       isInCollection: isInCollection ?? this.isInCollection,
       isFavorite: isFavorite ?? this.isFavorite,
+      rating: rating ?? this.rating,
+      isStandalone: isStandalone ?? this.isStandalone,
       imagePath: imagePath ?? this.imagePath,
     );
   }
@@ -1242,6 +1335,12 @@ class GamesCompanion extends UpdateCompanion<Game> {
     if (isFavorite.present) {
       map['is_favorite'] = Variable<bool>(isFavorite.value);
     }
+    if (rating.present) {
+      map['rating'] = Variable<int>(rating.value);
+    }
+    if (isStandalone.present) {
+      map['is_standalone'] = Variable<bool>(isStandalone.value);
+    }
     if (imagePath.present) {
       map['image_path'] = Variable<String>(imagePath.value);
     }
@@ -1259,6 +1358,8 @@ class GamesCompanion extends UpdateCompanion<Game> {
           ..write('maxPlayers: $maxPlayers, ')
           ..write('isInCollection: $isInCollection, ')
           ..write('isFavorite: $isFavorite, ')
+          ..write('rating: $rating, ')
+          ..write('isStandalone: $isStandalone, ')
           ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
@@ -6288,6 +6389,8 @@ typedef $$GamesTableCreateCompanionBuilder =
       Value<int?> maxPlayers,
       Value<bool> isInCollection,
       Value<bool> isFavorite,
+      Value<int?> rating,
+      Value<bool> isStandalone,
       Value<String?> imagePath,
     });
 typedef $$GamesTableUpdateCompanionBuilder =
@@ -6300,6 +6403,8 @@ typedef $$GamesTableUpdateCompanionBuilder =
       Value<int?> maxPlayers,
       Value<bool> isInCollection,
       Value<bool> isFavorite,
+      Value<int?> rating,
+      Value<bool> isStandalone,
       Value<String?> imagePath,
     });
 
@@ -6567,6 +6672,16 @@ class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
 
   ColumnFilters<bool> get isFavorite => $composableBuilder(
     column: $table.isFavorite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isStandalone => $composableBuilder(
+    column: $table.isStandalone,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6882,6 +6997,16 @@ class $$GamesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isStandalone => $composableBuilder(
+    column: $table.isStandalone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get imagePath => $composableBuilder(
     column: $table.imagePath,
     builder: (column) => ColumnOrderings(column),
@@ -6928,6 +7053,14 @@ class $$GamesTableAnnotationComposer
 
   GeneratedColumn<bool> get isFavorite => $composableBuilder(
     column: $table.isFavorite,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rating =>
+      $composableBuilder(column: $table.rating, builder: (column) => column);
+
+  GeneratedColumn<bool> get isStandalone => $composableBuilder(
+    column: $table.isStandalone,
     builder: (column) => column,
   );
 
@@ -7239,6 +7372,8 @@ class $$GamesTableTableManager
                 Value<int?> maxPlayers = const Value.absent(),
                 Value<bool> isInCollection = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
+                Value<int?> rating = const Value.absent(),
+                Value<bool> isStandalone = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
               }) => GamesCompanion(
                 id: id,
@@ -7249,6 +7384,8 @@ class $$GamesTableTableManager
                 maxPlayers: maxPlayers,
                 isInCollection: isInCollection,
                 isFavorite: isFavorite,
+                rating: rating,
+                isStandalone: isStandalone,
                 imagePath: imagePath,
               ),
           createCompanionCallback:
@@ -7261,6 +7398,8 @@ class $$GamesTableTableManager
                 Value<int?> maxPlayers = const Value.absent(),
                 Value<bool> isInCollection = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
+                Value<int?> rating = const Value.absent(),
+                Value<bool> isStandalone = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
               }) => GamesCompanion.insert(
                 id: id,
@@ -7271,6 +7410,8 @@ class $$GamesTableTableManager
                 maxPlayers: maxPlayers,
                 isInCollection: isInCollection,
                 isFavorite: isFavorite,
+                rating: rating,
+                isStandalone: isStandalone,
                 imagePath: imagePath,
               ),
           withReferenceMapper: (p0) => p0

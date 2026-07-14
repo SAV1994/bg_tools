@@ -14,6 +14,9 @@ class Games extends Table {
       boolean().withDefault(const Constant(false))(); // Наличие в коллекции
   BoolColumn get isFavorite =>
       boolean().withDefault(const Constant(false))(); // Помечена как любимая
+  IntColumn get rating => integer().nullable()(); // Рейтинг
+  BoolColumn get isStandalone =>
+      boolean().withDefault(const Constant(true))(); // Самодостаточность игры
   TextColumn get imagePath => text().nullable()(); // Путь к изображению
 
   @override

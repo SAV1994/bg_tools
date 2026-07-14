@@ -9,6 +9,7 @@ import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
 import 'package:bg_tools/core/services/image_service.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/image_picker.dart';
@@ -29,6 +30,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
   late final GameFullData? gameData;
   // Локальное состояние формы
   bool _isInCollection = false;
+  bool _isStandalone = true;
   Set<int> _selectedBaseIds = {};
   Set<int> _selectedDesignerIds = {};
   Set<int> _selectedArtistIds = {};
@@ -85,6 +87,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
       _selectedDesignerIds = gameData!.selectedDesignerIds;
       _selectedArtistIds = gameData!.selectedArtistIds;
       _selectedTagIds = gameData!.selectedTagIds;
+      _isStandalone = gameData!.game.isStandalone;
     }
 
     _titleController = TextEditingController(text: gameData?.game.name);
@@ -102,7 +105,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
     if (widget.gameId != null) {
       _baseGames = await gameDao.getAllExceptSelected([widget.gameId!]);
     } else {
-      _baseGames = await gameDao.getAll();
+      _baseGames = await gameDao.getStandalones();
     }
 
     _designers = designers;
@@ -135,6 +138,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
           ),
           isInCollection: Value(_isInCollection),
           imagePath: Value(_imagePath),
+          isStandalone: Value(_isStandalone),
         );
         if (widget.gameId == null) {
           await gameDao.create(
@@ -157,6 +161,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
 
         if (mounted) {
           ref.invalidate(gameFullDataProvider);
+          ref.read(gamesPaginatedProvider.notifier).refresh();
           Navigator.pop(context, true);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -361,6 +366,17 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                           ],
                         ),
                       ),
+                      if (_selectedBaseIds.isNotEmpty)
+                        CheckboxListTile(
+                          title: Text('Самодостаточность'),
+                          value: _isStandalone,
+                          onChanged: (value) {
+                            setState(() {
+                              _isStandalone = value!;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
                       MultiSelectWithSearch<Designer>(
                         label: 'Геймдизайнеры',
                         items: _designers,

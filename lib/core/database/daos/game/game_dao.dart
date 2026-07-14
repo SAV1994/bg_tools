@@ -129,6 +129,13 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     });
   }
 
+  Future<bool> updateIsFavorite(int gameId, bool value) async {
+    final result = await (update(games)..where((g) => g.id.equals(gameId)))
+        .write(GamesCompanion(isFavorite: Value(value)));
+
+    return result > 0;
+  }
+
   // Удаление
   Future<int> delInstance(int gameId) async {
     final game = await getSingle(gameId);
@@ -140,17 +147,69 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
   // Все игры кроме текущей
   Future<List<Game>> getAllExceptSelected(List<int> gameIds) async {
-    return await (select(games)..where((g) => g.id.isIn(gameIds).not())).get();
+    var query = _getBaseQuery();
+    query = query
+      ..where((g) => g.isStandalone.isValue(true) & g.id.isIn(gameIds).not());
+    return await query.get();
   }
 
   // Все игры
   Future<List<Game>> getAll() async {
-    return await select(games).get();
+    final query = _getBaseQuery();
+    return await query.get();
+  }
+
+  // Только самодостаточные коробки
+  Future<List<Game>> getStandalones() async {
+    var query = _getBaseQuery();
+    query = query..where((g) => g.isStandalone.isValue(true));
+    return await query.get();
   }
 
   // Все игры (поток)
   Stream<List<Game>> watchAll() {
-    return select(games).watch();
+    final query = _getBaseQuery();
+    return query.watch();
+  }
+
+  // Получить игры с пагинацией
+  Future<List<Game>> getPaginated({
+    required int page,
+    required int pageSize,
+    required bool reverseOrdering,
+    required bool onlyFavorite,
+    required bool onlyStandalone,
+    String? searchQuery,
+  }) async {
+    final offset = page * pageSize;
+
+    var query = _getBaseQuery(reverse: reverseOrdering)
+      ..limit(pageSize, offset: offset);
+
+    if (onlyFavorite) {
+      query = query..where((g) => g.isFavorite.isValue(true));
+    }
+
+    if (onlyStandalone) {
+      query = query..where((g) => g.isStandalone.isValue(true));
+    }
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query..where((g) => g.name.contains(searchQuery));
+    }
+
+    return await query.get();
+  }
+
+  // Общее количество игр, соответствующих условию
+  Future<int> getTotalCount({String? searchQuery}) async {
+    var query = select(games);
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query..where((g) => g.name.contains(searchQuery));
+    }
+
+    return await query.get().then((list) => list.length);
   }
 
   // Базовые игры
@@ -263,5 +322,16 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   // Игра
   Future<Game?> getSingle(int gameId) async {
     return (select(games)..where((g) => g.id.equals(gameId))).getSingleOrNull();
+  }
+
+  SimpleSelectStatement<$GamesTable, Game> _getBaseQuery({
+    bool reverse = false,
+  }) {
+    return select(games)..orderBy([
+      (g) => OrderingTerm(
+        expression: g.name,
+        mode: reverse ? OrderingMode.desc : OrderingMode.asc,
+      ),
+    ]);
   }
 }

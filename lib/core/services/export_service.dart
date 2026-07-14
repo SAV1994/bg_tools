@@ -143,6 +143,8 @@ class BackupService {
               'maxPlayers': game.maxPlayers,
               'isInCollection': game.isInCollection,
               'isFavorite': game.isFavorite,
+              'rating': game.rating,
+              'isStandalone': game.isStandalone,
               'imagePath': game.imagePath,
             },
           )
@@ -471,6 +473,8 @@ class BackupService {
                 maxPlayers: Value(gameJson['maxPlayers']),
                 isInCollection: Value(gameJson['isInCollection']),
                 isFavorite: Value(gameJson['isFavorite']),
+                rating: Value(gameJson['rating']),
+                isStandalone: Value(gameJson['isStandalone'] ?? true),
                 imagePath: Value(imagePath),
               ),
             );

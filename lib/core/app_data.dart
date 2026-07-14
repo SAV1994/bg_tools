@@ -65,4 +65,16 @@ class AppDataManager {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(teamssOfLastSessionKey);
   }
+
+  // Запись лимита записей настранице
+  static Future<void> savePageLimit(int pageLimit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(pageLimitKey, pageLimit);
+  }
+
+  // Получение лимита записей настранице
+  static Future<int> loadPageLimit() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(pageLimitKey) ?? pageSize;
+  }
 }
