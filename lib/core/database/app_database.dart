@@ -28,6 +28,7 @@ part 'app_database.g.dart';
     GamingSessions,
     Notes,
     Ratings,
+    RatingsGames,
     Tags,
   ],
   daos: [

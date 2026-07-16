@@ -800,12 +800,13 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
   );
   static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
   @override
-  late final GeneratedColumn<int> rating = GeneratedColumn<int>(
+  late final GeneratedColumn<double> rating = GeneratedColumn<double>(
     'rating',
     aliasedName,
     true,
-    type: DriftSqlType.int,
+    type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'CHECK (rating >= 0 AND rating <= 10)',
   );
   static const VerificationMeta _isStandaloneMeta = const VerificationMeta(
     'isStandalone',
@@ -975,7 +976,7 @@ class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
         data['${effectivePrefix}is_favorite'],
       )!,
       rating: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.double,
         data['${effectivePrefix}rating'],
       ),
       isStandalone: attachedDatabase.typeMapping.read(
@@ -1004,7 +1005,7 @@ class Game extends DataClass implements Insertable<Game> {
   final int? maxPlayers;
   final bool isInCollection;
   final bool isFavorite;
-  final int? rating;
+  final double? rating;
   final bool isStandalone;
   final String? imagePath;
   const Game({
@@ -1040,7 +1041,7 @@ class Game extends DataClass implements Insertable<Game> {
     map['is_in_collection'] = Variable<bool>(isInCollection);
     map['is_favorite'] = Variable<bool>(isFavorite);
     if (!nullToAbsent || rating != null) {
-      map['rating'] = Variable<int>(rating);
+      map['rating'] = Variable<double>(rating);
     }
     map['is_standalone'] = Variable<bool>(isStandalone);
     if (!nullToAbsent || imagePath != null) {
@@ -1089,7 +1090,7 @@ class Game extends DataClass implements Insertable<Game> {
       maxPlayers: serializer.fromJson<int?>(json['maxPlayers']),
       isInCollection: serializer.fromJson<bool>(json['isInCollection']),
       isFavorite: serializer.fromJson<bool>(json['isFavorite']),
-      rating: serializer.fromJson<int?>(json['rating']),
+      rating: serializer.fromJson<double?>(json['rating']),
       isStandalone: serializer.fromJson<bool>(json['isStandalone']),
       imagePath: serializer.fromJson<String?>(json['imagePath']),
     );
@@ -1106,7 +1107,7 @@ class Game extends DataClass implements Insertable<Game> {
       'maxPlayers': serializer.toJson<int?>(maxPlayers),
       'isInCollection': serializer.toJson<bool>(isInCollection),
       'isFavorite': serializer.toJson<bool>(isFavorite),
-      'rating': serializer.toJson<int?>(rating),
+      'rating': serializer.toJson<double?>(rating),
       'isStandalone': serializer.toJson<bool>(isStandalone),
       'imagePath': serializer.toJson<String?>(imagePath),
     };
@@ -1121,7 +1122,7 @@ class Game extends DataClass implements Insertable<Game> {
     Value<int?> maxPlayers = const Value.absent(),
     bool? isInCollection,
     bool? isFavorite,
-    Value<int?> rating = const Value.absent(),
+    Value<double?> rating = const Value.absent(),
     bool? isStandalone,
     Value<String?> imagePath = const Value.absent(),
   }) => Game(
@@ -1223,7 +1224,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
   final Value<int?> maxPlayers;
   final Value<bool> isInCollection;
   final Value<bool> isFavorite;
-  final Value<int?> rating;
+  final Value<double?> rating;
   final Value<bool> isStandalone;
   final Value<String?> imagePath;
   const GamesCompanion({
@@ -1261,7 +1262,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Expression<int>? maxPlayers,
     Expression<bool>? isInCollection,
     Expression<bool>? isFavorite,
-    Expression<int>? rating,
+    Expression<double>? rating,
     Expression<bool>? isStandalone,
     Expression<String>? imagePath,
   }) {
@@ -1289,7 +1290,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
     Value<int?>? maxPlayers,
     Value<bool>? isInCollection,
     Value<bool>? isFavorite,
-    Value<int?>? rating,
+    Value<double?>? rating,
     Value<bool>? isStandalone,
     Value<String?>? imagePath,
   }) {
@@ -1336,7 +1337,7 @@ class GamesCompanion extends UpdateCompanion<Game> {
       map['is_favorite'] = Variable<bool>(isFavorite.value);
     }
     if (rating.present) {
-      map['rating'] = Variable<int>(rating.value);
+      map['rating'] = Variable<double>(rating.value);
     }
     if (isStandalone.present) {
       map['is_standalone'] = Variable<bool>(isStandalone.value);
@@ -3528,6 +3529,21 @@ class $GamingSessionsTable extends GamingSessions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isFinishedMeta = const VerificationMeta(
+    'isFinished',
+  );
+  @override
+  late final GeneratedColumn<bool> isFinished = GeneratedColumn<bool>(
+    'is_finished',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_finished" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _commentMeta = const VerificationMeta(
     'comment',
   );
@@ -3579,6 +3595,7 @@ class $GamingSessionsTable extends GamingSessions
     gameId,
     startedAt,
     finishedAt,
+    isFinished,
     comment,
     gameType,
     data,
@@ -3619,6 +3636,12 @@ class $GamingSessionsTable extends GamingSessions
       context.handle(
         _finishedAtMeta,
         finishedAt.isAcceptableOrUnknown(data['finished_at']!, _finishedAtMeta),
+      );
+    }
+    if (data.containsKey('is_finished')) {
+      context.handle(
+        _isFinishedMeta,
+        isFinished.isAcceptableOrUnknown(data['is_finished']!, _isFinishedMeta),
       );
     }
     if (data.containsKey('comment')) {
@@ -3673,6 +3696,10 @@ class $GamingSessionsTable extends GamingSessions
         DriftSqlType.dateTime,
         data['${effectivePrefix}finished_at'],
       ),
+      isFinished: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_finished'],
+      )!,
       comment: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}comment'],
@@ -3703,6 +3730,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
   final int gameId;
   final DateTime startedAt;
   final DateTime? finishedAt;
+  final bool isFinished;
   final String? comment;
   final int? gameType;
   final String? data;
@@ -3712,6 +3740,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     required this.gameId,
     required this.startedAt,
     this.finishedAt,
+    required this.isFinished,
     this.comment,
     this.gameType,
     this.data,
@@ -3726,6 +3755,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     if (!nullToAbsent || finishedAt != null) {
       map['finished_at'] = Variable<DateTime>(finishedAt);
     }
+    map['is_finished'] = Variable<bool>(isFinished);
     if (!nullToAbsent || comment != null) {
       map['comment'] = Variable<String>(comment);
     }
@@ -3749,6 +3779,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       finishedAt: finishedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(finishedAt),
+      isFinished: Value(isFinished),
       comment: comment == null && nullToAbsent
           ? const Value.absent()
           : Value(comment),
@@ -3772,6 +3803,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       gameId: serializer.fromJson<int>(json['gameId']),
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       finishedAt: serializer.fromJson<DateTime?>(json['finishedAt']),
+      isFinished: serializer.fromJson<bool>(json['isFinished']),
       comment: serializer.fromJson<String?>(json['comment']),
       gameType: serializer.fromJson<int?>(json['gameType']),
       data: serializer.fromJson<String?>(json['data']),
@@ -3786,6 +3818,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       'gameId': serializer.toJson<int>(gameId),
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'finishedAt': serializer.toJson<DateTime?>(finishedAt),
+      'isFinished': serializer.toJson<bool>(isFinished),
       'comment': serializer.toJson<String?>(comment),
       'gameType': serializer.toJson<int?>(gameType),
       'data': serializer.toJson<String?>(data),
@@ -3798,6 +3831,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     int? gameId,
     DateTime? startedAt,
     Value<DateTime?> finishedAt = const Value.absent(),
+    bool? isFinished,
     Value<String?> comment = const Value.absent(),
     Value<int?> gameType = const Value.absent(),
     Value<String?> data = const Value.absent(),
@@ -3807,6 +3841,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     gameId: gameId ?? this.gameId,
     startedAt: startedAt ?? this.startedAt,
     finishedAt: finishedAt.present ? finishedAt.value : this.finishedAt,
+    isFinished: isFinished ?? this.isFinished,
     comment: comment.present ? comment.value : this.comment,
     gameType: gameType.present ? gameType.value : this.gameType,
     data: data.present ? data.value : this.data,
@@ -3822,6 +3857,9 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       finishedAt: data.finishedAt.present
           ? data.finishedAt.value
           : this.finishedAt,
+      isFinished: data.isFinished.present
+          ? data.isFinished.value
+          : this.isFinished,
       comment: data.comment.present ? data.comment.value : this.comment,
       gameType: data.gameType.present ? data.gameType.value : this.gameType,
       data: data.data.present ? data.data.value : this.data,
@@ -3838,6 +3876,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           ..write('gameId: $gameId, ')
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
+          ..write('isFinished: $isFinished, ')
           ..write('comment: $comment, ')
           ..write('gameType: $gameType, ')
           ..write('data: $data, ')
@@ -3852,6 +3891,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     gameId,
     startedAt,
     finishedAt,
+    isFinished,
     comment,
     gameType,
     data,
@@ -3865,6 +3905,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
           other.gameId == this.gameId &&
           other.startedAt == this.startedAt &&
           other.finishedAt == this.finishedAt &&
+          other.isFinished == this.isFinished &&
           other.comment == this.comment &&
           other.gameType == this.gameType &&
           other.data == this.data &&
@@ -3876,6 +3917,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
   final Value<int> gameId;
   final Value<DateTime> startedAt;
   final Value<DateTime?> finishedAt;
+  final Value<bool> isFinished;
   final Value<String?> comment;
   final Value<int?> gameType;
   final Value<String?> data;
@@ -3885,6 +3927,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     this.gameId = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.finishedAt = const Value.absent(),
+    this.isFinished = const Value.absent(),
     this.comment = const Value.absent(),
     this.gameType = const Value.absent(),
     this.data = const Value.absent(),
@@ -3895,6 +3938,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     required int gameId,
     required DateTime startedAt,
     this.finishedAt = const Value.absent(),
+    this.isFinished = const Value.absent(),
     this.comment = const Value.absent(),
     this.gameType = const Value.absent(),
     this.data = const Value.absent(),
@@ -3906,6 +3950,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     Expression<int>? gameId,
     Expression<DateTime>? startedAt,
     Expression<DateTime>? finishedAt,
+    Expression<bool>? isFinished,
     Expression<String>? comment,
     Expression<int>? gameType,
     Expression<String>? data,
@@ -3916,6 +3961,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
       if (gameId != null) 'game_id': gameId,
       if (startedAt != null) 'started_at': startedAt,
       if (finishedAt != null) 'finished_at': finishedAt,
+      if (isFinished != null) 'is_finished': isFinished,
       if (comment != null) 'comment': comment,
       if (gameType != null) 'game_type': gameType,
       if (data != null) 'data': data,
@@ -3928,6 +3974,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     Value<int>? gameId,
     Value<DateTime>? startedAt,
     Value<DateTime?>? finishedAt,
+    Value<bool>? isFinished,
     Value<String?>? comment,
     Value<int?>? gameType,
     Value<String?>? data,
@@ -3938,6 +3985,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
       gameId: gameId ?? this.gameId,
       startedAt: startedAt ?? this.startedAt,
       finishedAt: finishedAt ?? this.finishedAt,
+      isFinished: isFinished ?? this.isFinished,
       comment: comment ?? this.comment,
       gameType: gameType ?? this.gameType,
       data: data ?? this.data,
@@ -3959,6 +4007,9 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     }
     if (finishedAt.present) {
       map['finished_at'] = Variable<DateTime>(finishedAt.value);
+    }
+    if (isFinished.present) {
+      map['is_finished'] = Variable<bool>(isFinished.value);
     }
     if (comment.present) {
       map['comment'] = Variable<String>(comment.value);
@@ -3982,6 +4033,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
           ..write('gameId: $gameId, ')
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
+          ..write('isFinished: $isFinished, ')
           ..write('comment: $comment, ')
           ..write('gameType: $gameType, ')
           ..write('data: $data, ')
@@ -5140,6 +5192,21 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
     requiredDuringInsert: false,
     $customConstraints: 'CHECK (month >= 1 AND month <= 12)',
   );
+  static const VerificationMeta _isActualMeta = const VerificationMeta(
+    'isActual',
+  );
+  @override
+  late final GeneratedColumn<bool> isActual = GeneratedColumn<bool>(
+    'is_actual',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_actual" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _dataMeta = const VerificationMeta('data');
   @override
   late final GeneratedColumn<String> data = GeneratedColumn<String>(
@@ -5150,7 +5217,7 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, year, month, data];
+  List<GeneratedColumn> get $columns => [id, year, month, isActual, data];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -5178,6 +5245,12 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
       context.handle(
         _monthMeta,
         month.isAcceptableOrUnknown(data['month']!, _monthMeta),
+      );
+    }
+    if (data.containsKey('is_actual')) {
+      context.handle(
+        _isActualMeta,
+        isActual.isAcceptableOrUnknown(data['is_actual']!, _isActualMeta),
       );
     }
     if (data.containsKey('data')) {
@@ -5209,6 +5282,10 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
         DriftSqlType.int,
         data['${effectivePrefix}month'],
       ),
+      isActual: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_actual'],
+      )!,
       data: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}data'],
@@ -5226,11 +5303,13 @@ class Rating extends DataClass implements Insertable<Rating> {
   final int id;
   final int year;
   final int? month;
+  final bool isActual;
   final String data;
   const Rating({
     required this.id,
     required this.year,
     this.month,
+    required this.isActual,
     required this.data,
   });
   @override
@@ -5241,6 +5320,7 @@ class Rating extends DataClass implements Insertable<Rating> {
     if (!nullToAbsent || month != null) {
       map['month'] = Variable<int>(month);
     }
+    map['is_actual'] = Variable<bool>(isActual);
     map['data'] = Variable<String>(data);
     return map;
   }
@@ -5252,6 +5332,7 @@ class Rating extends DataClass implements Insertable<Rating> {
       month: month == null && nullToAbsent
           ? const Value.absent()
           : Value(month),
+      isActual: Value(isActual),
       data: Value(data),
     );
   }
@@ -5265,6 +5346,7 @@ class Rating extends DataClass implements Insertable<Rating> {
       id: serializer.fromJson<int>(json['id']),
       year: serializer.fromJson<int>(json['year']),
       month: serializer.fromJson<int?>(json['month']),
+      isActual: serializer.fromJson<bool>(json['isActual']),
       data: serializer.fromJson<String>(json['data']),
     );
   }
@@ -5275,6 +5357,7 @@ class Rating extends DataClass implements Insertable<Rating> {
       'id': serializer.toJson<int>(id),
       'year': serializer.toJson<int>(year),
       'month': serializer.toJson<int?>(month),
+      'isActual': serializer.toJson<bool>(isActual),
       'data': serializer.toJson<String>(data),
     };
   }
@@ -5283,11 +5366,13 @@ class Rating extends DataClass implements Insertable<Rating> {
     int? id,
     int? year,
     Value<int?> month = const Value.absent(),
+    bool? isActual,
     String? data,
   }) => Rating(
     id: id ?? this.id,
     year: year ?? this.year,
     month: month.present ? month.value : this.month,
+    isActual: isActual ?? this.isActual,
     data: data ?? this.data,
   );
   Rating copyWithCompanion(RatingsCompanion data) {
@@ -5295,6 +5380,7 @@ class Rating extends DataClass implements Insertable<Rating> {
       id: data.id.present ? data.id.value : this.id,
       year: data.year.present ? data.year.value : this.year,
       month: data.month.present ? data.month.value : this.month,
+      isActual: data.isActual.present ? data.isActual.value : this.isActual,
       data: data.data.present ? data.data.value : this.data,
     );
   }
@@ -5305,13 +5391,14 @@ class Rating extends DataClass implements Insertable<Rating> {
           ..write('id: $id, ')
           ..write('year: $year, ')
           ..write('month: $month, ')
+          ..write('isActual: $isActual, ')
           ..write('data: $data')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, year, month, data);
+  int get hashCode => Object.hash(id, year, month, isActual, data);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5319,6 +5406,7 @@ class Rating extends DataClass implements Insertable<Rating> {
           other.id == this.id &&
           other.year == this.year &&
           other.month == this.month &&
+          other.isActual == this.isActual &&
           other.data == this.data);
 }
 
@@ -5326,17 +5414,20 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
   final Value<int> id;
   final Value<int> year;
   final Value<int?> month;
+  final Value<bool> isActual;
   final Value<String> data;
   const RatingsCompanion({
     this.id = const Value.absent(),
     this.year = const Value.absent(),
     this.month = const Value.absent(),
+    this.isActual = const Value.absent(),
     this.data = const Value.absent(),
   });
   RatingsCompanion.insert({
     this.id = const Value.absent(),
     required int year,
     this.month = const Value.absent(),
+    this.isActual = const Value.absent(),
     required String data,
   }) : year = Value(year),
        data = Value(data);
@@ -5344,12 +5435,14 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
     Expression<int>? id,
     Expression<int>? year,
     Expression<int>? month,
+    Expression<bool>? isActual,
     Expression<String>? data,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (year != null) 'year': year,
       if (month != null) 'month': month,
+      if (isActual != null) 'is_actual': isActual,
       if (data != null) 'data': data,
     });
   }
@@ -5358,12 +5451,14 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
     Value<int>? id,
     Value<int>? year,
     Value<int?>? month,
+    Value<bool>? isActual,
     Value<String>? data,
   }) {
     return RatingsCompanion(
       id: id ?? this.id,
       year: year ?? this.year,
       month: month ?? this.month,
+      isActual: isActual ?? this.isActual,
       data: data ?? this.data,
     );
   }
@@ -5380,6 +5475,9 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
     if (month.present) {
       map['month'] = Variable<int>(month.value);
     }
+    if (isActual.present) {
+      map['is_actual'] = Variable<bool>(isActual.value);
+    }
     if (data.present) {
       map['data'] = Variable<String>(data.value);
     }
@@ -5392,7 +5490,325 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
           ..write('id: $id, ')
           ..write('year: $year, ')
           ..write('month: $month, ')
+          ..write('isActual: $isActual, ')
           ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RatingsGamesTable extends RatingsGames
+    with TableInfo<$RatingsGamesTable, RatingsGame> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RatingsGamesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _ratingIdMeta = const VerificationMeta(
+    'ratingId',
+  );
+  @override
+  late final GeneratedColumn<int> ratingId = GeneratedColumn<int>(
+    'rating_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES ratings (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES games (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _scoreMeta = const VerificationMeta('score');
+  @override
+  late final GeneratedColumn<double> score = GeneratedColumn<double>(
+    'score',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _placeMeta = const VerificationMeta('place');
+  @override
+  late final GeneratedColumn<int> place = GeneratedColumn<int>(
+    'place',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [ratingId, gameId, score, place];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ratings_games';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RatingsGame> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('rating_id')) {
+      context.handle(
+        _ratingIdMeta,
+        ratingId.isAcceptableOrUnknown(data['rating_id']!, _ratingIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ratingIdMeta);
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('score')) {
+      context.handle(
+        _scoreMeta,
+        score.isAcceptableOrUnknown(data['score']!, _scoreMeta),
+      );
+    }
+    if (data.containsKey('place')) {
+      context.handle(
+        _placeMeta,
+        place.isAcceptableOrUnknown(data['place']!, _placeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {ratingId, gameId};
+  @override
+  RatingsGame map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RatingsGame(
+      ratingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rating_id'],
+      )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_id'],
+      )!,
+      score: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}score'],
+      ),
+      place: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}place'],
+      ),
+    );
+  }
+
+  @override
+  $RatingsGamesTable createAlias(String alias) {
+    return $RatingsGamesTable(attachedDatabase, alias);
+  }
+}
+
+class RatingsGame extends DataClass implements Insertable<RatingsGame> {
+  final int ratingId;
+  final int gameId;
+  final double? score;
+  final int? place;
+  const RatingsGame({
+    required this.ratingId,
+    required this.gameId,
+    this.score,
+    this.place,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['rating_id'] = Variable<int>(ratingId);
+    map['game_id'] = Variable<int>(gameId);
+    if (!nullToAbsent || score != null) {
+      map['score'] = Variable<double>(score);
+    }
+    if (!nullToAbsent || place != null) {
+      map['place'] = Variable<int>(place);
+    }
+    return map;
+  }
+
+  RatingsGamesCompanion toCompanion(bool nullToAbsent) {
+    return RatingsGamesCompanion(
+      ratingId: Value(ratingId),
+      gameId: Value(gameId),
+      score: score == null && nullToAbsent
+          ? const Value.absent()
+          : Value(score),
+      place: place == null && nullToAbsent
+          ? const Value.absent()
+          : Value(place),
+    );
+  }
+
+  factory RatingsGame.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RatingsGame(
+      ratingId: serializer.fromJson<int>(json['ratingId']),
+      gameId: serializer.fromJson<int>(json['gameId']),
+      score: serializer.fromJson<double?>(json['score']),
+      place: serializer.fromJson<int?>(json['place']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'ratingId': serializer.toJson<int>(ratingId),
+      'gameId': serializer.toJson<int>(gameId),
+      'score': serializer.toJson<double?>(score),
+      'place': serializer.toJson<int?>(place),
+    };
+  }
+
+  RatingsGame copyWith({
+    int? ratingId,
+    int? gameId,
+    Value<double?> score = const Value.absent(),
+    Value<int?> place = const Value.absent(),
+  }) => RatingsGame(
+    ratingId: ratingId ?? this.ratingId,
+    gameId: gameId ?? this.gameId,
+    score: score.present ? score.value : this.score,
+    place: place.present ? place.value : this.place,
+  );
+  RatingsGame copyWithCompanion(RatingsGamesCompanion data) {
+    return RatingsGame(
+      ratingId: data.ratingId.present ? data.ratingId.value : this.ratingId,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      score: data.score.present ? data.score.value : this.score,
+      place: data.place.present ? data.place.value : this.place,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RatingsGame(')
+          ..write('ratingId: $ratingId, ')
+          ..write('gameId: $gameId, ')
+          ..write('score: $score, ')
+          ..write('place: $place')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(ratingId, gameId, score, place);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RatingsGame &&
+          other.ratingId == this.ratingId &&
+          other.gameId == this.gameId &&
+          other.score == this.score &&
+          other.place == this.place);
+}
+
+class RatingsGamesCompanion extends UpdateCompanion<RatingsGame> {
+  final Value<int> ratingId;
+  final Value<int> gameId;
+  final Value<double?> score;
+  final Value<int?> place;
+  final Value<int> rowid;
+  const RatingsGamesCompanion({
+    this.ratingId = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.score = const Value.absent(),
+    this.place = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RatingsGamesCompanion.insert({
+    required int ratingId,
+    required int gameId,
+    this.score = const Value.absent(),
+    this.place = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : ratingId = Value(ratingId),
+       gameId = Value(gameId);
+  static Insertable<RatingsGame> custom({
+    Expression<int>? ratingId,
+    Expression<int>? gameId,
+    Expression<double>? score,
+    Expression<int>? place,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (ratingId != null) 'rating_id': ratingId,
+      if (gameId != null) 'game_id': gameId,
+      if (score != null) 'score': score,
+      if (place != null) 'place': place,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RatingsGamesCompanion copyWith({
+    Value<int>? ratingId,
+    Value<int>? gameId,
+    Value<double?>? score,
+    Value<int?>? place,
+    Value<int>? rowid,
+  }) {
+    return RatingsGamesCompanion(
+      ratingId: ratingId ?? this.ratingId,
+      gameId: gameId ?? this.gameId,
+      score: score ?? this.score,
+      place: place ?? this.place,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (ratingId.present) {
+      map['rating_id'] = Variable<int>(ratingId.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    if (score.present) {
+      map['score'] = Variable<double>(score.value);
+    }
+    if (place.present) {
+      map['place'] = Variable<int>(place.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RatingsGamesCompanion(')
+          ..write('ratingId: $ratingId, ')
+          ..write('gameId: $gameId, ')
+          ..write('score: $score, ')
+          ..write('place: $place, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -5427,6 +5843,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $GamingSessionsGamersTable(this);
   late final $NotesTable notes = $NotesTable(this);
   late final $RatingsTable ratings = $RatingsTable(this);
+  late final $RatingsGamesTable ratingsGames = $RatingsGamesTable(this);
   late final ArtistDao artistDao = ArtistDao(this as AppDatabase);
   late final CountingTemplateDao countingTemplateDao = CountingTemplateDao(
     this as AppDatabase,
@@ -5463,6 +5880,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     gamingSessionsGamers,
     notes,
     ratings,
+    ratingsGames,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -5609,6 +6027,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('notes', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'ratings',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('ratings_games', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'games',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('ratings_games', kind: UpdateKind.delete)],
     ),
   ]);
   @override
@@ -6389,7 +6821,7 @@ typedef $$GamesTableCreateCompanionBuilder =
       Value<int?> maxPlayers,
       Value<bool> isInCollection,
       Value<bool> isFavorite,
-      Value<int?> rating,
+      Value<double?> rating,
       Value<bool> isStandalone,
       Value<String?> imagePath,
     });
@@ -6403,7 +6835,7 @@ typedef $$GamesTableUpdateCompanionBuilder =
       Value<int?> maxPlayers,
       Value<bool> isInCollection,
       Value<bool> isFavorite,
-      Value<int?> rating,
+      Value<double?> rating,
       Value<bool> isStandalone,
       Value<String?> imagePath,
     });
@@ -6625,6 +7057,24 @@ final class $$GamesTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$RatingsGamesTable, List<RatingsGame>>
+  _ratingsGamesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.ratingsGames,
+    aliasName: $_aliasNameGenerator(db.games.id, db.ratingsGames.gameId),
+  );
+
+  $$RatingsGamesTableProcessedTableManager get ratingsGamesRefs {
+    final manager = $$RatingsGamesTableTableManager(
+      $_db,
+      $_db.ratingsGames,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ratingsGamesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
@@ -6675,7 +7125,7 @@ class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get rating => $composableBuilder(
+  ColumnFilters<double> get rating => $composableBuilder(
     column: $table.rating,
     builder: (column) => ColumnFilters(column),
   );
@@ -6946,6 +7396,31 @@ class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
     );
     return f(composer);
   }
+
+  Expression<bool> ratingsGamesRefs(
+    Expression<bool> Function($$RatingsGamesTableFilterComposer f) f,
+  ) {
+    final $$RatingsGamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratingsGames,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsGamesTableFilterComposer(
+            $db: $db,
+            $table: $db.ratingsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GamesTableOrderingComposer
@@ -6997,7 +7472,7 @@ class $$GamesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get rating => $composableBuilder(
+  ColumnOrderings<double> get rating => $composableBuilder(
     column: $table.rating,
     builder: (column) => ColumnOrderings(column),
   );
@@ -7056,7 +7531,7 @@ class $$GamesTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get rating =>
+  GeneratedColumn<double> get rating =>
       $composableBuilder(column: $table.rating, builder: (column) => column);
 
   GeneratedColumn<bool> get isStandalone => $composableBuilder(
@@ -7323,6 +7798,31 @@ class $$GamesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> ratingsGamesRefs<T extends Object>(
+    Expression<T> Function($$RatingsGamesTableAnnotationComposer a) f,
+  ) {
+    final $$RatingsGamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratingsGames,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsGamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ratingsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GamesTableTableManager
@@ -7349,6 +7849,7 @@ class $$GamesTableTableManager
             bool gamingSessionsRefs,
             bool gamingSessionsExpansionsRefs,
             bool notesRefs,
+            bool ratingsGamesRefs,
           })
         > {
   $$GamesTableTableManager(_$AppDatabase db, $GamesTable table)
@@ -7372,7 +7873,7 @@ class $$GamesTableTableManager
                 Value<int?> maxPlayers = const Value.absent(),
                 Value<bool> isInCollection = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
-                Value<int?> rating = const Value.absent(),
+                Value<double?> rating = const Value.absent(),
                 Value<bool> isStandalone = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
               }) => GamesCompanion(
@@ -7398,7 +7899,7 @@ class $$GamesTableTableManager
                 Value<int?> maxPlayers = const Value.absent(),
                 Value<bool> isInCollection = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
-                Value<int?> rating = const Value.absent(),
+                Value<double?> rating = const Value.absent(),
                 Value<bool> isStandalone = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
               }) => GamesCompanion.insert(
@@ -7432,6 +7933,7 @@ class $$GamesTableTableManager
                 gamingSessionsRefs = false,
                 gamingSessionsExpansionsRefs = false,
                 notesRefs = false,
+                ratingsGamesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -7448,6 +7950,7 @@ class $$GamesTableTableManager
                     if (gamingSessionsExpansionsRefs)
                       db.gamingSessionsExpansions,
                     if (notesRefs) db.notes,
+                    if (ratingsGamesRefs) db.ratingsGames,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -7643,6 +8146,27 @@ class $$GamesTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (ratingsGamesRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          RatingsGame
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._ratingsGamesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).ratingsGamesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -7674,6 +8198,7 @@ typedef $$GamesTableProcessedTableManager =
         bool gamingSessionsRefs,
         bool gamingSessionsExpansionsRefs,
         bool notesRefs,
+        bool ratingsGamesRefs,
       })
     >;
 typedef $$ExpansionsGamesTableCreateCompanionBuilder =
@@ -10588,6 +11113,7 @@ typedef $$GamingSessionsTableCreateCompanionBuilder =
       required int gameId,
       required DateTime startedAt,
       Value<DateTime?> finishedAt,
+      Value<bool> isFinished,
       Value<String?> comment,
       Value<int?> gameType,
       Value<String?> data,
@@ -10599,6 +11125,7 @@ typedef $$GamingSessionsTableUpdateCompanionBuilder =
       Value<int> gameId,
       Value<DateTime> startedAt,
       Value<DateTime?> finishedAt,
+      Value<bool> isFinished,
       Value<String?> comment,
       Value<int?> gameType,
       Value<String?> data,
@@ -10731,6 +11258,11 @@ class $$GamingSessionsTableFilterComposer
 
   ColumnFilters<DateTime> get finishedAt => $composableBuilder(
     column: $table.finishedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isFinished => $composableBuilder(
+    column: $table.isFinished,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10872,6 +11404,11 @@ class $$GamingSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isFinished => $composableBuilder(
+    column: $table.isFinished,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get comment => $composableBuilder(
     column: $table.comment,
     builder: (column) => ColumnOrderings(column),
@@ -10951,6 +11488,11 @@ class $$GamingSessionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get finishedAt => $composableBuilder(
     column: $table.finishedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isFinished => $composableBuilder(
+    column: $table.isFinished,
     builder: (column) => column,
   );
 
@@ -11102,6 +11644,7 @@ class $$GamingSessionsTableTableManager
                 Value<int> gameId = const Value.absent(),
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> finishedAt = const Value.absent(),
+                Value<bool> isFinished = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
                 Value<int?> gameType = const Value.absent(),
                 Value<String?> data = const Value.absent(),
@@ -11111,6 +11654,7 @@ class $$GamingSessionsTableTableManager
                 gameId: gameId,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
+                isFinished: isFinished,
                 comment: comment,
                 gameType: gameType,
                 data: data,
@@ -11122,6 +11666,7 @@ class $$GamingSessionsTableTableManager
                 required int gameId,
                 required DateTime startedAt,
                 Value<DateTime?> finishedAt = const Value.absent(),
+                Value<bool> isFinished = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
                 Value<int?> gameType = const Value.absent(),
                 Value<String?> data = const Value.absent(),
@@ -11131,6 +11676,7 @@ class $$GamingSessionsTableTableManager
                 gameId: gameId,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
+                isFinished: isFinished,
                 comment: comment,
                 gameType: gameType,
                 data: data,
@@ -12454,6 +13000,7 @@ typedef $$RatingsTableCreateCompanionBuilder =
       Value<int> id,
       required int year,
       Value<int?> month,
+      Value<bool> isActual,
       required String data,
     });
 typedef $$RatingsTableUpdateCompanionBuilder =
@@ -12461,8 +13008,32 @@ typedef $$RatingsTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> year,
       Value<int?> month,
+      Value<bool> isActual,
       Value<String> data,
     });
+
+final class $$RatingsTableReferences
+    extends BaseReferences<_$AppDatabase, $RatingsTable, Rating> {
+  $$RatingsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$RatingsGamesTable, List<RatingsGame>>
+  _ratingsGamesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.ratingsGames,
+    aliasName: $_aliasNameGenerator(db.ratings.id, db.ratingsGames.ratingId),
+  );
+
+  $$RatingsGamesTableProcessedTableManager get ratingsGamesRefs {
+    final manager = $$RatingsGamesTableTableManager(
+      $_db,
+      $_db.ratingsGames,
+    ).filter((f) => f.ratingId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ratingsGamesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$RatingsTableFilterComposer
     extends Composer<_$AppDatabase, $RatingsTable> {
@@ -12488,10 +13059,40 @@ class $$RatingsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get isActual => $composableBuilder(
+    column: $table.isActual,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get data => $composableBuilder(
     column: $table.data,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> ratingsGamesRefs(
+    Expression<bool> Function($$RatingsGamesTableFilterComposer f) f,
+  ) {
+    final $$RatingsGamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratingsGames,
+      getReferencedColumn: (t) => t.ratingId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsGamesTableFilterComposer(
+            $db: $db,
+            $table: $db.ratingsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$RatingsTableOrderingComposer
@@ -12515,6 +13116,11 @@ class $$RatingsTableOrderingComposer
 
   ColumnOrderings<int> get month => $composableBuilder(
     column: $table.month,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActual => $composableBuilder(
+    column: $table.isActual,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12542,8 +13148,36 @@ class $$RatingsTableAnnotationComposer
   GeneratedColumn<int> get month =>
       $composableBuilder(column: $table.month, builder: (column) => column);
 
+  GeneratedColumn<bool> get isActual =>
+      $composableBuilder(column: $table.isActual, builder: (column) => column);
+
   GeneratedColumn<String> get data =>
       $composableBuilder(column: $table.data, builder: (column) => column);
+
+  Expression<T> ratingsGamesRefs<T extends Object>(
+    Expression<T> Function($$RatingsGamesTableAnnotationComposer a) f,
+  ) {
+    final $$RatingsGamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratingsGames,
+      getReferencedColumn: (t) => t.ratingId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsGamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ratingsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$RatingsTableTableManager
@@ -12557,9 +13191,9 @@ class $$RatingsTableTableManager
           $$RatingsTableAnnotationComposer,
           $$RatingsTableCreateCompanionBuilder,
           $$RatingsTableUpdateCompanionBuilder,
-          (Rating, BaseReferences<_$AppDatabase, $RatingsTable, Rating>),
+          (Rating, $$RatingsTableReferences),
           Rating,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool ratingsGamesRefs})
         > {
   $$RatingsTableTableManager(_$AppDatabase db, $RatingsTable table)
     : super(
@@ -12577,11 +13211,13 @@ class $$RatingsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> year = const Value.absent(),
                 Value<int?> month = const Value.absent(),
+                Value<bool> isActual = const Value.absent(),
                 Value<String> data = const Value.absent(),
               }) => RatingsCompanion(
                 id: id,
                 year: year,
                 month: month,
+                isActual: isActual,
                 data: data,
               ),
           createCompanionCallback:
@@ -12589,17 +13225,52 @@ class $$RatingsTableTableManager
                 Value<int> id = const Value.absent(),
                 required int year,
                 Value<int?> month = const Value.absent(),
+                Value<bool> isActual = const Value.absent(),
                 required String data,
               }) => RatingsCompanion.insert(
                 id: id,
                 year: year,
                 month: month,
+                isActual: isActual,
                 data: data,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RatingsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({ratingsGamesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (ratingsGamesRefs) db.ratingsGames],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (ratingsGamesRefs)
+                    await $_getPrefetchedData<
+                      Rating,
+                      $RatingsTable,
+                      RatingsGame
+                    >(
+                      currentTable: table,
+                      referencedTable: $$RatingsTableReferences
+                          ._ratingsGamesRefsTable(db),
+                      managerFromTypedResult: (p0) => $$RatingsTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).ratingsGamesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.ratingId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -12614,9 +13285,396 @@ typedef $$RatingsTableProcessedTableManager =
       $$RatingsTableAnnotationComposer,
       $$RatingsTableCreateCompanionBuilder,
       $$RatingsTableUpdateCompanionBuilder,
-      (Rating, BaseReferences<_$AppDatabase, $RatingsTable, Rating>),
+      (Rating, $$RatingsTableReferences),
       Rating,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool ratingsGamesRefs})
+    >;
+typedef $$RatingsGamesTableCreateCompanionBuilder =
+    RatingsGamesCompanion Function({
+      required int ratingId,
+      required int gameId,
+      Value<double?> score,
+      Value<int?> place,
+      Value<int> rowid,
+    });
+typedef $$RatingsGamesTableUpdateCompanionBuilder =
+    RatingsGamesCompanion Function({
+      Value<int> ratingId,
+      Value<int> gameId,
+      Value<double?> score,
+      Value<int?> place,
+      Value<int> rowid,
+    });
+
+final class $$RatingsGamesTableReferences
+    extends BaseReferences<_$AppDatabase, $RatingsGamesTable, RatingsGame> {
+  $$RatingsGamesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RatingsTable _ratingIdTable(_$AppDatabase db) =>
+      db.ratings.createAlias(
+        $_aliasNameGenerator(db.ratingsGames.ratingId, db.ratings.id),
+      );
+
+  $$RatingsTableProcessedTableManager get ratingId {
+    final $_column = $_itemColumn<int>('rating_id')!;
+
+    final manager = $$RatingsTableTableManager(
+      $_db,
+      $_db.ratings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_ratingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $GamesTable _gameIdTable(_$AppDatabase db) => db.games.createAlias(
+    $_aliasNameGenerator(db.ratingsGames.gameId, db.games.id),
+  );
+
+  $$GamesTableProcessedTableManager get gameId {
+    final $_column = $_itemColumn<int>('game_id')!;
+
+    final manager = $$GamesTableTableManager(
+      $_db,
+      $_db.games,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RatingsGamesTableFilterComposer
+    extends Composer<_$AppDatabase, $RatingsGamesTable> {
+  $$RatingsGamesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<double> get score => $composableBuilder(
+    column: $table.score,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get place => $composableBuilder(
+    column: $table.place,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RatingsTableFilterComposer get ratingId {
+    final $$RatingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ratingId,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableFilterComposer(
+            $db: $db,
+            $table: $db.ratings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GamesTableFilterComposer get gameId {
+    final $$GamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableFilterComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RatingsGamesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RatingsGamesTable> {
+  $$RatingsGamesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<double> get score => $composableBuilder(
+    column: $table.score,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get place => $composableBuilder(
+    column: $table.place,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RatingsTableOrderingComposer get ratingId {
+    final $$RatingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ratingId,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.ratings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GamesTableOrderingComposer get gameId {
+    final $$GamesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableOrderingComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RatingsGamesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RatingsGamesTable> {
+  $$RatingsGamesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<double> get score =>
+      $composableBuilder(column: $table.score, builder: (column) => column);
+
+  GeneratedColumn<int> get place =>
+      $composableBuilder(column: $table.place, builder: (column) => column);
+
+  $$RatingsTableAnnotationComposer get ratingId {
+    final $$RatingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ratingId,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ratings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GamesTableAnnotationComposer get gameId {
+    final $$GamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RatingsGamesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RatingsGamesTable,
+          RatingsGame,
+          $$RatingsGamesTableFilterComposer,
+          $$RatingsGamesTableOrderingComposer,
+          $$RatingsGamesTableAnnotationComposer,
+          $$RatingsGamesTableCreateCompanionBuilder,
+          $$RatingsGamesTableUpdateCompanionBuilder,
+          (RatingsGame, $$RatingsGamesTableReferences),
+          RatingsGame,
+          PrefetchHooks Function({bool ratingId, bool gameId})
+        > {
+  $$RatingsGamesTableTableManager(_$AppDatabase db, $RatingsGamesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RatingsGamesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RatingsGamesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RatingsGamesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> ratingId = const Value.absent(),
+                Value<int> gameId = const Value.absent(),
+                Value<double?> score = const Value.absent(),
+                Value<int?> place = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RatingsGamesCompanion(
+                ratingId: ratingId,
+                gameId: gameId,
+                score: score,
+                place: place,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int ratingId,
+                required int gameId,
+                Value<double?> score = const Value.absent(),
+                Value<int?> place = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RatingsGamesCompanion.insert(
+                ratingId: ratingId,
+                gameId: gameId,
+                score: score,
+                place: place,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RatingsGamesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({ratingId = false, gameId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (ratingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.ratingId,
+                                referencedTable: $$RatingsGamesTableReferences
+                                    ._ratingIdTable(db),
+                                referencedColumn: $$RatingsGamesTableReferences
+                                    ._ratingIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+                    if (gameId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.gameId,
+                                referencedTable: $$RatingsGamesTableReferences
+                                    ._gameIdTable(db),
+                                referencedColumn: $$RatingsGamesTableReferences
+                                    ._gameIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RatingsGamesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RatingsGamesTable,
+      RatingsGame,
+      $$RatingsGamesTableFilterComposer,
+      $$RatingsGamesTableOrderingComposer,
+      $$RatingsGamesTableAnnotationComposer,
+      $$RatingsGamesTableCreateCompanionBuilder,
+      $$RatingsGamesTableUpdateCompanionBuilder,
+      (RatingsGame, $$RatingsGamesTableReferences),
+      RatingsGame,
+      PrefetchHooks Function({bool ratingId, bool gameId})
     >;
 
 class $AppDatabaseManager {
@@ -12665,4 +13723,6 @@ class $AppDatabaseManager {
       $$NotesTableTableManager(_db, _db.notes);
   $$RatingsTableTableManager get ratings =>
       $$RatingsTableTableManager(_db, _db.ratings);
+  $$RatingsGamesTableTableManager get ratingsGames =>
+      $$RatingsGamesTableTableManager(_db, _db.ratingsGames);
 }

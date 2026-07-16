@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:flutter/material.dart';
+
+import 'package:image_picker/image_picker.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/services/image_service.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 // Виджет загрузки изображений
 class ImagePickerWidget extends StatefulWidget {

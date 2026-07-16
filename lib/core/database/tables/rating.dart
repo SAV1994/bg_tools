@@ -9,5 +9,8 @@ class Ratings extends Table {
   IntColumn get month => integer()
       .customConstraint('CHECK (month >= 1 AND month <= 12)')
       .nullable()(); // Месяц
+  BoolColumn get isActual => boolean().withDefault(
+    const Constant(true),
+  )(); // Является актуальным на данный момент
   TextColumn get data => text()(); // Данные (JSON)
 }

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
@@ -105,25 +105,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onPressed: () => {context.pushNamed('games-list')},
               style: btnStyle,
               label: Text('Настольные игры'),
-              icon: const Icon(Icons.layers),
+              icon: gamesIcon,
             ),
             ElevatedButton.icon(
               onPressed: () => {context.pushNamed('gamers-list')},
               style: btnStyle,
               label: Text('Список игроков'),
-              icon: const Icon(Icons.wc),
+              icon: gamersIcon,
             ),
             ElevatedButton.icon(
               onPressed: () => {context.pushNamed('gaming-sessions-list')},
               style: btnStyle,
               label: Text('История партий'),
-              icon: const Icon(Icons.assignment),
+              icon: sessionsIcon,
             ),
             ElevatedButton.icon(
               onPressed: () => {context.pushNamed('templates-list')},
               style: btnStyle,
               label: Text('Шаблоны партий'),
-              icon: const Icon(Icons.build),
+              icon: templatessIcon,
             ),
             // ElevatedButton.icon(
             //   onPressed: () => {},
@@ -141,19 +141,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onPressed: () => {context.pushNamed('tags')},
               style: btnStyle,
               label: Text('Метки категорий'),
-              icon: const Icon(Icons.location_on),
+              icon: tagsIcon,
             ),
             ElevatedButton.icon(
               onPressed: () => {context.pushNamed('designers')},
               style: btnStyle,
               label: Text('Геймдизайнеры'),
-              icon: const Icon(Icons.account_balance),
+              icon: designersIcon,
             ),
             ElevatedButton.icon(
               onPressed: () => {context.pushNamed('artists')},
               style: btnStyle,
               label: Text('Художники'),
-              icon: const Icon(Icons.color_lens),
+              icon: artistsIcon,
             ),
             BackupButtons(),
           ],

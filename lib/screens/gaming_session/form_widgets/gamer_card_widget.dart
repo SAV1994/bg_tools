@@ -1,8 +1,9 @@
-import 'package:bg_tools/core/consts.dart';
+import 'package:flutter/material.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/screens/gaming_session/form_widgets/team_select_widget.dart';
-import 'package:flutter/material.dart';
 
 class GamingSessionGamerCard extends StatefulWidget {
   final GamingSessionGamerData gamerData;

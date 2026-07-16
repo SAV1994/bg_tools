@@ -1,11 +1,9 @@
-import 'package:bg_tools/core/widgets/enum_select_widget.dart';
-import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
@@ -13,8 +11,10 @@ import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/add_gamer_modal_form_builder.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/enum_select_widget.dart';
 import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
 import 'package:bg_tools/core/widgets/select_with_search.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/screens/gaming_session/form_widgets/gamer_card_widget.dart';
 import 'package:bg_tools/screens/gaming_session/form_widgets/gamer_form_detail_widget.dart';
 
@@ -39,6 +39,7 @@ class _GamingSessionFormScreenState
   List<Game> _expansions = [];
   Set<int> _selectedExpansionIds = {};
   DateTime _startedAt = DateTime.now();
+  bool _isFinished = true;
   DateTime? _finishedAt;
   List<Gamer> _allGamers = [];
   List<GamingSession> _gamingSessions = [];
@@ -93,6 +94,7 @@ class _GamingSessionFormScreenState
       await _loadGamingSessionsForGame(_selectedGame!.id);
       _selectedExpansionIds = gamingSessionData!.selectedExpansionIds;
       _startedAt = gamingSession.startedAt;
+      _finishedAt = gamingSession.finishedAt;
       if (gamingSession.finishedAt != null) {
         _finishedAt = gamingSession.finishedAt;
       }
@@ -225,6 +227,7 @@ class _GamingSessionFormScreenState
         gameId: Value(_selectedGame!.id),
         startedAt: Value(_startedAt),
         finishedAt: Value(_finishedAt),
+        isFinished: Value(_isFinished),
         comment: Value(_commentController.text),
         gameType: Value(_selectedGameType?.id),
         rootSessionId: Value(_selectedGamingSession?.id),
@@ -465,6 +468,17 @@ class _GamingSessionFormScreenState
                           ),
                         ),
                       ],
+                    ),
+
+                    CheckboxListTile(
+                      title: Text('Партия закончена?'),
+                      value: _isFinished,
+                      onChanged: (value) {
+                        setState(() {
+                          _isFinished = value!;
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
                     ),
 
                     TextFormField(

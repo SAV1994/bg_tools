@@ -28,7 +28,11 @@ class GamesNotifier extends AsyncNotifier<List<Game>> {
   Future<List<Game>> _loadGames() async {
     final dao = ref.read(gameDaoProvider);
 
-    _totalItems = await dao.getTotalCount(searchQuery: _searchQuery);
+    _totalItems = await dao.getTotalCount(
+      onlyFavorite: _onlyFavorite,
+      onlyStandalone: _onlyStandalone,
+      searchQuery: _searchQuery,
+    );
 
     return await dao.getPaginated(
       page: _page,

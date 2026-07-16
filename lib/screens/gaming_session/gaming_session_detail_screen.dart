@@ -5,14 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/utils/bool_to_string.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class GamingSessionDetailScreen extends ConsumerStatefulWidget {
   final int gamingSessionId;
@@ -36,27 +38,6 @@ class _GamingSessionDetailScreenState
       ref.invalidate(gamingSessionFullDataProvider); // Обновляем провайдер
       setState(() {});
     }
-  }
-
-  Widget _buildInfoRow(String label, String? value, {Color? valueColor}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(label, style: TextStyle(color: Colors.grey.shade600)),
-          ),
-          Expanded(
-            child: Text(
-              value ?? emptyVal,
-              style: TextStyle(fontWeight: FontWeight.w500, color: valueColor),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildError(BuildContext context, Object error, WidgetRef ref) {
@@ -156,25 +137,34 @@ class _GamingSessionDetailScreenState
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  _buildInfoRow(
-                    'Начало партии',
-                    DateFormats.formatDateTime(gamingSession.startedAt),
+                  InfoRow(
+                    label: 'Начало партии',
+                    value: DateFormats.formatDateTime(gamingSession.startedAt),
+                    isFirst: true,
                   ),
-                  const Divider(),
-                  _buildInfoRow(
-                    'Конец партии',
-                    gamingSession.finishedAt != null
-                        ? DateFormats.formatDateTime(gamingSession.finishedAt!)
-                        : null,
+
+                  if (gamingSession.finishedAt != null)
+                    InfoRow(
+                      label: 'Конец партии',
+                      value: DateFormats.formatDateTime(
+                        gamingSession.finishedAt!,
+                      ),
+                    ),
+
+                  InfoRow(
+                    label: 'Партия закончена?',
+                    value: convertBoolToStr(gamingSession.isFinished),
                   ),
-                  const Divider(),
-                  _buildInfoRow('Комментарий', gamingSession.comment),
+
+                  if (gamingSession.comment != null &&
+                      gamingSession.comment!.isNotEmpty)
+                    InfoRow(label: 'Комментарий', value: gamingSession.comment),
                 ],
               ),
             ),
           ),
-          _buildExpansionsCard(expansions),
-          _buildGamersCard(gamers),
+          if (expansions.isNotEmpty) _buildExpansionsCard(expansions),
+          if (gamers.isNotEmpty) _buildGamersCard(gamers),
         ],
       ),
     );
@@ -193,24 +183,19 @@ class _GamingSessionDetailScreenState
           ],
         ),
         Card(
-          child: expansions.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(32),
-                  child: Center(child: Text(emptyVal)),
-                )
-              : ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: expansions.length,
-                  separatorBuilder: (_, _) => const Divider(),
-                  itemBuilder: (context, index) {
-                    final expansion = expansions[index];
-                    return ListTile(
-                      leading: Icon(Icons.layers),
-                      title: Text(expansion.name),
-                    );
-                  },
-                ),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: expansions.length,
+            // separatorBuilder: (_, _) => const Divider(),
+            itemBuilder: (context, index) {
+              final expansion = expansions[index];
+              return ListTile(
+                leading: Icon(Icons.layers),
+                title: Text(expansion.name),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -228,66 +213,61 @@ class _GamingSessionDetailScreenState
             ),
           ],
         ),
-        Card(
-          child: gamersData.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(32),
-                  child: Center(child: Text(emptyVal)),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: gamersData.length,
-                  itemBuilder: (context, index) {
-                    final GamingSessionGamerData? gamerData = gamersData[index];
-                    final Gamer gamer = gamerData!.gamer;
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: gamersData.length,
+          itemBuilder: (context, index) {
+            final GamingSessionGamerData? gamerData = gamersData[index];
+            final Gamer gamer = gamerData!.gamer;
 
-                    String gamerName = '(${gamer.username})';
-                    if (gamer.lastName != null) {
-                      gamerName += ' ${gamer.lastName}';
-                    }
-                    gamerName += ' ${gamer.firstName}';
-                    if (gamer.middleName != null) {
-                      gamerName += ' ${gamer.middleName}';
-                    }
+            String gamerName = '(${gamer.username})';
+            if (gamer.lastName != null) {
+              gamerName += ' ${gamer.lastName}';
+            }
+            gamerName += ' ${gamer.firstName}';
+            if (gamer.middleName != null) {
+              gamerName += ' ${gamer.middleName}';
+            }
 
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            _buildInfoRow('Игрок', gamerName),
-                            const Divider(),
-                            _buildInfoRow(
-                              'Команда',
-                              (gamerData.team != null)
-                                  ? TeamsEnum.fromId(gamerData.team!).label
-                                  : null,
-                              valueColor: (gamerData.team != null)
-                                  ? TeamsEnum.fromId(gamerData.team!).color
-                                  : null,
-                            ),
-                            const Divider(),
-                            _buildInfoRow(
-                              'Количество набранных очков',
-                              gamerData.score?.toString(),
-                            ),
-                            const Divider(),
-                            _buildInfoRow(
-                              'Занятое место',
-                              gamerData.place?.toString(),
-                            ),
-                            const Divider(),
-                            _buildInfoRow(
-                              'Порядок хода',
-                              gamerData.turnOrder?.toString(),
-                            ),
-                          ],
-                        ),
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    InfoRow(label: 'Игрок', value: gamerName, isFirst: true),
+
+                    if (gamerData.team != null)
+                      InfoRow(
+                        label: 'Команда',
+                        value: TeamsEnum.fromId(gamerData.team!).label,
+                        valueColor: (gamerData.team != null)
+                            ? TeamsEnum.fromId(gamerData.team!).color
+                            : null,
                       ),
-                    );
-                  },
+
+                    if (gamerData.score != null)
+                      InfoRow(
+                        label: 'Количество набранных очков',
+                        value: gamerData.score.toString(),
+                      ),
+
+                    if (gamerData.place != null)
+                      InfoRow(
+                        label: 'Занятое место',
+                        value: gamerData.place.toString(),
+                      ),
+
+                    if (gamerData.turnOrder != null)
+                      InfoRow(
+                        label: 'Порядок хода',
+                        value: gamerData.turnOrder.toString(),
+                      ),
+                  ],
                 ),
+              ),
+            );
+          },
         ),
       ],
     );

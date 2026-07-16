@@ -13,5 +13,6 @@ export 'gaming_session.dart';
 export 'gaming_sessions_expansions.dart';
 export 'gaming_sessions_gamers.dart';
 export 'note.dart';
+export 'rating_item.dart';
 export 'rating.dart';
 export 'tag.dart';

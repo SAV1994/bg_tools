@@ -22,6 +22,8 @@ class FinalScreen extends ConsumerStatefulWidget {
 
 class _FinalScreenState extends ConsumerState<FinalScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool _isFinished = true;
   // Контроллеры
   late final TextEditingController _commentController = TextEditingController();
 
@@ -34,6 +36,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
         gameId: Value(widget.data['gameId']),
         startedAt: Value(DateTime.parse(widget.data['startedAt'])),
         finishedAt: Value(DateTime.parse(widget.data['finishedAt'])),
+        isFinished: Value(_isFinished),
         comment: Value(_commentController.text),
         gameType: Value(widget.data['type']),
         rootSessionId: Value(widget.data['rootSessionId']),
@@ -114,6 +117,17 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
             child: Column(
               spacing: 20,
               children: [
+                CheckboxListTile(
+                  title: Text('Партия закончена?'),
+                  value: _isFinished,
+                  onChanged: (value) {
+                    setState(() {
+                      _isFinished = value!;
+                    });
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+
                 TextFormField(
                   controller: _commentController,
                   decoration: InputDecoration(

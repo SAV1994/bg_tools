@@ -57,7 +57,7 @@ class _NotesListScreentate extends ConsumerState<NotesListScreen> {
                   ),
                   Text(
                     DateFormats.formatDateTime(note.updatedAt),
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    style: TextStyle(fontSize: 12),
                   ),
                 ],
               ),

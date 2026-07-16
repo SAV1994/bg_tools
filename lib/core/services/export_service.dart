@@ -199,6 +199,7 @@ class BackupService {
               'gameId': gamingSession.gameId,
               'startedAt': gamingSession.startedAt.toIso8601String(),
               'finishedAt': gamingSession.finishedAt?.toIso8601String(),
+              'isFinished': gamingSession.isFinished,
               'comment': gamingSession.comment,
               'gameType': gamingSession.gameType,
               'data': gamingSession.data,
@@ -527,6 +528,7 @@ class BackupService {
                 finishedAt: gamingSessionJson['finishedAt'] != null
                     ? Value(DateTime.parse(gamingSessionJson['finishedAt']))
                     : const Value(null),
+                isFinished: Value(gamingSessionJson['isFinished'] ?? true),
                 comment: Value(gamingSessionJson['comment']),
                 gameType: Value(gamingSessionJson['gameType']),
                 data: Value(gamingSessionJson['data']),

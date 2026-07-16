@@ -1,5 +1,5 @@
 import 'package:bg_tools/core/app_data.dart';
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/custom_exceptions.dart';
 import 'package:bg_tools/core/utils/initial_gamers_data.dart';
 import 'package:bg_tools/core/utils/initial_team_data.dart';

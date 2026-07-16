@@ -6,12 +6,13 @@ import 'package:fleather/fleather.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class NoteDetailScreen extends ConsumerStatefulWidget {
   final int gameId;
@@ -78,28 +79,6 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
     }
   }
 
-  Widget _buildInfoRow(String label, String value, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: Colors.grey.shade600),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 80,
-            child: Text(label, style: TextStyle(color: Colors.grey.shade600)),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -139,15 +118,15 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
-                    _buildInfoRow(
-                      'Создана',
-                      DateFormats.formatDateTime(note!.createdAt),
-                      Icons.create,
+                    InfoRow(
+                      label: 'Создана',
+                      value: DateFormats.formatDateTime(note!.createdAt),
+                      isFirst: true,
                     ),
-                    _buildInfoRow(
-                      'Обновлена',
-                      DateFormats.formatDateTime(note!.updatedAt),
-                      Icons.update,
+
+                    InfoRow(
+                      label: 'Обновлена',
+                      value: DateFormats.formatDateTime(note!.updatedAt),
                     ),
                   ],
                 ),
@@ -172,7 +151,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
+                        color: firstColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: FleatherEditor(

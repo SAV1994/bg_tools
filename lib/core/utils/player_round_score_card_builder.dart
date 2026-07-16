@@ -1,6 +1,6 @@
-import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/widgets/score_calc_modal.dart';
 
 Widget buildPlayerRoundScoreInputCard(

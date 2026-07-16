@@ -10,6 +10,8 @@ class GamingSessions extends Table {
   DateTimeColumn get startedAt => dateTime()(); // Время начала игры
   DateTimeColumn get finishedAt =>
       dateTime().nullable()(); // Время окончания игры
+  BoolColumn get isFinished =>
+      boolean().withDefault(const Constant(true))(); // Партия закончена?
   TextColumn get comment => text().nullable()(); // Комментарий
   IntColumn get gameType => integer().nullable()(); // Тип игры
   TextColumn get data => text().nullable()(); // Данные (JSON)

@@ -1,5 +1,6 @@
-import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 
 class TeamSelector extends StatelessWidget {
   final TeamsEnum? selectedTeam;

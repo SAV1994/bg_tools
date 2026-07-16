@@ -183,31 +183,30 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   }) async {
     final offset = page * pageSize;
 
-    var query = _getBaseQuery(reverse: reverseOrdering)
-      ..limit(pageSize, offset: offset);
-
-    if (onlyFavorite) {
-      query = query..where((g) => g.isFavorite.isValue(true));
-    }
-
-    if (onlyStandalone) {
-      query = query..where((g) => g.isStandalone.isValue(true));
-    }
-
-    if (searchQuery != null && searchQuery.isNotEmpty) {
-      query = query..where((g) => g.name.contains(searchQuery));
-    }
+    SimpleSelectStatement<$GamesTable, Game> query = _getBaseQuery(
+      reverse: reverseOrdering,
+    )..limit(pageSize, offset: offset);
+    query = _getFilteredQuery(
+      query: query,
+      onlyFavorite: onlyFavorite,
+      onlyStandalone: onlyStandalone,
+    );
 
     return await query.get();
   }
 
   // Общее количество игр, соответствующих условию
-  Future<int> getTotalCount({String? searchQuery}) async {
-    var query = select(games);
-
-    if (searchQuery != null && searchQuery.isNotEmpty) {
-      query = query..where((g) => g.name.contains(searchQuery));
-    }
+  Future<int> getTotalCount({
+    bool onlyFavorite = false,
+    bool onlyStandalone = false,
+    String? searchQuery,
+  }) async {
+    SimpleSelectStatement<$GamesTable, Game> query = select(games);
+    query = _getFilteredQuery(
+      query: query,
+      onlyFavorite: onlyFavorite,
+      onlyStandalone: onlyStandalone,
+    );
 
     return await query.get().then((list) => list.length);
   }
@@ -333,5 +332,26 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
         mode: reverse ? OrderingMode.desc : OrderingMode.asc,
       ),
     ]);
+  }
+
+  SimpleSelectStatement<$GamesTable, Game> _getFilteredQuery({
+    required SimpleSelectStatement<$GamesTable, Game> query,
+    required bool onlyFavorite,
+    required bool onlyStandalone,
+    String? searchQuery,
+  }) {
+    if (onlyFavorite) {
+      query = query..where((g) => g.isFavorite.isValue(true));
+    }
+
+    if (onlyStandalone) {
+      query = query..where((g) => g.isStandalone.isValue(true));
+    }
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query..where((g) => g.name.contains(searchQuery));
+    }
+
+    return query;
   }
 }

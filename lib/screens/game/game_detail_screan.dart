@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
@@ -16,6 +16,7 @@ import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/error_screen_builder.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
 import 'package:bg_tools/screens/game/mixins/update_is_favorite.dart';
 
@@ -53,27 +54,6 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
       await context.pushNamed('session-runner');
       ref.invalidate(gameFullDataProvider); // Обновляем провайдер
     }
-  }
-
-  Widget _buildInfoRow(String label, String? value, {Color? valueColor}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 160,
-            child: Text(label, style: TextStyle(color: titleColor)),
-          ),
-          Expanded(
-            child: Text(
-              value ?? emptyVal,
-              style: TextStyle(fontWeight: FontWeight.w500, color: valueColor),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildError(BuildContext context, Object error, WidgetRef ref) {
@@ -179,31 +159,30 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  _buildInfoRow('Описание', game.description),
-                  const Divider(),
-                  _buildInfoRow('Год', game.year),
-                  const Divider(),
-                  _buildInfoRow(
-                    'Минимальное количество игроков',
-                    game.minPlayers?.toString(),
+                  InfoRow(label: 'Год', value: game.year, isFirst: true),
+                  InfoRow(
+                    label: 'Минимальное количество игроков',
+                    value: game.minPlayers?.toString(),
                   ),
-                  const Divider(),
-                  _buildInfoRow(
-                    'Максимальное количество игроков',
-                    game.maxPlayers?.toString(),
+                  InfoRow(
+                    label: 'Максимальное количество игроков',
+                    value: game.maxPlayers?.toString(),
                   ),
-                  const Divider(),
-                  _buildInfoRow(
-                    'Наличие в коллекции',
-                    convertBoolToStr(game.isInCollection),
+                  InfoRow(
+                    label: 'Наличие в коллекции',
+                    value: convertBoolToStr(game.isInCollection),
                   ),
-                  const Divider(),
-                  _buildInfoRow(
-                    'Самодостаточность',
-                    convertBoolToStr(game.isStandalone),
+                  InfoRow(
+                    label: 'Самодостаточность',
+                    value: convertBoolToStr(game.isStandalone),
                   ),
-                  const Divider(),
-                  _buildInfoRow('Описание', game.description),
+                  InfoRow(
+                    label: 'Рейтинг',
+                    value: ([null, 0.0].contains(game.rating))
+                        ? 'Неизвестно'
+                        : game.rating.toString(),
+                  ),
+                  InfoRow(label: 'Описание', value: game.description),
                 ],
               ),
             ),

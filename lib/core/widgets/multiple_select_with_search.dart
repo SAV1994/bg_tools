@@ -1,7 +1,8 @@
-// widgets/multi_select_with_search.dart
-import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 
 // Мультиселект с возможностью поиска
 class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {

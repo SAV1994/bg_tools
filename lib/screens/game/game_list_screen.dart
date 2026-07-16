@@ -1,15 +1,15 @@
-import 'package:bg_tools/screens/game/mixins/export.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
 import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/screens/game/mixins/export.dart';
 
 class GamesListScreen extends ConsumerStatefulWidget {
   const GamesListScreen({super.key});
@@ -192,7 +192,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : const Text('Игры'),
+                : gamesIcon,
           ),
           actions: [
             IconButton(

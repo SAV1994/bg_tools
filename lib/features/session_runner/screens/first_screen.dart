@@ -1,12 +1,13 @@
-import 'package:bg_tools/core/utils/gamer_session_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bg_tools/core/consts.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/dateformats.dart';
+import 'package:bg_tools/core/utils/gamer_session_data.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/select_with_search.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
@@ -96,7 +97,9 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                             });
                           },
                           displayName: (gamingSession) =>
-                              '${DateFormats.formatDate(gamingSession.startedAt)} (${gamingSession.comment ?? emptyVal})',
+                              '${gamingSession.isFinished ? '✅' : '⏱️'} '
+                              '${DateFormats.formatDate(gamingSession.startedAt)}'
+                              ' (${gamingSession.comment ?? emptyVal})',
                           getId: (gamingSession) => gamingSession.id,
                           searchHint: 'Поиск сессии...',
                           isRequired: false,

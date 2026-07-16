@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:bg_tools/core/consts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 
 class AppDataManager {
   // Запись запущенной сессии (JSON)

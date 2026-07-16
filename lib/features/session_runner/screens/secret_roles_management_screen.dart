@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // screens/role_management_screen.dart
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 
 class SecretRolesManagementScreen extends StatefulWidget {
   final Map<String, dynamic> data;

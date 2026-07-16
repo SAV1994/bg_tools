@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/router.dart';
 
 void main() {
@@ -21,12 +22,14 @@ class MyApp extends StatelessWidget {
           foregroundColor: textColor, // Цвет текста и иконок по умолчанию
           elevation: 4,
           shadowColor: shadowColor,
+          actionsIconTheme: IconThemeData(size: iconSize),
         ),
         textTheme: const TextTheme(
           bodySmall: TextStyle(color: textColor),
           bodyMedium: TextStyle(color: textColor),
           bodyLarge: TextStyle(color: textColor),
         ),
+        iconTheme: IconThemeData(size: iconSize),
         listTileTheme: const ListTileThemeData(
           textColor: textColor, // Цвет для основного текста и подзаголовков
           iconColor: borderColor, // Цвет для иконок (по желанию)
@@ -102,6 +105,9 @@ class MyApp extends StatelessWidget {
               letterSpacing: 0.5,
             ),
           ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(iconSize: iconSize),
         ),
         segmentedButtonTheme: SegmentedButtonThemeData(
           style: ButtonStyle(

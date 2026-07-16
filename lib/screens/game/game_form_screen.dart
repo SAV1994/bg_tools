@@ -1,3 +1,4 @@
+import 'package:bg_tools/screens/game/widgets/export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -36,6 +37,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
   Set<int> _selectedArtistIds = {};
   Set<int> _selectedTagIds = {};
   String? _imagePath;
+  double _rating = 0.0;
   // Контроллеры
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
@@ -88,6 +90,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
       _selectedArtistIds = gameData!.selectedArtistIds;
       _selectedTagIds = gameData!.selectedTagIds;
       _isStandalone = gameData!.game.isStandalone;
+      _rating = gameData!.game.rating ?? _rating;
     }
 
     _titleController = TextEditingController(text: gameData?.game.name);
@@ -137,6 +140,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                 : int.tryParse(_maxPlayersController.text.trim()),
           ),
           isInCollection: Value(_isInCollection),
+          rating: Value(_rating),
           imagePath: Value(_imagePath),
           isStandalone: Value(_isStandalone),
         );
@@ -333,6 +337,14 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                           });
                         },
                         controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                      RatingSlider(
+                        initialValue: _rating,
+                        onChanged: (value) {
+                          setState(() {
+                            _rating = value;
+                          });
+                        },
                       ),
                       TextFormField(
                         controller: _descriptionController,

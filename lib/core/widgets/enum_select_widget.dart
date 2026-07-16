@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
 
 class EnumSelector extends StatelessWidget {
   final String label;

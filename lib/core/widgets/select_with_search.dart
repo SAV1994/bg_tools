@@ -1,6 +1,6 @@
-// widgets/single_select_with_search.dart
-import 'package:bg_tools/core/consts.dart';
 import 'package:flutter/material.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 
 // Селект с возможностью поиска
 class SelectWithSearch<T> extends StatefulWidget {
@@ -65,7 +65,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
     if (_selectedItem == null) {
       return widget.placeholder ?? 'Не выбрано';
     }
-    return widget.displayName(_selectedItem!);
+    return widget.displayName(_selectedItem as T);
   }
 
   @override

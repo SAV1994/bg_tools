@@ -1,11 +1,11 @@
-import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/app_data.dart';
-import 'package:bg_tools/core/consts.dart';
+import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
