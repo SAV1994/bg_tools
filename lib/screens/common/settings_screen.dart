@@ -56,9 +56,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         if (_pageLimitController.text.isNotEmpty) {
           AppDataManager.savePageLimit(
             int.parse(_pageLimitController.text),
-          ).whenComplete(
-            () => ref.read(gamesPaginatedProvider.notifier).updatePageLimit(),
-          );
+          ).whenComplete(() {
+            ref.read(gamesPaginatedProvider.notifier).updatePageLimit();
+            ref.read(gamersPaginatedProvider.notifier).updatePageLimit();
+            ref
+                .read(gamingSessionsPaginatedProvider.notifier)
+                .updatePageLimit();
+            ref
+                .read(countingTemplatesPaginatedProvider.notifier)
+                .updatePageLimit();
+          });
         }
       },
       child: Scaffold(

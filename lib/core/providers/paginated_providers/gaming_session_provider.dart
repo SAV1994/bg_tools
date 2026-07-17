@@ -3,22 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/providers/database_providers.dart';
 
-final gamesPaginatedProvider =
-    AsyncNotifierProvider<GamesNotifier, List<dynamic>>(() {
-      return GamesNotifier();
+final gamingSessionsPaginatedProvider =
+    AsyncNotifierProvider<GamingSessionsNotifier, List<dynamic>>(() {
+      return GamingSessionsNotifier();
     });
 
-class GamesNotifier extends BaseNotifier {
-  bool onlyFavorite = false;
-  bool onlyStandalone = true;
+class GamingSessionsNotifier extends BaseNotifier {
+  @override
+  bool reverseOrdering = true;
+  bool onlyIsFinished = true;
+  int? gameId;
 
   @override
   Future<List<dynamic>> load() async {
-    final dao = ref.read(gameDaoProvider);
+    final dao = ref.read(gamingSessionDaoProvider);
 
     totalItems = await dao.getTotalCount(
-      onlyFavorite: onlyFavorite,
-      onlyStandalone: onlyStandalone,
+      onlyIsFinished: onlyIsFinished,
+      gameId: gameId,
       searchQuery: searchQuery,
     );
 
@@ -26,26 +28,27 @@ class GamesNotifier extends BaseNotifier {
       page: page,
       pageSize: pageSize,
       reverseOrdering: reverseOrdering,
-      onlyFavorite: onlyFavorite,
-      onlyStandalone: onlyStandalone,
+      onlyIsFinished: onlyIsFinished,
+      gameId: gameId,
       searchQuery: searchQuery,
     );
   }
 
-  Future<void> toggleOnlyFavorite() async {
-    onlyFavorite = !onlyFavorite;
+  Future<void> filterByGame(int? id) async {
+    gameId = id;
+    page = 0;
     state = await AsyncValue.guard(() => load());
   }
 
-  Future<void> toggleOnlyStandalone() async {
-    onlyStandalone = !onlyStandalone;
+  Future<void> toggleonlyIsFinished() async {
+    onlyIsFinished = !onlyIsFinished;
     state = await AsyncValue.guard(() => load());
   }
 
   @override
   void resetAdditionalParams() async {
-    onlyFavorite = false;
-    onlyStandalone = true;
+    onlyIsFinished = true;
+    gameId = null;
     state = await AsyncValue.guard(() => load());
   }
 }

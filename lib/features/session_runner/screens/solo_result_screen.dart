@@ -1,9 +1,10 @@
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/utils/win_toggle_btn_builder.dart';
-import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
 class SoloResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -148,7 +149,10 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
                           _buildScoreInput(),
 
                         // Кнопка-переключатель Победа/Поражение
-                        buildWinToggleBtn(_isVictory, _toggleResult),
+                        WinToggleBtn(
+                          isVictory: _isVictory,
+                          toggleResult: _toggleResult,
+                        ),
                       ],
                     ),
                   ),

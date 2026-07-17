@@ -172,7 +172,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     return query.watch();
   }
 
-  // Получить игры с пагинацией
+  // Игры с пагинацией
   Future<List<Game>> getPaginated({
     required int page,
     required int pageSize,
@@ -190,6 +190,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       query: query,
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
+      searchQuery: searchQuery,
     );
 
     return await query.get();

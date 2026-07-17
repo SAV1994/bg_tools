@@ -16,10 +16,10 @@ const Color blueColor = Color(0xFF29B6F6);
 const double iconSize = 20;
 
 // Иконки
-const Icon gamesIcon = Icon(Icons.layers);
-const Icon gamersIcon = Icon(Icons.wc);
-const Icon sessionsIcon = Icon(Icons.assignment);
-const Icon templatessIcon = Icon(Icons.build);
-const Icon tagsIcon = Icon(Icons.location_on);
-const Icon designersIcon = Icon(Icons.account_balance);
-const Icon artistsIcon = Icon(Icons.color_lens);
+const IconData gamesIcon = Icons.layers;
+const IconData gamersIcon = Icons.wc;
+const IconData sessionsIcon = Icons.assignment;
+const IconData templatesIcon = Icons.build;
+const IconData tagsIcon = Icons.location_on;
+const IconData designersIcon = Icons.account_balance;
+const IconData artistsIcon = Icons.color_lens;

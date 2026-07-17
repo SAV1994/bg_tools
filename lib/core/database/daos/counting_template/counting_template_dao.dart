@@ -38,15 +38,81 @@ class CountingTemplateDao extends DatabaseAccessor<AppDatabase>
     return await select(countingTemplates).get();
   }
 
-  // Все геймдизайнеры (поток)
+  // Все шаблоны (поток)
   Stream<List<CountingTemplate>> watchAll() {
     return select(countingTemplates).watch();
   }
 
-  // Геймдизайнер
+  // Шаблоны с пагинацией
+  Future<List<CountingTemplate>> getPaginated({
+    required int page,
+    required int pageSize,
+    required bool reverseOrdering,
+    int? gameTypeId,
+    String? searchQuery,
+  }) async {
+    final offset = page * pageSize;
+
+    SimpleSelectStatement<$CountingTemplatesTable, CountingTemplate> query =
+        _getFilteredQuery(
+          query: _getBaseQuery(reverse: reverseOrdering),
+          gameTypeId: gameTypeId,
+          searchQuery: searchQuery,
+        )..limit(pageSize, offset: offset);
+
+    return query.get();
+  }
+
+  // Общее число шаблонов, соответствующих условию
+  Future<int> getTotalCount({int? gameTypeId, String? searchQuery}) async {
+    SimpleSelectStatement<$CountingTemplatesTable, CountingTemplate> query =
+        select(countingTemplates);
+    query = _getFilteredQuery(
+      query: query,
+      gameTypeId: gameTypeId,
+      searchQuery: searchQuery,
+    );
+
+    return await query.get().then((list) => list.length);
+  }
+
+  // Шаблон
   Future<CountingTemplate?> get(int countingTemplateId) async {
     return await (select(
       countingTemplates,
     )..where((c) => c.id.equals(countingTemplateId))).getSingleOrNull();
+  }
+
+  SimpleSelectStatement<$CountingTemplatesTable, CountingTemplate>
+  _getBaseQuery({bool reverse = false}) {
+    return select(countingTemplates)..orderBy([
+      (ct) => OrderingTerm(
+        expression: ct.name,
+        mode: reverse ? OrderingMode.desc : OrderingMode.asc,
+      ),
+    ]);
+  }
+
+  SimpleSelectStatement<$CountingTemplatesTable, CountingTemplate>
+  _getFilteredQuery({
+    required SimpleSelectStatement<$CountingTemplatesTable, CountingTemplate>
+    query,
+    int? gameTypeId,
+    String? searchQuery,
+  }) {
+    if (gameTypeId != null) {
+      query = query..where((ct) => ct.data.contains('"gameType":$gameTypeId,'));
+    }
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query
+        ..where(
+          (ct) =>
+              ct.name.contains(searchQuery) |
+              ct.description.contains(searchQuery),
+        );
+    }
+
+    return query;
   }
 }

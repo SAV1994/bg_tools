@@ -44,6 +44,35 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
     return await (select(gamers)..where((g) => g.id.isIn(gamerIds))).get();
   }
 
+  // Игроки с пагинацией
+  Future<List<Gamer>> getPaginated({
+    required int page,
+    required int pageSize,
+    required bool reverseOrdering,
+    String? searchQuery,
+  }) async {
+    final offset = page * pageSize;
+
+    SimpleSelectStatement<$GamersTable, Gamer> query = _getBaseQuery(
+      reverse: reverseOrdering,
+    )..limit(pageSize, offset: offset);
+    query = _getFilteredQuery(query: query, searchQuery: searchQuery);
+
+    return await query.get();
+  }
+
+  // Общее количество игроков, соответствующих условию
+  Future<int> getTotalCount({
+    bool onlyFavorite = false,
+    bool onlyStandalone = false,
+    String? searchQuery,
+  }) async {
+    SimpleSelectStatement<$GamersTable, Gamer> query = _getBaseQuery();
+    query = _getFilteredQuery(query: query, searchQuery: searchQuery);
+
+    return await query.get().then((list) => list.length);
+  }
+
   // Игрок
   Future<Gamer?> get(int gamerId) async {
     return await (select(
@@ -51,10 +80,40 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
     )..where((g) => g.id.equals(gamerId))).getSingleOrNull();
   }
 
-  // Владелец
+  // Владелец приложения
   Future<Gamer?> getOwner() async {
     return await (select(
       gamers,
     )..where((g) => g.isOwner.equals(true))).getSingleOrNull();
+  }
+
+  SimpleSelectStatement<$GamersTable, Gamer> _getBaseQuery({
+    bool reverse = false,
+  }) {
+    return select(gamers)
+      ..where((g) => g.isOwner.equals(false))
+      ..orderBy([
+        (g) => OrderingTerm(
+          expression: g.username,
+          mode: reverse ? OrderingMode.desc : OrderingMode.asc,
+        ),
+      ]);
+  }
+
+  SimpleSelectStatement<$GamersTable, Gamer> _getFilteredQuery({
+    required SimpleSelectStatement<$GamersTable, Gamer> query,
+    String? searchQuery,
+  }) {
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query
+        ..where(
+          (g) =>
+              g.username.contains(searchQuery) |
+              g.firstName.contains(searchQuery) |
+              g.lastName.contains(searchQuery),
+        );
+    }
+
+    return query;
   }
 }

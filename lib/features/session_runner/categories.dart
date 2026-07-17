@@ -1,4 +1,6 @@
 // 1 Тип игры
+import 'package:bg_tools/core/utils/export.dart';
+
 enum GameTypeEnum {
   classic(1, 'Распределение по местам'),
   oneWinner(2, 'Один победитель'),
@@ -28,6 +30,12 @@ enum GameTypeEnum {
       (e) => e.label == label,
       orElse: () => GameTypeEnum.classic,
     );
+  }
+
+  static List<SelectItem> getSelectItems() {
+    return GameTypeEnum.values
+        .map((item) => SelectItem(item.id, item.label))
+        .toList();
   }
 }
 

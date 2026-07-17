@@ -105,22 +105,14 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     )..where((g) => g.id.equals(gamingSessionId))).go();
   }
 
-  JoinedSelectStatement<HasResultSet, dynamic> _getQuery() {
-    return (select(gamingSessions).join([
-      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
-    ])..orderBy([
-      OrderingTerm(
-        expression: gamingSessions.startedAt,
-        mode: OrderingMode.desc,
-      ),
-    ]));
-  }
-
   // Все игровые сессии
   Future<List<GamingSessionData>> getAll() async {
-    final query = _getQuery();
+    final query = _getBaseQuery();
+    final joinedQuery = query.join([
+      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
+    ]);
 
-    final rows = await query.get();
+    final rows = await joinedQuery.get();
     return rows.map((row) {
       final Game game = row.readTable(games);
       final GamingSession gamingSession = row.readTable(gamingSessions);
@@ -131,8 +123,12 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
   // Все игровые сессии (поток)
   Stream<List<GamingSessionData>> watchAll() {
-    final query = _getQuery();
-    return query.watch().map((rows) {
+    final query = _getBaseQuery();
+    final joinedQuery = query.join([
+      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
+    ]);
+
+    return joinedQuery.watch().map((rows) {
       return rows.map((row) {
         final Game game = row.readTable(games);
         final GamingSession gamingSession = row.readTable(gamingSessions);
@@ -140,6 +136,55 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
         return GamingSessionData(gamingSession: gamingSession, game: game);
       }).toList();
     });
+  }
+
+  // Игровые сессии с пагинацией
+  Future<List<GamingSessionData>> getPaginated({
+    required int page,
+    required int pageSize,
+    required bool reverseOrdering,
+    required bool onlyIsFinished,
+    int? gameId,
+    String? searchQuery,
+  }) async {
+    final offset = page * pageSize;
+
+    SimpleSelectStatement query = _getFilteredQuery(
+      query: _getBaseQuery(reverse: reverseOrdering),
+      onlyIsFinished: onlyIsFinished,
+      gameId: gameId,
+      searchQuery: searchQuery,
+    )..limit(pageSize, offset: offset);
+    final joinedQuery = query.join([
+      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
+    ]);
+
+    final rows = await joinedQuery.get();
+    return rows.map((row) {
+      final Game game = row.readTable(games);
+      final GamingSession gamingSession = row.readTable(gamingSessions);
+
+      return GamingSessionData(gamingSession: gamingSession, game: game);
+    }).toList();
+  }
+
+  // Общее число игровых сессий, соответствующих условию
+  Future<int> getTotalCount({
+    required bool onlyIsFinished,
+    int? gameId,
+    String? searchQuery,
+  }) async {
+    SimpleSelectStatement<$GamingSessionsTable, GamingSession> query = select(
+      gamingSessions,
+    );
+    query = _getFilteredQuery(
+      query: query,
+      onlyIsFinished: onlyIsFinished,
+      gameId: gameId,
+      searchQuery: searchQuery,
+    );
+
+    return await query.get().then((list) => list.length);
   }
 
   // Дополнения, использованные в игровой сессии
@@ -216,5 +261,37 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
             .get();
 
     return sessions.toList();
+  }
+
+  SimpleSelectStatement<$GamingSessionsTable, GamingSession> _getBaseQuery({
+    bool reverse = false,
+  }) {
+    return select(gamingSessions)..orderBy([
+      (gs) => OrderingTerm(
+        expression: gs.startedAt,
+        mode: reverse ? OrderingMode.desc : OrderingMode.asc,
+      ),
+    ]);
+  }
+
+  SimpleSelectStatement<$GamingSessionsTable, GamingSession> _getFilteredQuery({
+    required SimpleSelectStatement<$GamingSessionsTable, GamingSession> query,
+    required bool onlyIsFinished,
+    int? gameId,
+    String? searchQuery,
+  }) {
+    if (onlyIsFinished) {
+      query = query..where((gs) => gs.isFinished.equals(true));
+    }
+
+    if (gameId != null) {
+      query = query..where((gs) => gs.gameId.equals(gameId));
+    }
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query..where((gs) => gs.comment.contains(searchQuery));
+    }
+
+    return query;
   }
 }

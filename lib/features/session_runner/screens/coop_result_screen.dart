@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/utils/player_score_card_builder.dart';
-import 'package:bg_tools/core/utils/win_toggle_btn_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 enum _SelectMode {
@@ -190,7 +190,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
               ),
 
               // Кнопка-переключатель Победа/Поражение
-              buildWinToggleBtn(_isVictory, _toggleResult),
+              WinToggleBtn(isVictory: _isVictory, toggleResult: _toggleResult),
             ],
           ),
         ),
@@ -274,7 +274,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                 ),
 
               // Кнопка-переключатель Победа/Поражение
-              buildWinToggleBtn(_isVictory, _toggleResult),
+              WinToggleBtn(isVictory: _isVictory, toggleResult: _toggleResult),
             ],
           ),
         ),
@@ -332,7 +332,9 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
       controllerData['controller'].dispose();
     }
 
-    _generalScoreController.clear();
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      _generalScoreController.dispose();
+    }
 
     super.dispose();
   }
