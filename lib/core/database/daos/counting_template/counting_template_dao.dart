@@ -87,7 +87,7 @@ class CountingTemplateDao extends DatabaseAccessor<AppDatabase>
   _getBaseQuery({bool reverse = false}) {
     return select(countingTemplates)..orderBy([
       (ct) => OrderingTerm(
-        expression: ct.name,
+        expression: ct.name.collate(const Collate('UNICODE_CI')),
         mode: reverse ? OrderingMode.desc : OrderingMode.asc,
       ),
     ]);
@@ -106,11 +106,20 @@ class CountingTemplateDao extends DatabaseAccessor<AppDatabase>
 
     if (searchQuery != null && searchQuery.isNotEmpty) {
       query = query
-        ..where(
-          (ct) =>
-              ct.name.contains(searchQuery) |
-              ct.description.contains(searchQuery),
-        );
+        ..where((ct) {
+          final lowerNameExpression = CustomExpression<String>(
+            'lower_unicode(name)',
+            watchedTables: [countingTemplates],
+          );
+          final lowerDescriptionExpression = CustomExpression<String>(
+            'lower_unicode(description)',
+            watchedTables: [countingTemplates],
+          );
+          final searchQueryLower = searchQuery.toLowerCase();
+
+          return lowerNameExpression.like('%$searchQueryLower%') |
+              lowerDescriptionExpression.like('%$searchQueryLower%');
+        });
     }
 
     return query;

@@ -62,139 +62,145 @@ class _CountingTemplateListScreenListScreenState
     final templatesAsync = ref.watch(countingTemplatesPaginatedProvider);
     final notifier = ref.read(countingTemplatesPaginatedProvider.notifier);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
-          child: _screenState == _ScreenState.none
-              ? Icon(templatesIcon)
-              : _screenState == _ScreenState.search
-              ? TextField(
-                  controller: _searchController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: 'Поиск шаблонов...',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: textColor),
-                    contentPadding: const EdgeInsets.symmetric(),
-                  ),
-                  style: const TextStyle(color: textColor),
-                  onChanged: (value) => notifier.search(value),
-                )
-              : AppBarSelect(
-                  items: GameTypeEnum.getSelectItems(),
-                  onSelectionChanged: (selectItem) {
-                    notifier.filterByGameType(selectItem?.id);
-                  },
-                ),
-        ),
-        actions: [
-          if (_screenState != _ScreenState.select)
-            IconButton(
-              icon: Icon(
-                _screenState == _ScreenState.search
-                    ? Icons.close
-                    : Icons.search,
-                color: _screenState == _ScreenState.search
-                    ? redColor
-                    : borderColor,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (_screenState == _ScreenState.search) {
-                    _searchController.clear();
-                    notifier.search('');
-                    _screenState = _ScreenState.none;
-                  } else {
-                    _screenState = _ScreenState.search;
-                  }
-                });
-              },
-            ),
-
-          if (_screenState != _ScreenState.search)
-            IconButton(
-              icon: Icon(
-                _screenState == _ScreenState.select
-                    ? Icons.close
-                    : Icons.filter,
-                color: _screenState == _ScreenState.select
-                    ? redColor
-                    : borderColor,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (_screenState == _ScreenState.select) {
-                    notifier.filterByGameType(null);
-                    _screenState = _ScreenState.none;
-                  } else {
-                    _screenState = _ScreenState.select;
-                  }
-                });
-              },
-            ),
-          if (_screenState == _ScreenState.none) ...[
-            IconButton(
-              icon: Icon(
-                notifier.reverseOrdering
-                    ? Icons.arrow_upward
-                    : Icons.arrow_downward,
-                color: notifier.reverseOrdering ? goldColor : borderColor,
-              ),
-              onPressed: () => notifier.toggleOrdering(),
-            ),
-            IconButton(
-              onPressed: () => {_openAddForm()},
-              icon: Icon(Icons.add_box),
-            ),
-          ],
-        ],
-      ),
-      body: Column(
-        children: [
-          // Список
-          Expanded(
-            child: templatesAsync.when(
-              data: (templates) {
-                // Если данных нет
-                if (templates.isEmpty) {
-                  return buildEmptyListScreen();
-                }
-                return Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: true,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: templates.length,
-                    itemBuilder: (context, index) {
-                      final CountingTemplate template = templates[index];
-
-                      return Card(
-                        child: ListTile(
-                          leading: Icon(Icons.build),
-                          title: Text(
-                            template.name,
-                            style: TextStyle(color: goldColor),
-                          ),
-                          subtitle: Text(template.description ?? emptyVal),
-                          trailing: Icon(Icons.arrow_forward_ios),
-                          onTap: () {
-                            _openDetailPage(template.id);
-                          },
-                        ),
-                      );
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        notifier.reset();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: _screenState == _ScreenState.none
+                ? Icon(templatesIcon)
+                : _screenState == _ScreenState.search
+                ? TextField(
+                    controller: _searchController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'Поиск шаблонов...',
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(color: textColor),
+                      contentPadding: const EdgeInsets.symmetric(),
+                    ),
+                    style: const TextStyle(color: textColor),
+                    onChanged: (value) => notifier.search(value),
+                  )
+                : AppBarSelect(
+                    items: GameTypeEnum.getSelectItems(),
+                    onSelectionChanged: (selectItem) {
+                      notifier.filterByGameType(selectItem?.id);
                     },
                   ),
-                );
-              },
-              loading: () => buildLoadingScreen(),
-              error: (err, _) => Text('ОШИБКА'),
-            ),
           ),
-          // Панель пагинации (всегда внизу)
-          if (templatesAsync.hasValue && templatesAsync.value!.isNotEmpty)
-            PaginationPanel(notifier: notifier),
-        ],
+          actions: [
+            if (_screenState != _ScreenState.select)
+              IconButton(
+                icon: Icon(
+                  _screenState == _ScreenState.search
+                      ? Icons.close
+                      : Icons.search,
+                  color: _screenState == _ScreenState.search
+                      ? redColor
+                      : borderColor,
+                ),
+                onPressed: () {
+                  setState(() {
+                    if (_screenState == _ScreenState.search) {
+                      _searchController.clear();
+                      notifier.search('');
+                      _screenState = _ScreenState.none;
+                    } else {
+                      _screenState = _ScreenState.search;
+                    }
+                  });
+                },
+              ),
+
+            if (_screenState != _ScreenState.search)
+              IconButton(
+                icon: Icon(
+                  _screenState == _ScreenState.select
+                      ? Icons.close
+                      : Icons.filter,
+                  color: _screenState == _ScreenState.select
+                      ? redColor
+                      : borderColor,
+                ),
+                onPressed: () {
+                  setState(() {
+                    if (_screenState == _ScreenState.select) {
+                      notifier.filterByGameType(null);
+                      _screenState = _ScreenState.none;
+                    } else {
+                      _screenState = _ScreenState.select;
+                    }
+                  });
+                },
+              ),
+            if (_screenState == _ScreenState.none) ...[
+              IconButton(
+                icon: Icon(
+                  notifier.reverseOrdering
+                      ? Icons.arrow_upward
+                      : Icons.arrow_downward,
+                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                ),
+                onPressed: () => notifier.toggleOrdering(),
+              ),
+              IconButton(
+                onPressed: () => {_openAddForm()},
+                icon: Icon(Icons.add_box),
+              ),
+            ],
+          ],
+        ),
+        body: Column(
+          children: [
+            // Список
+            Expanded(
+              child: templatesAsync.when(
+                data: (templates) {
+                  // Если данных нет
+                  if (templates.isEmpty) {
+                    return buildEmptyListScreen();
+                  }
+                  return Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: templates.length,
+                      itemBuilder: (context, index) {
+                        final CountingTemplate template = templates[index];
+
+                        return Card(
+                          child: ListTile(
+                            leading: Icon(Icons.build),
+                            title: Text(
+                              template.name,
+                              style: TextStyle(color: goldColor),
+                            ),
+                            subtitle: Text(template.description ?? emptyVal),
+                            trailing: Icon(Icons.arrow_forward_ios),
+                            onTap: () {
+                              _openDetailPage(template.id);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => buildLoadingScreen(),
+                error: (err, _) => Text('ОШИБКА'),
+              ),
+            ),
+            // Панель пагинации (всегда внизу)
+            if (templatesAsync.hasValue && templatesAsync.value!.isNotEmpty)
+              PaginationPanel(notifier: notifier),
+          ],
+        ),
       ),
     );
   }

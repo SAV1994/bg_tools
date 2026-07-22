@@ -28,8 +28,21 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/games',
       name: 'games-list',
-      builder: (BuildContext context, GoRouterState state) =>
-          const GamesListScreen(),
+      builder: (BuildContext context, GoRouterState state) {
+        final artistId = int.tryParse(
+          state.uri.queryParameters['artistId'] ?? '',
+        );
+        final designerId = int.tryParse(
+          state.uri.queryParameters['designerId'] ?? '',
+        );
+        final tagId = int.tryParse(state.uri.queryParameters['tagId'] ?? '');
+
+        return GamesListScreen(
+          artistId: artistId,
+          designerId: designerId,
+          tagId: tagId,
+        );
+      },
     ),
     GoRoute(
       path: '/games/add',

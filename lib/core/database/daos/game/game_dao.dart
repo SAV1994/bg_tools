@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart';
+
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/expansions_games.dart';
 import 'package:bg_tools/core/database/tables/game.dart';
@@ -7,8 +9,6 @@ import 'package:bg_tools/core/database/tables/games_designers.dart';
 import 'package:bg_tools/core/database/tables/games_tags.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/services/image_service.dart';
-import 'package:drift/drift.dart';
-
 part 'game_dao.g.dart';
 
 @DriftAccessor(
@@ -179,6 +179,9 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     required bool reverseOrdering,
     required bool onlyFavorite,
     required bool onlyStandalone,
+    int? artistId,
+    int? designerId,
+    int? tagId,
     String? searchQuery,
   }) async {
     final offset = page * pageSize;
@@ -186,10 +189,13 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     SimpleSelectStatement<$GamesTable, Game> query = _getBaseQuery(
       reverse: reverseOrdering,
     )..limit(pageSize, offset: offset);
-    query = _getFilteredQuery(
+    query = await _getFilteredQuery(
       query: query,
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
+      artistId: artistId,
+      designerId: designerId,
+      tagId: tagId,
       searchQuery: searchQuery,
     );
 
@@ -200,12 +206,18 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   Future<int> getTotalCount({
     bool onlyFavorite = false,
     bool onlyStandalone = false,
+    int? artistId,
+    int? designerId,
+    int? tagId,
     String? searchQuery,
   }) async {
     SimpleSelectStatement<$GamesTable, Game> query = select(games);
-    query = _getFilteredQuery(
+    query = await _getFilteredQuery(
       query: query,
       onlyFavorite: onlyFavorite,
+      artistId: artistId,
+      designerId: designerId,
+      tagId: tagId,
       onlyStandalone: onlyStandalone,
     );
 
@@ -329,18 +341,21 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   }) {
     return select(games)..orderBy([
       (g) => OrderingTerm(
-        expression: g.name,
+        expression: g.name.collate(const Collate('UNICODE_CI')),
         mode: reverse ? OrderingMode.desc : OrderingMode.asc,
       ),
     ]);
   }
 
-  SimpleSelectStatement<$GamesTable, Game> _getFilteredQuery({
+  Future<SimpleSelectStatement<$GamesTable, Game>> _getFilteredQuery({
     required SimpleSelectStatement<$GamesTable, Game> query,
     required bool onlyFavorite,
     required bool onlyStandalone,
+    int? artistId,
+    int? designerId,
+    int? tagId,
     String? searchQuery,
-  }) {
+  }) async {
     if (onlyFavorite) {
       query = query..where((g) => g.isFavorite.isValue(true));
     }
@@ -349,8 +364,39 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       query = query..where((g) => g.isStandalone.isValue(true));
     }
 
+    if (artistId != null) {
+      final artistsQuery = select(gamesArtists)
+        ..where((ga) => ga.artistId.equals(artistId));
+      final List<int> gamesIds = await artistsQuery
+          .map((gamesArtist) => gamesArtist.gameId)
+          .get();
+      query = query..where((g) => g.id.isIn(gamesIds));
+    } else if (designerId != null) {
+      final designersQuery = select(gamesDesigners)
+        ..where((gd) => gd.designerId.equals(designerId));
+      final List<int> gamesIds = await designersQuery
+          .map((gamesDesigner) => gamesDesigner.gameId)
+          .get();
+      query = query..where((g) => g.id.isIn(gamesIds));
+    } else if (tagId != null) {
+      final tagsQuery = select(gamesDesigners)
+        ..where((gt) => gt.designerId.equals(tagId));
+      final List<int> gamesIds = await tagsQuery
+          .map((gamesTag) => gamesTag.gameId)
+          .get();
+      query = query..where((g) => g.id.isIn(gamesIds));
+    }
+
     if (searchQuery != null && searchQuery.isNotEmpty) {
-      query = query..where((g) => g.name.contains(searchQuery));
+      query = query
+        ..where((g) {
+          final lowerNameExpression = CustomExpression<String>(
+            'lower_unicode(name)',
+            watchedTables: [games],
+          );
+
+          return lowerNameExpression.like('%${searchQuery.toLowerCase()}%');
+        });
     }
 
     return query;

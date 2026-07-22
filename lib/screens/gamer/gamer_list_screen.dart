@@ -56,110 +56,116 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
     final gamersAsync = ref.watch(gamersPaginatedProvider);
     final notifier = ref.read(gamersPaginatedProvider.notifier);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
-          child: _isSearchOpen
-              ? TextField(
-                  controller: _searchController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: 'Поиск игроков...',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: textColor),
-                    contentPadding: const EdgeInsets.symmetric(),
-                  ),
-                  style: const TextStyle(color: textColor),
-                  onChanged: (value) => notifier.search(value),
-                )
-              : Icon(gamersIcon),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _isSearchOpen ? Icons.close : Icons.search,
-              color: _isSearchOpen ? redColor : borderColor,
-            ),
-            onPressed: () {
-              setState(() {
-                if (_isSearchOpen) {
-                  _searchController.clear();
-                  notifier.search('');
-                }
-                _isSearchOpen = !_isSearchOpen;
-              });
-            },
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        notifier.reset();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: _isSearchOpen
+                ? TextField(
+                    controller: _searchController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'Поиск игроков...',
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(color: textColor),
+                      contentPadding: const EdgeInsets.symmetric(),
+                    ),
+                    style: const TextStyle(color: textColor),
+                    onChanged: (value) => notifier.search(value),
+                  )
+                : Icon(gamersIcon),
           ),
-          if (!_isSearchOpen) ...[
+          actions: [
             IconButton(
               icon: Icon(
-                notifier.reverseOrdering
-                    ? Icons.arrow_upward
-                    : Icons.arrow_downward,
-                color: notifier.reverseOrdering ? goldColor : borderColor,
+                _isSearchOpen ? Icons.close : Icons.search,
+                color: _isSearchOpen ? redColor : borderColor,
               ),
-              onPressed: () => notifier.toggleOrdering(),
-            ),
-            IconButton(
-              onPressed: () => {_openAddForm()},
-              icon: Icon(Icons.add_box),
-            ),
-          ],
-        ],
-      ),
-      body: Column(
-        children: [
-          // Список
-          Expanded(
-            child: gamersAsync.when(
-              data: (gamers) {
-                // Если данных нет
-                if (gamers.isEmpty) {
-                  return buildEmptyListScreen();
-                }
-                return Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: true,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: gamers.length,
-                    itemBuilder: (context, index) {
-                      final gamer = gamers[index];
-
-                      String fio = '';
-
-                      if (gamer.lastName != null) {
-                        fio += '${gamer.lastName} ';
-                      }
-                      fio += '${gamer.firstName} ';
-                      if (gamer.middleName != null) {
-                        fio += '${gamer.middleName}';
-                      }
-
-                      return Card(
-                        child: ListTile(
-                          leading: Icon(Icons.wc),
-                          title: Text(gamer.username),
-                          subtitle: Text(fio),
-                          trailing: Icon(Icons.edit),
-                          onTap: () {
-                            _openUpdatePage(gamer.id);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                );
+              onPressed: () {
+                setState(() {
+                  if (_isSearchOpen) {
+                    _searchController.clear();
+                    notifier.search('');
+                  }
+                  _isSearchOpen = !_isSearchOpen;
+                });
               },
-              loading: () => buildLoadingScreen(),
-              error: (err, _) => Text('ОШИБКА'),
             ),
-          ),
-          // Панель пагинации (всегда внизу)
-          if (gamersAsync.hasValue && gamersAsync.value!.isNotEmpty)
-            PaginationPanel(notifier: notifier),
-        ],
+            if (!_isSearchOpen) ...[
+              IconButton(
+                icon: Icon(
+                  notifier.reverseOrdering
+                      ? Icons.arrow_upward
+                      : Icons.arrow_downward,
+                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                ),
+                onPressed: () => notifier.toggleOrdering(),
+              ),
+              IconButton(
+                onPressed: () => {_openAddForm()},
+                icon: Icon(Icons.add_box),
+              ),
+            ],
+          ],
+        ),
+        body: Column(
+          children: [
+            // Список
+            Expanded(
+              child: gamersAsync.when(
+                data: (gamers) {
+                  // Если данных нет
+                  if (gamers.isEmpty) {
+                    return buildEmptyListScreen();
+                  }
+                  return Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: gamers.length,
+                      itemBuilder: (context, index) {
+                        final gamer = gamers[index];
+
+                        String fio = '';
+
+                        if (gamer.lastName != null) {
+                          fio += '${gamer.lastName} ';
+                        }
+                        fio += '${gamer.firstName} ';
+                        if (gamer.middleName != null) {
+                          fio += '${gamer.middleName}';
+                        }
+
+                        return Card(
+                          child: ListTile(
+                            leading: Icon(Icons.wc),
+                            title: Text(gamer.username),
+                            subtitle: Text(fio),
+                            trailing: Icon(Icons.edit),
+                            onTap: () {
+                              _openUpdatePage(gamer.id);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => buildLoadingScreen(),
+                error: (err, _) => Text('ОШИБКА'),
+              ),
+            ),
+            // Панель пагинации (всегда внизу)
+            if (gamersAsync.hasValue && gamersAsync.value!.isNotEmpty)
+              PaginationPanel(notifier: notifier),
+          ],
+        ),
       ),
     );
   }

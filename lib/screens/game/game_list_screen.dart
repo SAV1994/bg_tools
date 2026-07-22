@@ -1,3 +1,4 @@
+import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +14,16 @@ import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/screens/game/mixins/export.dart';
 
 class GamesListScreen extends ConsumerStatefulWidget {
-  const GamesListScreen({super.key});
+  final int? artistId;
+  final int? designerId;
+  final int? tagId;
+
+  const GamesListScreen({
+    super.key,
+    this.artistId,
+    this.designerId,
+    this.tagId,
+  });
 
   @override
   ConsumerState<GamesListScreen> createState() => _GamesListScreenState();
@@ -22,9 +32,39 @@ class GamesListScreen extends ConsumerStatefulWidget {
 class _GamesListScreenState extends ConsumerState<GamesListScreen>
     with UpdateIsFaforiteMixin {
   bool _isSearchOpen = false;
+
+  String? filterObjTitle;
+
   // Контроллеры
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  // Загрузка
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    _isLoading = true;
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    if (widget.artistId != null) {
+      final ArtistDao artistDao = ref.read(artistDaoProvider);
+      final Artist? artist = await artistDao.get(widget.artistId!);
+      filterObjTitle = 'Художник: ${artist!.name}';
+    } else if (widget.designerId != null) {
+      final DesignerDao designerDao = ref.read(designerDaoProvider);
+      final Designer? designer = await designerDao.get(widget.designerId!);
+      filterObjTitle = 'Геймдизайнер: ${designer!.name}';
+    } else if (widget.tagId != null) {
+      final TagDao tagDao = ref.read(tagDaoProvider);
+      final Tag? tag = await tagDao.get(widget.tagId!);
+      filterObjTitle = 'Тэг: ${tag!.name}';
+    }
+
+    setState(() => _isLoading = false);
+  }
 
   Future<void> _openAddForm() async {
     final result = await context.pushNamed('games-add');
@@ -56,6 +96,10 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return buildLoadingScreen();
+    }
+
     final gamesAsync = ref.watch(gamesPaginatedProvider);
     final notifier = ref.read(gamesPaginatedProvider.notifier);
 
@@ -80,6 +124,11 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                     ),
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
+                  )
+                : filterObjTitle != null
+                ? Tooltip(
+                    message: filterObjTitle,
+                    child: const Icon(gamesIcon, size: 25, color: goldColor),
                   )
                 : Icon(gamesIcon),
           ),

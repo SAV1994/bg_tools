@@ -11,6 +11,9 @@ final gamesPaginatedProvider =
 class GamesNotifier extends BaseNotifier {
   bool onlyFavorite = false;
   bool onlyStandalone = true;
+  int? artistId;
+  int? designerId;
+  int? tagId;
 
   @override
   Future<List<dynamic>> load() async {
@@ -19,6 +22,9 @@ class GamesNotifier extends BaseNotifier {
     totalItems = await dao.getTotalCount(
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
+      artistId: artistId,
+      designerId: designerId,
+      tagId: tagId,
       searchQuery: searchQuery,
     );
 
@@ -28,6 +34,9 @@ class GamesNotifier extends BaseNotifier {
       reverseOrdering: reverseOrdering,
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
+      artistId: artistId,
+      designerId: designerId,
+      tagId: tagId,
       searchQuery: searchQuery,
     );
   }
@@ -42,10 +51,31 @@ class GamesNotifier extends BaseNotifier {
     state = await AsyncValue.guard(() => load());
   }
 
+  Future<void> filterByArtist(int? id) async {
+    artistId = id;
+    page = 0;
+    state = await AsyncValue.guard(() => load());
+  }
+
+  Future<void> filterByDesigner(int? id) async {
+    designerId = id;
+    page = 0;
+    state = await AsyncValue.guard(() => load());
+  }
+
+  Future<void> filterByTag(int? id) async {
+    tagId = id;
+    page = 0;
+    state = await AsyncValue.guard(() => load());
+  }
+
   @override
   void resetAdditionalParams() async {
     onlyFavorite = false;
     onlyStandalone = true;
+    artistId = null;
+    designerId = null;
+    tagId = null;
     state = await AsyncValue.guard(() => load());
   }
 }

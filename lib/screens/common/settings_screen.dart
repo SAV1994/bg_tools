@@ -65,6 +65,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ref
                 .read(countingTemplatesPaginatedProvider.notifier)
                 .updatePageLimit();
+            ref.read(designersPaginatedProvider.notifier).updatePageLimit();
+            ref.read(artistsPaginatedProvider.notifier).updatePageLimit();
+            ref.read(tagsPaginatedProvider.notifier).updatePageLimit();
           });
         }
       },

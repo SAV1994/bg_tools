@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 
@@ -76,6 +77,8 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
         } else {
           await gamerDao.updInstance(widget.gamerId!, gamerComp);
         }
+
+        ref.read(gamersPaginatedProvider.notifier).refresh();
 
         if (mounted) {
           Navigator.pop(context, true);

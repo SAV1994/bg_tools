@@ -163,9 +163,10 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
           );
         }
 
+        ref.invalidate(gameFullDataProvider);
+        ref.read(gamesPaginatedProvider.notifier).refresh();
+
         if (mounted) {
-          ref.invalidate(gameFullDataProvider);
-          ref.read(gamesPaginatedProvider.notifier).refresh();
           Navigator.pop(context, true);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

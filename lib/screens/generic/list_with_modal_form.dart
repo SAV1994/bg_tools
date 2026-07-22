@@ -1,84 +1,215 @@
+import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/misc.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/base.dart';
 import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
 import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class ListWithModalFormConfig<T, D, C> {
-  final String pageTitle;
   final IconData icon;
-  final ProviderBase<AsyncValue<List<T>>> dataProvider;
+  final AsyncNotifierProvider<BaseNotifier, dynamic> dataProvider;
   final Provider<D> daoProvier;
   final C Function(String name) companionFactory;
   final String imputName;
+  final String filterParam;
 
   const ListWithModalFormConfig({
-    required this.pageTitle,
     required this.icon,
     required this.dataProvider,
     required this.daoProvier,
     required this.companionFactory,
     required this.imputName,
+    required this.filterParam,
   });
 }
 
-class ListWithModalFormScreen<T> extends ConsumerWidget {
+class ListWithModalFormScreen<T> extends ConsumerStatefulWidget {
   final ListWithModalFormConfig config;
 
   const ListWithModalFormScreen({required this.config, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final dataAsync = ref.watch(config.dataProvider);
+  ConsumerState<ListWithModalFormScreen> createState() =>
+      _ListWithModalFormScreenState();
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(config.pageTitle),
-        actions: [
-          IconButton(
-            onPressed: () => {_showModalForm(context, ref)},
-            icon: Icon(Icons.add_box),
-          ),
-        ],
-      ),
-      body: dataAsync.when(
-        data: (data) {
-          // Если данных нет
-          if (data.isEmpty) {
-            return buildEmptyListScreen();
-          }
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              final item = data[index];
-              return Card(
-                child: ListTile(
-                  leading: Icon(config.icon),
-                  title: Text(item.name),
-                  trailing: Icon(Icons.edit),
-                  onTap: () {
-                    _showModalForm(context, ref, item.id);
-                  },
-                ),
-              );
-            },
-          );
-        },
-        loading: () => buildLoadingScreen(),
-        error: (err, _) => Text('ОШИБКА'),
-      ),
-    );
-  }
+class _ListWithModalFormScreenState
+    extends ConsumerState<ListWithModalFormScreen> {
+  bool _isSearchOpen = false;
+  bool _isEditMode = false;
+  // Контроллеры
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
   void _showModalForm(BuildContext context, WidgetRef ref, [int? instanceId]) {
     showDialog(
       context: context,
       builder: (context) =>
-          ModalForm(ref: ref, config: config, instanceId: instanceId),
+          ModalForm(ref: ref, config: widget.config, instanceId: instanceId),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dataAsync = ref.watch(widget.config.dataProvider);
+    final notifier = ref.read(widget.config.dataProvider.notifier);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: _isSearchOpen
+              ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Поиск игроков...',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: textColor),
+                    contentPadding: const EdgeInsets.symmetric(),
+                  ),
+                  style: const TextStyle(color: textColor),
+                  onChanged: (value) => notifier.search(value),
+                )
+              : Icon(widget.config.icon),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isSearchOpen ? Icons.close : Icons.search,
+              color: _isSearchOpen ? redColor : borderColor,
+            ),
+            onPressed: () {
+              setState(() {
+                if (_isSearchOpen) {
+                  _searchController.clear();
+                  notifier.search('');
+                }
+                _isSearchOpen = !_isSearchOpen;
+              });
+            },
+          ),
+          if (!_isSearchOpen) ...[
+            IconButton(
+              icon: Icon(
+                notifier.reverseOrdering
+                    ? Icons.arrow_upward
+                    : Icons.arrow_downward,
+                color: notifier.reverseOrdering ? goldColor : borderColor,
+              ),
+              onPressed: () => notifier.toggleOrdering(),
+            ),
+            IconButton(
+              onPressed: () => {
+                setState(() {
+                  _isEditMode = !_isEditMode;
+                }),
+              },
+              icon: _isEditMode
+                  ? Icon(Icons.edit)
+                  : Icon(gamesIcon, color: goldColor),
+            ),
+            IconButton(
+              onPressed: () => {_showModalForm(context, ref)},
+              icon: Icon(Icons.add_box),
+            ),
+          ],
+        ],
+      ),
+      body: PopScope(
+        canPop: true,
+        onPopInvokedWithResult: (bool didPop, Object? result) {
+          notifier.reset();
+        },
+        child: Column(
+          children: [
+            // Список
+            Expanded(
+              child: dataAsync.when(
+                data: (data) {
+                  // Если данных нет
+                  if (data.isEmpty) {
+                    return buildEmptyListScreen();
+                  }
+                  return Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: data.length,
+                      itemBuilder: (context, index) {
+                        final item = data[index];
+                        return Card(
+                          child: ListTile(
+                            leading: Icon(widget.config.icon),
+                            title: Text(
+                              item.name,
+                              style: TextStyle(
+                                color: _isEditMode ? textColor : goldColor,
+                              ),
+                            ),
+                            trailing: _isEditMode
+                                ? Icon(Icons.edit)
+                                : Icon(gamesIcon, color: goldColor),
+                            onTap: () {
+                              if (_isEditMode) {
+                                _showModalForm(context, ref, item.id);
+                              } else {
+                                final gamesAsync = ref.watch(
+                                  gamesPaginatedProvider,
+                                );
+                                final notifier = ref.read(
+                                  gamesPaginatedProvider.notifier,
+                                );
+
+                                if (widget.config.filterParam == 'artistId') {
+                                  notifier.filterByArtist(item.id);
+                                } else if (widget.config.filterParam ==
+                                    'designerId') {
+                                  notifier.filterByDesigner(item.id);
+                                } else if (widget.config.filterParam ==
+                                    'tagId') {
+                                  notifier.filterByTag(item.id);
+                                }
+                                context.pushNamed(
+                                  'games-list',
+                                  queryParameters: {
+                                    widget.config.filterParam: item.id
+                                        .toString(),
+                                  },
+                                );
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => buildLoadingScreen(),
+                error: (err, _) => Text('ОШИБКА'),
+              ),
+            ),
+            // Панель пагинации (всегда внизу)
+            if (dataAsync.hasValue && dataAsync.value!.isNotEmpty)
+              PaginationPanel(notifier: notifier),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -139,9 +270,9 @@ class _ModalFormState extends ConsumerState<ModalForm> {
           widget.instanceId,
           widget.config.companionFactory(_nameController.text),
         );
-        ref.invalidate(
-          gameFullDataProvider,
-        ); // Обновляем провайдер с данными для игр
+
+        ref.invalidate(gameFullDataProvider);
+        ref.read(widget.config.dataProvider.notifier).refresh();
       }
 
       if (mounted) Navigator.pop(context);

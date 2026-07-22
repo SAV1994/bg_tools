@@ -94,7 +94,7 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
       ..where((g) => g.isOwner.equals(false))
       ..orderBy([
         (g) => OrderingTerm(
-          expression: g.username,
+          expression: g.username.collate(const Collate('UNICODE_CI')),
           mode: reverse ? OrderingMode.desc : OrderingMode.asc,
         ),
       ]);
@@ -106,12 +106,30 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
   }) {
     if (searchQuery != null && searchQuery.isNotEmpty) {
       query = query
-        ..where(
-          (g) =>
-              g.username.contains(searchQuery) |
-              g.firstName.contains(searchQuery) |
-              g.lastName.contains(searchQuery),
-        );
+        ..where((g) {
+          final lowerUsernameExpression = CustomExpression<String>(
+            'lower_unicode(username)',
+            watchedTables: [gamers],
+          );
+          final lowerFirstNameExpression = CustomExpression<String>(
+            'lower_unicode(first_name)',
+            watchedTables: [gamers],
+          );
+          final lowerLastNameExpression = CustomExpression<String>(
+            'lower_unicode(last_name)',
+            watchedTables: [gamers],
+          );
+          final lowerMiddleNameExpression = CustomExpression<String>(
+            'lower_unicode(middle_name)',
+            watchedTables: [gamers],
+          );
+          final searchQueryLower = searchQuery.toLowerCase();
+
+          return lowerUsernameExpression.like('%$searchQueryLower%') |
+              lowerFirstNameExpression.like('%$searchQueryLower%') |
+              lowerLastNameExpression.like('%$searchQueryLower%') |
+              lowerMiddleNameExpression.like('%$searchQueryLower%');
+        });
     }
 
     return query;

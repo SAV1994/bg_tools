@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/import.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -52,7 +51,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 tooltip: 'Профиль',
               );
             },
-            loading: () => buildLoadingScreen(),
+            loading: () => Icon(loadingIcon, color: borderColor),
             error: (error, _) => Text('Ошибка'),
           ),
 

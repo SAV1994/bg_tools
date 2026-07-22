@@ -82,127 +82,133 @@ class _GamingSessionListScreenState
     final gamingSessionsAsync = ref.watch(gamingSessionsPaginatedProvider);
     final notifier = ref.read(gamingSessionsPaginatedProvider.notifier);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
-          child: _isGameSelectOpen
-              ? AppBarSelect(
-                  items: _games
-                      .map((game) => SelectItem(game.id, game.name))
-                      .toList(),
-                  onSelectionChanged: (game) {
-                    notifier.filterByGame(game?.id);
-                  },
-                )
-              : Icon(sessionsIcon),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _isGameSelectOpen ? Icons.close : gamesIcon,
-              color: _isGameSelectOpen ? redColor : borderColor,
-            ),
-            onPressed: () {
-              setState(() {
-                if (_isGameSelectOpen) {
-                  notifier.filterByGame(null);
-                }
-                _isGameSelectOpen = !_isGameSelectOpen;
-              });
-            },
-          ),
-          if (!_isGameSelectOpen) ...[
-            IconButton(
-              icon: Icon(
-                notifier.onlyIsFinished
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                color: notifier.onlyIsFinished ? borderColor : goldColor,
-              ),
-              onPressed: () => notifier.toggleonlyIsFinished(),
-            ),
-            IconButton(
-              icon: Icon(
-                notifier.reverseOrdering
-                    ? Icons.arrow_upward
-                    : Icons.arrow_downward,
-                color: notifier.reverseOrdering ? goldColor : borderColor,
-              ),
-              onPressed: () => notifier.toggleOrdering(),
-            ),
-            IconButton(
-              icon: Icon(Icons.add_box),
-              onPressed: () => {_openAddForm()},
-            ),
-          ],
-        ],
-      ),
-      body: Column(
-        children: [
-          // Список
-          Expanded(
-            child: gamingSessionsAsync.when(
-              data: (gamingSessions) {
-                // Если данных нет
-                if (gamingSessions.isEmpty) {
-                  return buildEmptyListScreen();
-                }
-                return Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: true,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: gamingSessions.length,
-                    itemBuilder: (context, index) {
-                      final GamingSessionData gamingSessionData =
-                          gamingSessions[index];
-                      final GamingSession gamingSession =
-                          gamingSessionData.gamingSession;
-                      final Game game = gamingSessionData.game;
-
-                      String gamingSessionInfo =
-                          gamingSession.finishedAt == null
-                          ? '🟡'
-                          : gamingSession.isFinished
-                          ? '🟢'
-                          : '⏱️';
-
-                      gamingSessionInfo += DateFormats.formatDateTime(
-                        gamingSession.startedAt,
-                      );
-
-                      return Card(
-                        child: ListTile(
-                          leading: Icon(Icons.assignment),
-                          title: Text(
-                            game.name,
-                            style: TextStyle(
-                              color: gamingSession.isFinished
-                                  ? textColor
-                                  : goldColor,
-                            ),
-                          ),
-                          subtitle: Text(gamingSessionInfo),
-                          trailing: Icon(Icons.arrow_forward_ios),
-                          onTap: () {
-                            _openDetailPage(gamingSession.id);
-                          },
-                        ),
-                      );
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        notifier.reset();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: _isGameSelectOpen
+                ? AppBarSelect(
+                    items: _games
+                        .map((game) => SelectItem(game.id, game.name))
+                        .toList(),
+                    onSelectionChanged: (game) {
+                      notifier.filterByGame(game?.id);
                     },
-                  ),
-                );
-              },
-              loading: () => buildLoadingScreen(),
-              error: (err, _) => Text(err.toString()),
-            ),
+                  )
+                : Icon(sessionsIcon),
           ),
-          // Панель пагинации (всегда внизу)
-          if (gamingSessionsAsync.hasValue &&
-              gamingSessionsAsync.value!.isNotEmpty)
-            PaginationPanel(notifier: notifier),
-        ],
+          actions: [
+            IconButton(
+              icon: Icon(
+                _isGameSelectOpen ? Icons.close : gamesIcon,
+                color: _isGameSelectOpen ? redColor : borderColor,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_isGameSelectOpen) {
+                    notifier.filterByGame(null);
+                  }
+                  _isGameSelectOpen = !_isGameSelectOpen;
+                });
+              },
+            ),
+            if (!_isGameSelectOpen) ...[
+              IconButton(
+                icon: Icon(
+                  notifier.onlyIsFinished
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                  color: notifier.onlyIsFinished ? borderColor : goldColor,
+                ),
+                onPressed: () => notifier.toggleonlyIsFinished(),
+              ),
+              IconButton(
+                icon: Icon(
+                  notifier.reverseOrdering
+                      ? Icons.arrow_upward
+                      : Icons.arrow_downward,
+                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                ),
+                onPressed: () => notifier.toggleOrdering(),
+              ),
+              IconButton(
+                icon: Icon(Icons.add_box),
+                onPressed: () => {_openAddForm()},
+              ),
+            ],
+          ],
+        ),
+        body: Column(
+          children: [
+            // Список
+            Expanded(
+              child: gamingSessionsAsync.when(
+                data: (gamingSessions) {
+                  // Если данных нет
+                  if (gamingSessions.isEmpty) {
+                    return buildEmptyListScreen();
+                  }
+                  return Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: gamingSessions.length,
+                      itemBuilder: (context, index) {
+                        final GamingSessionData gamingSessionData =
+                            gamingSessions[index];
+                        final GamingSession gamingSession =
+                            gamingSessionData.gamingSession;
+                        final Game game = gamingSessionData.game;
+
+                        String gamingSessionInfo =
+                            gamingSession.finishedAt == null
+                            ? '🟡'
+                            : gamingSession.isFinished
+                            ? '🟢'
+                            : '⏱️';
+
+                        gamingSessionInfo += DateFormats.formatDateTime(
+                          gamingSession.startedAt,
+                        );
+
+                        return Card(
+                          child: ListTile(
+                            leading: Icon(Icons.assignment),
+                            title: Text(
+                              game.name,
+                              style: TextStyle(
+                                color: gamingSession.isFinished
+                                    ? textColor
+                                    : goldColor,
+                              ),
+                            ),
+                            subtitle: Text(gamingSessionInfo),
+                            trailing: Icon(Icons.arrow_forward_ios),
+                            onTap: () {
+                              _openDetailPage(gamingSession.id);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => buildLoadingScreen(),
+                error: (err, _) => Text(err.toString()),
+              ),
+            ),
+            // Панель пагинации (всегда внизу)
+            if (gamingSessionsAsync.hasValue &&
+                gamingSessionsAsync.value!.isNotEmpty)
+              PaginationPanel(notifier: notifier),
+          ],
+        ),
       ),
     );
   }
