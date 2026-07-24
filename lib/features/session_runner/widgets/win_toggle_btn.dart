@@ -17,7 +17,7 @@ class WinToggleBtn extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         width: double.infinity,
-        height: 180,
+        height: 100,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isVictory
@@ -32,7 +32,7 @@ class WinToggleBtn extends StatelessWidget {
               color: (isVictory ? Colors.green : Colors.red).withValues(
                 alpha: 0.3,
               ),
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 10),
             ),
           ],
@@ -42,26 +42,25 @@ class WinToggleBtn extends StatelessWidget {
             // Центральный контент
             Center(
               child: Column(
+                spacing: 6,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     isVictory
                         ? Icons.emoji_events
                         : Icons.sentiment_very_dissatisfied,
-                    size: 64,
+                    size: 30,
                     color: Colors.white,
                   ),
-                  const SizedBox(height: 16),
                   Text(
                     isVictory ? 'ПОБЕДА' : 'ПОРАЖЕНИЕ',
                     style: const TextStyle(
-                      fontSize: 32,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Text(
                     isVictory
                         ? 'Нажмите чтобы изменить'

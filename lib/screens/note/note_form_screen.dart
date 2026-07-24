@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/fleather_editor.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class NoteForm extends ConsumerStatefulWidget {
   final int gameId;
@@ -70,8 +70,11 @@ class _NoteFormState extends ConsumerState<NoteForm> {
         );
       }
 
+      final notifier = ref.read(notesPaginatedProvider.notifier);
+      notifier.refresh();
+
       if (mounted) {
-        Navigator.pop(context, true);
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -107,7 +110,7 @@ class _NoteFormState extends ConsumerState<NoteForm> {
         ),
       ),
       body: _isLoading
-          ? buildLoadingScreen()
+          ? LoadingScreen()
           : Form(
               key: _formKey,
               child: SingleChildScrollView(

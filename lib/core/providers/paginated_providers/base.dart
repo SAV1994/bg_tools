@@ -47,12 +47,13 @@ abstract class BaseNotifier extends AsyncNotifier<List<dynamic>> {
   Future<void> reset() async {
     searchQuery = null;
     page = 0;
-    reverseOrdering = false;
     resetAdditionalParams();
     state = await AsyncValue.guard(() => load());
   }
 
-  void resetAdditionalParams() {}
+  void resetAdditionalParams() {
+    reverseOrdering = false;
+  }
 
   int get currentPage => page;
   int get totalPages => (totalItems / pageSize).ceil();

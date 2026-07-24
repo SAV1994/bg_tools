@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 class GamersTurnOrderScreen extends ConsumerStatefulWidget {
@@ -153,7 +153,7 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
         return SingleChildScrollView(
           child: Column(
             children: _isLoading
-                ? [buildLoadingScreen()]
+                ? [LoadingScreen()]
                 : [
                     ReorderableListView.builder(
                       shrinkWrap: true,

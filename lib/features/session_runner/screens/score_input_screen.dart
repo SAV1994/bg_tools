@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/utils/player_score_card_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
+import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 class ScoreInputScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -239,7 +239,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
     return Consumer(
       builder: (context, ref, child) {
         if (_isLoading) {
-          return buildLoadingScreen();
+          return LoadingScreen();
         }
 
         if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
@@ -274,13 +274,12 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
                   itemBuilder: (context, index) {
                     final Map<String, dynamic> gamerData =
                         widget.data['gamers'][index];
-                    return buildGamerInputCard(
-                      context,
-                      gamerData['id'],
-                      _scoreControllers[gamerData['id']],
-                      true,
-                      false,
-                      _updateScore,
+                    return PlayerInputCard(
+                      gamerId: gamerData['id'],
+                      controllerData: _scoreControllers[gamerData['id']],
+                      addCalcBtn: true,
+                      digitsOnly: false,
+                      updateScore: _updateScore,
                       color: (gamerData['team'] != null)
                           ? TeamsEnum.fromId(gamerData['team']).color
                           : null,

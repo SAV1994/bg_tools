@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
-import 'package:bg_tools/core/utils/initial_team_data.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/scenario_mapping.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
+import 'package:bg_tools/features/session_runner/utils/export.dart';
 
 Future<void> initSessionData(
   GamesCountingTemplatesData gamesCountingTemplatesData,

@@ -7,8 +7,8 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/utils/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class GamersFormScreen extends ConsumerStatefulWidget {
   final int? gamerId;
@@ -120,7 +120,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
             widget.gamerId == null ? 'Новый игрок' : 'Редактирование игрока',
           ),
         ),
-        body: buildLoadingScreen(),
+        body: LoadingScreen(),
       );
     }
 

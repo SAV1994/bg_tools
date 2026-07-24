@@ -5,10 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
-import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
@@ -28,27 +25,6 @@ class _CountingTemplateListScreenListScreenState
   // Контроллеры
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-
-  Future<void> _openAddForm() async {
-    final result = await context.pushNamed('templates-add');
-
-    if (result == true) {
-      ref.invalidate(countingTemplatesDataProvider); // Обновляем провайдер
-      setState(() {});
-    }
-  }
-
-  Future<void> _openDetailPage(int templateId) async {
-    final result = await context.pushNamed(
-      'templates-detail',
-      pathParameters: {'templateId': templateId.toString()},
-    );
-
-    if (result == true) {
-      ref.invalidate(countingTemplatesDataProvider); // Обновляем провайдер
-      setState(() {});
-    }
-  }
 
   @override
   void dispose() {
@@ -149,8 +125,8 @@ class _CountingTemplateListScreenListScreenState
                 onPressed: () => notifier.toggleOrdering(),
               ),
               IconButton(
-                onPressed: () => {_openAddForm()},
-                icon: Icon(Icons.add_box),
+                onPressed: () => context.pushNamed('templates-add'),
+                icon: Icon(addBtnIcon),
               ),
             ],
           ],
@@ -163,7 +139,7 @@ class _CountingTemplateListScreenListScreenState
                 data: (templates) {
                   // Если данных нет
                   if (templates.isEmpty) {
-                    return buildEmptyListScreen();
+                    return EmptyListScreen();
                   }
                   return Scrollbar(
                     controller: _scrollController,
@@ -184,7 +160,12 @@ class _CountingTemplateListScreenListScreenState
                             subtitle: Text(template.description ?? emptyVal),
                             trailing: Icon(Icons.arrow_forward_ios),
                             onTap: () {
-                              _openDetailPage(template.id);
+                              context.pushNamed(
+                                'templates-detail',
+                                pathParameters: {
+                                  'templateId': template.id.toString(),
+                                },
+                              );
                             },
                           ),
                         );
@@ -192,8 +173,8 @@ class _CountingTemplateListScreenListScreenState
                     ),
                   );
                 },
-                loading: () => buildLoadingScreen(),
-                error: (err, _) => Text('ОШИБКА'),
+                loading: () => LoadingScreen(),
+                error: (err, _) => ErrorNotification(),
               ),
             ),
             // Панель пагинации (всегда внизу)

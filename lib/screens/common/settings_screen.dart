@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -46,7 +46,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text('Настройки')),
-        body: buildLoadingScreen(),
+        body: LoadingScreen(),
       );
     }
 

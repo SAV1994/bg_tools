@@ -27,11 +27,6 @@ class GamerDao extends DatabaseAccessor<AppDatabase> with _$GamerDaoMixin {
     return await (delete(gamers)..where((g) => g.id.equals(gamerId))).go();
   }
 
-  // Все игроки
-  Future<List<Gamer>> getAll() async {
-    return await (select(gamers)..where((g) => g.isOwner.equals(false))).get();
-  }
-
   // Все игроки, включая владельца приложения
   Future<List<Gamer>> getEverybody() async {
     return await (select(gamers)).get();

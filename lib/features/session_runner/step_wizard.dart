@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/scenario_mapping.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 
@@ -115,7 +115,7 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
       ),
       body: Column(
         children: _isLoading
-            ? [buildLoadingScreen()]
+            ? [LoadingScreen()]
             : [
                 // Прогресс
                 LinearProgressIndicator(

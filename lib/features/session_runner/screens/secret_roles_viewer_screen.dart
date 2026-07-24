@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/center_btn.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class SecretRolesViewScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -189,7 +188,7 @@ class _SecretRolesViewerScreenState
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return _isLoading ? buildLoadingScreen() : _buildContent();
+        return _isLoading ? LoadingScreen() : _buildContent();
       },
     );
   }

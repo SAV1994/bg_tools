@@ -1,4 +1,3 @@
-import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,10 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
-import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/screens/game/mixins/export.dart';
 
@@ -97,7 +95,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return buildLoadingScreen();
+      return LoadingScreen();
     }
 
     final gamesAsync = ref.watch(gamesPaginatedProvider);
@@ -175,7 +173,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                 onPressed: () => notifier.toggleOrdering(),
               ),
               IconButton(
-                icon: Icon(Icons.add_box),
+                icon: Icon(addBtnIcon),
                 onPressed: () => {_openAddForm()},
               ),
             ],
@@ -189,7 +187,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                 data: (games) {
                   // Если данных нет
                   if (games.isEmpty) {
-                    return buildEmptyListScreen();
+                    return EmptyListScreen();
                   }
                   return Scrollbar(
                     controller: _scrollController,
@@ -246,8 +244,8 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                     ),
                   );
                 },
-                loading: () => buildLoadingScreen(),
-                error: (err, _) => Text('ОШИБКА'),
+                loading: () => LoadingScreen(),
+                error: (err, _) => ErrorNotification(),
               ),
             ),
             // Панель пагинации (всегда внизу)

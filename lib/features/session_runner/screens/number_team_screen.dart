@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class NumberTeamsScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -51,7 +51,7 @@ class _NumberTeamsScreenState extends ConsumerState<NumberTeamsScreen> {
             spacing: 16,
             mainAxisSize: MainAxisSize.min,
             children: _isLoading
-                ? [buildLoadingScreen()]
+                ? [LoadingScreen()]
                 : [
                     Padding(
                       padding: const EdgeInsets.all(24.0),

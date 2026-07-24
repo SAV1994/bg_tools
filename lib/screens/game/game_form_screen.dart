@@ -1,4 +1,3 @@
-import 'package:bg_tools/screens/game/widgets/export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,9 +11,8 @@ import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
 import 'package:bg_tools/core/services/image_service.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/image_picker.dart';
-import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
+import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/screens/game/widgets/export.dart';
 
 class GamesFormScreen extends ConsumerStatefulWidget {
   final int? gameId;
@@ -216,7 +214,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
           ),
         ),
         body: _isLoading
-            ? buildLoadingScreen()
+            ? LoadingScreen()
             : SingleChildScrollView(
                 padding: EdgeInsets.all(16),
                 child: Form(

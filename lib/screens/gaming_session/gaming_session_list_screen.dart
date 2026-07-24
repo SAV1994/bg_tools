@@ -9,10 +9,7 @@ import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/dateformats.dart';
-import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
 import 'package:bg_tools/core/utils/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class GamingSessionListScreen extends ConsumerStatefulWidget {
@@ -76,7 +73,7 @@ class _GamingSessionListScreenState
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return buildLoadingScreen();
+      return LoadingScreen();
     }
 
     final gamingSessionsAsync = ref.watch(gamingSessionsPaginatedProvider);
@@ -137,7 +134,7 @@ class _GamingSessionListScreenState
                 onPressed: () => notifier.toggleOrdering(),
               ),
               IconButton(
-                icon: Icon(Icons.add_box),
+                icon: Icon(addBtnIcon),
                 onPressed: () => {_openAddForm()},
               ),
             ],
@@ -151,7 +148,7 @@ class _GamingSessionListScreenState
                 data: (gamingSessions) {
                   // Если данных нет
                   if (gamingSessions.isEmpty) {
-                    return buildEmptyListScreen();
+                    return EmptyListScreen();
                   }
                   return Scrollbar(
                     controller: _scrollController,
@@ -199,7 +196,7 @@ class _GamingSessionListScreenState
                     ),
                   );
                 },
-                loading: () => buildLoadingScreen(),
+                loading: () => LoadingScreen(),
                 error: (err, _) => Text(err.toString()),
               ),
             ),

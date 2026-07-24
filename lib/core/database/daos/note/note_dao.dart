@@ -48,26 +48,33 @@ class NoteDao extends DatabaseAccessor<AppDatabase> with _$NoteDaoMixin {
     await (delete(notes)..where((gn) => gn.id.equals(noteId))).go();
   }
 
-  // Cписок заметок
-  Future<List<Note>> getAll(int gameId) async {
-    return await (select(notes)
-          ..where((n) => n.gameId.equals(gameId))
-          ..orderBy([
-            (n) =>
-                OrderingTerm(expression: n.updatedAt, mode: OrderingMode.desc),
-          ]))
-        .get();
+  // Заметки с пагинацией
+  Future<List<Note>> getPaginated({
+    required int page,
+    required int pageSize,
+    required bool reverseOrdering,
+    required int gameId,
+    String? searchQuery,
+  }) async {
+    final offset = page * pageSize;
+
+    SimpleSelectStatement<$NotesTable, Note> query = _getBaseQuery(
+      gameId: gameId,
+      reverse: reverseOrdering,
+    )..limit(pageSize, offset: offset);
+    query = _getFilteredQuery(query: query, searchQuery: searchQuery);
+
+    return await query.get();
   }
 
-  // Cписок заметок (поток)
-  Stream<List<Note>> watchAll(int gameId) {
-    return (select(notes)
-          ..where((n) => n.gameId.equals(gameId))
-          ..orderBy([
-            (gn) =>
-                OrderingTerm(expression: gn.updatedAt, mode: OrderingMode.desc),
-          ]))
-        .watch();
+  // Общее количество заметок, соответствующих условию
+  Future<int> getTotalCount({required int gameId, String? searchQuery}) async {
+    SimpleSelectStatement<$NotesTable, Note> query = _getBaseQuery(
+      gameId: gameId,
+    );
+    query = _getFilteredQuery(query: query, searchQuery: searchQuery);
+
+    return await query.get().then((list) => list.length);
   }
 
   // Заметка
@@ -75,5 +82,39 @@ class NoteDao extends DatabaseAccessor<AppDatabase> with _$NoteDaoMixin {
     return await (select(
       notes,
     )..where((n) => n.id.equals(noteId))).getSingleOrNull();
+  }
+
+  SimpleSelectStatement<$NotesTable, Note> _getBaseQuery({
+    required int gameId,
+    bool reverse = false,
+  }) {
+    return select(notes)
+      ..where((n) => n.gameId.equals(gameId))
+      ..orderBy([
+        (n) => OrderingTerm(
+          expression: n.title.collate(const Collate('UNICODE_CI')),
+          mode: reverse ? OrderingMode.desc : OrderingMode.asc,
+        ),
+      ]);
+  }
+
+  SimpleSelectStatement<$NotesTable, Note> _getFilteredQuery({
+    required SimpleSelectStatement<$NotesTable, Note> query,
+    String? searchQuery,
+  }) {
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query
+        ..where((n) {
+          final lowerNameExpression = CustomExpression<String>(
+            'lower_unicode(title)',
+            watchedTables: [notes],
+          );
+          final searchQueryLower = searchQuery.toLowerCase();
+
+          return lowerNameExpression.like('%$searchQueryLower%');
+        });
+    }
+
+    return query;
   }
 }

@@ -1,7 +1,8 @@
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:bg_tools/core/widgets/export.dart';
 
 enum _SelectMode { single, multiple }
 
@@ -179,7 +180,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
     return Consumer(
       builder: (context, ref, child) {
         return _isLoading
-            ? buildLoadingScreen()
+            ? LoadingScreen()
             : Column(
                 spacing: 12,
                 children: [

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:bg_tools/core/consts/export.dart';
 
 // Мультиселект с возможностью поиска
-class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {
+class MultiSelectWithSearch<T> extends StatefulWidget {
   final String label;
   final List<T> items;
   final Set<int> selectedIds;
@@ -30,12 +28,11 @@ class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MultiSelectWithSearch<T>> createState() =>
+  State<MultiSelectWithSearch<T>> createState() =>
       _MultiSelectWithSearchState<T>();
 }
 
-class _MultiSelectWithSearchState<T>
-    extends ConsumerState<MultiSelectWithSearch<T>> {
+class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 

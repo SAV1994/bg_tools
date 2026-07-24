@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/utils/player_score_card_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
+import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 enum _SelectMode { single, draw }
 
@@ -143,13 +143,12 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 itemCount: widget.data['gamers'].length,
                 itemBuilder: (context, index) {
                   final int gamerId = widget.data['gamers'][index]['id'];
-                  return buildGamerInputCard(
-                    context,
-                    gamerId,
-                    _scoreControllers[gamerId],
-                    false,
-                    true,
-                    _updatePlace,
+                  return PlayerInputCard(
+                    gamerId: gamerId,
+                    controllerData: _scoreControllers[gamerId],
+                    addCalcBtn: false,
+                    digitsOnly: true,
+                    updateScore: _updatePlace,
                     label: 'Занятое место',
                   );
                 },
@@ -289,7 +288,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     return Consumer(
       builder: (context, ref, child) {
         return _isLoading
-            ? buildLoadingScreen()
+            ? LoadingScreen()
             : Column(
                 spacing: 12,
                 children: [

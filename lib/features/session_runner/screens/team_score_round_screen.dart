@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/utils/player_round_score_card_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
+import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 class TeamScoreRoundScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -476,12 +476,11 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                     ),
                     child: Material(
                       color: Colors.transparent,
-                      child: buildPlayerRoundScoreInputCard(
-                        context,
-                        index,
-                        _scoreControllers,
-                        widget.data,
-                        _isFinished,
+                      child: PlayerRoundInputCard(
+                        index: index,
+                        controllersData: _scoreControllers,
+                        sessionData: widget.data,
+                        isFinished: _isFinished,
                       ),
                     ),
                   );
@@ -668,7 +667,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return _isLoading ? buildLoadingScreen() : _buildScrean();
+        return _isLoading ? LoadingScreen() : _buildScrean();
       },
     );
   }

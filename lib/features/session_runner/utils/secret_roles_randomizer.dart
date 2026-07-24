@@ -1,4 +1,4 @@
-import 'package:bg_tools/core/utils/initial_team_data.dart';
+import 'package:bg_tools/features/session_runner/utils/export.dart';
 
 void distributeSecretRoles(Map<String, dynamic> sessionData) {
   final List<Map<String, dynamic>> requiredRoles = [];

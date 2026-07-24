@@ -105,39 +105,6 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     )..where((g) => g.id.equals(gamingSessionId))).go();
   }
 
-  // Все игровые сессии
-  Future<List<GamingSessionData>> getAll() async {
-    final query = _getBaseQuery();
-    final joinedQuery = query.join([
-      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
-    ]);
-
-    final rows = await joinedQuery.get();
-    return rows.map((row) {
-      final Game game = row.readTable(games);
-      final GamingSession gamingSession = row.readTable(gamingSessions);
-
-      return GamingSessionData(gamingSession: gamingSession, game: game);
-    }).toList();
-  }
-
-  // Все игровые сессии (поток)
-  Stream<List<GamingSessionData>> watchAll() {
-    final query = _getBaseQuery();
-    final joinedQuery = query.join([
-      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
-    ]);
-
-    return joinedQuery.watch().map((rows) {
-      return rows.map((row) {
-        final Game game = row.readTable(games);
-        final GamingSession gamingSession = row.readTable(gamingSessions);
-
-        return GamingSessionData(gamingSession: gamingSession, game: game);
-      }).toList();
-    });
-  }
-
   // Игровые сессии с пагинацией
   Future<List<GamingSessionData>> getPaginated({
     required int page,

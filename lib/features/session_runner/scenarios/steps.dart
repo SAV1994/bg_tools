@@ -1,12 +1,10 @@
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/custom_exceptions.dart';
-import 'package:bg_tools/core/utils/initial_gamers_data.dart';
-import 'package:bg_tools/core/utils/initial_team_data.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/scenarios/structures.dart';
 import 'package:bg_tools/features/session_runner/screens/export.dart';
-import 'package:bg_tools/features/session_runner/utils/secret_roles_randomizer.dart';
+import 'package:bg_tools/features/session_runner/utils/export.dart';
 
 final rootSessionSelectStep = ScenarioStep(
   title: 'Базовые параметры',

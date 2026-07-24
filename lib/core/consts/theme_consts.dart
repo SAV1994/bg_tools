@@ -24,3 +24,4 @@ const IconData tagsIcon = Icons.location_on;
 const IconData designersIcon = Icons.account_balance;
 const IconData artistsIcon = Icons.color_lens;
 const IconData loadingIcon = Icons.timer;
+const IconData addBtnIcon = Icons.add_box;

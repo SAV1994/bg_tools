@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/dateformats.dart';
+import 'package:bg_tools/core/utils/export.dart';
 
 class DateTimeDisplay extends StatelessWidget {
   final DateTime dateTime;

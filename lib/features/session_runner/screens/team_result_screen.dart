@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 enum _SelectMode { single, draw }
@@ -450,7 +450,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
     return Consumer(
       builder: (context, ref, child) {
         return _isLoading
-            ? buildLoadingScreen()
+            ? LoadingScreen()
             : Column(
                 spacing: 12,
                 children: [

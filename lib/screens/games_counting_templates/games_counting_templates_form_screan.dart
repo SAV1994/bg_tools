@@ -10,10 +10,9 @@ import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
-import 'package:bg_tools/core/widgets/select_with_search.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 enum _SelectMode { classic, onlyTeams, teamsFull }
@@ -160,6 +159,11 @@ class _GamesCountingTemplatesModalFormState
         }
 
         _formKey.currentState!.save();
+
+        final notifier = ref.read(
+          gamesCountingTemplatesPaginatedProvider.notifier,
+        );
+        notifier.refresh();
 
         if (mounted) {
           Navigator.pop(context, true);
@@ -726,7 +730,7 @@ class _GamesCountingTemplatesModalFormState
               spacing: 16,
               mainAxisSize: MainAxisSize.min,
               children: _isLoading
-                  ? [buildLoadingScreen()]
+                  ? [LoadingScreen()]
                   : [
                       if (_generalError != null)
                         Container(

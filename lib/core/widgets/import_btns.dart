@@ -5,8 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/services/export_service.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 // Кнопки для импорта/экспорта
 class BackupButtons extends ConsumerWidget {
@@ -20,31 +21,33 @@ class BackupButtons extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => buildLoadingScreen(),
+      builder: (context) => LoadingScreen(),
     );
 
     final savedPath = await backupService.exportAllData();
 
-    // Закрываем диалог
-    Navigator.pop(context);
+    if (context.mounted) {
+      // Закрываем диалог
+      Navigator.pop(context);
 
-    if (savedPath != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Экспорт завершен!\nФайл сохранен: ${savedPath.split('/').last}',
+      if (savedPath != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Экспорт завершен!\nФайл сохранен: ${savedPath.split('/').last}',
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
           ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ошибка экспорта'),
-          backgroundColor: Colors.red,
-        ),
-      );
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ошибка экспорта'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -74,49 +77,74 @@ class BackupButtons extends ConsumerWidget {
     if (confirmed != true) return;
 
     // Показываем индикатор загрузки
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => buildLoadingScreen(),
-    );
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => LoadingScreen(),
+      );
+    }
 
     final database = ref.read(databaseProvider);
     final backupService = BackupService(database);
     final success = await backupService.importData();
 
-    // Закрываем диалог
-    Navigator.pop(context);
+    if (context.mounted) {
+      // Закрываем диалог
+      Navigator.pop(context);
+    }
 
     if (success) {
       // Обновляем провайдеры
-      ref.invalidate(artistsDataProvider);
-      ref.invalidate(countingTemplatesDataProvider);
       ref.invalidate(countingTemplateDataProvider);
-      ref.invalidate(gamesCountingTemplatesDataProvider);
-      ref.invalidate(designersDataProvider);
-      ref.invalidate(gamesDataProvider);
       ref.invalidate(gameFullDataProvider);
       ref.invalidate(ownerDataProvider);
-      ref.invalidate(gamingSessionDataProvider);
       ref.invalidate(gamingSessionFullDataProvider);
-      ref.invalidate(notesForGameDataProvider);
-      ref.invalidate(tagsDataProvider);
       // AppDataManager
       ref.invalidate(sessionDataProvider);
+      // AsyncNotifierProvider
+      final artistsNotifier = ref.read(artistsPaginatedProvider.notifier);
+      artistsNotifier.refresh();
+      final countingTemplatesNotifier = ref.read(
+        countingTemplatesPaginatedProvider.notifier,
+      );
+      countingTemplatesNotifier.refresh();
+      final designersNotifier = ref.read(designersPaginatedProvider.notifier);
+      designersNotifier.refresh();
+      final gamesNotifier = ref.read(gamesPaginatedProvider.notifier);
+      gamesNotifier.refresh();
+      final gamersNotifier = ref.read(gamersPaginatedProvider.notifier);
+      gamersNotifier.refresh();
+      final gamesCountingTemplatesNotifier = ref.read(
+        gamesCountingTemplatesPaginatedProvider.notifier,
+      );
+      gamesCountingTemplatesNotifier.refresh();
+      final gamingSessionsNotifier = ref.read(
+        gamingSessionsPaginatedProvider.notifier,
+      );
+      gamingSessionsNotifier.refresh();
+      final notesNotifier = ref.read(notesPaginatedProvider.notifier);
+      notesNotifier.refresh();
+      final tagsNotifier = ref.read(tagsPaginatedProvider.notifier);
+      tagsNotifier.refresh();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Импорт завершен успешно!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Импорт завершен успешно!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ошибка импорта'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ошибка импорта'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

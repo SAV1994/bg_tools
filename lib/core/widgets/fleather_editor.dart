@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bg_tools/core/consts/theme_consts.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fleather/fleather.dart';
@@ -64,14 +65,21 @@ class _FleatherEditorWidgetState extends State<FleatherEditorWidget> {
       child: Column(
         children: [
           // Панель инструментов
-          FleatherToolbar.basic(controller: _controller),
-          const Divider(height: 1),
-          // Редактор
-          SizedBox(
+          Container(
             height: widget.height,
-            child: FleatherEditor(
-              controller: _controller,
-              focusNode: FocusNode(),
+            alignment: AlignmentGeometry.topStart,
+            color: secondColor,
+            child: Column(
+              children: [
+                FleatherToolbar.basic(
+                  controller: _controller,
+                  hideHeadingStyle: true,
+                  hideLink: true,
+                ),
+                SizedBox(height: 30),
+                Divider(height: 2),
+                FleatherEditor(controller: _controller, focusNode: FocusNode()),
+              ],
             ),
           ),
         ],

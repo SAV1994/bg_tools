@@ -38,11 +38,6 @@ class CountingTemplateDao extends DatabaseAccessor<AppDatabase>
     return await select(countingTemplates).get();
   }
 
-  // Все шаблоны (поток)
-  Stream<List<CountingTemplate>> watchAll() {
-    return select(countingTemplates).watch();
-  }
-
   // Шаблоны с пагинацией
   Future<List<CountingTemplate>> getPaginated({
     required int page,

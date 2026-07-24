@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/services/image_service.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 // Виджет загрузки изображений
 class ImagePickerWidget extends StatefulWidget {
@@ -165,7 +165,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
             border: Border.all(color: borderColor, width: 2),
           ),
           child: _isLoading
-              ? buildLoadingScreen()
+              ? LoadingScreen()
               : _currentImagePath != null
               ? Stack(
                   fit: StackFit.expand,

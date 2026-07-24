@@ -9,12 +9,8 @@ import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/add_gamer_modal_form_builder.dart';
-import 'package:bg_tools/core/utils/dateformats.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/enum_select_widget.dart';
-import 'package:bg_tools/core/widgets/multiple_select_with_search.dart';
-import 'package:bg_tools/core/widgets/select_with_search.dart';
+import 'package:bg_tools/core/utils/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/screens/gaming_session/form_widgets/gamer_card_widget.dart';
 import 'package:bg_tools/screens/gaming_session/form_widgets/gamer_form_detail_widget.dart';
@@ -304,7 +300,7 @@ class _GamingSessionFormScreenState
         ],
       ),
       body: _isLoading
-          ? buildLoadingScreen()
+          ? LoadingScreen()
           : SingleChildScrollView(
               padding: EdgeInsets.all(16),
               child: Form(

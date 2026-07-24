@@ -32,11 +32,6 @@ class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
     return await select(artists).get();
   }
 
-  // Все художники (поток)
-  Stream<List<Artist>> watchAll() {
-    return select(artists).watch();
-  }
-
   // Художники с пагинацией
   Future<List<Artist>> getPaginated({
     required int page,

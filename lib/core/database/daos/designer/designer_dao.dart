@@ -35,11 +35,6 @@ class DesignerDao extends DatabaseAccessor<AppDatabase>
     return await select(designers).get();
   }
 
-  // Все геймдизайнеры (поток)
-  Stream<List<Designer>> watchAll() {
-    return select(designers).watch();
-  }
-
   // Геймдизайнеры с пагинацией
   Future<List<Designer>> getPaginated({
     required int page,

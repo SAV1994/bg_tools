@@ -11,11 +11,8 @@ import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
-import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
-import 'package:bg_tools/core/utils/error_screen_builder.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
 import 'package:bg_tools/screens/game/mixins/update_is_favorite.dart';
@@ -159,19 +156,23 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  InfoRow(label: 'Год', value: game.year, isFirst: true),
-                  InfoRow(
-                    label: 'Минимальное количество игроков',
-                    value: game.minPlayers?.toString(),
-                  ),
-                  InfoRow(
-                    label: 'Максимальное количество игроков',
-                    value: game.maxPlayers?.toString(),
-                  ),
                   InfoRow(
                     label: 'Наличие в коллекции',
                     value: convertBoolToStr(game.isInCollection),
+                    isFirst: true,
                   ),
+                  if (game.year != null)
+                    InfoRow(label: 'Год', value: game.year),
+                  if (game.minPlayers != null)
+                    InfoRow(
+                      label: 'Минимальное количество игроков',
+                      value: game.minPlayers.toString(),
+                    ),
+                  if (game.maxPlayers != null)
+                    InfoRow(
+                      label: 'Максимальное количество игроков',
+                      value: game.maxPlayers.toString(),
+                    ),
                   InfoRow(
                     label: 'Самодостаточность',
                     value: convertBoolToStr(game.isStandalone),
@@ -182,23 +183,79 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                         ? 'Неизвестно'
                         : game.rating.toString(),
                   ),
-                  InfoRow(label: 'Описание', value: game.description),
+                  if (game.description != null && game.description!.isNotEmpty)
+                    InfoRow(label: 'Описание', value: game.description),
                 ],
               ),
             ),
           ),
-          _buildMultiValCard('Базовая игра', Icons.layers, bases),
-          _buildMultiValCard('Дополнения', Icons.layers, expansions),
-          _buildMultiValCard('Геймдизайнеры', Icons.account_balance, designers),
-          _buildMultiValCard('Художники', Icons.border_color, artists),
-          _buildMultiValCard('Метки категорий', Icons.location_on, tags),
+
+          if (bases.isNotEmpty)
+            _buildMultiValCard('Базовая игра', Icons.layers, bases, (gameId) {
+              context.pushNamed(
+                'games-detail',
+                pathParameters: {'gameId': gameId.toString()},
+              );
+            }),
+          if (expansions.isNotEmpty)
+            _buildMultiValCard('Дополнения', Icons.layers, expansions, (
+              gameId,
+            ) {
+              context.pushNamed(
+                'games-detail',
+                pathParameters: {'gameId': gameId.toString()},
+              );
+            }),
+          if (designers.isNotEmpty)
+            _buildMultiValCard(
+              'Геймдизайнеры',
+              Icons.account_balance,
+              designers,
+              (designerId) {
+                final notifier = ref.read(gamesPaginatedProvider.notifier);
+                notifier.filterByDesigner(designerId);
+                context.pushNamed(
+                  'games-list',
+                  queryParameters: {'designerId': designerId.toString()},
+                );
+              },
+            ),
+          if (artists.isNotEmpty)
+            _buildMultiValCard('Художники', Icons.border_color, artists, (
+              artistId,
+            ) {
+              final notifier = ref.read(gamesPaginatedProvider.notifier);
+              notifier.filterByArtist(artistId);
+              context.pushNamed(
+                'games-list',
+                queryParameters: {'artistId': artistId.toString()},
+              );
+            }),
+          if (tags.isNotEmpty)
+            _buildMultiValCard('Метки категорий', Icons.location_on, tags, (
+              tagId,
+            ) {
+              final notifier = ref.read(gamesPaginatedProvider.notifier);
+              notifier.filterByTag(tagId);
+              context.pushNamed(
+                'games-list',
+                queryParameters: {'tagId': tagId.toString()},
+              );
+            }),
         ],
       ),
     );
   }
 
-  Widget _buildMultiValCard(String title, IconData icon, List items) {
+  Widget _buildMultiValCard(
+    String title,
+    IconData icon,
+    List items,
+    Function onTap,
+  ) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -209,26 +266,22 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
             ),
           ],
         ),
-        Card(
-          child: items.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(32),
-                  child: Center(child: Text(emptyVal)),
-                )
-              : ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: items.length,
-                  separatorBuilder: (_, _) => const Divider(),
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return ListTile(
-                      leading: Icon(icon),
-                      title: Text(item.name),
-                    );
-                  },
-                ),
+        Wrap(
+          alignment: WrapAlignment.start,
+          spacing: 8,
+          runSpacing: 8,
+          children: items.map((item) {
+            return GestureDetector(
+              onTap: () => onTap(item.id),
+              child: Chip(
+                label: Text(item.name, style: TextStyle(color: goldColor)),
+
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            );
+          }).toList(),
         ),
+        SizedBox(height: 8),
       ],
     );
   }
@@ -258,6 +311,11 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 IconButton(
                   icon: const Icon(Icons.build),
                   onPressed: () async {
+                    final notifier = ref.read(
+                      gamesCountingTemplatesPaginatedProvider.notifier,
+                    );
+                    notifier.filterByGame(game.id);
+
                     _openNewScreen('counting-templates-list');
                   },
                 ),
@@ -268,15 +326,25 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                         ? Icon(Icons.play_arrow)
                         : Icon(Icons.play_arrow_outlined),
                     onPressed: () async {
-                      (templatesCount == 1)
-                          ? _runSession()
-                          : _openNewScreen('counting-templates-select');
+                      if (templatesCount == 1) {
+                        _runSession();
+                      } else {
+                        final notifier = ref.read(
+                          gamesCountingTemplatesPaginatedProvider.notifier,
+                        );
+                        notifier.filterByGame(game.id);
+
+                        _openNewScreen('counting-templates-select');
+                      }
                     },
                   ),
                 // Заметки
                 IconButton(
                   icon: const Icon(Icons.note),
                   onPressed: () {
+                    final notifier = ref.read(notesPaginatedProvider.notifier);
+                    notifier.filterByGame(game.id);
+
                     context.pushNamed(
                       'notes-list',
                       pathParameters: {
@@ -307,10 +375,10 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
             body: _buildContent(context, data),
           );
         } else {
-          return buildErrorScreen();
+          return ErrorNotification();
         }
       },
-      loading: () => buildLoadingScreen(),
+      loading: () => LoadingScreen(),
       error: (error, _) => _buildError(context, error, ref),
     );
   }

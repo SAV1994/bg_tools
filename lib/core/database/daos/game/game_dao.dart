@@ -166,12 +166,6 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     return await query.get();
   }
 
-  // Все игры (поток)
-  Stream<List<Game>> watchAll() {
-    final query = _getBaseQuery();
-    return query.watch();
-  }
-
   // Игры с пагинацией
   Future<List<Game>> getPaginated({
     required int page,
@@ -379,8 +373,8 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
           .get();
       query = query..where((g) => g.id.isIn(gamesIds));
     } else if (tagId != null) {
-      final tagsQuery = select(gamesDesigners)
-        ..where((gt) => gt.designerId.equals(tagId));
+      final tagsQuery = select(gamesTags)
+        ..where((gt) => gt.tagId.equals(tagId));
       final List<int> gamesIds = await tagsQuery
           .map((gamesTag) => gamesTag.gameId)
           .get();

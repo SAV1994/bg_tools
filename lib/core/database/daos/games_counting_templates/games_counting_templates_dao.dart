@@ -73,17 +73,6 @@ class GamesCountingTemplatesDao extends DatabaseAccessor<AppDatabase>
     )..where((gct) => gct.id.equals(id))).go();
   }
 
-  JoinedSelectStatement<HasResultSet, dynamic> _getQuery(int gameId) {
-    return (select(gamesCountingTemplates).join([
-      innerJoin(
-        countingTemplates,
-        countingTemplates.id.equalsExp(
-          gamesCountingTemplates.countingTemplateId,
-        ),
-      ),
-    ])..where(gamesCountingTemplates.gameId.equals(gameId)));
-  }
-
   // Дополнения, указанные в шаблоне
   Future<List<Game>> getExpansions(int gamesCountingTemplateId) async {
     final query =
@@ -106,9 +95,17 @@ class GamesCountingTemplatesDao extends DatabaseAccessor<AppDatabase>
   // Cписок шаблонов партии игры
   Future<List<GamesCountingTemplatesData>> getAll(int gameId) async {
     List<GamesCountingTemplatesData> result = [];
-    final query = _getQuery(gameId);
+    final query = _getBaseQuery(gameId: gameId);
+    final joinedQuery = query.join([
+      innerJoin(
+        countingTemplates,
+        countingTemplates.id.equalsExp(
+          gamesCountingTemplates.countingTemplateId,
+        ),
+      ),
+    ]);
 
-    final rows = await query.get();
+    final rows = await joinedQuery.get();
     for (final row in rows) {
       final GamesCountingTemplate gamesCountingTemplate = row.readTable(
         gamesCountingTemplates,
@@ -133,36 +130,62 @@ class GamesCountingTemplatesDao extends DatabaseAccessor<AppDatabase>
     return result;
   }
 
-  // Cписок шаблонов партии игры (поток)
-  Stream<List<GamesCountingTemplatesData>> watchAll(int gameId) {
-    final query = _getQuery(gameId);
+  // Шаблоны партии игры с пагинацией
+  Future<List<GamesCountingTemplatesData>> getPaginated({
+    required int page,
+    required int pageSize,
+    required bool reverseOrdering,
+    required int gameId,
+    String? searchQuery,
+  }) async {
+    final offset = page * pageSize;
+    List<GamesCountingTemplatesData> result = [];
 
-    return query.watch().asyncMap((rows) async {
-      List<GamesCountingTemplatesData> result = [];
+    SimpleSelectStatement query = _getFilteredQuery(
+      query: _getBaseQuery(gameId: gameId, reverse: reverseOrdering),
+      searchQuery: searchQuery,
+    )..limit(pageSize, offset: offset);
+    final joinedQuery = query.join([
+      innerJoin(
+        countingTemplates,
+        countingTemplates.id.equalsExp(
+          gamesCountingTemplates.countingTemplateId,
+        ),
+      ),
+    ]);
 
-      for (final row in rows) {
-        final GamesCountingTemplate gamesCountingTemplate = row.readTable(
-          gamesCountingTemplates,
-        );
-        final CountingTemplate countingTemplate = row.readTable(
-          countingTemplates,
-        );
+    final rows = await joinedQuery.get();
+    for (final row in rows) {
+      final GamesCountingTemplate gamesCountingTemplate = row.readTable(
+        gamesCountingTemplates,
+      );
+      final CountingTemplate countingTemplate = row.readTable(
+        countingTemplates,
+      );
 
-        final expansions = await getExpansions(gamesCountingTemplate.id);
-        final selectedExpansionIds = expansions.map((d) => d.id).toSet();
+      final expansions = await getExpansions(gamesCountingTemplate.id);
+      final selectedExpansionIds = expansions.map((d) => d.id).toSet();
 
-        result.add(
-          GamesCountingTemplatesData(
-            gamesCountingTemplate: gamesCountingTemplate,
-            countingTemplate: countingTemplate,
-            expansions: expansions,
-            selectedexpansionIds: selectedExpansionIds,
-          ),
-        );
-      }
+      result.add(
+        GamesCountingTemplatesData(
+          gamesCountingTemplate: gamesCountingTemplate,
+          countingTemplate: countingTemplate,
+          expansions: expansions,
+          selectedexpansionIds: selectedExpansionIds,
+        ),
+      );
+    }
 
-      return result;
-    });
+    return result;
+  }
+
+  // Общее число шаблонов партии игры, соответствующих условию
+  Future<int> getTotalCount({required int gameId, String? searchQuery}) async {
+    SimpleSelectStatement<$GamesCountingTemplatesTable, GamesCountingTemplate>
+    query = _getBaseQuery(gameId: gameId);
+    query = _getFilteredQuery(query: query, searchQuery: searchQuery);
+
+    return await query.get().then((list) => list.length);
   }
 
   // Шаблон партии игры
@@ -197,5 +220,42 @@ class GamesCountingTemplatesDao extends DatabaseAccessor<AppDatabase>
       expansions: expansions,
       selectedexpansionIds: selectedExpansionIds,
     );
+  }
+
+  SimpleSelectStatement<$GamesCountingTemplatesTable, GamesCountingTemplate>
+  _getBaseQuery({required int gameId, bool reverse = false}) {
+    return select(gamesCountingTemplates)
+      ..where((gct) => gct.gameId.equals(gameId))
+      ..orderBy([
+        (gct) => OrderingTerm(
+          expression: gct.name.collate(const Collate('UNICODE_CI')),
+          mode: reverse ? OrderingMode.desc : OrderingMode.asc,
+        ),
+      ]);
+  }
+
+  SimpleSelectStatement<$GamesCountingTemplatesTable, GamesCountingTemplate>
+  _getFilteredQuery({
+    required SimpleSelectStatement<
+      $GamesCountingTemplatesTable,
+      GamesCountingTemplate
+    >
+    query,
+    String? searchQuery,
+  }) {
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query
+        ..where((gct) {
+          final lowerNameExpression = CustomExpression<String>(
+            'lower_unicode(games_counting_templates.name)',
+            watchedTables: [gamesCountingTemplates],
+          );
+          final searchQueryLower = searchQuery.toLowerCase();
+
+          return lowerNameExpression.like('%$searchQueryLower%');
+        });
+    }
+
+    return query;
   }
 }

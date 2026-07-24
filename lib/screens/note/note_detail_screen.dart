@@ -9,9 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
-import 'package:bg_tools/core/utils/dateformats.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class NoteDetailScreen extends ConsumerStatefulWidget {
@@ -84,7 +82,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text(appName)),
-        body: buildLoadingScreen(),
+        body: LoadingScreen(),
       );
     }
 
@@ -133,34 +131,17 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
               ),
             ),
             // Содержимое заметки
+            const Text(
+              'Содержание',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 12,
-                  children: [
-                    const Text(
-                      'Содержание',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    // Форматированный текст
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: firstColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: FleatherEditor(
-                        controller: _controller,
-                        readOnly: true,
-                        focusNode: FocusNode(),
-                      ),
-                    ),
-                  ],
+                child: FleatherEditor(
+                  controller: _controller,
+                  readOnly: true,
+                  focusNode: FocusNode(),
                 ),
               ),
             ),

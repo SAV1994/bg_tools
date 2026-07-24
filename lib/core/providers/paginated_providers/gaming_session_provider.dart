@@ -49,6 +49,7 @@ class GamingSessionsNotifier extends BaseNotifier {
   void resetAdditionalParams() async {
     onlyIsFinished = true;
     gameId = null;
+    reverseOrdering = true;
     state = await AsyncValue.guard(() => load());
   }
 }

@@ -7,8 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
@@ -220,8 +219,8 @@ class _CountingTemplateDetailScreenState
             ),
           );
         },
-        loading: () => buildLoadingScreen(),
-        error: (error, _) => Text('Ошибка'),
+        loading: () => LoadingScreen(),
+        error: (error, _) => ErrorNotification(),
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
-import 'package:bg_tools/core/utils/gamer_fio_builder.dart';
+import 'package:bg_tools/core/utils/export.dart';
 
 void buildAddGamerModal(
   BuildContext context,

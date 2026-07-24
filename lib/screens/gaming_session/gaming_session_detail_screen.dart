@@ -10,10 +10,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/utils/bool_to_string.dart';
-import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
-import 'package:bg_tools/core/utils/dateformats.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class GamingSessionDetailScreen extends ConsumerStatefulWidget {
@@ -312,7 +309,7 @@ class _GamingSessionDetailScreenState
         data: (data) {
           return _buildContent(context, data!);
         },
-        loading: () => buildLoadingScreen(),
+        loading: () => LoadingScreen(),
         error: (error, _) => _buildError(context, error, ref),
       ),
     );

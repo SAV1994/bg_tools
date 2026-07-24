@@ -32,11 +32,6 @@ class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
     return await select(tags).get();
   }
 
-  // Все метки (поток)
-  Stream<List<Tag>> watchAll() {
-    return select(tags).watch();
-  }
-
   // Метки с пагинацией
   Future<List<Tag>> getPaginated({
     required int page,

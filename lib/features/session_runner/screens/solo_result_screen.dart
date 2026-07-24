@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
+import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 class SoloResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -124,7 +124,7 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
     return Consumer(
       builder: (context, ref, child) {
         return _isLoading
-            ? buildLoadingScreen()
+            ? LoadingScreen()
             : Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(

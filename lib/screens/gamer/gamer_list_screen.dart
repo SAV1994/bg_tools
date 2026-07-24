@@ -6,8 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class GamersListScreen extends ConsumerStatefulWidget {
@@ -108,7 +106,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
               ),
               IconButton(
                 onPressed: () => {_openAddForm()},
-                icon: Icon(Icons.add_box),
+                icon: Icon(addBtnIcon),
               ),
             ],
           ],
@@ -121,7 +119,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
                 data: (gamers) {
                   // Если данных нет
                   if (gamers.isEmpty) {
-                    return buildEmptyListScreen();
+                    return EmptyListScreen();
                   }
                   return Scrollbar(
                     controller: _scrollController,
@@ -157,8 +155,8 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
                     ),
                   );
                 },
-                loading: () => buildLoadingScreen(),
-                error: (err, _) => Text('ОШИБКА'),
+                loading: () => LoadingScreen(),
+                error: (err, _) => ErrorNotification(),
               ),
             ),
             // Панель пагинации (всегда внизу)

@@ -9,8 +9,7 @@ import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
-import 'package:bg_tools/core/widgets/enum_select_widget.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 class CountingTemplateFormScreen extends ConsumerStatefulWidget {
@@ -333,7 +332,7 @@ class _CountingTemplateFormFormState
         ),
       ),
       body: _isLoading
-          ? buildLoadingScreen()
+          ? LoadingScreen()
           : Form(
               key: _formKey,
               child: SingleChildScrollView(

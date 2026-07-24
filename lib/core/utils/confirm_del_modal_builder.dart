@@ -1,8 +1,8 @@
-import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/utils/universal_attr_getter.dart';
 
 // Модальное окно с подтверждением удаления (тут и сам процесс удаления)

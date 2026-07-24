@@ -1,4 +1,3 @@
-import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,9 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/base.dart';
-import 'package:bg_tools/core/utils/confirm_del_modal_builder.dart';
-import 'package:bg_tools/core/utils/empty_list_screen_builder.dart';
-import 'package:bg_tools/core/utils/loading_screen_builder.dart';
+import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class ListWithModalFormConfig<T, D, C> {
@@ -120,12 +118,12 @@ class _ListWithModalFormScreenState
                 }),
               },
               icon: _isEditMode
-                  ? Icon(Icons.edit)
+                  ? Icon(Icons.edit, color: borderColor)
                   : Icon(gamesIcon, color: goldColor),
             ),
             IconButton(
               onPressed: () => {_showModalForm(context, ref)},
-              icon: Icon(Icons.add_box),
+              icon: Icon(addBtnIcon),
             ),
           ],
         ],
@@ -143,7 +141,7 @@ class _ListWithModalFormScreenState
                 data: (data) {
                   // Если данных нет
                   if (data.isEmpty) {
-                    return buildEmptyListScreen();
+                    return EmptyListScreen();
                   }
                   return Scrollbar(
                     controller: _scrollController,
@@ -169,9 +167,6 @@ class _ListWithModalFormScreenState
                               if (_isEditMode) {
                                 _showModalForm(context, ref, item.id);
                               } else {
-                                final gamesAsync = ref.watch(
-                                  gamesPaginatedProvider,
-                                );
                                 final notifier = ref.read(
                                   gamesPaginatedProvider.notifier,
                                 );
@@ -200,8 +195,8 @@ class _ListWithModalFormScreenState
                     ),
                   );
                 },
-                loading: () => buildLoadingScreen(),
-                error: (err, _) => Text('ОШИБКА'),
+                loading: () => LoadingScreen(),
+                error: (err, _) => ErrorNotification(),
               ),
             ),
             // Панель пагинации (всегда внизу)
@@ -301,7 +296,7 @@ class _ModalFormState extends ConsumerState<ModalForm> {
           spacing: 16,
           mainAxisSize: MainAxisSize.min,
           children: _isLoading
-              ? [buildLoadingScreen()]
+              ? [LoadingScreen()]
               : [
                   if (widget.instanceId != null)
                     IconButton(
