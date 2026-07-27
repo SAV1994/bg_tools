@@ -82,7 +82,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
             IconButton(
               icon: Icon(
                 _isSearchOpen ? Icons.close : Icons.search,
-                color: _isSearchOpen ? redColor : borderColor,
+                color: _isSearchOpen ? redColor : textColor,
               ),
               onPressed: () {
                 setState(() {
@@ -100,7 +100,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
                       : Icons.arrow_downward,
-                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                  color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOrdering(),
               ),

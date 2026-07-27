@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:bg_tools/core/consts/theme_consts.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/export.dart';
@@ -54,7 +55,7 @@ class _CountingTemplateDetailScreenState
           ),
           // Кнопка удаления
           IconButton(
-            icon: const Icon(Icons.delete_outlined),
+            icon: const Icon(Icons.delete_outlined, color: redColor),
             onPressed: () {
               final template = gamingSessionAsync.value;
               if (template != null) {
@@ -73,149 +74,156 @@ class _CountingTemplateDetailScreenState
       body: gamingSessionAsync.when(
         data: (template) {
           final Map<String, dynamic> templateData = jsonDecode(template!.data);
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
-              children: [
-                // Заголовок с именем
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                template.name,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+          return Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
+                children: [
+                  // Заголовок с именем
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  template.name,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              InfoRow(
-                                label: 'Описание',
-                                value: template.description,
-                                isFirst: true,
-                              ),
-                            ],
+                                InfoRow(
+                                  label: 'Описание',
+                                  value: template.description,
+                                  isFirst: true,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              InfoRow(
-                                label: 'Тип игры',
-                                value: GameTypeEnum.fromId(
-                                  templateData['gameType'],
-                                ).label,
-                                isFirst: true,
-                              ),
-
-                              if (templateData['firstPlayerStartType'] != null)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 InfoRow(
-                                  label: 'Тип определения первого игрока',
-                                  value: FirstPlayerStartTypeEnum.fromId(
-                                    templateData['firstPlayerStartType'],
+                                  label: 'Тип игры',
+                                  value: GameTypeEnum.fromId(
+                                    templateData['gameType'],
                                   ).label,
+                                  isFirst: true,
                                 ),
 
-                              if (templateData['teamPointType'] != null)
-                                InfoRow(
-                                  label: 'Тип игровых очков при командной игре',
-                                  value: TeamPointTypeEnum.fromId(
-                                    templateData['teamPointType'],
-                                  ).label,
-                                ),
+                                if (templateData['firstPlayerStartType'] !=
+                                    null)
+                                  InfoRow(
+                                    label: 'Тип определения первого игрока',
+                                    value: FirstPlayerStartTypeEnum.fromId(
+                                      templateData['firstPlayerStartType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['resultType'] != null)
-                                InfoRow(
-                                  label: 'Тип определения результативности',
-                                  value: ResultTypeEnum.fromId(
-                                    templateData['resultType'],
-                                  ).label,
-                                ),
+                                if (templateData['teamPointType'] != null)
+                                  InfoRow(
+                                    label:
+                                        'Тип игровых очков при командной игре',
+                                    value: TeamPointTypeEnum.fromId(
+                                      templateData['teamPointType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['pointType'] != null)
-                                InfoRow(
-                                  label: 'Тип игровых очков',
-                                  value: PointTypeEnum.fromId(
-                                    templateData['pointType'],
-                                  ).label,
-                                ),
+                                if (templateData['resultType'] != null)
+                                  InfoRow(
+                                    label: 'Тип определения результативности',
+                                    value: ResultTypeEnum.fromId(
+                                      templateData['resultType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['roundsType'] != null)
-                                InfoRow(
-                                  label: 'Тип раундов',
-                                  value: RoundsTypeEnum.fromId(
-                                    templateData['roundsType'],
-                                  ).label,
-                                ),
+                                if (templateData['pointType'] != null)
+                                  InfoRow(
+                                    label: 'Тип игровых очков',
+                                    value: PointTypeEnum.fromId(
+                                      templateData['pointType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['altVictoryType'] != null)
-                                InfoRow(
-                                  label: 'Возможность победы другим путём',
-                                  value: AltVictoryTypeEnum.fromId(
-                                    templateData['altVictoryType'],
-                                  ).label,
-                                ),
+                                if (templateData['roundsType'] != null)
+                                  InfoRow(
+                                    label: 'Тип раундов',
+                                    value: RoundsTypeEnum.fromId(
+                                      templateData['roundsType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['firstPlayerRoundType'] != null)
-                                InfoRow(
-                                  label:
-                                      'Тип определения первого игрока в раунде',
-                                  value: FirstPlayerRoundTypeEnum.fromId(
-                                    templateData['firstPlayerRoundType'],
-                                  ).label,
-                                ),
+                                if (templateData['altVictoryType'] != null)
+                                  InfoRow(
+                                    label: 'Возможность победы другим путём',
+                                    value: AltVictoryTypeEnum.fromId(
+                                      templateData['altVictoryType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['sequencePlayersMovesType'] !=
-                                  null)
-                                InfoRow(
-                                  label: 'Тип последовательности ходов игроков',
-                                  value: SequencePlayersMovesTypeEnum.fromId(
-                                    templateData['sequencePlayersMovesType'],
-                                  ).label,
-                                ),
+                                if (templateData['firstPlayerRoundType'] !=
+                                    null)
+                                  InfoRow(
+                                    label:
+                                        'Тип определения первого игрока в раунде',
+                                    value: FirstPlayerRoundTypeEnum.fromId(
+                                      templateData['firstPlayerRoundType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['gameHostType'] != null)
-                                InfoRow(
-                                  label: 'Тип организации игры',
-                                  value: GameHostTypeEnum.fromId(
-                                    templateData['gameHostType'],
-                                  ).label,
-                                ),
+                                if (templateData['sequencePlayersMovesType'] !=
+                                    null)
+                                  InfoRow(
+                                    label:
+                                        'Тип последовательности ходов игроков',
+                                    value: SequencePlayersMovesTypeEnum.fromId(
+                                      templateData['sequencePlayersMovesType'],
+                                    ).label,
+                                  ),
 
-                              if (templateData['secretRolesDistributionType'] !=
-                                  null)
-                                InfoRow(
-                                  label: 'Способ распределения ролей',
-                                  value: SecretRolesDistributionTypeEnum.fromId(
-                                    templateData['secretRolesDistributionType'],
-                                  ).label,
-                                ),
-                            ],
+                                if (templateData['gameHostType'] != null)
+                                  InfoRow(
+                                    label: 'Тип организации игры',
+                                    value: GameHostTypeEnum.fromId(
+                                      templateData['gameHostType'],
+                                    ).label,
+                                  ),
+
+                                if (templateData['secretRolesDistributionType'] !=
+                                    null)
+                                  InfoRow(
+                                    label: 'Способ распределения ролей',
+                                    value: SecretRolesDistributionTypeEnum.fromId(
+                                      templateData['secretRolesDistributionType'],
+                                    ).label,
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

@@ -11,6 +11,7 @@ final gamesPaginatedProvider =
 class GamesNotifier extends BaseNotifier {
   bool onlyFavorite = false;
   bool onlyStandalone = true;
+  bool isInCollection = true;
   int? artistId;
   int? designerId;
   int? tagId;
@@ -22,6 +23,7 @@ class GamesNotifier extends BaseNotifier {
     totalItems = await dao.getTotalCount(
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
+      isInCollection: isInCollection,
       artistId: artistId,
       designerId: designerId,
       tagId: tagId,
@@ -34,6 +36,7 @@ class GamesNotifier extends BaseNotifier {
       reverseOrdering: reverseOrdering,
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
+      isInCollection: isInCollection,
       artistId: artistId,
       designerId: designerId,
       tagId: tagId,
@@ -48,6 +51,11 @@ class GamesNotifier extends BaseNotifier {
 
   Future<void> toggleOnlyStandalone() async {
     onlyStandalone = !onlyStandalone;
+    state = await AsyncValue.guard(() => load());
+  }
+
+  Future<void> toggleIsInCollection() async {
+    isInCollection = !isInCollection;
     state = await AsyncValue.guard(() => load());
   }
 
@@ -73,6 +81,7 @@ class GamesNotifier extends BaseNotifier {
   void resetAdditionalParams() async {
     onlyFavorite = false;
     onlyStandalone = true;
+    isInCollection = true;
     artistId = null;
     designerId = null;
     tagId = null;

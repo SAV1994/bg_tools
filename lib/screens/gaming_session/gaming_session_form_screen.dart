@@ -301,237 +301,246 @@ class _GamingSessionFormScreenState
       ),
       body: _isLoading
           ? LoadingScreen()
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  spacing: 16,
-                  children: [
-                    if (_generalError != null)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(8),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.shade200),
+          : Scrollbar(
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    spacing: 16,
+                    children: [
+                      if (_generalError != null)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.error,
+                                color: Colors.red.shade700,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _generalError!,
+                                  style: TextStyle(color: Colors.red.shade700),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Row(
+                      if (widget.gamingSessionId != null)
+                        SelectWithSearch<GamingSession>(
+                          label: 'Первая сессия серии',
+                          items: _gamingSessions,
+                          selectedItem: _selectedGamingSession,
+                          onSelectionChanged: (gamingSession) {
+                            setState(() {
+                              _selectedGamingSession = gamingSession;
+                            });
+                          },
+                          displayName: (gamingSession) =>
+                              '${DateFormats.formatDate(gamingSession.startedAt)} (${gamingSession.comment ?? emptyVal})',
+                          getId: (template) => template.id,
+                          searchHint: 'Поиск сессии...',
+                          isRequired: false,
+                          placeholder: 'Не выбрана',
+                        ),
+                      SelectWithSearch<Game>(
+                        label: 'Игра *',
+                        items: _games,
+                        selectedItem: _selectedGame,
+                        onSelectionChanged: (baseGame) {
+                          _onGameSelected(baseGame);
+                        },
+                        displayName: (baseGame) => baseGame.name,
+                        getId: (baseGame) => baseGame.id,
+                        searchHint: 'Поиск игры...',
+                        isRequired: true,
+                        placeholder: 'Не выбрана',
+                        customItemBuilder: (baseGame) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.error,
-                              color: Colors.red.shade700,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _generalError!,
-                                style: TextStyle(color: Colors.red.shade700),
+                            Text(
+                              baseGame.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    if (widget.gamingSessionId != null)
-                      SelectWithSearch<GamingSession>(
-                        label: 'Первая сессия серии',
-                        items: _gamingSessions,
-                        selectedItem: _selectedGamingSession,
-                        onSelectionChanged: (gamingSession) {
+                      // Выбор дополнений (MultiSelect) - появляется только если есть дополнения
+                      if (_expansions.isNotEmpty)
+                        MultiSelectWithSearch<Game>(
+                          label: 'Дополнения',
+                          items: _expansions,
+                          selectedIds: _selectedExpansionIds,
+                          onSelectionChanged: (newSelected) {
+                            setState(() {
+                              _selectedExpansionIds = newSelected;
+                            });
+                          },
+                          displayName: (expansion) => expansion.name,
+                          getId: (expansion) => expansion.id,
+                          searchHint: 'Поиск дополнений...',
+                        ),
+                      EnumSelector(
+                        label: 'Тип игры',
+                        choices: GameTypeEnum.values.map((val) {
+                          return DropdownMenuItem(
+                            value: val,
+                            child: Row(
+                              children: [
+                                Text(
+                                  val.label,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                        selected: _selectedGameType,
+                        onChanged: (value) {
                           setState(() {
-                            _selectedGamingSession = gamingSession;
+                            _selectedGameType = (value != null)
+                                ? value as GameTypeEnum
+                                : null;
                           });
                         },
-                        displayName: (gamingSession) =>
-                            '${DateFormats.formatDate(gamingSession.startedAt)} (${gamingSession.comment ?? emptyVal})',
-                        getId: (template) => template.id,
-                        searchHint: 'Поиск сессии...',
-                        isRequired: false,
-                        placeholder: 'Не выбрана',
                       ),
-                    SelectWithSearch<Game>(
-                      label: 'Игра *',
-                      items: _games,
-                      selectedItem: _selectedGame,
-                      onSelectionChanged: (baseGame) {
-                        _onGameSelected(baseGame);
-                      },
-                      displayName: (baseGame) => baseGame.name,
-                      getId: (baseGame) => baseGame.id,
-                      searchHint: 'Поиск игры...',
-                      isRequired: true,
-                      placeholder: 'Не выбрана',
-                      customItemBuilder: (baseGame) => Column(
+                      InkWell(
+                        onTap: () async {
+                          _selectDateTime();
+                        },
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            labelText: 'Начало партии *',
+                            border: OutlineInputBorder(),
+                          ),
+                          child: Text(DateFormats.formatDateTime(_startedAt)),
+                        ),
+                      ),
+                      Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            baseGame.name,
-                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                _selectDateTime(isFinishedAt: true);
+                              },
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  labelText: 'Конец партии',
+                                  border: OutlineInputBorder(),
+                                ),
+                                child: Text(
+                                  _finishedAt != null
+                                      ? DateFormats.formatDateTime(_finishedAt!)
+                                      : emptyVal,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Tooltip(
+                            message: 'Установить текущие дату и время',
+                            child: InkWell(
+                              onTap: _setCurrentDateTime,
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.blue.shade200,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.today,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    // Выбор дополнений (MultiSelect) - появляется только если есть дополнения
-                    if (_expansions.isNotEmpty)
-                      MultiSelectWithSearch<Game>(
-                        label: 'Дополнения',
-                        items: _expansions,
-                        selectedIds: _selectedExpansionIds,
-                        onSelectionChanged: (newSelected) {
+
+                      CheckboxListTile(
+                        title: Text('Партия закончена?'),
+                        value: _isFinished,
+                        onChanged: (value) {
                           setState(() {
-                            _selectedExpansionIds = newSelected;
+                            _isFinished = value!;
                           });
                         },
-                        displayName: (expansion) => expansion.name,
-                        getId: (expansion) => expansion.id,
-                        searchHint: 'Поиск дополнений...',
+                        controlAffinity: ListTileControlAffinity.leading,
                       ),
-                    EnumSelector(
-                      label: 'Тип игры',
-                      choices: GameTypeEnum.values.map((val) {
-                        return DropdownMenuItem(
-                          value: val,
-                          child: Row(
-                            children: [
-                              Text(
-                                val.label,
-                                style: TextStyle(color: textColor),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                      selected: _selectedGameType,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedGameType = (value != null)
-                              ? value as GameTypeEnum
-                              : null;
-                        });
-                      },
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        _selectDateTime();
-                      },
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Начало партии *',
+
+                      TextFormField(
+                        controller: _commentController,
+                        decoration: InputDecoration(
+                          labelText: 'Комментарий',
                           border: OutlineInputBorder(),
                         ),
-                        child: Text(DateFormats.formatDateTime(_startedAt)),
                       ),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              _selectDateTime(isFinishedAt: true);
+                      // Список выбранных дизайнеров
+                      const Text(
+                        'Игроки',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      if (_selectedGamers.isEmpty)
+                        const Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(32),
+                            child: Center(
+                              child: Text('Нет добавленных игроков'),
+                            ),
+                          ),
+                        )
+                      else
+                        ..._selectedGamers.values.map((gamerData) {
+                          return GamingSessionGamerCard(
+                            gamerData: gamerData,
+                            onChanged: (data) {
+                              setState(() {
+                                _selectedGamers[data.gamer.id] = data;
+                              });
                             },
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: 'Конец партии',
-                                border: OutlineInputBorder(),
-                              ),
-                              child: Text(
-                                _finishedAt != null
-                                    ? DateFormats.formatDateTime(_finishedAt!)
-                                    : emptyVal,
-                              ),
+                            onRemove: () {
+                              setState(() {
+                                _selectedGamers.remove(gamerData.gamer.id);
+                              });
+                            },
+                          );
+                        }),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _submitForm,
+                              child: Text('Сохранить'),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Tooltip(
-                          message: 'Установить текущие дату и время',
-                          child: InkWell(
-                            onTap: _setCurrentDateTime,
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.blue.shade200),
-                              ),
-                              child: const Icon(
-                                Icons.today,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    CheckboxListTile(
-                      title: Text('Партия закончена?'),
-                      value: _isFinished,
-                      onChanged: (value) {
-                        setState(() {
-                          _isFinished = value!;
-                        });
-                      },
-                      controlAffinity: ListTileControlAffinity.leading,
-                    ),
-
-                    TextFormField(
-                      controller: _commentController,
-                      decoration: InputDecoration(
-                        labelText: 'Комментарий',
-                        border: OutlineInputBorder(),
+                        ],
                       ),
-                    ),
-                    // Список выбранных дизайнеров
-                    const Text(
-                      'Игроки',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    if (_selectedGamers.isEmpty)
-                      const Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(32),
-                          child: Center(child: Text('Нет добавленных игроков')),
-                        ),
-                      )
-                    else
-                      ..._selectedGamers.values.map((gamerData) {
-                        return GamingSessionGamerCard(
-                          gamerData: gamerData,
-                          onChanged: (data) {
-                            setState(() {
-                              _selectedGamers[data.gamer.id] = data;
-                            });
-                          },
-                          onRemove: () {
-                            setState(() {
-                              _selectedGamers.remove(gamerData.gamer.id);
-                            });
-                          },
-                        );
-                      }),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _submitForm,
-                            child: Text('Сохранить'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

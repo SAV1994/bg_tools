@@ -96,7 +96,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
             tooltip: 'Редактировать',
           ),
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.delete, color: redColor),
             onPressed: () {
               buildDelModal(context, ref, noteDaoProvider, mounted, note);
             },

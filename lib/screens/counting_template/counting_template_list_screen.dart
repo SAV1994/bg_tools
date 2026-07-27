@@ -78,7 +78,7 @@ class _CountingTemplateListScreenListScreenState
                       : Icons.search,
                   color: _screenState == _ScreenState.search
                       ? redColor
-                      : borderColor,
+                      : textColor,
                 ),
                 onPressed: () {
                   setState(() {
@@ -101,7 +101,7 @@ class _CountingTemplateListScreenListScreenState
                       : Icons.filter,
                   color: _screenState == _ScreenState.select
                       ? redColor
-                      : borderColor,
+                      : textColor,
                 ),
                 onPressed: () {
                   setState(() {
@@ -120,7 +120,7 @@ class _CountingTemplateListScreenListScreenState
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
                       : Icons.arrow_downward,
-                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                  color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOrdering(),
               ),

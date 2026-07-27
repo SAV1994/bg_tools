@@ -335,118 +335,39 @@ class _CountingTemplateFormFormState
           ? LoadingScreen()
           : Form(
               key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  spacing: 16,
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Название *',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Пожалуйста, введите название';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Описание',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 3,
-                    ),
-
-                    EnumSelector(
-                      label: 'Тип игры *',
-                      choices: GameTypeEnum.values.map((val) {
-                        return DropdownMenuItem(
-                          value: val,
-                          child: Row(
-                            children: [
-                              Text(
-                                val.label,
-                                style: TextStyle(color: textColor),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                      selected: _selectedGameType,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedGameType = (value != null)
-                              ? value as GameTypeEnum
-                              : null;
-                          // Сбрасываем зависимые поля
-                          if ([
-                            GameTypeEnum.solo,
-                            GameTypeEnum.secretRoles,
-                          ].contains(value)) {
-                            _selectedFirstPlayerStartType = null;
-                            _selectedFirstPlayerRoundType = null;
-                            _selectedSequencePlayersMovesType = null;
-                            _selectedAltVictoryType = null;
+              child: Scrollbar(
+                thumbVisibility: true,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    spacing: 16,
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Название *',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Пожалуйста, введите название';
                           }
-                          if (value == GameTypeEnum.secretRoles) {
-                            _selectedResultType = null;
-                            _selectedPointType = null;
-                            _selectedRoundsType = null;
-                          }
-                          if (value != GameTypeEnum.secretRoles) {
-                            _selectedGameHostType = null;
-                            _selectedSecretRolesDistributionType = null;
-                          }
-                          if (![
-                            GameTypeEnum.coop,
-                            GameTypeEnum.team,
-                            GameTypeEnum.teamOneWinner,
-                            GameTypeEnum.secretTeams,
-                          ].contains(value)) {
-                            _selectedTeamPointType = null;
-                          }
-                        });
-
-                        _updateSelectorsVisibility();
-                      },
-                    ),
-
-                    if (_showFirstPlayerStartType)
-                      EnumSelector(
-                        label: 'Тип определения первого игрока *',
-                        choices: FirstPlayerStartTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedFirstPlayerStartType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedFirstPlayerStartType = (value != null)
-                                ? value as FirstPlayerStartTypeEnum
-                                : null;
-                          });
+                          return null;
                         },
                       ),
 
-                    if (_showResultType)
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: 'Описание',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                      ),
+
                       EnumSelector(
-                        label: 'Тип определения результативности *',
-                        choices: ResultTypeEnum.values.map((val) {
+                        label: 'Тип игры *',
+                        choices: GameTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
                             child: Row(
@@ -459,265 +380,350 @@ class _CountingTemplateFormFormState
                             ),
                           );
                         }),
-                        selected: _selectedResultType,
+                        selected: _selectedGameType,
                         onChanged: (value) {
                           setState(() {
-                            _selectedResultType = (value != null)
-                                ? value as ResultTypeEnum
+                            _selectedGameType = (value != null)
+                                ? value as GameTypeEnum
                                 : null;
                             // Сбрасываем зависимые поля
-                            if (value == ResultTypeEnum.condition) {
-                              _selectedPointType = null;
+                            if ([
+                              GameTypeEnum.solo,
+                              GameTypeEnum.secretRoles,
+                            ].contains(value)) {
+                              _selectedFirstPlayerStartType = null;
+                              _selectedFirstPlayerRoundType = null;
+                              _selectedSequencePlayersMovesType = null;
                               _selectedAltVictoryType = null;
+                            }
+                            if (value == GameTypeEnum.secretRoles) {
+                              _selectedResultType = null;
+                              _selectedPointType = null;
+                              _selectedRoundsType = null;
+                            }
+                            if (value != GameTypeEnum.secretRoles) {
+                              _selectedGameHostType = null;
+                              _selectedSecretRolesDistributionType = null;
+                            }
+                            if (![
+                              GameTypeEnum.coop,
+                              GameTypeEnum.team,
+                              GameTypeEnum.teamOneWinner,
+                              GameTypeEnum.secretTeams,
+                            ].contains(value)) {
                               _selectedTeamPointType = null;
                             }
-                            if (value != ResultTypeEnum.round) {
-                              _selectedRoundsType = null;
+                          });
+
+                          _updateSelectorsVisibility();
+                        },
+                      ),
+
+                      if (_showFirstPlayerStartType)
+                        EnumSelector(
+                          label: 'Тип определения первого игрока *',
+                          choices: FirstPlayerStartTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedFirstPlayerStartType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedFirstPlayerStartType = (value != null)
+                                  ? value as FirstPlayerStartTypeEnum
+                                  : null;
+                            });
+                          },
+                        ),
+
+                      if (_showResultType)
+                        EnumSelector(
+                          label: 'Тип определения результативности *',
+                          choices: ResultTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedResultType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedResultType = (value != null)
+                                  ? value as ResultTypeEnum
+                                  : null;
+                              // Сбрасываем зависимые поля
+                              if (value == ResultTypeEnum.condition) {
+                                _selectedPointType = null;
+                                _selectedAltVictoryType = null;
+                                _selectedTeamPointType = null;
+                              }
+                              if (value != ResultTypeEnum.round) {
+                                _selectedRoundsType = null;
+                                _selectedFirstPlayerRoundType = null;
+                                _selectedSequencePlayersMovesType = null;
+                              }
+                            });
+
+                            _updateSelectorsVisibility();
+                          },
+                        ),
+
+                      if (_showTeamPointType)
+                        EnumSelector(
+                          label: 'Тип игровых очков при командной игре *',
+                          choices: TeamPointTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedTeamPointType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedTeamPointType = (value != null)
+                                  ? value as TeamPointTypeEnum
+                                  : null;
+                            });
+
+                            // Сбрасываем зависимые поля
+                            if (value == TeamPointTypeEnum.general) {
                               _selectedFirstPlayerRoundType = null;
                               _selectedSequencePlayersMovesType = null;
                             }
-                          });
 
-                          _updateSelectorsVisibility();
-                        },
+                            _updateSelectorsVisibility();
+                          },
+                        ),
+
+                      if (_showPointType)
+                        EnumSelector(
+                          label: 'Тип игровых очков *',
+                          choices: PointTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedPointType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedPointType = (value != null)
+                                  ? value as PointTypeEnum
+                                  : null;
+                            });
+                          },
+                        ),
+
+                      if (_showRoundsType)
+                        EnumSelector(
+                          label: 'Тип раундов *',
+                          choices: RoundsTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedRoundsType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedRoundsType = (value != null)
+                                  ? value as RoundsTypeEnum
+                                  : null;
+                            });
+                          },
+                        ),
+
+                      if (_showAltVictoryType)
+                        EnumSelector(
+                          label: 'Возможность победы другим путём *',
+                          choices: AltVictoryTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedAltVictoryType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedAltVictoryType = (value != null)
+                                  ? value as AltVictoryTypeEnum
+                                  : null;
+                            });
+                          },
+                        ),
+
+                      if (_showFirstPlayerRoundType)
+                        EnumSelector(
+                          label: 'Тип определения первого игрока в раунде *',
+                          choices: FirstPlayerRoundTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedFirstPlayerRoundType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedFirstPlayerRoundType = (value != null)
+                                  ? value as FirstPlayerRoundTypeEnum
+                                  : null;
+                            });
+
+                            if ([
+                              FirstPlayerRoundTypeEnum.queue,
+                              FirstPlayerRoundTypeEnum.manually,
+                            ].contains(value)) {
+                              _selectedSequencePlayersMovesType = null;
+                            }
+
+                            _updateSelectorsVisibility();
+                          },
+                        ),
+
+                      if (_showSequencePlayersMovesType)
+                        EnumSelector(
+                          label: 'Тип последовательности ходов игроков *',
+                          choices: SequencePlayersMovesTypeEnum.values.map((
+                            val,
+                          ) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedSequencePlayersMovesType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedSequencePlayersMovesType =
+                                  (value != null)
+                                  ? value as SequencePlayersMovesTypeEnum
+                                  : null;
+                            });
+                          },
+                        ),
+
+                      if (_showGameHostType)
+                        EnumSelector(
+                          label: 'Тип организации игры *',
+                          choices: GameHostTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedGameHostType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedGameHostType = (value != null)
+                                  ? value as GameHostTypeEnum
+                                  : null;
+                            });
+                          },
+                        ),
+
+                      if (_showSecretRolesDistributionType)
+                        EnumSelector(
+                          label: 'Способ распределения ролей *',
+                          choices: SecretRolesDistributionTypeEnum.values.map((
+                            val,
+                          ) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedSecretRolesDistributionType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedSecretRolesDistributionType =
+                                  (value != null)
+                                  ? value as SecretRolesDistributionTypeEnum
+                                  : null;
+                            });
+                          },
+                        ),
+
+                      ElevatedButton(
+                        onPressed: _save,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text('Сохранить'),
                       ),
-
-                    if (_showTeamPointType)
-                      EnumSelector(
-                        label: 'Тип игровых очков при командной игре *',
-                        choices: TeamPointTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedTeamPointType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedTeamPointType = (value != null)
-                                ? value as TeamPointTypeEnum
-                                : null;
-                          });
-
-                          // Сбрасываем зависимые поля
-                          if (value == TeamPointTypeEnum.general) {
-                            _selectedFirstPlayerRoundType = null;
-                            _selectedSequencePlayersMovesType = null;
-                          }
-
-                          _updateSelectorsVisibility();
-                        },
-                      ),
-
-                    if (_showPointType)
-                      EnumSelector(
-                        label: 'Тип игровых очков *',
-                        choices: PointTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedPointType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedPointType = (value != null)
-                                ? value as PointTypeEnum
-                                : null;
-                          });
-                        },
-                      ),
-
-                    if (_showRoundsType)
-                      EnumSelector(
-                        label: 'Тип раундов *',
-                        choices: RoundsTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedRoundsType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedRoundsType = (value != null)
-                                ? value as RoundsTypeEnum
-                                : null;
-                          });
-                        },
-                      ),
-
-                    if (_showAltVictoryType)
-                      EnumSelector(
-                        label: 'Возможность победы другим путём *',
-                        choices: AltVictoryTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedAltVictoryType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedAltVictoryType = (value != null)
-                                ? value as AltVictoryTypeEnum
-                                : null;
-                          });
-                        },
-                      ),
-
-                    if (_showFirstPlayerRoundType)
-                      EnumSelector(
-                        label: 'Тип определения первого игрока в раунде *',
-                        choices: FirstPlayerRoundTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedFirstPlayerRoundType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedFirstPlayerRoundType = (value != null)
-                                ? value as FirstPlayerRoundTypeEnum
-                                : null;
-                          });
-
-                          if ([
-                            FirstPlayerRoundTypeEnum.queue,
-                            FirstPlayerRoundTypeEnum.manually,
-                          ].contains(value)) {
-                            _selectedSequencePlayersMovesType = null;
-                          }
-
-                          _updateSelectorsVisibility();
-                        },
-                      ),
-
-                    if (_showSequencePlayersMovesType)
-                      EnumSelector(
-                        label: 'Тип последовательности ходов игроков *',
-                        choices: SequencePlayersMovesTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedSequencePlayersMovesType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedSequencePlayersMovesType = (value != null)
-                                ? value as SequencePlayersMovesTypeEnum
-                                : null;
-                          });
-                        },
-                      ),
-
-                    if (_showGameHostType)
-                      EnumSelector(
-                        label: 'Тип организации игры *',
-                        choices: GameHostTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedGameHostType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedGameHostType = (value != null)
-                                ? value as GameHostTypeEnum
-                                : null;
-                          });
-                        },
-                      ),
-
-                    if (_showSecretRolesDistributionType)
-                      EnumSelector(
-                        label: 'Способ распределения ролей *',
-                        choices: SecretRolesDistributionTypeEnum.values.map((
-                          val,
-                        ) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        selected: _selectedSecretRolesDistributionType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedSecretRolesDistributionType =
-                                (value != null)
-                                ? value as SecretRolesDistributionTypeEnum
-                                : null;
-                          });
-                        },
-                      ),
-
-                    ElevatedButton(
-                      onPressed: _save,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: const Text('Сохранить'),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

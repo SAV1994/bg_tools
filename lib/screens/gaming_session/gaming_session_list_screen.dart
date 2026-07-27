@@ -103,7 +103,7 @@ class _GamingSessionListScreenState
             IconButton(
               icon: Icon(
                 _isGameSelectOpen ? Icons.close : gamesIcon,
-                color: _isGameSelectOpen ? redColor : borderColor,
+                color: _isGameSelectOpen ? redColor : textColor,
               ),
               onPressed: () {
                 setState(() {
@@ -120,7 +120,7 @@ class _GamingSessionListScreenState
                   notifier.onlyIsFinished
                       ? Icons.visibility_off
                       : Icons.visibility,
-                  color: notifier.onlyIsFinished ? borderColor : goldColor,
+                  color: notifier.onlyIsFinished ? textColor : goldColor,
                 ),
                 onPressed: () => notifier.toggleonlyIsFinished(),
               ),
@@ -129,7 +129,7 @@ class _GamingSessionListScreenState
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
                       : Icons.arrow_downward,
-                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                  color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOrdering(),
               ),

@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         iconTheme: IconThemeData(size: iconSize),
         listTileTheme: const ListTileThemeData(
           textColor: textColor, // Цвет для основного текста и подзаголовков
-          iconColor: borderColor, // Цвет для иконок (по желанию)
+          iconColor: textColor, // Цвет для иконок (по желанию)
         ),
         dialogTheme: const DialogThemeData(
           backgroundColor: secondColor, // Цвет фона диалога

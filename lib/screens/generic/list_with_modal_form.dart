@@ -89,7 +89,7 @@ class _ListWithModalFormScreenState
           IconButton(
             icon: Icon(
               _isSearchOpen ? Icons.close : Icons.search,
-              color: _isSearchOpen ? redColor : borderColor,
+              color: _isSearchOpen ? redColor : textColor,
             ),
             onPressed: () {
               setState(() {
@@ -107,7 +107,7 @@ class _ListWithModalFormScreenState
                 notifier.reverseOrdering
                     ? Icons.arrow_upward
                     : Icons.arrow_downward,
-                color: notifier.reverseOrdering ? goldColor : borderColor,
+                color: notifier.reverseOrdering ? goldColor : textColor,
               ),
               onPressed: () => notifier.toggleOrdering(),
             ),
@@ -118,7 +118,7 @@ class _ListWithModalFormScreenState
                 }),
               },
               icon: _isEditMode
-                  ? Icon(Icons.edit, color: borderColor)
+                  ? Icon(Icons.edit, color: textColor)
                   : Icon(gamesIcon, color: goldColor),
             ),
             IconButton(
@@ -300,7 +300,7 @@ class _ModalFormState extends ConsumerState<ModalForm> {
               : [
                   if (widget.instanceId != null)
                     IconButton(
-                      icon: const Icon(Icons.delete_outlined),
+                      icon: const Icon(Icons.delete_outlined, color: redColor),
                       onPressed: () {
                         buildDelModal(
                           context,

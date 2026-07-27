@@ -31,7 +31,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       side: const BorderSide(color: borderColor, width: 1.5),
       fixedSize: Size(350, 50),
       iconSize: 30,
-      iconColor: borderColor,
     );
 
     return Scaffold(
@@ -96,69 +95,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsetsGeometry.only(top: 10),
-            child: Column(
-              spacing: 16,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () => {context.pushNamed('games-list')},
-                  style: btnStyle,
-                  label: Text('Настольные игры'),
-                  icon: Icon(gamesIcon),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => {context.pushNamed('gamers-list')},
-                  style: btnStyle,
-                  label: Text('Список игроков'),
-                  icon: Icon(gamersIcon),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => {context.pushNamed('gaming-sessions-list')},
-                  style: btnStyle,
-                  label: Text('История партий'),
-                  icon: Icon(sessionsIcon),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => {context.pushNamed('templates-list')},
-                  style: btnStyle,
-                  label: Text('Шаблоны партий'),
-                  icon: Icon(templatesIcon),
-                ),
-                // ElevatedButton.icon(
-                //   onPressed: () => {},
-                //   style: btnStyle,
-                //   label: Text('Статистика'),
-                //   icon: const Icon(Icons.trending_up),
-                // ),
-                // ElevatedButton.icon(
-                //   onPressed: () => {},
-                //   style: btnStyle,
-                //   label: Text('Мой рейтинг игр'),
-                //   icon: const Icon(Icons.favorite),
-                // ),
-                ElevatedButton.icon(
-                  onPressed: () => {context.pushNamed('tags')},
-                  style: btnStyle,
-                  label: Text('Метки категорий'),
-                  icon: Icon(tagsIcon),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => {context.pushNamed('designers')},
-                  style: btnStyle,
-                  label: Text('Геймдизайнеры'),
-                  icon: Icon(designersIcon),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => {context.pushNamed('artists')},
-                  style: btnStyle,
-                  label: Text('Художники'),
-                  icon: Icon(artistsIcon),
-                ),
-                BackupButtons(),
-              ],
+        child: Scrollbar(
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsetsGeometry.only(top: 10),
+              child: Column(
+                spacing: 16,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => {context.pushNamed('games-list')},
+                    style: btnStyle,
+                    label: Text('Настольные игры'),
+                    icon: Icon(gamesIcon),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => {context.pushNamed('gamers-list')},
+                    style: btnStyle,
+                    label: Text('Список игроков'),
+                    icon: Icon(gamersIcon),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => {
+                      context.pushNamed('gaming-sessions-list'),
+                    },
+                    style: btnStyle,
+                    label: Text('История партий'),
+                    icon: Icon(sessionsIcon),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => {context.pushNamed('templates-list')},
+                    style: btnStyle,
+                    label: Text('Шаблоны партий'),
+                    icon: Icon(templatesIcon),
+                  ),
+                  // ElevatedButton.icon(
+                  //   onPressed: () => {},
+                  //   style: btnStyle,
+                  //   label: Text('Статистика'),
+                  //   icon: const Icon(Icons.trending_up),
+                  // ),
+                  // ElevatedButton.icon(
+                  //   onPressed: () => {},
+                  //   style: btnStyle,
+                  //   label: Text('Мой рейтинг игр'),
+                  //   icon: const Icon(Icons.favorite),
+                  // ),
+                  ElevatedButton.icon(
+                    onPressed: () => {context.pushNamed('tags')},
+                    style: btnStyle,
+                    label: Text('Метки категорий'),
+                    icon: Icon(tagsIcon),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => {context.pushNamed('designers')},
+                    style: btnStyle,
+                    label: Text('Геймдизайнеры'),
+                    icon: Icon(designersIcon),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => {context.pushNamed('artists')},
+                    style: btnStyle,
+                    label: Text('Художники'),
+                    icon: Icon(artistsIcon),
+                  ),
+                  BackupButtons(),
+                ],
+              ),
             ),
           ),
         ),

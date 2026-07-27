@@ -198,7 +198,7 @@ class _GamesCountingTemplatesModalFormState
         side: BorderSide(color: team.color, width: 2),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -225,22 +225,20 @@ class _GamesCountingTemplatesModalFormState
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    teamData['name'],
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  child: GestureDetector(
+                    onTap: () => _showTeamModalForm(index),
+                    child: Text(
+                      teamData['name'],
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
                 // Кнопки действий
                 Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: borderColor),
-                      onPressed: () => _showTeamModalForm(index),
-                      tooltip: 'Редактировать команду',
-                    ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: redColor),
                       onPressed: () => setState(() {
@@ -298,7 +296,6 @@ class _GamesCountingTemplatesModalFormState
               const SizedBox(height: 8),
               ListView.builder(
                 shrinkWrap: true,
-                padding: const EdgeInsets.all(16),
                 itemCount: groups.length,
                 itemBuilder: (context, index) {
                   return _buildGroupCard(groups, index);
@@ -313,7 +310,6 @@ class _GamesCountingTemplatesModalFormState
               const SizedBox(height: 8),
               ListView.builder(
                 shrinkWrap: true,
-                padding: const EdgeInsets.all(16),
                 itemCount: roles.length,
                 itemBuilder: (context, index) {
                   return _buildRoleTile(roles, index);
@@ -334,7 +330,7 @@ class _GamesCountingTemplatesModalFormState
       margin: const EdgeInsets.only(bottom: 8),
       color: firstColor,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -361,11 +357,6 @@ class _GamesCountingTemplatesModalFormState
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.edit, size: 16, color: borderColor),
-                  onPressed: () => _showGroupModalForm(groups, index),
-                  tooltip: 'Редактировать группу',
-                ),
-                IconButton(
                   icon: const Icon(Icons.close, size: 16, color: redColor),
                   onPressed: () {
                     setState(() {
@@ -385,8 +376,8 @@ class _GamesCountingTemplatesModalFormState
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Добавить роль'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: redColor,
-                side: const BorderSide(color: redColor),
+                foregroundColor: borderColor,
+                side: const BorderSide(color: borderColor),
                 padding: const EdgeInsets.all(4),
               ),
             ),
@@ -396,7 +387,6 @@ class _GamesCountingTemplatesModalFormState
               const SizedBox(height: 8),
               ListView.builder(
                 shrinkWrap: true,
-                padding: const EdgeInsets.all(16),
                 itemCount: roles.length,
                 itemBuilder: (context, index) {
                   return _buildRoleTile(roles, index);
@@ -433,12 +423,7 @@ class _GamesCountingTemplatesModalFormState
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.edit, size: 14, color: borderColor),
-            onPressed: () => _showRoleModalForm(roles, index),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
+
           IconButton(
             icon: const Icon(Icons.close, size: 14, color: redColor),
             onPressed: () {
@@ -707,7 +692,7 @@ class _GamesCountingTemplatesModalFormState
 
           if (widget.gamesCountingTemplatesId != null)
             IconButton(
-              icon: const Icon(Icons.delete_outlined),
+              icon: const Icon(Icons.delete_outlined, color: redColor),
               onPressed: () {
                 buildDelModal(
                   context,

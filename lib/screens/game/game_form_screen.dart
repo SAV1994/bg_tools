@@ -215,263 +215,268 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
         ),
         body: _isLoading
             ? LoadingScreen()
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    spacing: 16,
-                    children: [
-                      if (_generalError != null)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(8),
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red.shade200),
+            : Scrollbar(
+                thumbVisibility: true,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      spacing: 16,
+                      children: [
+                        if (_generalError != null)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red.shade200),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.error,
+                                  color: Colors.red.shade700,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _generalError!,
+                                    style: TextStyle(
+                                      color: Colors.red.shade700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          child: Row(
+                        TextFormField(
+                          controller: _titleController,
+                          decoration: InputDecoration(
+                            labelText: 'Название *',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Пожалуйста, введите название';
+                            }
+                            return null;
+                          },
+                        ),
+                        ImagePickerWidget(
+                          initialImagePath: _imagePath,
+                          onImageSelected: (path) {
+                            setState(() => _imagePath = path);
+                          },
+                          fieldName: 'Изображение с игрой',
+                        ),
+                        TextFormField(
+                          controller: _yearController,
+                          decoration: InputDecoration(
+                            labelText: 'Год',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return null;
+                            }
+                            if (RegExp(r'^-?\d+$').hasMatch(value)) {
+                              return null;
+                            }
+                            return 'Некорректный год';
+                          },
+                        ),
+                        TextFormField(
+                          controller: _minPlayersController,
+                          decoration: InputDecoration(
+                            labelText: 'Минимальное количество игроков',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType:
+                              TextInputType.number, // Цифровая клавиатура
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly, // Только цифры
+                          ],
+                          validator: (value) {
+                            if (value != null && value.isNotEmpty) {
+                              final num = int.tryParse(value);
+                              if (num == null) return 'Некорректное число';
+                              if (num < 1) return 'Должно быть не меньше 1';
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: _maxPlayersController,
+                          decoration: InputDecoration(
+                            labelText: 'Максимальное количество игроков',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType:
+                              TextInputType.number, // Цифровая клавиатура
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly, // Только цифры
+                          ],
+                          validator: (value) {
+                            if (value != null && value.isNotEmpty) {
+                              final num = int.tryParse(value);
+                              if (num == null) return 'Некорректное число';
+                              if (num < 1) return 'Должно быть не меньше 1';
+                            }
+                            return null;
+                          },
+                        ),
+                        CheckboxListTile(
+                          title: Text('Наличие в коллекции'),
+                          value: _isInCollection,
+                          onChanged: (value) {
+                            setState(() {
+                              _isInCollection = value!;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
+                        RatingSlider(
+                          initialValue: _rating,
+                          onChanged: (value) {
+                            setState(() {
+                              _rating = value;
+                            });
+                          },
+                        ),
+                        TextFormField(
+                          controller: _descriptionController,
+                          decoration: InputDecoration(
+                            labelText: 'Описание',
+                            border: OutlineInputBorder(),
+                          ),
+                          maxLines: 3,
+                        ),
+                        MultiSelectWithSearch<Game>(
+                          label: 'Базовая игра',
+                          items: _baseGames,
+                          selectedIds: _selectedBaseIds,
+                          onSelectionChanged: (newSelected) {
+                            setState(() {
+                              _selectedBaseIds = newSelected;
+                            });
+                          },
+                          displayName: (baseGame) => baseGame.name,
+                          getId: (baseGame) => baseGame.id,
+                          searchHint: 'Поиск игр...',
+                          customItemBuilder: (baseGame) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.error,
-                                color: Colors.red.shade700,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _generalError!,
-                                  style: TextStyle(color: Colors.red.shade700),
+                              Text(
+                                baseGame.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: InputDecoration(
-                          labelText: 'Название *',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Пожалуйста, введите название';
-                          }
-                          return null;
-                        },
-                      ),
-                      ImagePickerWidget(
-                        initialImagePath: _imagePath,
-                        onImageSelected: (path) {
-                          setState(() => _imagePath = path);
-                        },
-                        fieldName: 'Изображение с игрой',
-                      ),
-                      TextFormField(
-                        controller: _yearController,
-                        decoration: InputDecoration(
-                          labelText: 'Год',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return null;
-                          }
-                          if (RegExp(r'^-?\d+$').hasMatch(value)) {
-                            return null;
-                          }
-                          return 'Некорректный год';
-                        },
-                      ),
-                      TextFormField(
-                        controller: _minPlayersController,
-                        decoration: InputDecoration(
-                          labelText: 'Минимальное количество игроков',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType:
-                            TextInputType.number, // Цифровая клавиатура
-                        inputFormatters: [
-                          FilteringTextInputFormatter
-                              .digitsOnly, // Только цифры
-                        ],
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            final num = int.tryParse(value);
-                            if (num == null) return 'Некорректное число';
-                            if (num < 1) return 'Должно быть не меньше 1';
-                          }
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        controller: _maxPlayersController,
-                        decoration: InputDecoration(
-                          labelText: 'Максимальное количество игроков',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType:
-                            TextInputType.number, // Цифровая клавиатура
-                        inputFormatters: [
-                          FilteringTextInputFormatter
-                              .digitsOnly, // Только цифры
-                        ],
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            final num = int.tryParse(value);
-                            if (num == null) return 'Некорректное число';
-                            if (num < 1) return 'Должно быть не меньше 1';
-                          }
-                          return null;
-                        },
-                      ),
-                      CheckboxListTile(
-                        title: Text('Наличие в коллекции'),
-                        value: _isInCollection,
-                        onChanged: (value) {
-                          setState(() {
-                            _isInCollection = value!;
-                          });
-                        },
-                        controlAffinity: ListTileControlAffinity.leading,
-                      ),
-                      RatingSlider(
-                        initialValue: _rating,
-                        onChanged: (value) {
-                          setState(() {
-                            _rating = value;
-                          });
-                        },
-                      ),
-                      TextFormField(
-                        controller: _descriptionController,
-                        decoration: InputDecoration(
-                          labelText: 'Описание',
-                          border: OutlineInputBorder(),
-                        ),
-                        maxLines: 3,
-                      ),
-                      MultiSelectWithSearch<Game>(
-                        label: 'Базовая игра',
-                        items: _baseGames,
-                        selectedIds: _selectedBaseIds,
-                        onSelectionChanged: (newSelected) {
-                          setState(() {
-                            _selectedBaseIds = newSelected;
-                          });
-                        },
-                        displayName: (baseGame) => baseGame.name,
-                        getId: (baseGame) => baseGame.id,
-                        searchHint: 'Поиск игр...',
-                        customItemBuilder: (baseGame) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              baseGame.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (_selectedBaseIds.isNotEmpty)
-                        CheckboxListTile(
-                          title: Text('Самодостаточность'),
-                          value: _isStandalone,
-                          onChanged: (value) {
+                        if (_selectedBaseIds.isNotEmpty)
+                          CheckboxListTile(
+                            title: Text('Самодостаточность'),
+                            value: _isStandalone,
+                            onChanged: (value) {
+                              setState(() {
+                                _isStandalone = value!;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                          ),
+                        MultiSelectWithSearch<Designer>(
+                          label: 'Геймдизайнеры',
+                          items: _designers,
+                          selectedIds: _selectedDesignerIds,
+                          onSelectionChanged: (newSelected) {
                             setState(() {
-                              _isStandalone = value!;
+                              _selectedDesignerIds = newSelected;
                             });
                           },
-                          controlAffinity: ListTileControlAffinity.leading,
-                        ),
-                      MultiSelectWithSearch<Designer>(
-                        label: 'Геймдизайнеры',
-                        items: _designers,
-                        selectedIds: _selectedDesignerIds,
-                        onSelectionChanged: (newSelected) {
-                          setState(() {
-                            _selectedDesignerIds = newSelected;
-                          });
-                        },
-                        displayName: (designer) => designer.name,
-                        getId: (designer) => designer.id,
-                        searchHint: 'Поиск геймдизайнеров...',
-                        customItemBuilder: (designer) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              designer.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
+                          displayName: (designer) => designer.name,
+                          getId: (designer) => designer.id,
+                          searchHint: 'Поиск геймдизайнеров...',
+                          customItemBuilder: (designer) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                designer.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      MultiSelectWithSearch<Artist>(
-                        label: 'Художники',
-                        items: _artists,
-                        selectedIds: _selectedArtistIds,
-                        onSelectionChanged: (newSelected) {
-                          setState(() {
-                            _selectedArtistIds = newSelected;
-                          });
-                        },
-                        displayName: (artist) => artist.name,
-                        getId: (artist) => artist.id,
-                        searchHint: 'Поиск художника...',
-                        customItemBuilder: (artist) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              artist.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      MultiSelectWithSearch<Tag>(
-                        label: 'Метки категорий',
-                        items: _tags,
-                        selectedIds: _selectedTagIds,
-                        onSelectionChanged: (newSelected) {
-                          setState(() {
-                            _selectedTagIds = newSelected;
-                          });
-                        },
-                        displayName: (tag) => tag.name,
-                        getId: (tag) => tag.id,
-                        searchHint: 'Поиск тэгов...',
-                        customItemBuilder: (tag) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              tag.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: _submitForm,
-                              child: Text('Сохранить'),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        MultiSelectWithSearch<Artist>(
+                          label: 'Художники',
+                          items: _artists,
+                          selectedIds: _selectedArtistIds,
+                          onSelectionChanged: (newSelected) {
+                            setState(() {
+                              _selectedArtistIds = newSelected;
+                            });
+                          },
+                          displayName: (artist) => artist.name,
+                          getId: (artist) => artist.id,
+                          searchHint: 'Поиск художника...',
+                          customItemBuilder: (artist) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                artist.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        MultiSelectWithSearch<Tag>(
+                          label: 'Метки категорий',
+                          items: _tags,
+                          selectedIds: _selectedTagIds,
+                          onSelectionChanged: (newSelected) {
+                            setState(() {
+                              _selectedTagIds = newSelected;
+                            });
+                          },
+                          displayName: (tag) => tag.name,
+                          getId: (tag) => tag.id,
+                          searchHint: 'Поиск тэгов...',
+                          customItemBuilder: (tag) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tag.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: _submitForm,
+                                child: Text('Сохранить'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

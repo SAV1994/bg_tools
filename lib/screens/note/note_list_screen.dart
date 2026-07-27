@@ -112,7 +112,7 @@ class _NotesListScreentate extends ConsumerState<NotesListScreen> {
             IconButton(
               icon: Icon(
                 _isSearchOpen ? Icons.close : Icons.search,
-                color: _isSearchOpen ? redColor : borderColor,
+                color: _isSearchOpen ? redColor : textColor,
               ),
               onPressed: () {
                 setState(() {
@@ -130,7 +130,7 @@ class _NotesListScreentate extends ConsumerState<NotesListScreen> {
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
                       : Icons.arrow_downward,
-                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                  color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOrdering(),
               ),

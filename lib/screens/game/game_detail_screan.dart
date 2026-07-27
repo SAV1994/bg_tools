@@ -90,159 +90,165 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
     final List<Tag> tags = data.tags;
     final List<Game> expansions = data.expansions;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Заголовок с именем
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    child: game.imagePath != null
-                        ? Image.file(
-                            File(game.imagePath!),
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          )
-                        : Container(
-                            width: 100,
-                            height: 100,
-                            color: Colors.grey.shade300,
-                            child: const Icon(
-                              Icons.image_not_supported,
-                              size: 40,
-                              color: Colors.grey,
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Заголовок с именем
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      child: game.imagePath != null
+                          ? Image.file(
+                              File(game.imagePath!),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              width: 100,
+                              height: 100,
+                              color: Colors.grey.shade300,
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            game.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          game.name,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      game.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: game.isFavorite ? goldColor : borderColor,
+                    IconButton(
+                      icon: Icon(
+                        game.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: game.isFavorite ? goldColor : borderColor,
+                      ),
+                      onPressed: () => updateIsFavorite(game),
                     ),
-                    onPressed: () => updateIsFavorite(game),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          // Основная информация
-          const Text(
-            'Основная информация',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  InfoRow(
-                    label: 'Наличие в коллекции',
-                    value: convertBoolToStr(game.isInCollection),
-                    isFirst: true,
-                  ),
-                  if (game.year != null)
-                    InfoRow(label: 'Год', value: game.year),
-                  if (game.minPlayers != null)
+            // Основная информация
+            const Text(
+              'Основная информация',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
                     InfoRow(
-                      label: 'Минимальное количество игроков',
-                      value: game.minPlayers.toString(),
+                      label: 'Наличие в коллекции',
+                      value: convertBoolToStr(game.isInCollection),
+                      isFirst: true,
                     ),
-                  if (game.maxPlayers != null)
+                    if (game.year != null)
+                      InfoRow(label: 'Год', value: game.year),
+                    if (game.minPlayers != null)
+                      InfoRow(
+                        label: 'Минимальное количество игроков',
+                        value: game.minPlayers.toString(),
+                      ),
+                    if (game.maxPlayers != null)
+                      InfoRow(
+                        label: 'Максимальное количество игроков',
+                        value: game.maxPlayers.toString(),
+                      ),
                     InfoRow(
-                      label: 'Максимальное количество игроков',
-                      value: game.maxPlayers.toString(),
+                      label: 'Самодостаточность',
+                      value: convertBoolToStr(game.isStandalone),
                     ),
-                  InfoRow(
-                    label: 'Самодостаточность',
-                    value: convertBoolToStr(game.isStandalone),
-                  ),
-                  InfoRow(
-                    label: 'Рейтинг',
-                    value: ([null, 0.0].contains(game.rating))
-                        ? 'Неизвестно'
-                        : game.rating.toString(),
-                  ),
-                  if (game.description != null && game.description!.isNotEmpty)
-                    InfoRow(label: 'Описание', value: game.description),
-                ],
+                    InfoRow(
+                      label: 'Рейтинг',
+                      value: ([null, 0.0].contains(game.rating))
+                          ? 'Неизвестно'
+                          : game.rating.toString(),
+                    ),
+                    if (game.description != null &&
+                        game.description!.isNotEmpty)
+                      InfoRow(label: 'Описание', value: game.description),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          if (bases.isNotEmpty)
-            _buildMultiValCard('Базовая игра', Icons.layers, bases, (gameId) {
-              context.pushNamed(
-                'games-detail',
-                pathParameters: {'gameId': gameId.toString()},
-              );
-            }),
-          if (expansions.isNotEmpty)
-            _buildMultiValCard('Дополнения', Icons.layers, expansions, (
-              gameId,
-            ) {
-              context.pushNamed(
-                'games-detail',
-                pathParameters: {'gameId': gameId.toString()},
-              );
-            }),
-          if (designers.isNotEmpty)
-            _buildMultiValCard(
-              'Геймдизайнеры',
-              Icons.account_balance,
-              designers,
-              (designerId) {
+            if (bases.isNotEmpty)
+              _buildMultiValCard('Базовая игра', Icons.layers, bases, (gameId) {
+                context.pushNamed(
+                  'games-detail',
+                  pathParameters: {'gameId': gameId.toString()},
+                );
+              }),
+            if (expansions.isNotEmpty)
+              _buildMultiValCard('Дополнения', Icons.layers, expansions, (
+                gameId,
+              ) {
+                context.pushNamed(
+                  'games-detail',
+                  pathParameters: {'gameId': gameId.toString()},
+                );
+              }),
+            if (designers.isNotEmpty)
+              _buildMultiValCard(
+                'Геймдизайнеры',
+                Icons.account_balance,
+                designers,
+                (designerId) {
+                  final notifier = ref.read(gamesPaginatedProvider.notifier);
+                  notifier.filterByDesigner(designerId);
+                  context.pushNamed(
+                    'games-list',
+                    queryParameters: {'designerId': designerId.toString()},
+                  );
+                },
+              ),
+            if (artists.isNotEmpty)
+              _buildMultiValCard('Художники', Icons.border_color, artists, (
+                artistId,
+              ) {
                 final notifier = ref.read(gamesPaginatedProvider.notifier);
-                notifier.filterByDesigner(designerId);
+                notifier.filterByArtist(artistId);
                 context.pushNamed(
                   'games-list',
-                  queryParameters: {'designerId': designerId.toString()},
+                  queryParameters: {'artistId': artistId.toString()},
                 );
-              },
-            ),
-          if (artists.isNotEmpty)
-            _buildMultiValCard('Художники', Icons.border_color, artists, (
-              artistId,
-            ) {
-              final notifier = ref.read(gamesPaginatedProvider.notifier);
-              notifier.filterByArtist(artistId);
-              context.pushNamed(
-                'games-list',
-                queryParameters: {'artistId': artistId.toString()},
-              );
-            }),
-          if (tags.isNotEmpty)
-            _buildMultiValCard('Метки категорий', Icons.location_on, tags, (
-              tagId,
-            ) {
-              final notifier = ref.read(gamesPaginatedProvider.notifier);
-              notifier.filterByTag(tagId);
-              context.pushNamed(
-                'games-list',
-                queryParameters: {'tagId': tagId.toString()},
-              );
-            }),
-        ],
+              }),
+            if (tags.isNotEmpty)
+              _buildMultiValCard('Метки категорий', Icons.location_on, tags, (
+                tagId,
+              ) {
+                final notifier = ref.read(gamesPaginatedProvider.notifier);
+                notifier.filterByTag(tagId);
+                context.pushNamed(
+                  'games-list',
+                  queryParameters: {'tagId': tagId.toString()},
+                );
+              }),
+          ],
+        ),
       ),
     );
   }
@@ -275,7 +281,6 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
               onTap: () => onTap(item.id),
               child: Chip(
                 label: Text(item.name, style: TextStyle(color: goldColor)),
-
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
             );
@@ -355,7 +360,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 ),
                 // Кнопка удаления
                 IconButton(
-                  icon: const Icon(Icons.delete_outlined),
+                  icon: const Icon(Icons.delete_outlined, color: redColor),
                   onPressed: () {
                     buildDelModal(
                       context,

@@ -8,8 +8,7 @@ import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.d
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/widgets/export.dart'
-    show LoadingScreen, EmptyListScreen;
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
 
 class GamesCountingTemplatesSelectScreen<T> extends ConsumerStatefulWidget {
@@ -110,46 +109,55 @@ class _GamesCountingTemplatesSelectScreenState
             ],
           ],
         ),
-        body: gamesCountingTemplatesAsync.when(
-          data: (gamesCountingTemplates) {
-            // Если данных нет
-            if (gamesCountingTemplates.isEmpty) {
-              return EmptyListScreen();
-            }
+        body: Column(
+          children: [
+            Expanded(
+              child: gamesCountingTemplatesAsync.when(
+                data: (gamesCountingTemplates) {
+                  // Если данных нет
+                  if (gamesCountingTemplates.isEmpty) {
+                    return EmptyListScreen();
+                  }
 
-            return Scrollbar(
-              controller: _scrollController,
-              thumbVisibility: true,
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: gamesCountingTemplates.length,
-                itemBuilder: (context, index) {
-                  final gamesCountingTemplatesData =
-                      gamesCountingTemplates[index];
-                  final gamesCountingTemplate =
-                      gamesCountingTemplatesData.gamesCountingTemplate;
-                  String subtitle = gamesCountingTemplatesData.expansions
-                      .map((expansion) => expansion.name)
-                      .toList()
-                      .join(', ');
+                  return Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: gamesCountingTemplates.length,
+                      itemBuilder: (context, index) {
+                        final gamesCountingTemplatesData =
+                            gamesCountingTemplates[index];
+                        final gamesCountingTemplate =
+                            gamesCountingTemplatesData.gamesCountingTemplate;
+                        String subtitle = gamesCountingTemplatesData.expansions
+                            .map((expansion) => expansion.name)
+                            .toList()
+                            .join(', ');
 
-                  return Card(
-                    child: ListTile(
-                      leading: Icon(Icons.build),
-                      title: Text(gamesCountingTemplate.name),
-                      subtitle: Text(subtitle),
-                      trailing: Icon(Icons.play_arrow),
-                      onTap: () {
-                        _runSession(gamesCountingTemplate.id);
+                        return Card(
+                          child: ListTile(
+                            leading: Icon(Icons.build),
+                            title: Text(gamesCountingTemplate.name),
+                            subtitle: Text(subtitle),
+                            trailing: Icon(Icons.play_arrow),
+                            onTap: () {
+                              _runSession(gamesCountingTemplate.id);
+                            },
+                          ),
+                        );
                       },
                     ),
                   );
                 },
+                loading: () => LoadingScreen(),
+                error: (err, _) => Text('ОШИБКА: ${err.toString()}'),
               ),
-            );
-          },
-          loading: () => LoadingScreen(),
-          error: (err, _) => Text('ОШИБКА: ${err.toString()}'),
+            ),
+            if (gamesCountingTemplatesAsync.hasValue &&
+                gamesCountingTemplatesAsync.value!.isNotEmpty)
+              PaginationPanel(notifier: notifier),
+          ],
         ),
       ),
     );

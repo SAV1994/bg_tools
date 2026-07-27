@@ -8,6 +8,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/screens/game/mixins/export.dart';
 
@@ -134,7 +135,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
             IconButton(
               icon: Icon(
                 _isSearchOpen ? Icons.close : Icons.search,
-                color: _isSearchOpen ? redColor : borderColor,
+                color: _isSearchOpen ? redColor : textColor,
               ),
               onPressed: () {
                 setState(() {
@@ -148,31 +149,45 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
             ),
             if (!_isSearchOpen) ...[
               IconButton(
+                visualDensity: VisualDensity(horizontal: -4.0),
+                icon: Icon(
+                  notifier.isInCollection
+                      ? Icons.check_circle
+                      : Icons.check_circle_outline,
+                  color: notifier.isInCollection ? goldColor : textColor,
+                ),
+                onPressed: () => notifier.toggleIsInCollection(),
+              ),
+              IconButton(
+                visualDensity: VisualDensity(horizontal: -4.0),
                 icon: Icon(
                   notifier.onlyStandalone ? Icons.photo : Icons.photo_library,
-                  color: notifier.onlyStandalone ? borderColor : goldColor,
+                  color: notifier.onlyStandalone ? textColor : goldColor,
                 ),
                 onPressed: () => notifier.toggleOnlyStandalone(),
               ),
               IconButton(
+                visualDensity: VisualDensity(horizontal: -4.0),
                 icon: Icon(
                   notifier.onlyFavorite
                       ? Icons.favorite
                       : Icons.favorite_border,
-                  color: notifier.onlyFavorite ? goldColor : borderColor,
+                  color: notifier.onlyFavorite ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOnlyFavorite(),
               ),
               IconButton(
+                visualDensity: VisualDensity(horizontal: -4.0),
                 icon: Icon(
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
                       : Icons.arrow_downward,
-                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                  color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOrdering(),
               ),
               IconButton(
+                visualDensity: VisualDensity(horizontal: -4.0),
                 icon: Icon(addBtnIcon),
                 onPressed: () => {_openAddForm()},
               ),
@@ -198,19 +213,12 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                       itemBuilder: (context, index) {
                         final Game game = games[index];
 
-                        String gameInfo = game.isInCollection ? '🟢' : '🔴';
+                        String gameInfo = game.isInCollection ? '🟢 ' : '🔴 ';
 
-                        if (game.minPlayers == null &&
-                            game.maxPlayers == null) {
-                          gameInfo += emptyVal;
-                        } else if (game.maxPlayers == null) {
-                          gameInfo += ' (от ${game.minPlayers} игроков)';
-                        } else if (game.minPlayers == null) {
-                          gameInfo += ' (до ${game.maxPlayers} игроков)';
-                        } else {
-                          gameInfo +=
-                              ' (${game.minPlayers} - ${game.maxPlayers} игроков)';
-                        }
+                        gameInfo += getPlayersCountStr(
+                          game.minPlayers,
+                          game.maxPlayers,
+                        );
 
                         return Card(
                           child: ListTile(
@@ -219,9 +227,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                                 game.isFavorite
                                     ? Icons.favorite
                                     : Icons.favorite_border,
-                                color: game.isFavorite
-                                    ? goldColor
-                                    : borderColor,
+                                color: game.isFavorite ? goldColor : textColor,
                               ),
                               onPressed: () => updateIsFavorite(game),
                             ),

@@ -74,95 +74,103 @@ class _GamingSessionDetailScreenState
     final List<GamingSessionGamerData?> gamers = data.gamers;
     final List<Game> expansions = data.expansions;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
-        children: [
-          // Заголовок с именем
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    child: game.imagePath != null
-                        ? Image.file(
-                            File(game.imagePath!),
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          )
-                        : Container(
-                            width: 100,
-                            height: 100,
-                            color: Colors.grey.shade300,
-                            child: const Icon(
-                              Icons.image_not_supported,
-                              size: 40,
-                              color: Colors.grey,
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
+          children: [
+            // Заголовок с именем
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      child: game.imagePath != null
+                          ? Image.file(
+                              File(game.imagePath!),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              width: 100,
+                              height: 100,
+                              color: Colors.grey.shade300,
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            game.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          game.name,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Основная информация
-          const Text(
-            'Основная информация',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  InfoRow(
-                    label: 'Начало партии',
-                    value: DateFormats.formatDateTime(gamingSession.startedAt),
-                    isFirst: true,
-                  ),
-
-                  if (gamingSession.finishedAt != null)
-                    InfoRow(
-                      label: 'Конец партии',
-                      value: DateFormats.formatDateTime(
-                        gamingSession.finishedAt!,
+                        ],
                       ),
                     ),
-
-                  InfoRow(
-                    label: 'Партия закончена?',
-                    value: convertBoolToStr(gamingSession.isFinished),
-                  ),
-
-                  if (gamingSession.comment != null &&
-                      gamingSession.comment!.isNotEmpty)
-                    InfoRow(label: 'Комментарий', value: gamingSession.comment),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          if (expansions.isNotEmpty) _buildExpansionsCard(expansions),
-          if (gamers.isNotEmpty) _buildGamersCard(gamers),
-        ],
+            // Основная информация
+            const Text(
+              'Основная информация',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    InfoRow(
+                      label: 'Начало партии',
+                      value: DateFormats.formatDateTime(
+                        gamingSession.startedAt,
+                      ),
+                      isFirst: true,
+                    ),
+
+                    if (gamingSession.finishedAt != null)
+                      InfoRow(
+                        label: 'Конец партии',
+                        value: DateFormats.formatDateTime(
+                          gamingSession.finishedAt!,
+                        ),
+                      ),
+
+                    InfoRow(
+                      label: 'Партия закончена?',
+                      value: convertBoolToStr(gamingSession.isFinished),
+                    ),
+
+                    if (gamingSession.comment != null &&
+                        gamingSession.comment!.isNotEmpty)
+                      InfoRow(
+                        label: 'Комментарий',
+                        value: gamingSession.comment,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            if (expansions.isNotEmpty) _buildExpansionsCard(expansions),
+            if (gamers.isNotEmpty) _buildGamersCard(gamers),
+          ],
+        ),
       ),
     );
   }
@@ -179,20 +187,16 @@ class _GamingSessionDetailScreenState
             ),
           ],
         ),
-        Card(
-          child: ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: expansions.length,
-            // separatorBuilder: (_, _) => const Divider(),
-            itemBuilder: (context, index) {
-              final expansion = expansions[index];
-              return ListTile(
-                leading: Icon(Icons.layers),
-                title: Text(expansion.name),
-              );
-            },
-          ),
+        Wrap(
+          alignment: WrapAlignment.start,
+          spacing: 8,
+          runSpacing: 8,
+          children: expansions.map((item) {
+            return Chip(
+              label: Text(item.name, style: TextStyle(color: goldColor)),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            );
+          }).toList(),
         ),
       ],
     );
@@ -289,7 +293,7 @@ class _GamingSessionDetailScreenState
           ),
           // Кнопка удаления
           IconButton(
-            icon: const Icon(Icons.delete_outlined),
+            icon: const Icon(Icons.delete_outlined, color: redColor),
             onPressed: () {
               final gamingSession = gamingSessionAsync.value?.gamingSession;
               if (gamingSession != null) {

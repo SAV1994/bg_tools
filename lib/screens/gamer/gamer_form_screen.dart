@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
@@ -132,7 +133,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
         actions: [
           if (widget.gamerId != null && gamer!.isOwner == false)
             IconButton(
-              icon: Icon(Icons.delete_outlined),
+              icon: Icon(Icons.delete_outlined, color: redColor),
               onPressed: () => {
                 buildDelModal(
                   context,
@@ -146,88 +147,91 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            spacing: 16,
-            children: [
-              if (_generalError != null)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error, color: Colors.red.shade700, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _generalError!,
-                          style: TextStyle(color: Colors.red.shade700),
+      body: Scrollbar(
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              spacing: 16,
+              children: [
+                if (_generalError != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red.shade700, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _generalError!,
+                            style: TextStyle(color: Colors.red.shade700),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              TextFormField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Ник *',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите ник';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _firstNameController,
-                decoration: InputDecoration(
-                  labelText: 'Имя *',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите имя';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: InputDecoration(
-                  labelText: 'Фамилия',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              TextFormField(
-                controller: _middleNameController,
-                decoration: InputDecoration(
-                  labelText: 'Отчество',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _submitForm,
-                      child: Text('Сохранить'),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ],
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Ник *',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Пожалуйста, введите ник';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Имя *',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Пожалуйста, введите имя';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Фамилия',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                TextFormField(
+                  controller: _middleNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Отчество',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _submitForm,
+                        child: Text('Сохранить'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

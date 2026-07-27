@@ -173,6 +173,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     required bool reverseOrdering,
     required bool onlyFavorite,
     required bool onlyStandalone,
+    required bool isInCollection,
     int? artistId,
     int? designerId,
     int? tagId,
@@ -187,6 +188,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       query: query,
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
+      isInCollection: isInCollection,
       artistId: artistId,
       designerId: designerId,
       tagId: tagId,
@@ -200,6 +202,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   Future<int> getTotalCount({
     bool onlyFavorite = false,
     bool onlyStandalone = false,
+    bool isInCollection = false,
     int? artistId,
     int? designerId,
     int? tagId,
@@ -213,6 +216,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       designerId: designerId,
       tagId: tagId,
       onlyStandalone: onlyStandalone,
+      isInCollection: isInCollection,
     );
 
     return await query.get().then((list) => list.length);
@@ -345,6 +349,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     required SimpleSelectStatement<$GamesTable, Game> query,
     required bool onlyFavorite,
     required bool onlyStandalone,
+    required bool isInCollection,
     int? artistId,
     int? designerId,
     int? tagId,
@@ -356,6 +361,10 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
     if (onlyStandalone) {
       query = query..where((g) => g.isStandalone.isValue(true));
+    }
+
+    if (isInCollection) {
+      query = query..where((g) => g.isInCollection.isValue(true));
     }
 
     if (artistId != null) {
@@ -382,15 +391,29 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     }
 
     if (searchQuery != null && searchQuery.isNotEmpty) {
-      query = query
-        ..where((g) {
-          final lowerNameExpression = CustomExpression<String>(
-            'lower_unicode(name)',
-            watchedTables: [games],
-          );
+      final regex = RegExp(r'^>=(\d+)$');
 
-          return lowerNameExpression.like('%${searchQuery.toLowerCase()}%');
-        });
+      final match = regex.firstMatch(searchQuery);
+      if (match != null) {
+        // group(0) — всё совпадение, group(1) — первая группа из (...)
+        final int playersCount = int.parse(match.group(1)!);
+        query = query
+          ..where(
+            (g) =>
+                games.minPlayers.isSmallerOrEqualValue(playersCount) &
+                games.maxPlayers.isBiggerOrEqualValue(playersCount),
+          );
+      } else {
+        query = query
+          ..where((g) {
+            final lowerNameExpression = CustomExpression<String>(
+              'lower_unicode(name)',
+              watchedTables: [games],
+            );
+
+            return lowerNameExpression.like('%${searchQuery.toLowerCase()}%');
+          });
+      }
     }
 
     return query;
