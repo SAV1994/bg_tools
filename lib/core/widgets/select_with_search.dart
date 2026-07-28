@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
 
 // Селект с возможностью поиска
 class SelectWithSearch<T> extends StatefulWidget {
@@ -34,6 +35,8 @@ class SelectWithSearch<T> extends StatefulWidget {
 }
 
 class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
+  final GlobalKey _dropdownKey = GlobalKey();
+  // Контроллеры
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -85,6 +88,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
           children: [
             Text(
               widget.label,
+              key: _dropdownKey,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -100,7 +104,10 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
         // Кнопка-селектор
         GestureDetector(
           onTap: () {
-            setState(() => _isDropdownOpen = !_isDropdownOpen);
+            setState(() {
+              _isDropdownOpen = !_isDropdownOpen;
+              scrollToDropdown(_dropdownKey);
+            });
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

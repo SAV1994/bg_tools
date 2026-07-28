@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
 
 // Мультиселект с возможностью поиска
 class MultiSelectWithSearch<T> extends StatefulWidget {
@@ -33,6 +34,8 @@ class MultiSelectWithSearch<T> extends StatefulWidget {
 }
 
 class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
+  final GlobalKey _dropdownKey = GlobalKey();
+  // Контроллеры
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -104,6 +107,7 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
         // Метка
         Text(
           widget.label,
+          key: _dropdownKey,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -115,7 +119,10 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
         // Кнопка-селектор
         GestureDetector(
           onTap: () {
-            setState(() => _isDropdownOpen = !_isDropdownOpen);
+            setState(() {
+              _isDropdownOpen = !_isDropdownOpen;
+              scrollToDropdown(_dropdownKey);
+            });
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

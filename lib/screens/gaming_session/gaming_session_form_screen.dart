@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
@@ -218,19 +220,30 @@ class _GamingSessionFormScreenState
   }
 
   void _submitForm() async {
+    if (_selectedGameType == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Укажите тип игры')));
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       final gamingSessionDao = ref.read(gamingSessionDaoProvider);
+      final List<GamingSessionGamerData> gamersData = _selectedGamers.values
+          .toList();
+      final Map<String, dynamic> sessionData = _getSessionData(gamersData);
+
       final gamingSessionComp = GamingSessionsCompanion(
         gameId: Value(_selectedGame!.id),
         startedAt: Value(_startedAt),
         finishedAt: Value(_finishedAt),
         isFinished: Value(_isFinished),
         comment: Value(_commentController.text),
-        gameType: Value(_selectedGameType?.id),
+        gameType: Value(_selectedGameType!.id),
         rootSessionId: Value(_selectedGamingSession?.id),
+        data: Value(jsonEncode(sessionData)),
       );
-      final List<GamingSessionGamerData?> gamersData = _selectedGamers.values
-          .toList();
+
       try {
         if (widget.gamingSessionId == null) {
           await gamingSessionDao.create(
@@ -269,6 +282,37 @@ class _GamingSessionFormScreenState
         });
       }
     }
+  }
+
+  Map<String, dynamic> _getSessionData(
+    List<GamingSessionGamerData> playersData,
+  ) {
+    Map<String, dynamic> sessionData = getSessionInitialData();
+
+    for (var playerData in playersData) {
+      if (playerData.team != null) {
+        if (sessionData['teamsData'][playerData.team.toString()] == null) {
+          sessionData['teamsData'][playerData.team.toString()] = {
+            'score': playerData.score,
+            'scoreByrounds': [],
+            'numWinRounds': null,
+            "place": playerData.place,
+            "name": null,
+          };
+        } else if (playerData.score != null) {
+          if (sessionData['teamsData'][playerData.team.toString()]['score'] ==
+              null) {
+            sessionData['teamsData'][playerData.team.toString()]['score'] =
+                playerData.score;
+          } else {
+            sessionData['teamsData'][playerData.team.toString()]['score'] +=
+                playerData.score;
+          }
+        }
+      }
+    }
+
+    return sessionData;
   }
 
   @override

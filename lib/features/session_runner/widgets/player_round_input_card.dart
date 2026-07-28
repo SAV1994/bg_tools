@@ -37,6 +37,10 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: secondColor,
+        border: Border.all(
+          color: (team != null) ? team.color : borderColor,
+          width: 3,
+        ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -58,7 +62,7 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: (team != null) ? team.color : Colors.deepOrange,
+                  color: textColor,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -67,7 +71,7 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
           ),
 
           // Количество выигранных раундов
-          if (gamerData['numWInRounds'] != null)
+          if (gamerData['numWinRounds'] != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -75,7 +79,7 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                gamerData['numWInRounds'].toString(),
+                gamerData['numWinRounds'].toString(),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,

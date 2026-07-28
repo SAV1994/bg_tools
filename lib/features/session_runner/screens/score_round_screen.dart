@@ -114,7 +114,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
     }
     // Засчитываем победу в раунде только если не было ничьей
     if (roundResults[0].$2 != roundResults[1].$2) {
-      widget.data['gamers'][roundResults[0].$1]['numWInRounds'] += 1;
+      widget.data['gamers'][roundResults[0].$1]['numWinRounds'] += 1;
     }
 
     if (!_isFinished) {

@@ -139,7 +139,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     }
     // Засчитываем победу в раунде только если не было ничьей
     if (roundResults[0].$2 != roundResults[1].$2) {
-      widget.data['gamers'][roundResults[0].$1]['numWInRounds'] += 1;
+      widget.data['gamers'][roundResults[0].$1]['numWinRounds'] += 1;
     }
 
     if (!_isFinished) {
@@ -193,11 +193,11 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     }
     // Засчитываем победу в раунде только если не было ничьей
     if (roundResults[0].$2 != roundResults[1].$2) {
-      if (widget.data['teamsData'][roundResults[0].$1]['numWInRounds'] !=
+      if (widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] !=
           null) {
-        widget.data['teamsData'][roundResults[0].$1]['numWInRounds'] += 1;
+        widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] += 1;
       } else {
-        widget.data['teamsData'][roundResults[0].$1]['numWInRounds'] = 1;
+        widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] = 1;
       }
     }
 
@@ -540,7 +540,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                       child: Text(
                         widget
                             .data['teamsData'][teamData['team'].id
-                                .toString()]['numWInRounds']
+                                .toString()]['numWinRounds']
                             .toString(),
                         style: const TextStyle(
                           fontSize: 20,

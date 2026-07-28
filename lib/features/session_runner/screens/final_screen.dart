@@ -86,6 +86,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
   Map<String, dynamic>? _getGamerSessionData(Map<String, dynamic> gamerData) {
     final Map<String, dynamic> data = {};
     data['scoreByrounds'] = gamerData['scoreByrounds'];
+    data['numWinRounds'] = gamerData['numWinRounds'];
     data['role'] = gamerData['role'];
 
     return data;

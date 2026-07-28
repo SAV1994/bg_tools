@@ -102,7 +102,7 @@ class _CountingTemplateDetailScreenState
                                 InfoRow(
                                   label: 'Описание',
                                   value: template.description,
-                                  isFirst: true,
+                                  addDivider: false,
                                 ),
                               ],
                             ),
@@ -126,7 +126,7 @@ class _CountingTemplateDetailScreenState
                                   value: GameTypeEnum.fromId(
                                     templateData['gameType'],
                                   ).label,
-                                  isFirst: true,
+                                  addDivider: false,
                                 ),
 
                                 if (templateData['firstPlayerStartType'] !=

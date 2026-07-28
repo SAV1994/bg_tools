@@ -361,21 +361,21 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: _isLoading
-              ? LoadingScreen()
-              : SingleChildScrollView(
+        return _isLoading
+            ? LoadingScreen()
+            : Scrollbar(
+                thumbVisibility: true,
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      ..._teams.keys.map((team) {
-                        return _buildTeamCard(team);
-                      }),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        ..._teams.keys.map((team) {
+                          return _buildTeamCard(team);
+                        }),
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: OutlinedButton.icon(
+                        OutlinedButton.icon(
                           onPressed: () {
                             _shuffle(true);
                           },
@@ -384,10 +384,8 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
                             minimumSize: const Size(double.infinity, 40),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: OutlinedButton.icon(
+
+                        OutlinedButton.icon(
                           onPressed: () {
                             _shuffle(false);
                           },
@@ -396,11 +394,9 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
                             minimumSize: const Size(double.infinity, 40),
                           ),
                         ),
-                      ),
-                      if (widget.data['gamers'].isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: OutlinedButton.icon(
+
+                        if (widget.data['gamers'].isEmpty)
+                          OutlinedButton.icon(
                             onPressed: _addLastSessionTeams,
                             icon: const Icon(Icons.group),
                             label: const Text(
@@ -410,11 +406,11 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
                               minimumSize: const Size(double.infinity, 40),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-        );
+              );
       },
     );
   }

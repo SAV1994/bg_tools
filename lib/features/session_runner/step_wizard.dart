@@ -123,50 +123,47 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
                 ),
 
                 // Заголовок
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: (_currentStep >= 1)
-                            ? Icon(Icons.arrow_back_ios, color: goldColor)
-                            : Icon(Icons.do_not_disturb, color: redColor),
-                        onPressed: () {
-                          if (_currentStep >= 1) {
-                            _previousStep();
-                          }
-                        },
-                      ),
-                      Row(
-                        spacing: 5,
-                        children: [
-                          Text(
-                            _currentScenarioStep.title,
-                            style: TextStyle(fontSize: 16, color: titleColor),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: (_currentStep >= 1)
+                          ? Icon(Icons.arrow_back_ios, color: goldColor)
+                          : Icon(Icons.do_not_disturb, color: redColor),
+                      onPressed: () {
+                        if (_currentStep >= 1) {
+                          _previousStep();
+                        }
+                      },
+                    ),
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Text(
+                          _currentScenarioStep.title,
+                          style: TextStyle(fontSize: 16, color: titleColor),
+                        ),
+                        Tooltip(
+                          message: _currentScenarioStep.description,
+                          child: const Icon(
+                            Icons.info_outline,
+                            size: 25,
+                            color: titleColor,
                           ),
-                          Tooltip(
-                            message: _currentScenarioStep.description,
-                            child: const Icon(
-                              Icons.info_outline,
-                              size: 25,
-                              color: titleColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        icon: (isLastStep)
-                            ? Icon(Icons.arrow_forward_ios, color: goldColor)
-                            : Icon(Icons.do_not_disturb, color: redColor),
-                        onPressed: () {
-                          if (isLastStep) {
-                            _nextStep();
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: (isLastStep)
+                          ? Icon(Icons.arrow_forward_ios, color: goldColor)
+                          : Icon(Icons.do_not_disturb, color: redColor),
+                      onPressed: () {
+                        if (isLastStep) {
+                          _nextStep();
+                        }
+                      },
+                    ),
+                  ],
                 ),
 
                 // Основной контент

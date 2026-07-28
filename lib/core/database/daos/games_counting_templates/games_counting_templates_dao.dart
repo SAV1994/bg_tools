@@ -188,6 +188,22 @@ class GamesCountingTemplatesDao extends DatabaseAccessor<AppDatabase>
     return await query.get().then((list) => list.length);
   }
 
+  // Общее число шаблонов партии игр, использующих шаблон
+  Future<int> getGamesTemplateCount(int countingTemplateId) async {
+    SimpleSelectStatement<$GamesCountingTemplatesTable, GamesCountingTemplate>
+    query = select(gamesCountingTemplates)
+      ..where((gct) => gct.countingTemplateId.equals(countingTemplateId));
+
+    return await query.get().then((list) => list.length);
+  }
+
+  // Удалить шаблоны партии игр, использующие шаблон
+  Future<void> delByTemplate(int countingTemplateId) async {
+    await (delete(
+      gamesCountingTemplates,
+    )..where((gct) => gct.countingTemplateId.equals(countingTemplateId))).go();
+  }
+
   // Шаблон партии игры
   Future<GamesCountingTemplatesData?> getSingle(
     int gamesCountingTemplatesId,

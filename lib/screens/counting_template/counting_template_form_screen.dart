@@ -30,7 +30,10 @@ class _CountingTemplateFormFormState
   // Контроллеры
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
-  // Поля для хранения выбранных значений (плоская структура)
+  // Переменные для валидации целостности связи с играми
+  int _gamesTemplateCount = 0;
+  GameTypeEnum? _oldSelectedGameType;
+  // Поля для хранения выбранных значений
   GameTypeEnum? _selectedGameType;
   FirstPlayerStartTypeEnum? _selectedFirstPlayerStartType;
   ResultTypeEnum? _selectedResultType;
@@ -74,6 +77,13 @@ class _CountingTemplateFormFormState
       _selectedGameType = templateData['gameType'] != null
           ? GameTypeEnum.fromId(templateData['gameType'])
           : null;
+
+      _oldSelectedGameType = _selectedGameType;
+      final gamesTemplateDao = ref.read(gamesCountingTemplatesDaoProvider);
+      _gamesTemplateCount = await gamesTemplateDao.getGamesTemplateCount(
+        template!.id,
+      );
+
       _selectedFirstPlayerStartType =
           templateData['firstPlayerStartType'] != null
           ? FirstPlayerStartTypeEnum.fromId(
@@ -180,6 +190,19 @@ class _CountingTemplateFormFormState
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_oldSelectedGameType != null &&
+        _selectedGameType != _oldSelectedGameType &&
+        _gamesTemplateCount > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Нельзя изменить тип игры, сначала удалите связи с играми.',
+          ),
+        ),
+      );
+      return;
+    }
 
     if (_selectedGameType == null) {
       ScaffoldMessenger.of(
@@ -314,6 +337,18 @@ class _CountingTemplateFormFormState
     }
   }
 
+  Future<void> _delGamesLinks() async {
+    setState(() => _isLoading = true);
+
+    final gamesTemplateDao = ref.read(gamesCountingTemplatesDaoProvider);
+    await gamesTemplateDao.delByTemplate(template!.id);
+
+    setState(() {
+      _gamesTemplateCount = 0;
+      _isLoading = false;
+    });
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -342,6 +377,17 @@ class _CountingTemplateFormFormState
                   child: Column(
                     spacing: 16,
                     children: [
+                      if (_gamesTemplateCount > 0)
+                        ElevatedButton(
+                          onPressed: _delGamesLinks,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 50),
+                          ),
+                          child: Text(
+                            'Удалить все ($_gamesTemplateCount) связи с играми',
+                          ),
+                        ),
+
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(

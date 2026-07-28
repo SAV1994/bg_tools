@@ -192,18 +192,21 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
                         );
                       },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: OutlinedButton.icon(
-                        onPressed: _showAddGamerDialog,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Добавить игрока'),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 40),
+                    if (widget.data['type'] != GameTypeEnum.solo.id ||
+                        widget.data['gamers'].isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: OutlinedButton.icon(
+                          onPressed: _showAddGamerDialog,
+                          icon: const Icon(Icons.add),
+                          label: const Text('Добавить игрока'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 40),
+                          ),
                         ),
                       ),
-                    ),
-                    if (widget.data['gamers'].isEmpty ||
+                    if (widget.data['type'] != GameTypeEnum.solo.id &&
+                            widget.data['gamers'].isEmpty ||
                         (widget.data['master'] != null &&
                             widget.data['gamers'].length == 1))
                       Padding(

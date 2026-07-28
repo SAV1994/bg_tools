@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/screens/gaming_session/form_widgets/team_select_widget.dart';
 
 class AddGamerDetailsForm extends StatefulWidget {
@@ -107,6 +108,7 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
                               ? int.tryParse(_turnOrderController.text)
                               : null,
                           team: _selectedTeam?.id,
+                          data: getPlayerInitialData(),
                         ),
                       );
                     }

@@ -8,14 +8,14 @@ class InfoRow extends ConsumerStatefulWidget {
   final String label;
   final String? value;
   final Color? valueColor;
-  final bool isFirst;
+  final bool addDivider;
 
   const InfoRow({
     super.key,
     required this.label,
     this.value,
     this.valueColor,
-    this.isFirst = false,
+    this.addDivider = true,
   });
 
   @override
@@ -27,7 +27,7 @@ class _InfoRowState extends ConsumerState<InfoRow> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (!widget.isFirst) const Divider(),
+        if (widget.addDivider) const Divider(),
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),

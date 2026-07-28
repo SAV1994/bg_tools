@@ -1,8 +1,14 @@
 export 'add_gamer_modal_form_builder.dart';
+export 'auto_scroll.dart';
 export 'bool_to_string.dart';
 export 'confirm_del_modal_builder.dart';
 export 'dateformats.dart';
 export 'gamer_fio_builder.dart';
+export 'get_duration.dart';
+export 'get_place_text.dart';
+export 'initial_player_data.dart';
+export 'initial_session_data.dart';
 export 'modal_select_list_builder.dart';
-export 'players_to_str.dart';
+export 'players_count_to_str.dart';
+export 'score_list_to_str.dart';
 export 'universal_attr_getter.dart';

@@ -34,6 +34,15 @@ class MyApp extends StatelessWidget {
           textColor: textColor, // Цвет для основного текста и подзаголовков
           iconColor: textColor, // Цвет для иконок (по желанию)
         ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: borderColor,
+            side: const BorderSide(color: borderColor, width: 2.0),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+          ),
+        ),
         dialogTheme: const DialogThemeData(
           backgroundColor: secondColor, // Цвет фона диалога
           titleTextStyle: TextStyle(

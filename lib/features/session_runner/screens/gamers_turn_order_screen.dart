@@ -150,117 +150,111 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return SingleChildScrollView(
-          child: Column(
-            children: _isLoading
-                ? [LoadingScreen()]
-                : [
-                    ReorderableListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      header: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            const Text(
-                              'Порядок хода',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+        return Scrollbar(
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            child: Column(
+              children: _isLoading
+                  ? [LoadingScreen()]
+                  : [
+                      ReorderableListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        onReorder: _reorder,
+                        proxyDecorator: (child, index, animation) {
+                          return Material(
+                            elevation: 0,
+                            color: Colors.transparent,
+                            child: child,
+                          );
+                        },
+                        itemCount: widget.data['gamers'].length,
+                        itemBuilder: (context, index) {
+                          final Map<String, dynamic> gamerData =
+                              widget.data['gamers'][index];
+                          return Container(
+                            key: Key('${gamerData['id']}_$index'),
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
                             ),
-                          ],
-                        ),
-                      ),
-                      onReorder: _reorder,
-                      proxyDecorator: (child, index, animation) {
-                        return Material(
-                          elevation: 0,
-                          color: Colors.transparent,
-                          child: child,
-                        );
-                      },
-                      itemCount: widget.data['gamers'].length,
-                      itemBuilder: (context, index) {
-                        final Map<String, dynamic> gamerData =
-                            widget.data['gamers'][index];
-                        return Container(
-                          key: Key('${gamerData['id']}_$index'),
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 4,
-                          ),
-                          child: Card(
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: (gamerData['team'] != null)
-                                    ? TeamsEnum.fromId(gamerData['team']).color
-                                    : Colors.red,
-                                child: Text(
-                                  '${index + 1}',
-                                  style: TextStyle(color: Colors.white),
+                            child: Card(
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: (gamerData['team'] != null)
+                                      ? TeamsEnum.fromId(
+                                          gamerData['team'],
+                                        ).color
+                                      : Colors.red,
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                title: Text(gamerData['username']),
+                                subtitle: Text(gamerData['fio']),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ReorderableDragStartListener(
+                                      index: index,
+                                      child: Icon(Icons.drag_handle),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              title: Text(gamerData['username']),
-                              subtitle: Text(gamerData['fio']),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ReorderableDragStartListener(
-                                    index: index,
-                                    child: Icon(Icons.drag_handle),
-                                  ),
-                                ],
-                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: OutlinedButton.icon(
+                          onPressed: _reorderByCircle,
+                          icon: const Icon(Icons.trip_origin),
+                          label: const Text('Сохранить последовательность'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 40),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: OutlinedButton.icon(
+                          onPressed: _reorderRandom,
+                          icon: const Icon(Icons.priority_high),
+                          label: const Text('Полный рандом'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 40),
+                          ),
+                        ),
+                      ),
+                      if (widget.data['type'] == GameTypeEnum.team.id)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: OutlinedButton.icon(
+                            onPressed: _reorderTeamTakeTurns,
+                            icon: const Icon(Icons.priority_high),
+                            label: const Text('Чередовать команды'),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 40),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: OutlinedButton.icon(
-                        onPressed: _reorderByCircle,
-                        icon: const Icon(Icons.trip_origin),
-                        label: const Text('Сохранить последовательность'),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 40),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: OutlinedButton.icon(
-                        onPressed: _reorderRandom,
-                        icon: const Icon(Icons.priority_high),
-                        label: const Text('Полный рандом'),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 40),
-                        ),
-                      ),
-                    ),
-                    if (widget.data['type'] == GameTypeEnum.team.id)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: OutlinedButton.icon(
-                          onPressed: _reorderTeamTakeTurns,
-                          icon: const Icon(Icons.priority_high),
-                          label: const Text('Чередовать команды'),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 40),
+                      if (widget.data['type'] == GameTypeEnum.team.id)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: OutlinedButton.icon(
+                            onPressed: _reorderOneTeamFirst,
+                            icon: const Icon(Icons.priority_high),
+                            label: const Text('Команды по порядку'),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 40),
+                            ),
                           ),
                         ),
-                      ),
-                    if (widget.data['type'] == GameTypeEnum.team.id)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: OutlinedButton.icon(
-                          onPressed: _reorderOneTeamFirst,
-                          icon: const Icon(Icons.priority_high),
-                          label: const Text('Команды по порядку'),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 40),
-                          ),
-                        ),
-                      ),
-                  ],
+                    ],
+            ),
           ),
         );
       },

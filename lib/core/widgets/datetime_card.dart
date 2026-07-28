@@ -24,17 +24,7 @@ class DateTimeDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     String? duration;
     if (secondDateTime != null) {
-      final Duration difference;
-      if (dateTime.isBefore(secondDateTime!)) {
-        difference = secondDateTime!.difference(dateTime);
-      } else {
-        difference = dateTime.difference(secondDateTime!);
-      }
-
-      // Вычисляем общее количество часов и оставшиеся минуты
-      final hours = difference.inHours;
-      final minutes = difference.inMinutes.remainder(60);
-      duration = '$hours ч. $minutes мин.';
+      duration = getDuration(dateTime, secondDateTime!);
     }
 
     return Card(

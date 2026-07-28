@@ -10,7 +10,7 @@ List<dynamic> cleanGamersData(
       'fio': gamerData['fio'],
       'score': null,
       'scoreByrounds': [],
-      'numWInRounds': 0,
+      'numWinRounds': 0,
       'place': null,
       'turnOrder': null,
       'team': saveTeam ? gamerData['team'] : null,

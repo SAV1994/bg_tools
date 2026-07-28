@@ -119,7 +119,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                     InfoRow(
                       label: 'Создана',
                       value: DateFormats.formatDateTime(note!.createdAt),
-                      isFirst: true,
+                      addDivider: false,
                     ),
 
                     InfoRow(

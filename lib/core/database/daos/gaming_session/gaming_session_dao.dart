@@ -7,6 +7,7 @@ import 'package:bg_tools/core/database/tables/gaming_session.dart';
 import 'package:bg_tools/core/database/tables/gaming_sessions_expansions.dart';
 import 'package:bg_tools/core/database/tables/gaming_sessions_gamers.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/core/utils/export.dart';
 
 part 'gaming_session_dao.g.dart';
 
@@ -203,7 +204,9 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
         place: gamerInfo.place,
         turnOrder: gamerInfo.turnOrder,
         team: gamerInfo.team,
-        data: (gamerInfo.data != null) ? jsonDecode(gamerInfo.data!) : null,
+        data: (gamerInfo.data != null)
+            ? jsonDecode(gamerInfo.data!)
+            : getPlayerInitialData(),
       );
     }).toList();
 

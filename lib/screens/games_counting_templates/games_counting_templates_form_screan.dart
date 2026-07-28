@@ -866,7 +866,6 @@ class _GamesCountingTemplatesModalFormState
                               )
                             : ListView.builder(
                                 shrinkWrap: true,
-                                padding: const EdgeInsets.all(16),
                                 itemCount: _secretRolesConfig.length,
                                 itemBuilder: (context, index) {
                                   final team = _secretRolesConfig[index];

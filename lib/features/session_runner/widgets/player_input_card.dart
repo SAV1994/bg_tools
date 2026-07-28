@@ -33,9 +33,15 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      color: (widget.color == null) ? secondColor : widget.color,
+      color: secondColor,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: widget.color == null ? borderColor : widget.color!,
+          width: 3.0,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(

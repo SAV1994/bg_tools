@@ -163,7 +163,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                     InfoRow(
                       label: 'Наличие в коллекции',
                       value: convertBoolToStr(game.isInCollection),
-                      isFirst: true,
+                      addDivider: false,
                     ),
                     if (game.year != null)
                       InfoRow(label: 'Год', value: game.year),

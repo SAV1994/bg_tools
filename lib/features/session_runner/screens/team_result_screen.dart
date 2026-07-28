@@ -313,7 +313,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: team.color,
+                          color: blackColor,
                         ),
                       ),
                     ),
@@ -329,17 +329,14 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: blackColor,
                         ),
                       ),
                       if (widget.data['resultType'] !=
                           ResultTypeEnum.condition.id)
                         Text(
                           'Сумма очков: ${teamData['score']}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.9),
-                          ),
+                          style: TextStyle(fontSize: 14, color: blackColor),
                         ),
                     ],
                   ),
@@ -393,7 +390,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
+                            color: secondColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -422,7 +419,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: teamData['team'].color,
+          color: Colors.black,
         ),
         decoration: InputDecoration(
           filled: true,

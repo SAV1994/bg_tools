@@ -9,8 +9,11 @@ const Color titleColor = Colors.lightGreenAccent;
 const Color shadowColor = Colors.black;
 const Color greenColor = Color(0xFF69F0AE);
 const Color redColor = Color(0xFFFF5252);
-const Color goldColor = Color(0xFFFFD700);
+const Color goldColor = Color(0xFFFFB300);
+const Color silverColor = Color(0xFFBDBDBD);
+const Color bronzeColor = Color(0xFFE65100);
 const Color blueColor = Color(0xFF29B6F6);
+const Color blackColor = Colors.black;
 
 // Размеры
 const double iconSize = 20;
@@ -25,3 +28,8 @@ const IconData designersIcon = Icons.account_balance;
 const IconData artistsIcon = Icons.color_lens;
 const IconData loadingIcon = Icons.timer;
 const IconData addBtnIcon = Icons.add_box;
+
+// Эмодзи
+const String firstPlaceMedal = '🥇';
+const String secondPlaceMedal = '🥈';
+const String thirdPlaceMedal = '🥉';

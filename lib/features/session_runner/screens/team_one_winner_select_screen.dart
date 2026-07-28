@@ -262,7 +262,7 @@ class _TeamOneWinnerSelectScreenState
                         child: Text(
                           widget
                                   .data['teamsData'][teamData['team'].id
-                                      .toString()]['numWInRounds']
+                                      .toString()]['numWinRounds']
                                   ?.toString() ??
                               '0',
                           style: const TextStyle(
