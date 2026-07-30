@@ -76,6 +76,31 @@ class _GamingSessionDetailScreenState
     final List<GamingSessionGamerData?> players = data.gamers;
     final List<Game> expansions = data.expansions;
 
+    String? totalDuration;
+    if (data.sessionParts.isNotEmpty) {
+      List<Duration> durationList = data.sessionParts
+          .map(
+            (session) =>
+                getDuration(
+                      session!.startedAt,
+                      session.finishedAt!,
+                      convertToStr: false,
+                    )
+                    as Duration,
+          )
+          .toList();
+      durationList.add(
+        getDuration(
+              gamingSession.startedAt,
+              gamingSession.finishedAt!,
+              convertToStr: false,
+            )
+            as Duration,
+      );
+
+      totalDuration = getTotaDuration(durationList) as String;
+    }
+
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
@@ -160,12 +185,20 @@ class _GamingSessionDetailScreenState
                       ),
                       InfoRow(
                         label: 'Продолжительность партии',
-                        value: getDuration(
-                          gamingSession.startedAt,
-                          gamingSession.finishedAt!,
-                        ),
+                        value:
+                            getDuration(
+                                  gamingSession.startedAt,
+                                  gamingSession.finishedAt!,
+                                )
+                                as String,
                       ),
                     ],
+
+                    if (totalDuration != null)
+                      InfoRow(
+                        label: 'Общая продолжительность партии',
+                        value: totalDuration,
+                      ),
 
                     InfoRow(
                       label: 'Партия закончена?',
@@ -182,7 +215,51 @@ class _GamingSessionDetailScreenState
                 ),
               ),
             ),
+
+            if (data.sessionParts.isNotEmpty)
+              ListChips(
+                title: 'Составляющие сессии',
+                items: data.sessionParts,
+                getItemTitle: (gamingSession) {
+                  final String duration =
+                      getDuration(
+                            gamingSession.startedAt,
+                            gamingSession.finishedAt!,
+                          )
+                          as String;
+                  return '${DateFormats.formatDateTime(gamingSession.startedAt)} ($duration)';
+                },
+                onTap: (gamingSessionId) => context.pushNamed(
+                  'gaming-sessions-detail',
+                  pathParameters: {
+                    'gamingSessionId': gamingSessionId.toString(),
+                  },
+                ),
+              ),
+
+            if (data.linkedSessions.isNotEmpty)
+              ListChips(
+                title: 'Связанные сессии',
+                items: data.linkedSessions,
+                getItemTitle: (gamingSession) {
+                  final String duration =
+                      getDuration(
+                            gamingSession.startedAt,
+                            gamingSession.finishedAt!,
+                          )
+                          as String;
+                  return '${DateFormats.formatDateTime(gamingSession.startedAt)} ($duration)';
+                },
+                onTap: (gamingSessionId) => context.pushNamed(
+                  'gaming-sessions-detail',
+                  pathParameters: {
+                    'gamingSessionId': gamingSessionId.toString(),
+                  },
+                ),
+              ),
+
             if (expansions.isNotEmpty) _buildExpansionsCard(expansions),
+
             if (players.isNotEmpty)
               _buildPlayersCard(gamingSession, players, gamingSession.data),
           ],

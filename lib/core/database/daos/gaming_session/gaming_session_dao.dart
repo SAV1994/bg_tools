@@ -24,6 +24,19 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     List<GamingSessionGamerData?> gamersData,
     Set<int> expansionIds,
   ) async {
+    GamingSession? rootGamingSession;
+    if (gamingSession.isFinished.value &&
+        gamingSession.rootSessionId.value != null) {
+      final int? rootSessionId = gamingSession.rootSessionId.value;
+      if (rootSessionId != null) {
+        final GamingSession? rootSession = await getSingle(rootSessionId);
+        if (!rootSession!.isFinished) {
+          gamingSession = gamingSession.copyWith(rootSessionId: Value(null));
+          rootGamingSession = rootSession;
+        }
+      }
+    }
+
     int gamingSessionId = await into(gamingSessions).insert(gamingSession);
 
     for (final gamerData in gamersData) {
@@ -51,6 +64,26 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
       );
     }
 
+    if (rootGamingSession != null) {
+      final GamingSession? newGamingSession = await getSingle(gamingSessionId);
+
+      final List<GamingSession> unfinishedSessions = await getBySession(
+        rootGamingSession.id,
+      );
+      if (unfinishedSessions.isNotEmpty) {
+        final List<int> unfinishedSessionsList = unfinishedSessions
+            .map((gs) => gs.id)
+            .toList();
+        unfinishedSessionsList.add(rootGamingSession.id);
+
+        await (update(
+          gamingSessions,
+        )..where((gs) => gs.id.isIn(unfinishedSessionsList))).write(
+          GamingSessionsCompanion(rootSessionId: Value(newGamingSession!.id)),
+        );
+      }
+    }
+
     return gamingSessionId;
   }
 
@@ -64,7 +97,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     // 1. Обновляем
     final updateResult = await (update(
       gamingSessions,
-    )..where((g) => g.id.equals(gamingSessionId))).write(gamingSession);
+    )..where((gs) => gs.id.equals(gamingSessionId))).write(gamingSession);
 
     // 2. Удаляем старые связи
     await (delete(
@@ -182,12 +215,20 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     if (gamingSession == null) return null;
 
     // Получаем игроков с дополнительной информацией из связующей таблицы
-    final query = select(gamers).join([
-      innerJoin(
-        gamingSessionsGamers,
-        gamingSessionsGamers.gamerId.equalsExp(gamers.id),
-      ),
-    ])..where(gamingSessionsGamers.gamingSessionId.equals(gamingSessionId));
+    final query =
+        select(gamers).join([
+            innerJoin(
+              gamingSessionsGamers,
+              gamingSessionsGamers.gamerId.equalsExp(gamers.id),
+            ),
+          ])
+          ..where(gamingSessionsGamers.gamingSessionId.equals(gamingSessionId))
+          ..orderBy([
+            OrderingTerm.asc(
+              gamingSessionsGamers.place,
+              nulls: NullsOrder.last,
+            ),
+          ]);
 
     final Game? game = await (select(
       games,
@@ -212,6 +253,13 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
     final expansions = await getExpansions(gamingSessionId);
     final selectedExpansionIds = expansions.map((g) => g.id).toSet();
+    final List<GamingSession?> sessionParts = await getBySession(
+      gamingSessionId,
+    );
+    final List<GamingSession?> linkedSessions = await getBySession(
+      gamingSessionId,
+      isFinished: true,
+    );
 
     return GamingSessionFullData(
       gamingSession: gamingSession,
@@ -219,14 +267,39 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
       expansions: expansions,
       selectedExpansionIds: selectedExpansionIds,
       gamers: gamersInfo,
+      sessionParts: sessionParts,
+      linkedSessions: linkedSessions,
     );
   }
 
   // Все корневые сессии по игре
   Future<List<GamingSession>> getByGame(int gameId) async {
     final sessions =
+        await (select(gamingSessions)
+              ..where(
+                (gs) => gs.gameId.equals(gameId) & gs.rootSessionId.isNull(),
+              )
+              ..orderBy([
+                (gs) => OrderingTerm(
+                  expression: gs.startedAt,
+                  mode: OrderingMode.desc,
+                ),
+              ]))
+            .get();
+
+    return sessions.toList();
+  }
+
+  // Все дочерние сессии
+  Future<List<GamingSession>> getBySession(
+    int gamingSessionId, {
+    bool isFinished = false,
+  }) async {
+    final sessions =
         await (select(gamingSessions)..where(
-              (gs) => gs.gameId.equals(gameId) & gs.rootSessionId.isNull(),
+              (gs) =>
+                  gs.rootSessionId.equals(gamingSessionId) &
+                  gs.isFinished.equals(isFinished),
             ))
             .get();
 

@@ -7,7 +7,7 @@ Widget getPlaceText(int? place, {bool isFinished = true}) {
 
   if (!isFinished) {
     return Text(
-      'Место не определено',
+      'Партия не закончена',
       style: TextStyle(color: borderColor, fontSize: fontSize),
     );
   }
@@ -20,7 +20,7 @@ Widget getPlaceText(int? place, {bool isFinished = true}) {
       );
     case 1:
       return Text(
-        '$firstPlaceMedal Победитель',
+        '$firstPlaceMedal Победа',
         style: TextStyle(color: goldColor, fontSize: fontSize),
       );
     case 2:

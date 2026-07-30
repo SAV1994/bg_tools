@@ -133,17 +133,6 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
                     ReorderableListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      header: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            const Text(
-                              'Список игроков',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
                       onReorder: _reorder,
                       proxyDecorator: (child, index, animation) {
                         return Material(

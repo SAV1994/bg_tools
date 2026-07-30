@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 
@@ -72,7 +73,8 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
 
       await AppDataManager.clearActiveSession();
 
-      ref.read(gamingSessionsPaginatedProvider.notifier).updatePageLimit();
+      ref.read(gamingSessionsPaginatedProvider.notifier).refresh();
+      ref.invalidate(gamingSessionFullDataProvider);
 
       if (mounted) {
         Navigator.pop(context);

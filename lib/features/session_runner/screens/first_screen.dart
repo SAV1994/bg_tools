@@ -97,7 +97,7 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                           },
                           displayName: (gamingSession) =>
                               '${gamingSession.isFinished ? '✅' : '⏱️'} '
-                              '${DateFormats.formatDate(gamingSession.startedAt)}'
+                              '${DateFormats.formatDateTime(gamingSession.startedAt)}'
                               ' (${gamingSession.comment ?? emptyVal})',
                           getId: (gamingSession) => gamingSession.id,
                           searchHint: 'Поиск сессии...',

@@ -24,7 +24,7 @@ class DateTimeDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     String? duration;
     if (secondDateTime != null) {
-      duration = getDuration(dateTime, secondDateTime!);
+      duration = getDuration(dateTime, secondDateTime!) as String;
     }
 
     return Card(

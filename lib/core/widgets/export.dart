@@ -8,6 +8,7 @@ export 'fleather_editor.dart';
 export 'image_picker.dart';
 export 'import_btns.dart';
 export 'info_row.dart';
+export 'list_chips.dart';
 export 'loading_screen.dart';
 export 'multiple_select_with_search.dart';
 export 'pagination_panel.dart';

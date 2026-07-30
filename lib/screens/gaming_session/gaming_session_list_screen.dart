@@ -43,27 +43,6 @@ class _GamingSessionListScreenState
     setState(() => _isLoading = false);
   }
 
-  Future<void> _openAddForm() async {
-    final result = await context.pushNamed('gaming-sessions-add');
-
-    if (result == true) {
-      ref.invalidate(gamingSessionDaoProvider); // Обновляем провайдер
-      setState(() {});
-    }
-  }
-
-  Future<void> _openDetailPage(int gamingSessionId) async {
-    final result = await context.pushNamed(
-      'gaming-sessions-detail',
-      pathParameters: {'gamingSessionId': gamingSessionId.toString()},
-    );
-
-    if (result == true) {
-      ref.invalidate(gamingSessionDaoProvider); // Обновляем провайдер
-      setState(() {});
-    }
-  }
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -135,7 +114,7 @@ class _GamingSessionListScreenState
               ),
               IconButton(
                 icon: Icon(addBtnIcon),
-                onPressed: () => {_openAddForm()},
+                onPressed: () => context.pushNamed('gaming-sessions-add'),
               ),
             ],
           ],
@@ -187,9 +166,12 @@ class _GamingSessionListScreenState
                             ),
                             subtitle: Text(gamingSessionInfo),
                             trailing: Icon(Icons.arrow_forward_ios),
-                            onTap: () {
-                              _openDetailPage(gamingSession.id);
-                            },
+                            onTap: () => context.pushNamed(
+                              'gaming-sessions-detail',
+                              pathParameters: {
+                                'gamingSessionId': gamingSession.id.toString(),
+                              },
+                            ),
                           ),
                         );
                       },

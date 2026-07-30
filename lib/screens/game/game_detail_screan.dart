@@ -196,27 +196,35 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
             ),
 
             if (bases.isNotEmpty)
-              _buildMultiValCard('Базовая игра', Icons.layers, bases, (gameId) {
-                context.pushNamed(
-                  'games-detail',
-                  pathParameters: {'gameId': gameId.toString()},
-                );
-              }),
+              ListChips(
+                title: 'Базовая игра',
+                items: bases,
+                getItemTitle: (game) => game.name,
+                onTap: (gameId) {
+                  context.pushNamed(
+                    'games-detail',
+                    pathParameters: {'gameId': gameId.toString()},
+                  );
+                },
+              ),
             if (expansions.isNotEmpty)
-              _buildMultiValCard('Дополнения', Icons.layers, expansions, (
-                gameId,
-              ) {
-                context.pushNamed(
-                  'games-detail',
-                  pathParameters: {'gameId': gameId.toString()},
-                );
-              }),
+              ListChips(
+                title: 'Дополнения',
+                items: expansions,
+                getItemTitle: (game) => game.name,
+                onTap: (gameId) {
+                  context.pushNamed(
+                    'games-detail',
+                    pathParameters: {'gameId': gameId.toString()},
+                  );
+                },
+              ),
             if (designers.isNotEmpty)
-              _buildMultiValCard(
-                'Геймдизайнеры',
-                Icons.account_balance,
-                designers,
-                (designerId) {
+              ListChips(
+                title: 'Геймдизайнеры',
+                items: designers,
+                getItemTitle: (designer) => designer.name,
+                onTap: (designerId) {
                   final notifier = ref.read(gamesPaginatedProvider.notifier);
                   notifier.filterByDesigner(designerId);
                   context.pushNamed(
@@ -226,68 +234,36 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 },
               ),
             if (artists.isNotEmpty)
-              _buildMultiValCard('Художники', Icons.border_color, artists, (
-                artistId,
-              ) {
-                final notifier = ref.read(gamesPaginatedProvider.notifier);
-                notifier.filterByArtist(artistId);
-                context.pushNamed(
-                  'games-list',
-                  queryParameters: {'artistId': artistId.toString()},
-                );
-              }),
+              ListChips(
+                title: 'Художники',
+                items: artists,
+                getItemTitle: (artist) => artist.name,
+                onTap: (artistId) {
+                  final notifier = ref.read(gamesPaginatedProvider.notifier);
+                  notifier.filterByArtist(artistId);
+                  context.pushNamed(
+                    'games-list',
+                    queryParameters: {'artistId': artistId.toString()},
+                  );
+                },
+              ),
             if (tags.isNotEmpty)
-              _buildMultiValCard('Метки категорий', Icons.location_on, tags, (
-                tagId,
-              ) {
-                final notifier = ref.read(gamesPaginatedProvider.notifier);
-                notifier.filterByTag(tagId);
-                context.pushNamed(
-                  'games-list',
-                  queryParameters: {'tagId': tagId.toString()},
-                );
-              }),
+              ListChips(
+                title: 'Метки категорий',
+                items: tags,
+                getItemTitle: (tag) => tag.name,
+                onTap: (tagId) {
+                  final notifier = ref.read(gamesPaginatedProvider.notifier);
+                  notifier.filterByTag(tagId);
+                  context.pushNamed(
+                    'games-list',
+                    queryParameters: {'tagId': tagId.toString()},
+                  );
+                },
+              ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildMultiValCard(
-    String title,
-    IconData icon,
-    List items,
-    Function onTap,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        Wrap(
-          alignment: WrapAlignment.start,
-          spacing: 8,
-          runSpacing: 8,
-          children: items.map((item) {
-            return GestureDetector(
-              onTap: () => onTap(item.id),
-              child: Chip(
-                label: Text(item.name, style: TextStyle(color: goldColor)),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            );
-          }).toList(),
-        ),
-        SizedBox(height: 8),
-      ],
     );
   }
 

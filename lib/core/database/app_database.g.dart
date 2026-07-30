@@ -3586,7 +3586,7 @@ class $GamingSessionsTable extends GamingSessions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES gaming_sessions (id)',
+      'REFERENCES gaming_sessions (id) ON DELETE CASCADE',
     ),
   );
   @override
@@ -5985,6 +5985,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'games',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('gaming_sessions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'gaming_sessions',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('gaming_sessions', kind: UpdateKind.delete)],

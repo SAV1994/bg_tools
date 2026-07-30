@@ -89,6 +89,7 @@ class _GamingSessionFormScreenState
           gamingSession.rootSessionId!,
         );
       }
+      _isFinished = gamingSession.isFinished;
       await _loadExpansionsForGame(_selectedGame!.id);
       await _loadGamingSessionsForGame(_selectedGame!.id);
       _selectedExpansionIds = gamingSessionData!.selectedExpansionIds;
@@ -262,7 +263,7 @@ class _GamingSessionFormScreenState
 
         _formKey.currentState!.save();
 
-        ref.read(gamingSessionsPaginatedProvider.notifier).updatePageLimit();
+        ref.read(gamingSessionsPaginatedProvider.notifier).refresh();
 
         if (mounted) {
           Navigator.pop(context, true);

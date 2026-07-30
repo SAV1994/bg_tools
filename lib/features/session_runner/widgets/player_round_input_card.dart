@@ -144,6 +144,7 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
                         widget.sessionData['round'] <
                             widget.sessionData['totalRounds'] &&
                         widget.isFinished == false,
+                    // textInputAction: TextInputAction.next,
                     controller: controllerData['controller'],
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,

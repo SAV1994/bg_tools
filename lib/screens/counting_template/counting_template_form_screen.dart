@@ -314,7 +314,7 @@ class _CountingTemplateFormFormState
         await templateDao.updInstance(widget.templateId!, templateCompanion);
       }
 
-      ref.read(countingTemplatesPaginatedProvider.notifier).updatePageLimit();
+      ref.read(countingTemplatesPaginatedProvider.notifier).refresh();
 
       if (mounted) {
         Navigator.pop(context, true);

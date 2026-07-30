@@ -34,6 +34,8 @@ class GamingSessionFullData {
   final List<Game> expansions;
   final Set<int> selectedExpansionIds;
   final List<GamingSessionGamerData?> gamers;
+  final List<GamingSession?> sessionParts;
+  final List<GamingSession?> linkedSessions;
 
   GamingSessionFullData({
     required this.gamingSession,
@@ -41,5 +43,7 @@ class GamingSessionFullData {
     required this.expansions,
     required this.selectedExpansionIds,
     required this.gamers,
+    required this.sessionParts,
+    required this.linkedSessions,
   });
 }

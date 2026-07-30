@@ -15,6 +15,9 @@ class GamingSessions extends Table {
   TextColumn get comment => text().nullable()(); // Комментарий
   IntColumn get gameType => integer().nullable()(); // Тип игры
   TextColumn get data => text().nullable()(); // Данные (JSON)
-  IntColumn get rootSessionId =>
-      integer().nullable().references(GamingSessions, #id)();
+  IntColumn get rootSessionId => integer().nullable().references(
+    GamingSessions,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
 }
