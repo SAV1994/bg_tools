@@ -45,6 +45,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
         _teamScoreControllers.add({
           'team': teamEnum,
           'controller': TextEditingController(),
+          'focusNode': FocusNode(),
           'gamers': [],
           'score': score,
           'show': false,
@@ -68,6 +69,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
       for (final Map<String, dynamic> gamerData in gamersData) {
         _scoreControllers.add({
           'controller': TextEditingController(),
+          'focusNode': FocusNode(),
           'score': gamerData['score'],
         });
 
@@ -403,7 +405,12 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                     final Map<String, dynamic> teamData =
                         _teamScoreControllers[index];
 
-                    return _buildTeamCard(teamData);
+                    return _buildTeamCard(
+                      teamData,
+                      (index + 1 < _teamScoreControllers.length)
+                          ? _teamScoreControllers[index + 1]
+                          : null,
+                    );
                   }),
                 ),
 
@@ -506,7 +513,10 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     );
   }
 
-  Widget _buildTeamCard(Map<String, dynamic> teamData) {
+  Widget _buildTeamCard(
+    Map<String, dynamic> teamData,
+    Map<String, dynamic>? nextTeamData,
+  ) {
     return Card(
       key: Key('${teamData['team'].id}'),
       margin: const EdgeInsets.only(bottom: 12),
@@ -574,30 +584,44 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                   ),
 
                   // Поле ввода очков
-                  SizedBox(
-                    width: 100,
-                    child: TextFormField(
-                      enabled:
-                          widget.data['round'] < widget.data['totalRounds'] &&
-                          !_isFinished,
-                      controller: teamData['controller'],
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: teamData['team'].color,
-                      ),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey.shade100,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                  if (widget.data['round'] < widget.data['totalRounds'] &&
+                      !_isFinished)
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        focusNode: teamData['focusNode'],
+                        textInputAction: (nextTeamData == null)
+                            ? null
+                            : TextInputAction.next,
+                        onSubmitted: (_) {
+                          if (nextTeamData == null) {
+                            FocusScope.of(context).unfocus();
+                          } else {
+                            FocusScope.of(
+                              context,
+                            ).requestFocus(nextTeamData['focusNode']);
+                          }
+                        },
+                        controller: teamData['controller'],
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: teamData['team'].color,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -656,9 +680,11 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
   void dispose() {
     for (final Map<String, dynamic> controllerData in _scoreControllers) {
       controllerData['controller'].dispose();
+      controllerData['focusNode'].dispose();
     }
     for (final Map<String, dynamic> controllerData in _teamScoreControllers) {
       controllerData['controller'].dispose();
+      controllerData['focusNode'].dispose();
     }
     super.dispose();
   }

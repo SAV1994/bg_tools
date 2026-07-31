@@ -3525,9 +3525,9 @@ class $GamingSessionsTable extends GamingSessions
   late final GeneratedColumn<DateTime> finishedAt = GeneratedColumn<DateTime>(
     'finished_at',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _isFinishedMeta = const VerificationMeta(
     'isFinished',
@@ -3637,6 +3637,8 @@ class $GamingSessionsTable extends GamingSessions
         _finishedAtMeta,
         finishedAt.isAcceptableOrUnknown(data['finished_at']!, _finishedAtMeta),
       );
+    } else if (isInserting) {
+      context.missing(_finishedAtMeta);
     }
     if (data.containsKey('is_finished')) {
       context.handle(
@@ -3695,7 +3697,7 @@ class $GamingSessionsTable extends GamingSessions
       finishedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}finished_at'],
-      ),
+      )!,
       isFinished: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_finished'],
@@ -3729,7 +3731,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
   final int id;
   final int gameId;
   final DateTime startedAt;
-  final DateTime? finishedAt;
+  final DateTime finishedAt;
   final bool isFinished;
   final String? comment;
   final int? gameType;
@@ -3739,7 +3741,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     required this.id,
     required this.gameId,
     required this.startedAt,
-    this.finishedAt,
+    required this.finishedAt,
     required this.isFinished,
     this.comment,
     this.gameType,
@@ -3752,9 +3754,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     map['id'] = Variable<int>(id);
     map['game_id'] = Variable<int>(gameId);
     map['started_at'] = Variable<DateTime>(startedAt);
-    if (!nullToAbsent || finishedAt != null) {
-      map['finished_at'] = Variable<DateTime>(finishedAt);
-    }
+    map['finished_at'] = Variable<DateTime>(finishedAt);
     map['is_finished'] = Variable<bool>(isFinished);
     if (!nullToAbsent || comment != null) {
       map['comment'] = Variable<String>(comment);
@@ -3776,9 +3776,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       id: Value(id),
       gameId: Value(gameId),
       startedAt: Value(startedAt),
-      finishedAt: finishedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(finishedAt),
+      finishedAt: Value(finishedAt),
       isFinished: Value(isFinished),
       comment: comment == null && nullToAbsent
           ? const Value.absent()
@@ -3802,7 +3800,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       id: serializer.fromJson<int>(json['id']),
       gameId: serializer.fromJson<int>(json['gameId']),
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
-      finishedAt: serializer.fromJson<DateTime?>(json['finishedAt']),
+      finishedAt: serializer.fromJson<DateTime>(json['finishedAt']),
       isFinished: serializer.fromJson<bool>(json['isFinished']),
       comment: serializer.fromJson<String?>(json['comment']),
       gameType: serializer.fromJson<int?>(json['gameType']),
@@ -3817,7 +3815,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
       'id': serializer.toJson<int>(id),
       'gameId': serializer.toJson<int>(gameId),
       'startedAt': serializer.toJson<DateTime>(startedAt),
-      'finishedAt': serializer.toJson<DateTime?>(finishedAt),
+      'finishedAt': serializer.toJson<DateTime>(finishedAt),
       'isFinished': serializer.toJson<bool>(isFinished),
       'comment': serializer.toJson<String?>(comment),
       'gameType': serializer.toJson<int?>(gameType),
@@ -3830,7 +3828,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     int? id,
     int? gameId,
     DateTime? startedAt,
-    Value<DateTime?> finishedAt = const Value.absent(),
+    DateTime? finishedAt,
     bool? isFinished,
     Value<String?> comment = const Value.absent(),
     Value<int?> gameType = const Value.absent(),
@@ -3840,7 +3838,7 @@ class GamingSession extends DataClass implements Insertable<GamingSession> {
     id: id ?? this.id,
     gameId: gameId ?? this.gameId,
     startedAt: startedAt ?? this.startedAt,
-    finishedAt: finishedAt.present ? finishedAt.value : this.finishedAt,
+    finishedAt: finishedAt ?? this.finishedAt,
     isFinished: isFinished ?? this.isFinished,
     comment: comment.present ? comment.value : this.comment,
     gameType: gameType.present ? gameType.value : this.gameType,
@@ -3916,7 +3914,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
   final Value<int> id;
   final Value<int> gameId;
   final Value<DateTime> startedAt;
-  final Value<DateTime?> finishedAt;
+  final Value<DateTime> finishedAt;
   final Value<bool> isFinished;
   final Value<String?> comment;
   final Value<int?> gameType;
@@ -3937,14 +3935,15 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     this.id = const Value.absent(),
     required int gameId,
     required DateTime startedAt,
-    this.finishedAt = const Value.absent(),
+    required DateTime finishedAt,
     this.isFinished = const Value.absent(),
     this.comment = const Value.absent(),
     this.gameType = const Value.absent(),
     this.data = const Value.absent(),
     this.rootSessionId = const Value.absent(),
   }) : gameId = Value(gameId),
-       startedAt = Value(startedAt);
+       startedAt = Value(startedAt),
+       finishedAt = Value(finishedAt);
   static Insertable<GamingSession> custom({
     Expression<int>? id,
     Expression<int>? gameId,
@@ -3973,7 +3972,7 @@ class GamingSessionsCompanion extends UpdateCompanion<GamingSession> {
     Value<int>? id,
     Value<int>? gameId,
     Value<DateTime>? startedAt,
-    Value<DateTime?>? finishedAt,
+    Value<DateTime>? finishedAt,
     Value<bool>? isFinished,
     Value<String?>? comment,
     Value<int?>? gameType,
@@ -11119,7 +11118,7 @@ typedef $$GamingSessionsTableCreateCompanionBuilder =
       Value<int> id,
       required int gameId,
       required DateTime startedAt,
-      Value<DateTime?> finishedAt,
+      required DateTime finishedAt,
       Value<bool> isFinished,
       Value<String?> comment,
       Value<int?> gameType,
@@ -11131,7 +11130,7 @@ typedef $$GamingSessionsTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> gameId,
       Value<DateTime> startedAt,
-      Value<DateTime?> finishedAt,
+      Value<DateTime> finishedAt,
       Value<bool> isFinished,
       Value<String?> comment,
       Value<int?> gameType,
@@ -11650,7 +11649,7 @@ class $$GamingSessionsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> gameId = const Value.absent(),
                 Value<DateTime> startedAt = const Value.absent(),
-                Value<DateTime?> finishedAt = const Value.absent(),
+                Value<DateTime> finishedAt = const Value.absent(),
                 Value<bool> isFinished = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
                 Value<int?> gameType = const Value.absent(),
@@ -11672,7 +11671,7 @@ class $$GamingSessionsTableTableManager
                 Value<int> id = const Value.absent(),
                 required int gameId,
                 required DateTime startedAt,
-                Value<DateTime?> finishedAt = const Value.absent(),
+                required DateTime finishedAt,
                 Value<bool> isFinished = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
                 Value<int?> gameType = const Value.absent(),

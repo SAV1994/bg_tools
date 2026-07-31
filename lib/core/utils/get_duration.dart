@@ -8,7 +8,7 @@ Object getDuration(
   if (dateTime.isBefore(secondDateTime)) {
     duration = secondDateTime.difference(dateTime);
   } else {
-    duration = dateTime.difference(secondDateTime!);
+    duration = dateTime.difference(secondDateTime);
   }
 
   if (convertToStr) {

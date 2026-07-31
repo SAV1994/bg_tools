@@ -75,17 +75,17 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
     return Consumer(
       builder: (context, ref, child) {
         return SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              spacing: 16,
-              mainAxisSize: MainAxisSize.min,
-              children: _isLoading
-                  ? [LoadingScreen()]
-                  : [
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: SelectWithSearch<GamingSession>(
+          child: Padding(
+            padding: EdgeInsets.only(left: 24, right: 24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                spacing: 28,
+                mainAxisSize: MainAxisSize.min,
+                children: _isLoading
+                    ? [LoadingScreen()]
+                    : [
+                        SelectWithSearch<GamingSession>(
                           label: 'Первая сессия серии',
                           items: _gamingSessions,
                           selectedItem: _selectedGamingSession,
@@ -104,13 +104,10 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                           isRequired: false,
                           placeholder: 'Не выбрана',
                         ),
-                      ),
 
-                      if (widget.data['gameHostType'] ==
-                          GameHostTypeEnum.master.id)
-                        Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: SelectWithSearch<Gamer>(
+                        if (widget.data['gameHostType'] ==
+                            GameHostTypeEnum.master.id)
+                          SelectWithSearch<Gamer>(
                             label: 'Ведущий',
                             items: _gamers,
                             selectedItem: _selectedMaster,
@@ -147,12 +144,9 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                             isRequired: true,
                             placeholder: 'Не выбран',
                           ),
-                        ),
 
-                      if (widget.data['roundsType'] == RoundsTypeEnum.fix.id)
-                        Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: TextFormField(
+                        if (widget.data['roundsType'] == RoundsTypeEnum.fix.id)
+                          TextFormField(
                             controller: _numberRoundsController,
                             decoration: InputDecoration(
                               labelText: 'Количество раундов',
@@ -168,8 +162,8 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                               widget.data['totalRounds'] = int.tryParse(value);
                             },
                           ),
-                        ),
-                    ],
+                      ],
+              ),
             ),
           ),
         );

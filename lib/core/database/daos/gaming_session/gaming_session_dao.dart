@@ -261,12 +261,18 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
       isFinished: true,
     );
 
+    GamingSession? rootSession;
+    if (gamingSession.rootSessionId != null) {
+      rootSession = await getSingle(gamingSession.rootSessionId!);
+    }
+
     return GamingSessionFullData(
       gamingSession: gamingSession,
       game: game!,
       expansions: expansions,
       selectedExpansionIds: selectedExpansionIds,
       gamers: gamersInfo,
+      rootSession: rootSession,
       sessionParts: sessionParts,
       linkedSessions: linkedSessions,
     );

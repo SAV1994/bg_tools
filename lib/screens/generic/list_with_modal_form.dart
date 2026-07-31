@@ -267,8 +267,9 @@ class _ModalFormState extends ConsumerState<ModalForm> {
         );
 
         ref.invalidate(gameFullDataProvider);
-        ref.read(widget.config.dataProvider.notifier).refresh();
       }
+
+      ref.read(widget.config.dataProvider.notifier).refresh();
 
       if (mounted) Navigator.pop(context);
     } catch (e) {
@@ -308,6 +309,9 @@ class _ModalFormState extends ConsumerState<ModalForm> {
                           widget.config.daoProvier,
                           mounted,
                           instance,
+                          () => ref
+                              .read(widget.config.dataProvider.notifier)
+                              .refresh(),
                         );
                       },
                     ),

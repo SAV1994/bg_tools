@@ -8,8 +8,7 @@ class GamingSessions extends Table {
   IntColumn get gameId =>
       integer().references(Games, #id, onDelete: KeyAction.cascade)(); // Игра
   DateTimeColumn get startedAt => dateTime()(); // Время начала игры
-  DateTimeColumn get finishedAt =>
-      dateTime().nullable()(); // Время окончания игры
+  DateTimeColumn get finishedAt => dateTime()(); // Время окончания игры
   BoolColumn get isFinished =>
       boolean().withDefault(const Constant(true))(); // Партия закончена?
   TextColumn get comment => text().nullable()(); // Комментарий

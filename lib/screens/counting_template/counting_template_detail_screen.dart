@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/core/consts/theme_consts.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
@@ -65,6 +66,9 @@ class _CountingTemplateDetailScreenState
                   countingTemplateDaoProvider,
                   mounted,
                   template,
+                  () => ref
+                      .read(countingTemplatesPaginatedProvider.notifier)
+                      .refresh(),
                 );
               }
             },

@@ -57,59 +57,38 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
   }
 
   Widget _buildScoreInput() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text(
-              'Победные очки',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Column(
+            children: [
+              Text(
+                'Победные очки',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-            ),
-          ),
-          const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // Поле ввода
-                Expanded(
-                  child: TextField(
-                    controller: _scoreController,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _scoreController,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(hintText: '0'),
+                      onChanged: _updateScore,
                     ),
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: '0',
-                    ),
-                    onChanged: _updateScore,
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -125,36 +104,24 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
       builder: (context, ref, child) {
         return _isLoading
             ? LoadingScreen()
-            : Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      _isVictory ? Colors.green.shade200 : Colors.red.shade200,
-                      Colors.white,
-                    ],
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      spacing: 48,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Числовой ввод
-                        if (widget.data['resultType'] !=
-                            ResultTypeEnum.condition.id)
-                          _buildScoreInput(),
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Кнопка-переключатель Победа/Поражение
+                      WinToggleBtn(
+                        isVictory: _isVictory,
+                        toggleResult: _toggleResult,
+                      ),
 
-                        // Кнопка-переключатель Победа/Поражение
-                        WinToggleBtn(
-                          isVictory: _isVictory,
-                          toggleResult: _toggleResult,
-                        ),
-                      ],
-                    ),
+                      // Числовой ввод
+                      if (widget.data['resultType'] !=
+                          ResultTypeEnum.condition.id)
+                        _buildScoreInput(),
+                    ],
                   ),
                 ),
               );

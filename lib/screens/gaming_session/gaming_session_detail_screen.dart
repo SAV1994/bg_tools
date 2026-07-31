@@ -11,6 +11,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
@@ -74,7 +75,6 @@ class _GamingSessionDetailScreenState
     final GamingSession gamingSession = data.gamingSession;
     final Game game = data.game;
     final List<GamingSessionGamerData?> players = data.gamers;
-    final List<Game> expansions = data.expansions;
 
     String? totalDuration;
     if (data.sessionParts.isNotEmpty) {
@@ -83,7 +83,7 @@ class _GamingSessionDetailScreenState
             (session) =>
                 getDuration(
                       session!.startedAt,
-                      session.finishedAt!,
+                      session.finishedAt,
                       convertToStr: false,
                     )
                     as Duration,
@@ -92,7 +92,7 @@ class _GamingSessionDetailScreenState
       durationList.add(
         getDuration(
               gamingSession.startedAt,
-              gamingSession.finishedAt!,
+              gamingSession.finishedAt,
               convertToStr: false,
             )
             as Duration,
@@ -176,23 +176,22 @@ class _GamingSessionDetailScreenState
                       ),
                     ),
 
-                    if (gamingSession.finishedAt != null) ...[
-                      InfoRow(
-                        label: 'Конец партии',
-                        value: DateFormats.formatDateTime(
-                          gamingSession.finishedAt!,
-                        ),
+                    InfoRow(
+                      label: 'Конец партии',
+                      value: DateFormats.formatDateTime(
+                        gamingSession.finishedAt,
                       ),
-                      InfoRow(
-                        label: 'Продолжительность партии',
-                        value:
-                            getDuration(
-                                  gamingSession.startedAt,
-                                  gamingSession.finishedAt!,
-                                )
-                                as String,
-                      ),
-                    ],
+                    ),
+
+                    InfoRow(
+                      label: 'Продолжительность партий',
+                      value:
+                          getDuration(
+                                gamingSession.startedAt,
+                                gamingSession.finishedAt,
+                              )
+                              as String,
+                    ),
 
                     if (totalDuration != null)
                       InfoRow(
@@ -216,6 +215,34 @@ class _GamingSessionDetailScreenState
               ),
             ),
 
+            if (data.expansions.isNotEmpty)
+              ListChips(
+                title: 'Дополнения',
+                items: data.expansions,
+                getItemTitle: (expansion) => expansion.name,
+              ),
+
+            if (data.rootSession != null)
+              ListChips(
+                title: 'Корневая сессия',
+                items: [data.rootSession],
+                getItemTitle: (gamingSession) {
+                  final String duration =
+                      getDuration(
+                            gamingSession.startedAt,
+                            gamingSession.finishedAt,
+                          )
+                          as String;
+                  return '${DateFormats.formatDateTime(gamingSession.startedAt)} ($duration)';
+                },
+                onTap: (gamingSessionId) => context.pushNamed(
+                  'gaming-sessions-detail',
+                  pathParameters: {
+                    'gamingSessionId': gamingSessionId.toString(),
+                  },
+                ),
+              ),
+
             if (data.sessionParts.isNotEmpty)
               ListChips(
                 title: 'Составляющие сессии',
@@ -224,7 +251,7 @@ class _GamingSessionDetailScreenState
                   final String duration =
                       getDuration(
                             gamingSession.startedAt,
-                            gamingSession.finishedAt!,
+                            gamingSession.finishedAt,
                           )
                           as String;
                   return '${DateFormats.formatDateTime(gamingSession.startedAt)} ($duration)';
@@ -245,7 +272,7 @@ class _GamingSessionDetailScreenState
                   final String duration =
                       getDuration(
                             gamingSession.startedAt,
-                            gamingSession.finishedAt!,
+                            gamingSession.finishedAt,
                           )
                           as String;
                   return '${DateFormats.formatDateTime(gamingSession.startedAt)} ($duration)';
@@ -258,40 +285,11 @@ class _GamingSessionDetailScreenState
                 ),
               ),
 
-            if (expansions.isNotEmpty) _buildExpansionsCard(expansions),
-
             if (players.isNotEmpty)
               _buildPlayersCard(gamingSession, players, gamingSession.data),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildExpansionsCard(List<Game> expansions) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Дополнения',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        Wrap(
-          alignment: WrapAlignment.start,
-          spacing: 8,
-          runSpacing: 8,
-          children: expansions.map((item) {
-            return Chip(
-              label: Text(item.name, style: TextStyle(color: goldColor)),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            );
-          }).toList(),
-        ),
-      ],
     );
   }
 
@@ -305,7 +303,7 @@ class _GamingSessionDetailScreenState
           GameTypeEnum.coop.id,
           GameTypeEnum.teamOneWinner.id,
           GameTypeEnum.secretRoles.id,
-          GameTypeEnum.secretRoles.id,
+          GameTypeEnum.secretTeams.id,
         ].contains(gamingSession.gameType) &&
         sessionData != null) {
       final Map<String, dynamic> data = jsonDecode(sessionData);
@@ -667,6 +665,9 @@ class _GamingSessionDetailScreenState
                   gamingSessionDaoProvider,
                   mounted,
                   gamingSession,
+                  () => ref
+                      .read(gamingSessionsPaginatedProvider.notifier)
+                      .refresh(),
                 );
               }
             },

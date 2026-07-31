@@ -110,8 +110,9 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
   }
 
   void _fillTurnOrder() {
-    if (widget.data['firstPlayerStartType'] ==
-        FirstPlayerStartTypeEnum.sameTime.id) {
+    if (widget.data['type'] != GameTypeEnum.secretRoles ||
+        widget.data['firstPlayerStartType'] ==
+            FirstPlayerStartTypeEnum.sameTime.id) {
       return;
     }
 

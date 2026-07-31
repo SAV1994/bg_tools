@@ -15,9 +15,12 @@ class ListChips extends StatelessWidget {
     this.onTap,
   });
 
-  Widget getChip(item) {
+  Widget getChip(Object item) {
     return Chip(
-      label: Text(getItemTitle(item), style: TextStyle(color: goldColor)),
+      label: Text(
+        getItemTitle(item),
+        style: TextStyle(color: (onTap == null) ? textColor : goldColor),
+      ),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }

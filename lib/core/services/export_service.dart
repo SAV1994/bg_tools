@@ -198,7 +198,7 @@ class BackupService {
               'id': gamingSession.id,
               'gameId': gamingSession.gameId,
               'startedAt': gamingSession.startedAt.toIso8601String(),
-              'finishedAt': gamingSession.finishedAt?.toIso8601String(),
+              'finishedAt': gamingSession.finishedAt.toIso8601String(),
               'isFinished': gamingSession.isFinished,
               'comment': gamingSession.comment,
               'gameType': gamingSession.gameType,
@@ -516,7 +516,14 @@ class BackupService {
       }
 
       final gamingSessionsIds = <int, int>{};
+      final Map<int, List<int>> rootSessionLinks = {};
       for (final gamingSessionJson in data['gamingSessions']) {
+        int? rootSessionId;
+        if (gamingSessionJson['rootSessionId'] != null &&
+            gamingSessionsIds[gamingSessionJson['rootSessionId']] != null) {
+          rootSessionId = gamingSessionsIds[gamingSessionJson['rootSessionId']];
+        }
+
         final id = await database
             .into(database.gamingSessions)
             .insert(
@@ -525,21 +532,35 @@ class BackupService {
                 startedAt: Value(
                   DateTime.parse(gamingSessionJson['startedAt']),
                 ),
-                finishedAt: gamingSessionJson['finishedAt'] != null
-                    ? Value(DateTime.parse(gamingSessionJson['finishedAt']))
-                    : const Value(null),
-                isFinished: Value(gamingSessionJson['isFinished'] ?? true),
+                finishedAt: Value(
+                  DateTime.parse(gamingSessionJson['finishedAt']),
+                ),
+                isFinished: Value(gamingSessionJson['isFinished']),
                 comment: Value(gamingSessionJson['comment']),
                 gameType: Value(gamingSessionJson['gameType']),
                 data: Value(gamingSessionJson['data']),
-                rootSessionId: gamingSessionJson['rootSessionId'] != null
-                    ? Value(
-                        gamingSessionsIds[gamingSessionJson['rootSessionId']]!,
-                      )
-                    : const Value(null),
+                rootSessionId: Value(rootSessionId),
               ),
             );
         gamingSessionsIds[gamingSessionJson['id']] = id;
+
+        if (gamingSessionJson['rootSessionId'] != null &&
+            rootSessionId == null) {
+          if (rootSessionLinks[gamingSessionJson['rootSessionId']] != null) {
+            rootSessionLinks[gamingSessionJson['rootSessionId']]!.add(id);
+          } else {
+            rootSessionLinks[gamingSessionJson['rootSessionId']] = [id];
+          }
+        }
+      }
+      for (final item in rootSessionLinks.entries) {
+        await (database.update(
+          database.gamingSessions,
+        )..where((gs) => gs.id.isIn(item.value))).write(
+          GamingSessionsCompanion(
+            rootSessionId: Value(gamingSessionsIds[item.key]!),
+          ),
+        );
       }
 
       for (final noteJson in data['notes']) {

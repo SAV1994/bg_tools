@@ -142,12 +142,9 @@ class _GamingSessionListScreenState
                             gamingSessionData.gamingSession;
                         final Game game = gamingSessionData.game;
 
-                        String gamingSessionInfo =
-                            gamingSession.finishedAt == null
-                            ? '🟡'
-                            : gamingSession.isFinished
-                            ? '🟢'
-                            : '⏱️';
+                        String gamingSessionInfo = gamingSession.isFinished
+                            ? '✅ '
+                            : '⏱️ ';
 
                         gamingSessionInfo += DateFormats.formatDateTime(
                           gamingSession.startedAt,

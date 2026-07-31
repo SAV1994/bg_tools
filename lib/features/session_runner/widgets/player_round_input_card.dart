@@ -26,6 +26,10 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
   Widget build(BuildContext context) {
     final Map<String, dynamic> controllerData =
         widget.controllersData[widget.index];
+    Map<String, dynamic>? nextControllerData;
+    if (widget.index + 1 < widget.controllersData.length) {
+      nextControllerData = widget.controllersData[widget.index + 1];
+    }
     final Map<String, dynamic> gamerData =
         widget.sessionData['gamers'][widget.index];
     final TeamsEnum? team = (gamerData['team'] != null)
@@ -107,61 +111,72 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
             ),
 
           // Поле ввода очков с кнопкой калькулятора
-          SizedBox(
-            width: 135,
-            child: Row(
-              spacing: 2,
-              children: [
-                // Кнопка калькулятора (слева)
-                IconButton(
-                  onPressed: () {
-                    if (widget.sessionData['round'] <
-                            widget.sessionData['totalRounds'] &&
-                        widget.isFinished == false) {
-                      final TextEditingController controller =
-                          controllerData['controller'];
-                      showDialog(
-                        context: context,
-                        builder: (context) => ScoreCalcModal(
-                          title: gamerData['username'],
-                          value: int.tryParse(controller.text) ?? 0,
-                          onScoreChanged: (value) {
-                            final String score = value.toString();
-                            controller.text = score;
-                          },
-                          team: team,
-                        ),
-                      );
-                    }
-                  },
-                  icon: Icon(Icons.iso),
-                  color: goldColor,
-                ),
-                // Поле ввода
-                Expanded(
-                  child: TextField(
-                    enabled:
-                        widget.sessionData['round'] <
-                            widget.sessionData['totalRounds'] &&
-                        widget.isFinished == false,
-                    // textInputAction: TextInputAction.next,
-                    controller: controllerData['controller'],
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 4),
+          if (widget.sessionData['round'] < widget.sessionData['totalRounds'] &&
+              widget.isFinished == false)
+            SizedBox(
+              width: 135,
+              child: Row(
+                spacing: 2,
+                children: [
+                  // Кнопка калькулятора (слева)
+                  IconButton(
+                    onPressed: () {
+                      if (widget.sessionData['round'] <
+                              widget.sessionData['totalRounds'] &&
+                          widget.isFinished == false) {
+                        final TextEditingController controller =
+                            controllerData['controller'];
+                        showDialog(
+                          context: context,
+                          builder: (context) => ScoreCalcModal(
+                            title: gamerData['username'],
+                            value: int.tryParse(controller.text) ?? 0,
+                            onScoreChanged: (value) {
+                              final String score = value.toString();
+                              controller.text = score;
+                            },
+                            team: team,
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.iso),
+                    color: goldColor,
+                  ),
+
+                  // Поле ввода
+                  Expanded(
+                    child: TextField(
+                      focusNode: controllerData['focusNode'],
+                      textInputAction: (nextControllerData == null)
+                          ? null
+                          : TextInputAction.next,
+                      onSubmitted: (_) {
+                        if (nextControllerData == null) {
+                          FocusScope.of(context).unfocus();
+                        } else {
+                          FocusScope.of(
+                            context,
+                          ).requestFocus(nextControllerData['focusNode']);
+                        }
+                      },
+                      controller: controllerData['controller'],
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 4),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

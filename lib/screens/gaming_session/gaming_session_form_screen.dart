@@ -39,7 +39,7 @@ class _GamingSessionFormScreenState
   Set<int> _selectedExpansionIds = {};
   DateTime _startedAt = DateTime.now();
   bool _isFinished = true;
-  DateTime? _finishedAt;
+  DateTime _finishedAt = DateTime.now();
   List<Gamer> _allGamers = [];
   List<GamingSession> _gamingSessions = [];
   GamingSession? _selectedGamingSession;
@@ -95,9 +95,6 @@ class _GamingSessionFormScreenState
       _selectedExpansionIds = gamingSessionData!.selectedExpansionIds;
       _startedAt = gamingSession.startedAt;
       _finishedAt = gamingSession.finishedAt;
-      if (gamingSession.finishedAt != null) {
-        _finishedAt = gamingSession.finishedAt;
-      }
       if (gamersData.isNotEmpty) {
         for (final gamerData in gamingSessionData!.gamers) {
           _selectedGamers[gamerData!.gamer.id] = gamerData;
@@ -183,7 +180,7 @@ class _GamingSessionFormScreenState
   }
 
   Future<void> _selectDateTime({bool isFinishedAt = false}) async {
-    final DateTime? initialDate = isFinishedAt ? _finishedAt : _startedAt;
+    final DateTime initialDate = isFinishedAt ? _finishedAt : _startedAt;
 
     final date = await showDatePicker(
       context: context,
@@ -488,9 +485,7 @@ class _GamingSessionFormScreenState
                                   border: OutlineInputBorder(),
                                 ),
                                 child: Text(
-                                  _finishedAt != null
-                                      ? DateFormats.formatDateTime(_finishedAt!)
-                                      : emptyVal,
+                                  DateFormats.formatDateTime(_finishedAt),
                                 ),
                               ),
                             ),

@@ -89,11 +89,7 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
             Text(
               widget.label,
               key: _dropdownKey,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             if (widget.isRequired)
               const Text(' *', style: TextStyle(color: Colors.red)),

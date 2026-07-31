@@ -9,7 +9,9 @@ import 'package:bg_tools/features/session_runner/utils/export.dart';
 final rootSessionSelectStep = ScenarioStep(
   title: 'Базовые параметры',
   description:
-      'Вы можете выбрать записанную ранее сессию для сохранения связи между серией игровых сессий. Может быть актуально для игр-компаний. Выбирайте имеено первую сессию серии.',
+      'Вы можете выбрать записанную ранее сессию для сохранения связи между '
+      'серией игровых сессий. Может быть актуально для игр-компаний или если '
+      'Вы были вынуждены прервать партию и хотите её доиграть',
   contentBuilder: (data) => FirstScreen(data: data),
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id &&

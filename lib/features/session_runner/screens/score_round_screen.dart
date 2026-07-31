@@ -57,6 +57,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
       for (final Map<String, dynamic> gamerData in gamersData) {
         _scoreControllers.add({
           'controller': TextEditingController(),
+          'focusNode': FocusNode(),
           'score': gamerData['score'],
         });
 
@@ -113,7 +114,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
       roundResults.sort((a, b) => a.$2.compareTo(b.$2));
     }
     // Засчитываем победу в раунде только если не было ничьей
-    if (roundResults[0].$2 != roundResults[1].$2) {
+    if (roundResults.length > 1 && roundResults[0].$2 != roundResults[1].$2) {
       widget.data['gamers'][roundResults[0].$1]['numWinRounds'] += 1;
     }
 
@@ -437,6 +438,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
   void dispose() {
     for (final Map<String, dynamic> controllerData in _scoreControllers) {
       controllerData['controller'].dispose();
+      controllerData['focusNode'].dispose();
     }
     _generalScoreController?.dispose();
     super.dispose();
