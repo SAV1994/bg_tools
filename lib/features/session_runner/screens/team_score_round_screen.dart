@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/widgets/export.dart';
@@ -117,11 +118,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
 
       roundResults.add((i, newScore));
 
-      if (gamerData['score'] != null) {
-        gamerData['score'] += newScore;
-      } else {
-        gamerData['score'] = newScore;
-      }
+      increaseEnsureCounter(gamerData, 'score', newScore);
 
       gamerData['scoreByrounds'].add(newScore);
       controllerData['score'] = gamerData['score'];
@@ -164,11 +161,11 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
 
       roundResults.add((team.id.toString(), newScore));
 
-      if (widget.data['teamsData'][team.id.toString()]['score'] != null) {
-        widget.data['teamsData'][team.id.toString()]['score'] += newScore;
-      } else {
-        widget.data['teamsData'][team.id.toString()]['score'] = newScore;
-      }
+      increaseEnsureCounter(
+        widget.data['teamsData'][team.id.toString()],
+        'score',
+        newScore,
+      );
       widget.data['teamsData'][team.id.toString()]['scoreByrounds'].add(
         newScore,
       );

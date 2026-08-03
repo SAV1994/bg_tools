@@ -69,8 +69,13 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
   }
 
   Future<void> _addLastSessionGamers() async {
-    final List<dynamic> gamersData =
-        await AppDataManager.loadLastSessionGamers();
+    late final List<dynamic> gamersData;
+    if (widget.data['type'] == GameTypeEnum.solo.id) {
+      gamersData = await AppDataManager.loadLastSessionGamer();
+    } else {
+      gamersData = await AppDataManager.loadLastSessionGamers();
+    }
+
     if (gamersData.isNotEmpty) {
       widget.data['gamers'] = gamersData;
       if ([
@@ -195,8 +200,7 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
                           ),
                         ),
                       ),
-                    if (widget.data['type'] != GameTypeEnum.solo.id &&
-                            widget.data['gamers'].isEmpty ||
+                    if (widget.data['gamers'].isEmpty ||
                         (widget.data['master'] != null &&
                             widget.data['gamers'].length == 1))
                       Padding(

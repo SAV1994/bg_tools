@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
@@ -48,7 +49,10 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
     }
 
     final sessionsDao = ref.read(gamingSessionDaoProvider);
-    _gamingSessions = await sessionsDao.getByGame(widget.data['gameId']);
+    _gamingSessions = await sessionsDao.getByGame(
+      widget.data['gameId'],
+      widget.data['type'],
+    );
 
     final int? selectedGamingSessionId = widget.data['rootSessionId'];
     if (selectedGamingSessionId != null) {
@@ -62,6 +66,28 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
     );
 
     setState(() => _isLoading = false);
+  }
+
+  Future<void> _setGamingSession(GamingSession? gamingSession) async {
+    setState(() => _isLoading = true);
+
+    widget.data['rootSessionId'] = gamingSession?.id;
+    if (gamingSession != null && widget.data['gamers'].isEmpty) {
+      final sessionsDao = ref.read(gamingSessionDaoProvider);
+
+      final List<GamingSessionGamerData> gamersData = await sessionsDao
+          .getPlayers(gamingSession.id);
+      for (final GamingSessionGamerData gamerInfo in gamersData) {
+        final Map<String, dynamic> gamerData = getGamerData(gamerInfo.gamer);
+        gamerData['team'] = gamerInfo.team;
+        widget.data['gamers'].add(gamerData);
+      }
+    }
+
+    setState(() {
+      _selectedGamingSession = gamingSession;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -89,12 +115,8 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                           label: 'Первая сессия серии',
                           items: _gamingSessions,
                           selectedItem: _selectedGamingSession,
-                          onSelectionChanged: (gamingSession) {
-                            widget.data['rootSessionId'] = gamingSession?.id;
-                            setState(() {
-                              _selectedGamingSession = gamingSession;
-                            });
-                          },
+                          onSelectionChanged: (gamingSession) =>
+                              _setGamingSession(gamingSession),
                           displayName: (gamingSession) =>
                               '${gamingSession.isFinished ? '✅' : '⏱️'} '
                               '${DateFormats.formatDateTime(gamingSession.startedAt)}'

@@ -3,15 +3,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
-import 'package:bg_tools/core/app_data.dart';
-import 'package:bg_tools/core/services/image_service.dart';
 import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/services/image_service.dart';
 import 'package:bg_tools/core/services/permissions_service.dart';
+import 'package:bg_tools/core/utils/export.dart';
 
 // Сервис импорта/экспорта
 class BackupService {
@@ -400,6 +401,7 @@ class BackupService {
 
       // в AppDataManager тоже
       await AppDataManager.clearLastSessionGamers();
+      await AppDataManager.clearLastSessionGamer();
       await AppDataManager.clearActiveSession();
       await AppDataManager.clearLastSessionTeams();
 
@@ -546,11 +548,11 @@ class BackupService {
 
         if (gamingSessionJson['rootSessionId'] != null &&
             rootSessionId == null) {
-          if (rootSessionLinks[gamingSessionJson['rootSessionId']] != null) {
-            rootSessionLinks[gamingSessionJson['rootSessionId']]!.add(id);
-          } else {
-            rootSessionLinks[gamingSessionJson['rootSessionId']] = [id];
-          }
+          addToEnsureList(
+            rootSessionLinks,
+            gamingSessionJson['rootSessionId'],
+            id,
+          );
         }
       }
       for (final item in rootSessionLinks.entries) {

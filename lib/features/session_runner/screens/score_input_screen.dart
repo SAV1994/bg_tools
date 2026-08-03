@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/widgets/export.dart';
@@ -42,11 +43,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
           Map<String, dynamic> teamData =
               widget.data['teamsData'][gamerData['team'].toString()];
           if (gamerData['score'] != null) {
-            if (teamData['score'] == null) {
-              teamData['score'] = gamerData['score'];
-            } else {
-              teamData['score'] += gamerData['score'];
-            }
+            increaseEnsureCounter(teamData, 'score', gamerData['score']);
           }
         }
       }

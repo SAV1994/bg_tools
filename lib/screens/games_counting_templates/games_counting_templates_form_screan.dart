@@ -768,7 +768,7 @@ class _GamesCountingTemplatesModalFormState
                         searchHint: 'Поиск дополнений...',
                       ),
                       SelectWithSearch<CountingTemplate>(
-                        label: 'Шаблон *',
+                        label: 'Шаблон',
                         items: _countingTemplates,
                         selectedItem: _selectedCountingTemplate,
                         onSelectionChanged: (template) {

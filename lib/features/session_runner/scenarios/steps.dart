@@ -84,7 +84,11 @@ final gamersSelectStep = ScenarioStep(
     }
 
     final List<dynamic> claenedGamersData = cleanGamersData(data['gamers']);
-    AppDataManager.saveLastSessionGamers(claenedGamersData);
+    if (data['type'] == GameTypeEnum.solo.id) {
+      AppDataManager.saveLastSessionGamer(claenedGamersData);
+    } else {
+      AppDataManager.saveLastSessionGamers(claenedGamersData);
+    }
   },
 );
 

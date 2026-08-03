@@ -201,6 +201,42 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     return results.map((row) => row.readTable(games)).toList();
   }
 
+  // Игроки, участвовавшие в игровой сессии
+  Future<List<GamingSessionGamerData>> getPlayers(int gamingSessionId) async {
+    final query =
+        select(gamingSessionsGamers).join([
+            innerJoin(
+              gamers,
+              gamers.id.equalsExp(gamingSessionsGamers.gamerId),
+            ),
+          ])
+          ..where(gamingSessionsGamers.gamingSessionId.equals(gamingSessionId))
+          ..orderBy([
+            OrderingTerm(
+              expression: gamingSessionsGamers.turnOrder,
+              mode: OrderingMode.asc,
+            ),
+          ]);
+    ;
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      final Gamer gamer = row.readTable(gamers);
+      final GamingSessionsGamer gamerInfo = row.readTable(gamingSessionsGamers);
+      return GamingSessionGamerData(
+        gamer: gamer,
+        score: gamerInfo.score,
+        place: gamerInfo.place,
+        turnOrder: gamerInfo.place,
+        team: gamerInfo.team,
+        data: (gamerInfo.data != null)
+            ? jsonDecode(gamerInfo.data!)
+            : getPlayerInitialData(),
+      );
+    }).toList();
+  }
+
   // Игровая сессия
   Future<GamingSession?> getSingle(int gamingSessionId) async {
     return await (select(
@@ -279,11 +315,14 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Все корневые сессии по игре
-  Future<List<GamingSession>> getByGame(int gameId) async {
+  Future<List<GamingSession>> getByGame(int gameId, int gameType) async {
     final sessions =
         await (select(gamingSessions)
               ..where(
-                (gs) => gs.gameId.equals(gameId) & gs.rootSessionId.isNull(),
+                (gs) =>
+                    gs.gameId.equals(gameId) &
+                    gs.gameType.equals(gameType) &
+                    gs.rootSessionId.isNull(),
               )
               ..orderBy([
                 (gs) => OrderingTerm(

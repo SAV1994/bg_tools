@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/widgets/export.dart';
@@ -91,11 +92,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
 
       roundResults.add((i, newScore));
 
-      if (gamerData['score'] != null) {
-        gamerData['score'] += newScore;
-      } else {
-        gamerData['score'] = newScore;
-      }
+      increaseEnsureCounter(gamerData, 'score', newScore);
 
       gamerData['scoreByrounds'].add(newScore);
       controllerData['score'] = gamerData['score'];

@@ -50,13 +50,13 @@ class AppDataManager {
   // Запись команд последней сессии (JSON)
   static Future<void> saveLastSessionTeams(List<dynamic> gamersData) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(teamssOfLastSessionKey, jsonEncode(gamersData));
+    await prefs.setString(teamsOfLastSessionKey, jsonEncode(gamersData));
   }
 
   // Получение команд последней сессии (JSON)
   static Future<List<dynamic>> loadLastSessionTeams() async {
     final prefs = await SharedPreferences.getInstance();
-    final json = prefs.getString(teamssOfLastSessionKey);
+    final json = prefs.getString(teamsOfLastSessionKey);
 
     return (json == null) ? [] : jsonDecode(json);
   }
@@ -64,7 +64,27 @@ class AppDataManager {
   // Удаление команд последней сессии (JSON)
   static Future<void> clearLastSessionTeams() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(teamssOfLastSessionKey);
+    await prefs.remove(teamsOfLastSessionKey);
+  }
+
+  // Запись игрока последней сессии (JSON)
+  static Future<void> saveLastSessionGamer(List<dynamic> gamersData) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(gamerOfLastSessionKey, jsonEncode(gamersData));
+  }
+
+  // Получение игрока последней сессии (JSON)
+  static Future<List<dynamic>> loadLastSessionGamer() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString(gamerOfLastSessionKey);
+
+    return (json == null) ? [] : jsonDecode(json);
+  }
+
+  // Удаление игрока последней сессии (JSON)
+  static Future<void> clearLastSessionGamer() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(gamerOfLastSessionKey);
   }
 
   // Запись лимита записей настранице

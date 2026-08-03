@@ -91,7 +91,7 @@ class _GamingSessionFormScreenState
       }
       _isFinished = gamingSession.isFinished;
       await _loadExpansionsForGame(_selectedGame!.id);
-      await _loadGamingSessionsForGame(_selectedGame!.id);
+      await _loadGamingSessionsForGame();
       _selectedExpansionIds = gamingSessionData!.selectedExpansionIds;
       _startedAt = gamingSession.startedAt;
       _finishedAt = gamingSession.finishedAt;
@@ -109,9 +109,21 @@ class _GamingSessionFormScreenState
     setState(() => _isLoading = false);
   }
 
-  Future<void> _loadGamingSessionsForGame(int gameId) async {
-    final sessionsDao = ref.read(gamingSessionDaoProvider);
-    _gamingSessions = await sessionsDao.getByGame(gameId);
+  Future<void> _loadGamingSessionsForGame() async {
+    if (_selectedGame != null && _selectedGameType != null) {
+      setState(() => _isLoading = true);
+
+      final sessionsDao = ref.read(gamingSessionDaoProvider);
+      final List<GamingSession> gamingSessions = await sessionsDao.getByGame(
+        _selectedGame!.id,
+        _selectedGameType!.id,
+      );
+
+      setState(() {
+        _gamingSessions = gamingSessions;
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _loadExpansionsForGame(int gameId) async {
@@ -132,7 +144,7 @@ class _GamingSessionFormScreenState
 
     if (game != null) {
       await _loadExpansionsForGame(game.id);
-      await _loadGamingSessionsForGame(_selectedGame!.id);
+      await _loadGamingSessionsForGame();
     } else {
       setState(() {
         _expansions = [];
@@ -298,14 +310,11 @@ class _GamingSessionFormScreenState
             "name": null,
           };
         } else if (playerData.score != null) {
-          if (sessionData['teamsData'][playerData.team.toString()]['score'] ==
-              null) {
-            sessionData['teamsData'][playerData.team.toString()]['score'] =
-                playerData.score;
-          } else {
-            sessionData['teamsData'][playerData.team.toString()]['score'] +=
-                playerData.score;
-          }
+          increaseEnsureCounter(
+            sessionData['teamsData'][playerData.team.toString()],
+            'score',
+            playerData.score ?? 0,
+          );
         }
       }
     }
@@ -397,7 +406,7 @@ class _GamingSessionFormScreenState
                           placeholder: 'Не выбрана',
                         ),
                       SelectWithSearch<Game>(
-                        label: 'Игра *',
+                        label: 'Игра',
                         items: _games,
                         selectedItem: _selectedGame,
                         onSelectionChanged: (baseGame) {
@@ -437,6 +446,7 @@ class _GamingSessionFormScreenState
                         ),
                       EnumSelector(
                         label: 'Тип игры',
+                        required: true,
                         choices: GameTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
@@ -457,6 +467,7 @@ class _GamingSessionFormScreenState
                                 ? value as GameTypeEnum
                                 : null;
                           });
+                          _loadGamingSessionsForGame();
                         },
                       ),
                       InkWell(
@@ -481,7 +492,7 @@ class _GamingSessionFormScreenState
                               },
                               child: InputDecorator(
                                 decoration: const InputDecoration(
-                                  labelText: 'Конец партии',
+                                  labelText: 'Конец партии *',
                                   border: OutlineInputBorder(),
                                 ),
                                 child: Text(

@@ -3,6 +3,7 @@ export 'auto_scroll.dart';
 export 'bool_to_string.dart';
 export 'confirm_del_modal_builder.dart';
 export 'dateformats.dart';
+export 'ensure_map_attr.dart';
 export 'gamer_fio_builder.dart';
 export 'get_duration.dart';
 export 'get_place_text.dart';
