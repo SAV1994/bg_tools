@@ -153,16 +153,15 @@ class _SecretRolesManagementScreenState
                     size: 20,
                     color: role['isRequired'] ? Colors.orange : Colors.grey,
                   ),
-                  onPressed: () => setState(() {
-                    role['isRequired'] = !role['isRequired'];
-                  }),
+                  onPressed: () =>
+                      setState(() => role['isRequired'] = !role['isRequired']),
                   tooltip: 'Переключить обязательность',
                 ),
                 IconButton(
                   icon: const Icon(Icons.close, color: Colors.red, size: 20),
-                  onPressed: () => setState(() {
-                    widget.data['secretRoles'].removeAt(index);
-                  }),
+                  onPressed: () => setState(
+                    () => widget.data['secretRoles'].removeAt(index),
+                  ),
                   tooltip: 'Удалить роль',
                 ),
               ],
@@ -337,9 +336,7 @@ class _SecretRolesManagementScreenState
                     Switch(
                       value: _isRequired,
                       onChanged: (value) {
-                        setState(() {
-                          _isRequired = value;
-                        });
+                        setState(() => _isRequired = value);
                       },
                       activeThumbColor: Colors.orange,
                     ),

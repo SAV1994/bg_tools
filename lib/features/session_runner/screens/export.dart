@@ -12,6 +12,7 @@ export 'score_input_screen.dart';
 export 'score_round_screen.dart';
 export 'secret_roles_management_screen.dart';
 export 'secret_roles_viewer_screen.dart';
+export 'session_start_and_stop_screen.dart';
 export 'session_start_screen.dart';
 export 'session_stop_screen.dart';
 export 'solo_result_screen.dart';

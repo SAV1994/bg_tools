@@ -56,9 +56,7 @@ class _RoleAssignmentScreenState extends State<RoleAssignmentScreen> {
       });
     }
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
   void _assignPlayerToRole(Map<String, dynamic> role, {int? playerId = 0}) {

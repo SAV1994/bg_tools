@@ -87,25 +87,24 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   }
 
   void _toggleResult() {
-    _isVictory = !_isVictory;
-    for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
-      gamerData['place'] = (_isVictory) ? 1 : null;
-    }
-
-    setState(() {});
+    setState(() {
+      _isVictory = !_isVictory;
+      for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
+        gamerData['place'] = (_isVictory) ? 1 : null;
+      }
+    });
   }
 
   void _updateScore(int gamerId, String value) {
     final newScore = int.tryParse(value);
-    for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
-      if (gamerData['id'] == gamerId) {
-        gamerData['score'] = newScore;
+    setState(() {
+      for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
+        if (gamerData['id'] == gamerId) {
+          gamerData['score'] = newScore;
+        }
+        _updateTotalScore();
       }
-
-      _updateTotalScore();
-
-      setState(() {});
-    }
+    });
   }
 
   void _updateTotalScore() {
@@ -138,12 +137,11 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
   }
 
   void _toggleMode(Set<_SelectMode> selection) {
-    _mode = selection.first;
-    widget.data['resulScreenMode'] = _mode.id;
-
-    _updateTotalScore();
-
-    setState(() {});
+    setState(() {
+      _mode = selection.first;
+      widget.data['resulScreenMode'] = _mode.id;
+      _updateTotalScore();
+    });
   }
 
   Widget _buildScrean() {

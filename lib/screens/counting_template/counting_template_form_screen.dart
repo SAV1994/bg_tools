@@ -509,23 +509,21 @@ class _CountingTemplateFormFormState
                           }),
                           selected: _selectedResultType,
                           onChanged: (value) {
-                            setState(() {
-                              _selectedResultType = (value != null)
-                                  ? value as ResultTypeEnum
-                                  : null;
-                              // Сбрасываем зависимые поля
-                              if (value == ResultTypeEnum.condition) {
-                                _selectedPointType = null;
-                                _selectedAltVictoryType = null;
-                                _selectedTeamPointType = null;
-                              }
-                              if (value != ResultTypeEnum.round) {
-                                _selectedRoundsType = null;
-                                _selectedFirstPlayerRoundType = null;
-                                _selectedSequencePlayersMovesType = null;
-                              }
-                            });
-
+                            _selectedResultType = (value != null)
+                                ? value as ResultTypeEnum
+                                : null;
+                            // Сбрасываем зависимые поля
+                            if (value == ResultTypeEnum.condition) {
+                              _selectedPointType = null;
+                              _selectedAltVictoryType = null;
+                              _selectedTeamPointType = null;
+                            }
+                            if (value != ResultTypeEnum.round) {
+                              _selectedRoundsType = null;
+                              _selectedFirstPlayerRoundType = null;
+                              _selectedSequencePlayersMovesType = null;
+                            }
+                            // setState внутри
                             _updateSelectorsVisibility();
                           },
                         ),

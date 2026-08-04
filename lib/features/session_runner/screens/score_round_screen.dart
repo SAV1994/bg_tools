@@ -130,36 +130,35 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
     final newScore = int.tryParse(_generalScoreController!.text) ?? 0;
     _generalScoreController!.clear();
 
-    if (widget.data['type'] == GameTypeEnum.coop.id) {
-      if (widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] !=
-          null) {
-        widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] +=
-            newScore;
-      } else {
-        widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] =
-            newScore;
+    setState(() {
+      if (widget.data['type'] == GameTypeEnum.coop.id) {
+        if (widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] !=
+            null) {
+          widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] +=
+              newScore;
+        } else {
+          widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] =
+              newScore;
+        }
       }
-    }
 
-    if (_isFinished == false && _roundsScoreLimit != null) {
-      if (_roundsScoreLimit < 0) {
-        _isFinished =
-            widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] <=
-            _roundsScoreLimit;
-      } else {
-        _isFinished =
-            widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] >=
-            _roundsScoreLimit;
+      if (_isFinished == false && _roundsScoreLimit != null) {
+        if (_roundsScoreLimit < 0) {
+          _isFinished =
+              widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] <=
+              _roundsScoreLimit;
+        } else {
+          _isFinished =
+              widget.data['teamsData'][TeamsEnum.red.id.toString()]['score'] >=
+              _roundsScoreLimit;
+        }
       }
-    }
 
-    if (!_isFinished) {
-      widget.data['round']++;
-    }
-
-    _lastRoundGeneralScore = newScore;
-
-    setState(() {});
+      if (!_isFinished) {
+        widget.data['round']++;
+      }
+      _lastRoundGeneralScore = newScore;
+    });
   }
 
   void _sortByCondition() {
@@ -296,8 +295,6 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
       );
       _scoreControllers.insert(newIndex, controllerData);
     });
-
-    setState(() {});
   }
 
   Widget _buildScrean() {

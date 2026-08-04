@@ -100,11 +100,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         oldIndex,
       );
       widget.data['gamers'].insert(newIndex, gamerData);
+      _fillPlace();
     });
-
-    _fillPlace();
-
-    setState(() {});
   }
 
   void _fillPlace() {

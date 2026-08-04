@@ -258,9 +258,7 @@ class _PlayerRolesViewScreenState extends State<PlayerRolesViewScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () => setState(() {
-                  _show = true;
-                }),
+                onPressed: () => setState(() => _show = true),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.green,

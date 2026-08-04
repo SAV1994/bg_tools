@@ -131,16 +131,16 @@ class _TeamOneWinnerSelectScreenState
   }
 
   void _toggleScoreMode(Set<_SelectScoreMode> selection) {
-    _scoreMode = selection.first;
-    widget.data['resulScreenMode'] = _scoreMode.id;
+    setState(() {
+      _scoreMode = selection.first;
+      widget.data['resulScreenMode'] = _scoreMode.id;
 
-    for (var teamData in _teams) {
-      _updateTeamScore(teamData);
-    }
+      for (var teamData in _teams) {
+        _updateTeamScore(teamData);
+      }
 
-    _sortByWinCondition();
-
-    setState(() {});
+      _sortByWinCondition();
+    });
   }
 
   void _sortByWinCondition() {

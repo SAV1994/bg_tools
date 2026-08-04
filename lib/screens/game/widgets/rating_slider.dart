@@ -152,9 +152,7 @@ class _RatingSliderState extends State<RatingSlider> {
             label: _rating.toStringAsFixed(1),
             onChanged: (value) {
               final rounded = (value * 10).round() / 10.0;
-              setState(() {
-                _rating = rounded;
-              });
+              setState(() => _rating = rounded);
               widget.onChanged(rounded);
             },
           ),

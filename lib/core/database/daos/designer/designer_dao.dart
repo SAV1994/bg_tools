@@ -32,7 +32,8 @@ class DesignerDao extends DatabaseAccessor<AppDatabase>
 
   // Все геймдизайнеры
   Future<List<Designer>> getAll() async {
-    return await select(designers).get();
+    SimpleSelectStatement<$DesignersTable, Designer> query = _getBaseQuery();
+    return await query.get();
   }
 
   // Геймдизайнеры с пагинацией

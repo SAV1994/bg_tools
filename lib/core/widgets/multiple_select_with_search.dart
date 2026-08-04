@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
+import 'package:bg_tools/core/widgets/loading_screen.dart';
+import 'package:bg_tools/screens/generic/list_with_modal_form.dart';
 
 // Мультиселект с возможностью поиска
-class MultiSelectWithSearch<T> extends StatefulWidget {
+class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {
   final String label;
-  final List<T> items;
+  final Future<List<T>> Function() getItems;
   final Set<int> selectedIds;
   final Function(Set<int>) onSelectionChanged;
   final String Function(T) displayName;
@@ -14,11 +18,12 @@ class MultiSelectWithSearch<T> extends StatefulWidget {
   final bool Function(T)? isEnabled;
   final Widget Function(T)? customItemBuilder;
   final String? searchHint;
+  final ModalFormConfig? configForModal;
 
   const MultiSelectWithSearch({
     super.key,
     required this.label,
-    required this.items,
+    required this.getItems,
     required this.selectedIds,
     required this.onSelectionChanged,
     required this.displayName,
@@ -26,33 +31,57 @@ class MultiSelectWithSearch<T> extends StatefulWidget {
     this.isEnabled,
     this.customItemBuilder,
     this.searchHint,
+    this.configForModal,
   });
 
   @override
-  State<MultiSelectWithSearch<T>> createState() =>
-      _MultiSelectWithSearchState<T>();
+  ConsumerState<MultiSelectWithSearch<T>> createState() =>
+      MultiSelectWithSearchState<T>();
 }
 
-class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
+class MultiSelectWithSearchState<T>
+    extends ConsumerState<MultiSelectWithSearch<T>> {
   final GlobalKey _dropdownKey = GlobalKey();
+
+  List<T> items = [];
   // Контроллеры
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  // Загрузка
+  bool _isLoading = false;
 
   String _searchQuery = '';
   bool _isDropdownOpen = false;
 
-  List<T> get _filteredItems {
-    if (_searchQuery.isEmpty) return widget.items;
+  Set<int> get _selectedIds => widget.selectedIds;
 
-    return widget.items.where((item) {
+  @override
+  void initState() {
+    super.initState();
+
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    setState(() => _isLoading = true);
+
+    List<T> newItems = await widget.getItems();
+
+    setState(() {
+      items = newItems;
+      _isLoading = false;
+    });
+  }
+
+  List<T> getFilteredItems() {
+    if (_searchQuery.isEmpty) return items;
+
+    return items.where((item) {
       final displayName = widget.displayName(item).toLowerCase();
       final query = _searchQuery.toLowerCase();
       return displayName.contains(query);
     }).toList();
   }
-
-  Set<int> get _selectedIds => widget.selectedIds;
 
   void _toggleSelection(int id) {
     final newSelected = Set<int>.from(_selectedIds);
@@ -65,15 +94,15 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
   }
 
   void _selectAll() {
-    final allIds = _filteredItems.map((item) => widget.getId(item)).toSet();
+    final List<T> filteredItems = getFilteredItems();
+    final allIds = filteredItems.map((item) => widget.getId(item)).toSet();
     final newSelected = Set<int>.from(_selectedIds)..addAll(allIds);
     widget.onSelectionChanged(newSelected);
   }
 
   void _clearAll() {
-    final filteredIds = _filteredItems
-        .map((item) => widget.getId(item))
-        .toSet();
+    final List<T> filteredItems = getFilteredItems();
+    final filteredIds = filteredItems.map((item) => widget.getId(item)).toSet();
     final newSelected = Set<int>.from(_selectedIds)..removeAll(filteredIds);
     widget.onSelectionChanged(newSelected);
   }
@@ -81,7 +110,7 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
   String _getSelectedNames() {
     if (_selectedIds.isEmpty) return 'Не выбрано';
 
-    final selectedItems = widget.items.where((item) {
+    final selectedItems = items.where((item) {
       return _selectedIds.contains(widget.getId(item));
     }).toList();
 
@@ -101,18 +130,39 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final List<T> filteredItems = getFilteredItems();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Метка
-        Text(
-          widget.label,
-          key: _dropdownKey,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: textColor,
-          ),
+        Row(
+          children: [
+            Text(
+              widget.label,
+              key: _dropdownKey,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+            ),
+            if (widget.configForModal != null)
+              IconButton(
+                onPressed: () =>
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          ModalForm(ref: ref, config: widget.configForModal!),
+                    ).then((result) {
+                      if (result == true) {
+                        loadData();
+                      }
+                    }),
+                icon: Icon(addBtnIcon, color: textColor),
+                visualDensity: VisualDensity(vertical: -4.0),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
 
@@ -173,8 +223,10 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
                           ? IconButton(
                               icon: const Icon(Icons.clear, size: 20),
                               onPressed: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = '');
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                });
                               },
                             )
                           : null,
@@ -210,9 +262,9 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
                         child: const Text('Очистить'),
                       ),
                       const Spacer(),
-                      if (_filteredItems.isNotEmpty)
+                      if (filteredItems.isNotEmpty)
                         Text(
-                          _filteredItems.length.toString(),
+                          filteredItems.length.toString(),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -229,7 +281,9 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
                   constraints: BoxConstraints(
                     maxHeight: MediaQuery.of(context).size.height * 0.4,
                   ),
-                  child: _filteredItems.isEmpty
+                  child: _isLoading
+                      ? LoadingScreen()
+                      : filteredItems.isEmpty
                       ? Center(
                           child: Padding(
                             padding: const EdgeInsets.all(32.0),
@@ -255,9 +309,9 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
                           child: ListView.builder(
                             controller: _scrollController,
                             shrinkWrap: true,
-                            itemCount: _filteredItems.length,
+                            itemCount: filteredItems.length,
                             itemBuilder: (context, index) {
-                              final item = _filteredItems[index];
+                              final item = filteredItems[index];
                               final id = widget.getId(item);
                               final isSelected = _selectedIds.contains(id);
                               final isEnabled =
@@ -291,7 +345,7 @@ class _MultiSelectWithSearchState<T> extends State<MultiSelectWithSearch<T>> {
               spacing: 8,
               runSpacing: 4,
               children: _selectedIds.take(5).map((id) {
-                final item = widget.items.firstWhere(
+                final item = items.firstWhere(
                   (item) => widget.getId(item) == id,
                   orElse: () => null as T,
                 );

@@ -69,8 +69,8 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
     final result = await context.pushNamed('games-add');
 
     if (result == true) {
-      ref.invalidate(gameDaoProvider); // Обновляем провайдер
-      setState(() {});
+      // Обновляем провайдер
+      setState(() => ref.invalidate(gameDaoProvider));
     }
   }
 
@@ -81,8 +81,8 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
     );
 
     if (result == true) {
-      ref.invalidate(gameDaoProvider); // Обновляем провайдер
-      setState(() {});
+      // Обновляем провайдер
+      setState(() => ref.invalidate(gameDaoProvider));
     }
   }
 

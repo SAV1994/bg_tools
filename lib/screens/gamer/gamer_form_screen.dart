@@ -96,9 +96,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
 
         _formKey.currentState!.save();
       } catch (e) {
-        setState(() {
-          _generalError = 'Запись уже существует';
-        });
+        setState(() => _generalError = 'Запись уже существует');
       }
     }
   }

@@ -29,7 +29,8 @@ class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
 
   // Все художники
   Future<List<Artist>> getAll() async {
-    return await select(artists).get();
+    SimpleSelectStatement<$ArtistsTable, Artist> query = _getBaseQuery();
+    return await query.get();
   }
 
   // Художники с пагинацией

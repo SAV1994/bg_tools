@@ -28,11 +28,12 @@ class _NumberTeamsScreenState extends ConsumerState<NumberTeamsScreen> {
   }
 
   Future<void> _loadData() async {
-    _numberTeamsController = TextEditingController(
-      text: widget.data['numberTeams']?.toString(),
-    );
-
-    setState(() => _isLoading = false);
+    setState(() {
+      _numberTeamsController = TextEditingController(
+        text: widget.data['numberTeams']?.toString(),
+      );
+      _isLoading = false;
+    });
   }
 
   @override

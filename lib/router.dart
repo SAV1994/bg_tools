@@ -47,7 +47,12 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/games/add',
       name: 'games-add',
-      builder: (BuildContext context, GoRouterState state) => GamesFormScreen(),
+      builder: (BuildContext context, GoRouterState state) {
+        final baseGameId = int.tryParse(
+          state.uri.queryParameters['baseGameId'] ?? '',
+        );
+        return GamesFormScreen(baseGameId: baseGameId);
+      },
     ),
     GoRoute(
       path: '/games/:gameId',

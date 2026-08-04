@@ -23,9 +23,7 @@ class FirstScreen extends ConsumerStatefulWidget {
 
 class _FirstScreenState extends ConsumerState<FirstScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  List<GamingSession> _gamingSessions = [];
   GamingSession? _selectedGamingSession;
-  List<Gamer> _gamers = [];
   Gamer? _selectedMaster;
   late TextEditingController _numberRoundsController;
   // Загрузка
@@ -41,21 +39,16 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
   Future<void> _loadData() async {
     if (widget.data['gameHostType'] == GameHostTypeEnum.master.id) {
       // Загружаем всех игроков
-      final gamerDao = ref.read(gamerDaoProvider);
-      _gamers = await gamerDao.getEverybody();
+
       if (widget.data['master'] != null) {
+        final gamerDao = ref.read(gamerDaoProvider);
         _selectedMaster = await gamerDao.get(widget.data['master']);
       }
     }
 
-    final sessionsDao = ref.read(gamingSessionDaoProvider);
-    _gamingSessions = await sessionsDao.getByGame(
-      widget.data['gameId'],
-      widget.data['type'],
-    );
-
     final int? selectedGamingSessionId = widget.data['rootSessionId'];
     if (selectedGamingSessionId != null) {
+      final sessionsDao = ref.read(gamingSessionDaoProvider);
       _selectedGamingSession = await sessionsDao.getSingle(
         selectedGamingSessionId,
       );
@@ -71,7 +64,6 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
   Future<void> _setGamingSession(GamingSession? gamingSession) async {
     setState(() => _isLoading = true);
 
-    widget.data['rootSessionId'] = gamingSession?.id;
     if (gamingSession != null && widget.data['gamers'].isEmpty) {
       final sessionsDao = ref.read(gamingSessionDaoProvider);
 
@@ -85,9 +77,23 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
     }
 
     setState(() {
+      widget.data['rootSessionId'] = gamingSession?.id;
       _selectedGamingSession = gamingSession;
       _isLoading = false;
     });
+  }
+
+  Future<List<GamingSession>> getItemsForGamingSessionsSelect() async {
+    final sessionsDao = ref.read(gamingSessionDaoProvider);
+    return await sessionsDao.getByGame(
+      widget.data['gameId'],
+      widget.data['type'],
+    );
+  }
+
+  Future<List<Gamer>> getItemsForGamersSelect() async {
+    final gamerDao = ref.read(gamerDaoProvider);
+    return await gamerDao.getEverybody();
   }
 
   @override
@@ -113,7 +119,7 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                     : [
                         SelectWithSearch<GamingSession>(
                           label: 'Первая сессия серии',
-                          items: _gamingSessions,
+                          getItems: () => getItemsForGamingSessionsSelect(),
                           selectedItem: _selectedGamingSession,
                           onSelectionChanged: (gamingSession) =>
                               _setGamingSession(gamingSession),
@@ -131,32 +137,30 @@ class _FirstScreenState extends ConsumerState<FirstScreen> {
                             GameHostTypeEnum.master.id)
                           SelectWithSearch<Gamer>(
                             label: 'Ведущий',
-                            items: _gamers,
+                            getItems: () => getItemsForGamersSelect(),
                             selectedItem: _selectedMaster,
                             onSelectionChanged: (gamer) {
-                              if (widget.data['master'] != null &&
-                                  gamer!.id != widget.data['master']) {
-                                widget.data['gamers'].removeWhere(
-                                  (player) =>
-                                      player['id'] == widget.data['master'],
-                                );
-                              }
-                              widget.data['master'] = gamer!.id;
-
-                              final Map<String, dynamic> gamerData =
-                                  getGamerData(gamer);
-
-                              final Map<String, dynamic>? oldGamerData = widget
-                                  .data['gamers']
-                                  .firstWhere(
-                                    (player) => player['id'] == gamer.id,
-                                    orElse: () => null,
-                                  );
-                              if (oldGamerData == null) {
-                                widget.data['gamers'].add(gamerData);
-                              }
-
                               setState(() {
+                                if (widget.data['master'] != null &&
+                                    gamer!.id != widget.data['master']) {
+                                  widget.data['gamers'].removeWhere(
+                                    (player) =>
+                                        player['id'] == widget.data['master'],
+                                  );
+                                }
+                                widget.data['master'] = gamer!.id;
+
+                                final Map<String, dynamic> gamerData =
+                                    getGamerData(gamer);
+
+                                final Map<String, dynamic>? oldGamerData =
+                                    widget.data['gamers'].firstWhere(
+                                      (player) => player['id'] == gamer.id,
+                                      orElse: () => null,
+                                    );
+                                if (oldGamerData == null) {
+                                  widget.data['gamers'].add(gamerData);
+                                }
                                 _selectedMaster = gamer;
                               });
                             },

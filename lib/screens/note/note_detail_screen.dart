@@ -73,7 +73,6 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
 
     if (result == true && mounted) {
       _loadData();
-      setState(() {});
     }
   }
 

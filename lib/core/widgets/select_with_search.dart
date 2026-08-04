@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
+import 'package:bg_tools/core/widgets/loading_screen.dart';
 
 // Селект с возможностью поиска
 class SelectWithSearch<T> extends StatefulWidget {
   final String label;
-  final List<T> items;
+  final Future<List<T>> Function() getItems;
   final T? selectedItem;
   final Function(T?) onSelectionChanged;
   final String Function(T) displayName;
@@ -19,7 +20,7 @@ class SelectWithSearch<T> extends StatefulWidget {
   const SelectWithSearch({
     super.key,
     required this.label,
-    required this.items,
+    required this.getItems,
     this.selectedItem,
     required this.onSelectionChanged,
     required this.displayName,
@@ -31,29 +32,51 @@ class SelectWithSearch<T> extends StatefulWidget {
   });
 
   @override
-  State<SelectWithSearch<T>> createState() => _SelectWithSearchState<T>();
+  State<SelectWithSearch<T>> createState() => SelectWithSearchState<T>();
 }
 
-class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
+class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
   final GlobalKey _dropdownKey = GlobalKey();
+
+  List<T> items = [];
   // Контроллеры
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  // Загрузка
+  bool _isLoading = false;
 
   String _searchQuery = '';
   bool _isDropdownOpen = false;
 
-  List<T> get _filteredItems {
-    if (_searchQuery.isEmpty) return widget.items;
+  T? get _selectedItem => widget.selectedItem;
 
-    return widget.items.where((item) {
+  @override
+  void initState() {
+    super.initState();
+
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    setState(() => _isLoading = true);
+
+    List<T> newItems = await widget.getItems();
+
+    setState(() {
+      items = newItems;
+      _isLoading = false;
+    });
+  }
+
+  List<T> getFilteredItems() {
+    if (_searchQuery.isEmpty) return items;
+
+    return items.where((item) {
       final displayName = widget.displayName(item).toLowerCase();
       final query = _searchQuery.toLowerCase();
       return displayName.contains(query);
     }).toList();
   }
-
-  T? get _selectedItem => widget.selectedItem;
 
   void _selectItem(T? item) {
     widget.onSelectionChanged(item);
@@ -80,6 +103,8 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final List<T> filteredItems = getFilteredItems();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -158,8 +183,10 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                           ? IconButton(
                               icon: const Icon(Icons.clear, size: 20),
                               onPressed: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = '');
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                });
                               },
                             )
                           : null,
@@ -185,7 +212,9 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                   constraints: BoxConstraints(
                     maxHeight: MediaQuery.of(context).size.height * 0.4,
                   ),
-                  child: _filteredItems.isEmpty
+                  child: _isLoading
+                      ? LoadingScreen()
+                      : filteredItems.isEmpty
                       ? Center(
                           child: Padding(
                             padding: const EdgeInsets.all(32.0),
@@ -211,9 +240,9 @@ class _SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                           child: ListView.builder(
                             controller: _scrollController,
                             shrinkWrap: true,
-                            itemCount: _filteredItems.length,
+                            itemCount: filteredItems.length,
                             itemBuilder: (context, index) {
-                              final item = _filteredItems[index];
+                              final item = filteredItems[index];
                               final isSelected = _selectedItem == item;
 
                               return _buildListItem(item, isSelected);

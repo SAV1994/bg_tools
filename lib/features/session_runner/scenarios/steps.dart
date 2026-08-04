@@ -110,6 +110,20 @@ final sessionStartStep = ScenarioStep(
   },
 );
 
+final sessionStartStopStep = ScenarioStep(
+  title: 'Трекинг сессии',
+  description: 'Фиксирование времени сессии',
+  contentBuilder: (data) => SessionStartStopScreen(data: data),
+  validator: (data) {
+    if (data['startedAt'] == null) {
+      throw StepWizardException('Запустите сессию');
+    }
+    if (data['finishedAt'] == null) {
+      throw StepWizardException('Остановите сессию');
+    }
+  },
+);
+
 final roundsStep = ScenarioStep(
   title: 'Подсчёт по раундами',
   description: 'Заполните результаты',

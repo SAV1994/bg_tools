@@ -19,6 +19,10 @@ class DateTimeDisplay extends StatelessWidget {
 
   String get _formattedDate => DateFormats.formatDate(dateTime);
   String get _formattedTime => DateFormats.formatTime(dateTime);
+  String? get _formattedSecondDate =>
+      (secondDateTime == null) ? null : DateFormats.formatDate(secondDateTime!);
+  String? get _formattedSecondTime =>
+      (secondDateTime == null) ? null : DateFormats.formatTime(secondDateTime!);
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +63,10 @@ class DateTimeDisplay extends StatelessWidget {
                         style: TextStyle(fontSize: 12, color: titleColor),
                       ),
                       Text(
-                        _formattedDate,
+                        (_formattedSecondDate != null &&
+                                _formattedDate != _formattedSecondDate)
+                            ? '$_formattedDate 🎲 $_formattedSecondDate'
+                            : _formattedDate,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -95,7 +102,9 @@ class DateTimeDisplay extends StatelessWidget {
                           style: TextStyle(fontSize: 12, color: titleColor),
                         ),
                         Text(
-                          _formattedTime,
+                          (_formattedSecondTime != null)
+                              ? '$_formattedTime 🎲 $_formattedSecondTime'
+                              : _formattedTime,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

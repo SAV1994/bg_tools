@@ -366,8 +366,6 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
       );
       _scoreControllers.insert(newIndex, controllerData);
     });
-
-    setState(() {});
   }
 
   Widget _buildScrean() {
@@ -524,9 +522,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
         children: [
           // Заголовок команды
           InkWell(
-            onTap: () => setState(() {
-              teamData['show'] = !teamData['show'];
-            }),
+            onTap: () => setState(() => teamData['show'] = !teamData['show']),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),

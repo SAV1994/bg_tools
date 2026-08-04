@@ -62,9 +62,7 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
         gamerData['team'] = TeamsEnum.red.id;
       }
 
-      setState(() {
-        widget.data['gamers'].add(gamerData);
-      });
+      setState(() => widget.data['gamers'].add(gamerData));
     });
   }
 
@@ -77,41 +75,41 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
     }
 
     if (gamersData.isNotEmpty) {
-      widget.data['gamers'] = gamersData;
-      if ([
-        GameTypeEnum.solo.id,
-        GameTypeEnum.coop.id,
-        GameTypeEnum.secretTeams.id,
-      ].contains(widget.data['type'])) {
-        late final int team;
-        if (widget.data['type'] == GameTypeEnum.secretTeams.id) {
-          team = int.parse(widget.data['teamsData'].keys.first);
-        } else {
-          team = TeamsEnum.red.id;
+      setState(() {
+        widget.data['gamers'] = gamersData;
+        if ([
+          GameTypeEnum.solo.id,
+          GameTypeEnum.coop.id,
+          GameTypeEnum.secretTeams.id,
+        ].contains(widget.data['type'])) {
+          late final int team;
+          if (widget.data['type'] == GameTypeEnum.secretTeams.id) {
+            team = int.parse(widget.data['teamsData'].keys.first);
+          } else {
+            team = TeamsEnum.red.id;
+          }
+
+          for (final Map<String, dynamic> gamerData in gamersData) {
+            gamerData['team'] = team;
+          }
         }
 
-        for (final Map<String, dynamic> gamerData in gamersData) {
-          gamerData['team'] = team;
-        }
-      }
-
-      _fillTurnOrder();
-
-      setState(() {});
+        _fillTurnOrder();
+      });
     }
   }
 
   void _reorder(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-    final Map<String, dynamic> gamerData = widget.data['gamers'].removeAt(
-      oldIndex,
-    );
-    widget.data['gamers'].insert(newIndex, gamerData);
-    _fillTurnOrder();
-
-    setState(() {});
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final Map<String, dynamic> gamerData = widget.data['gamers'].removeAt(
+        oldIndex,
+      );
+      widget.data['gamers'].insert(newIndex, gamerData);
+      _fillTurnOrder();
+    });
   }
 
   void _fillTurnOrder() {
@@ -176,8 +174,11 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
                                     IconButton(
                                       icon: const Icon(Icons.close, size: 20),
                                       onPressed: () {
-                                        widget.data['gamers'].removeAt(index);
-                                        setState(() => {});
+                                        setState(
+                                          () => widget.data['gamers'].removeAt(
+                                            index,
+                                          ),
+                                        );
                                       },
                                     ),
                                 ],

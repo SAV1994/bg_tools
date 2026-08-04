@@ -35,16 +35,20 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
 
   Future<void> _loadProgress() async {
     setState(() => _isLoading = true);
-    sessionData =
+
+    final Map<String, dynamic> newSessionData =
         await AppDataManager.loadActiveSession() ??
         json.decode(json.encode(sessionInitialData)) as Map<String, dynamic>;
-    scenario = scenarioMapping[sessionData['selector']];
-    _currentStep = sessionData['step'];
-    _currentScenarioStep = scenario.steps[_currentStep];
-    final int totalSteps = sessionData['totalSteps'] ?? 1;
-    isLastStep = totalSteps - 1 > _currentStep;
+    final int totalSteps = newSessionData['totalSteps'] ?? 1;
 
-    setState(() => _isLoading = false);
+    setState(() {
+      sessionData = newSessionData;
+      scenario = scenarioMapping[newSessionData['selector']];
+      _currentStep = newSessionData['step'];
+      _currentScenarioStep = scenario.steps[_currentStep];
+      isLastStep = totalSteps - 1 > _currentStep;
+      _isLoading = false;
+    });
   }
 
   Future<void> _saveProgress() async {

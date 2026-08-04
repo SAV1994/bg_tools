@@ -11,9 +11,9 @@ mixin UpdateIsFaforiteMixin<T extends ConsumerStatefulWidget>
     final gameDao = ref.read(gameDaoProvider);
     await gameDao.updateIsFavorite(game.id, !game.isFavorite);
 
-    ref.read(gamesPaginatedProvider.notifier).refresh();
-    ref.invalidate(gameFullDataProvider);
-
-    setState(() {});
+    setState(() {
+      ref.read(gamesPaginatedProvider.notifier).refresh();
+      ref.invalidate(gameFullDataProvider);
+    });
   }
 }

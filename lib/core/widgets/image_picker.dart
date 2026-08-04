@@ -44,9 +44,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
     super.didUpdateWidget(oldWidget);
     // Обновляем изображение если изменился initialImagePath
     if (widget.initialImagePath != oldWidget.initialImagePath) {
-      setState(() {
-        _currentImagePath = widget.initialImagePath;
-      });
+      setState(() => _currentImagePath = widget.initialImagePath);
     }
   }
 
@@ -62,17 +60,13 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
         imageFile = await ImageService.pickImageFromCamera();
       }
 
-      setState(() => _isLoading = false);
-
       if (imageFile != null) {
         // Если было старое изображение - удаляем его
         if (_currentImagePath != null) {
           await ImageService.deleteImage(_currentImagePath);
         }
 
-        setState(() {
-          _currentImagePath = imageFile!.path;
-        });
+        _currentImagePath = imageFile.path;
         widget.onImageSelected(imageFile.path);
       }
     } catch (error) {

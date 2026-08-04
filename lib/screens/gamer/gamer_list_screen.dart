@@ -25,8 +25,8 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
     final result = await context.pushNamed('gamers-add');
 
     if (result == true) {
-      ref.invalidate(gamerDaoProvider); // Обновляем провайдер
-      setState(() {});
+      // Обновляем провайдер
+      setState(() => ref.invalidate(gamerDaoProvider));
     }
   }
 
@@ -37,8 +37,8 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
     );
 
     if (result == true) {
-      ref.invalidate(gameDaoProvider); // Обновляем провайдер
-      setState(() {});
+      // Обновляем провайдер
+      setState(() => ref.invalidate(gameDaoProvider));
     }
   }
 

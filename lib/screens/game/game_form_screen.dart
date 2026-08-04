@@ -9,15 +9,17 @@ import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/providers/paginated_providers/game_provider.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/services/image_service.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/screens/game/widgets/export.dart';
+import 'package:bg_tools/screens/generic/list_with_modal_form.dart';
 
 class GamesFormScreen extends ConsumerStatefulWidget {
   final int? gameId;
+  final int? baseGameId;
 
-  const GamesFormScreen({super.key, this.gameId});
+  const GamesFormScreen({super.key, this.gameId, this.baseGameId});
 
   @override
   ConsumerState<GamesFormScreen> createState() => _GamesFormScreenState();
@@ -42,11 +44,6 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
   late final TextEditingController _yearController;
   late final TextEditingController _minPlayersController;
   late final TextEditingController _maxPlayersController;
-  // Локальное состояние формы
-  List<Game> _baseGames = [];
-  List<Designer> _designers = [];
-  List<Artist> _artists = [];
-  List<Tag> _tags = [];
   // Загрузка
   bool _isLoading = false;
   // Ошибка
@@ -63,21 +60,11 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
 
     final GameDao gameDao = ref.read(gameDaoProvider);
 
-    final List<Designer> designers;
-    final List<Artist> artists;
-    final List<Tag> tags;
-
-    final designerDao = ref.read(designerDaoProvider);
-    designers = await designerDao.getAll();
-
-    final artistDao = ref.read(artistDaoProvider);
-    artists = await artistDao.getAll();
-
-    final tagDao = ref.read(tagDaoProvider);
-    tags = await tagDao.getAll();
-
     if (widget.gameId == null) {
       gameData = null;
+      if (widget.baseGameId != null) {
+        _selectedBaseIds.add(widget.baseGameId!);
+      }
     } else {
       gameData = await gameDao.getFullInfo(widget.gameId!);
 
@@ -103,17 +90,31 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
       text: gameData?.game.maxPlayers?.toString(),
     );
 
-    if (widget.gameId != null) {
-      _baseGames = await gameDao.getAllExceptSelected([widget.gameId!]);
-    } else {
-      _baseGames = await gameDao.getStandalones();
-    }
-
-    _designers = designers;
-    _artists = artists;
-    _tags = tags;
-
     setState(() => _isLoading = false);
+  }
+
+  Future<List<Game>> getItemsForForBaseGamesSelect() async {
+    final GameDao gameDao = ref.read(gameDaoProvider);
+    if (widget.gameId != null) {
+      return await gameDao.getAllExceptSelected([widget.gameId!]);
+    } else {
+      return await gameDao.getStandalones();
+    }
+  }
+
+  Future<List<Designer>> getItemsForForDesignersSelect() async {
+    final designerDao = ref.read(designerDaoProvider);
+    return await designerDao.getAll();
+  }
+
+  Future<List<Artist>> getItemsForForArtistsSelect() async {
+    final artistDao = ref.read(artistDaoProvider);
+    return await artistDao.getAll();
+  }
+
+  Future<List<Tag>> getItemsForForTagsSelect() async {
+    final tagDao = ref.read(tagDaoProvider);
+    return await tagDao.getAll();
   }
 
   void _submitForm() async {
@@ -179,9 +180,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
 
         _formKey.currentState!.save();
       } catch (e) {
-        setState(() {
-          _generalError = 'Запись уже существует';
-        });
+        setState(() => _generalError = 'Запись уже существует');
       }
     }
   }
@@ -335,18 +334,14 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                           title: Text('Наличие в коллекции'),
                           value: _isInCollection,
                           onChanged: (value) {
-                            setState(() {
-                              _isInCollection = value!;
-                            });
+                            setState(() => _isInCollection = value!);
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
                         RatingSlider(
                           initialValue: _rating,
                           onChanged: (value) {
-                            setState(() {
-                              _rating = value;
-                            });
+                            setState(() => _rating = value);
                           },
                         ),
                         TextFormField(
@@ -359,12 +354,10 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                         ),
                         MultiSelectWithSearch<Game>(
                           label: 'Базовая игра',
-                          items: _baseGames,
+                          getItems: () => getItemsForForBaseGamesSelect(),
                           selectedIds: _selectedBaseIds,
                           onSelectionChanged: (newSelected) {
-                            setState(() {
-                              _selectedBaseIds = newSelected;
-                            });
+                            setState(() => _selectedBaseIds = newSelected);
                           },
                           displayName: (baseGame) => baseGame.name,
                           getId: (baseGame) => baseGame.id,
@@ -386,20 +379,16 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                             title: Text('Самодостаточность'),
                             value: _isStandalone,
                             onChanged: (value) {
-                              setState(() {
-                                _isStandalone = value!;
-                              });
+                              setState(() => _isStandalone = value!);
                             },
                             controlAffinity: ListTileControlAffinity.leading,
                           ),
                         MultiSelectWithSearch<Designer>(
                           label: 'Геймдизайнеры',
-                          items: _designers,
+                          getItems: () => getItemsForForDesignersSelect(),
                           selectedIds: _selectedDesignerIds,
                           onSelectionChanged: (newSelected) {
-                            setState(() {
-                              _selectedDesignerIds = newSelected;
-                            });
+                            setState(() => _selectedDesignerIds = newSelected);
                           },
                           displayName: (designer) => designer.name,
                           getId: (designer) => designer.id,
@@ -415,15 +404,20 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                               ),
                             ],
                           ),
+                          configForModal: ModalFormConfig(
+                            dataProvider: designersPaginatedProvider,
+                            daoProvier: designerDaoProvider,
+                            companionFactory: (name) =>
+                                DesignersCompanion(name: Value(name)),
+                            imputName: 'Геймдизайнер *',
+                          ),
                         ),
                         MultiSelectWithSearch<Artist>(
                           label: 'Художники',
-                          items: _artists,
+                          getItems: () => getItemsForForArtistsSelect(),
                           selectedIds: _selectedArtistIds,
                           onSelectionChanged: (newSelected) {
-                            setState(() {
-                              _selectedArtistIds = newSelected;
-                            });
+                            setState(() => _selectedArtistIds = newSelected);
                           },
                           displayName: (artist) => artist.name,
                           getId: (artist) => artist.id,
@@ -439,15 +433,20 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                               ),
                             ],
                           ),
+                          configForModal: ModalFormConfig(
+                            dataProvider: artistsPaginatedProvider,
+                            daoProvier: artistDaoProvider,
+                            companionFactory: (name) =>
+                                ArtistsCompanion(name: Value(name)),
+                            imputName: 'Художник *',
+                          ),
                         ),
                         MultiSelectWithSearch<Tag>(
                           label: 'Метки категорий',
-                          items: _tags,
+                          getItems: () => getItemsForForTagsSelect(),
                           selectedIds: _selectedTagIds,
                           onSelectionChanged: (newSelected) {
-                            setState(() {
-                              _selectedTagIds = newSelected;
-                            });
+                            setState(() => _selectedTagIds = newSelected);
                           },
                           displayName: (tag) => tag.name,
                           getId: (tag) => tag.id,
@@ -462,6 +461,13 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                                 ),
                               ),
                             ],
+                          ),
+                          configForModal: ModalFormConfig(
+                            dataProvider: tagsPaginatedProvider,
+                            daoProvier: tagDaoProvider,
+                            companionFactory: (name) =>
+                                TagsCompanion(name: Value(name)),
+                            imputName: 'Метка категории *',
                           ),
                         ),
 

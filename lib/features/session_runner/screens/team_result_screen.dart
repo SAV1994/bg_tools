@@ -202,16 +202,16 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
   }
 
   void _toggleScoreMode(Set<_SelectScoreMode> selection) {
-    _scoreMode = selection.first;
-    widget.data['resulScreenMode'] = _scoreMode.id;
+    setState(() {
+      _scoreMode = selection.first;
+      widget.data['resulScreenMode'] = _scoreMode.id;
 
-    for (var teamData in _teams) {
-      _updateTeamScore(teamData);
-    }
+      for (var teamData in _teams) {
+        _updateTeamScore(teamData);
+      }
 
-    _sortByWinCondition();
-
-    setState(() {});
+      _sortByWinCondition();
+    });
   }
 
   void _reorder(int oldIndex, int newIndex) {
@@ -221,11 +221,9 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
       }
       final Map<String, dynamic> teamData = _teams.removeAt(oldIndex);
       _teams.insert(newIndex, teamData);
+
+      _fillPlace();
     });
-
-    _fillPlace();
-
-    setState(() {});
   }
 
   void _updatePlace(Map<String, dynamic> teamData, String place) {

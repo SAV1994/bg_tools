@@ -46,11 +46,7 @@ class _AddGamerDetailsFormState extends State<AddGamerDetailsForm> {
         children: [
           TeamSelector(
             selectedTeam: _selectedTeam,
-            onChanged: (team) => {
-              setState(() {
-                _selectedTeam = team;
-              }),
-            },
+            onChanged: (team) => setState(() => _selectedTeam = team),
           ),
           TextFormField(
             controller: _scoreController,

@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
-import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
@@ -30,18 +29,18 @@ class GamingSessionFormScreen extends ConsumerStatefulWidget {
 class _GamingSessionFormScreenState
     extends ConsumerState<GamingSessionFormScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<MultiSelectWithSearchState> _expansionsSelectKey =
+      GlobalKey();
+  final GlobalKey<SelectWithSearchState> _rootSessionsSelectKey = GlobalKey();
 
   late final GamingSessionFullData? gamingSessionData;
   // Локальное состояние формы
-  List<Game> _games = [];
   Game? _selectedGame;
-  List<Game> _expansions = [];
   Set<int> _selectedExpansionIds = {};
   DateTime _startedAt = DateTime.now();
   bool _isFinished = true;
   DateTime _finishedAt = DateTime.now();
   List<Gamer> _allGamers = [];
-  List<GamingSession> _gamingSessions = [];
   GamingSession? _selectedGamingSession;
   GameTypeEnum? _selectedGameType;
   // Выбранные игроки
@@ -64,9 +63,6 @@ class _GamingSessionFormScreenState
     // Загружаем всех игроков
     final gamerDao = ref.read(gamerDaoProvider);
     _allGamers = await gamerDao.getEverybody();
-    // Загружаем все игры
-    final GameDao gameDao = ref.read(gameDaoProvider);
-    _games = await gameDao.getAll();
 
     if (widget.gamingSessionId == null) {
       gamingSessionData = null;
@@ -90,8 +86,6 @@ class _GamingSessionFormScreenState
         );
       }
       _isFinished = gamingSession.isFinished;
-      await _loadExpansionsForGame(_selectedGame!.id);
-      await _loadGamingSessionsForGame();
       _selectedExpansionIds = gamingSessionData!.selectedExpansionIds;
       _startedAt = gamingSession.startedAt;
       _finishedAt = gamingSession.finishedAt;
@@ -109,47 +103,31 @@ class _GamingSessionFormScreenState
     setState(() => _isLoading = false);
   }
 
-  Future<void> _loadGamingSessionsForGame() async {
-    if (_selectedGame != null && _selectedGameType != null) {
-      setState(() => _isLoading = true);
-
-      final sessionsDao = ref.read(gamingSessionDaoProvider);
-      final List<GamingSession> gamingSessions = await sessionsDao.getByGame(
-        _selectedGame!.id,
-        _selectedGameType!.id,
-      );
-
-      setState(() {
-        _gamingSessions = gamingSessions;
-        _isLoading = false;
-      });
-    }
+  Future<List<Game>> getItemsForGameSelect() async {
+    final gameDao = ref.read(gameDaoProvider);
+    return await gameDao.getAll();
   }
 
-  Future<void> _loadExpansionsForGame(int gameId) async {
+  Future<List<Game>> getItemsForExpansionsSelect() async {
     final gameDao = ref.read(gameDaoProvider);
-    final expansions = await gameDao.getExpansions(gameId);
+    return await gameDao.getExpansions(_selectedGame!.id);
+  }
 
-    setState(() {
-      _expansions = expansions;
-    });
+  Future<List<GamingSession>> getItemsForRootSessionSelect() async {
+    final sessionsDao = ref.read(gamingSessionDaoProvider);
+    return await sessionsDao.getByGame(
+      _selectedGame!.id,
+      _selectedGameType!.id,
+    );
   }
 
   Future<void> _onGameSelected(Game? game) async {
     _selectedExpansionIds.clear(); // Очищаем выбранные дополнения
     _selectedGamingSession = null;
-    setState(() {
-      _selectedGame = game;
-    });
+    setState(() => _selectedGame = game);
 
-    if (game != null) {
-      await _loadExpansionsForGame(game.id);
-      await _loadGamingSessionsForGame();
-    } else {
-      setState(() {
-        _expansions = [];
-      });
-    }
+    _rootSessionsSelectKey.currentState?.loadData();
+    _expansionsSelectKey.currentState?.loadData();
   }
 
   void _showAddGamerDialog() {
@@ -181,9 +159,7 @@ class _GamingSessionFormScreenState
         content: AddGamerDetailsForm(
           gamer: gamer,
           onSave: (data) {
-            setState(() {
-              _selectedGamers[gamer.id] = data;
-            });
+            setState(() => _selectedGamers[gamer.id] = data);
             Navigator.pop(context);
           },
         ),
@@ -287,9 +263,7 @@ class _GamingSessionFormScreenState
           );
         }
       } catch (e) {
-        setState(() {
-          _generalError = 'Ошибка';
-        });
+        setState(() => _generalError = 'Ошибка');
       }
     }
   }
@@ -390,13 +364,14 @@ class _GamingSessionFormScreenState
                         ),
                       if (widget.gamingSessionId != null)
                         SelectWithSearch<GamingSession>(
+                          key: _rootSessionsSelectKey,
                           label: 'Первая сессия серии',
-                          items: _gamingSessions,
+                          getItems: () => getItemsForRootSessionSelect(),
                           selectedItem: _selectedGamingSession,
                           onSelectionChanged: (gamingSession) {
-                            setState(() {
-                              _selectedGamingSession = gamingSession;
-                            });
+                            setState(
+                              () => _selectedGamingSession = gamingSession,
+                            );
                           },
                           displayName: (gamingSession) =>
                               '${DateFormats.formatDate(gamingSession.startedAt)} (${gamingSession.comment ?? emptyVal})',
@@ -407,7 +382,7 @@ class _GamingSessionFormScreenState
                         ),
                       SelectWithSearch<Game>(
                         label: 'Игра',
-                        items: _games,
+                        getItems: () => getItemsForGameSelect(),
                         selectedItem: _selectedGame,
                         onSelectionChanged: (baseGame) {
                           _onGameSelected(baseGame);
@@ -430,15 +405,14 @@ class _GamingSessionFormScreenState
                         ),
                       ),
                       // Выбор дополнений (MultiSelect) - появляется только если есть дополнения
-                      if (_expansions.isNotEmpty)
+                      if (_selectedGame != null)
                         MultiSelectWithSearch<Game>(
                           label: 'Дополнения',
-                          items: _expansions,
+                          key: _expansionsSelectKey,
+                          getItems: () => getItemsForExpansionsSelect(),
                           selectedIds: _selectedExpansionIds,
                           onSelectionChanged: (newSelected) {
-                            setState(() {
-                              _selectedExpansionIds = newSelected;
-                            });
+                            setState(() => _selectedExpansionIds = newSelected);
                           },
                           displayName: (expansion) => expansion.name,
                           getId: (expansion) => expansion.id,
@@ -462,12 +436,12 @@ class _GamingSessionFormScreenState
                         }),
                         selected: _selectedGameType,
                         onChanged: (value) {
-                          setState(() {
-                            _selectedGameType = (value != null)
+                          setState(
+                            () => _selectedGameType = (value != null)
                                 ? value as GameTypeEnum
-                                : null;
-                          });
-                          _loadGamingSessionsForGame();
+                                : null,
+                          );
+                          _rootSessionsSelectKey.currentState?.loadData();
                         },
                       ),
                       InkWell(
@@ -530,9 +504,7 @@ class _GamingSessionFormScreenState
                         title: Text('Партия закончена?'),
                         value: _isFinished,
                         onChanged: (value) {
-                          setState(() {
-                            _isFinished = value!;
-                          });
+                          setState(() => _isFinished = value!);
                         },
                         controlAffinity: ListTileControlAffinity.leading,
                       ),
@@ -568,14 +540,15 @@ class _GamingSessionFormScreenState
                           return GamingSessionGamerCard(
                             gamerData: gamerData,
                             onChanged: (data) {
-                              setState(() {
-                                _selectedGamers[data.gamer.id] = data;
-                              });
+                              setState(
+                                () => _selectedGamers[data.gamer.id] = data,
+                              );
                             },
                             onRemove: () {
-                              setState(() {
-                                _selectedGamers.remove(gamerData.gamer.id);
-                              });
+                              setState(
+                                () =>
+                                    _selectedGamers.remove(gamerData.gamer.id),
+                              );
                             },
                           );
                         }),

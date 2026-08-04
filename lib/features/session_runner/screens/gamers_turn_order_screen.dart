@@ -25,12 +25,12 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
   Future<void> _reorderByCircle() async {
     setState(() => _isLoading = true);
 
-    final List<dynamic> _gamers = widget.data['gamers'];
-    final int totalGamers = _gamers.length;
+    final List<dynamic> gamers = widget.data['gamers'];
+    final int totalGamers = gamers.length;
     final int index = Random().nextInt(totalGamers);
     if (index != 0) {
       final List<dynamic> reorderGamers =
-          _gamers.sublist(index) + _gamers.sublist(0, index);
+          gamers.sublist(index) + gamers.sublist(0, index);
       widget.data['gamers'] = reorderGamers;
       _fillTurnOrder();
     }
@@ -51,14 +51,15 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
   Future<void> _reorderRandom() async {
     setState(() => _isLoading = true);
 
-    widget.data['gamers'].shuffle();
-    _fillTurnOrder();
+    setState(() {
+      widget.data['gamers'].shuffle();
+      _fillTurnOrder();
+      _isLoading = false;
+    });
 
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Порядок хода изменён')));
-
-    setState(() => _isLoading = false);
   }
 
   Future<void> _reorderTeamTakeTurns() async {
@@ -69,30 +70,33 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
     final int totalGamers = widget.data['gamers'].length;
 
     List<List<Map<String, dynamic>>> teams = _getTeamsList();
-    teams.sort((a, b) => b.length.compareTo(a.length));
 
-    int i = 0;
-    while (gamers.length < totalGamers) {
-      if (teams[i].isNotEmpty) {
-        final Map<String, dynamic> gamerData = teams[i].removeAt(0);
-        gamers.add(gamerData);
+    setState(() {
+      teams.sort((a, b) => b.length.compareTo(a.length));
+
+      int i = 0;
+      while (gamers.length < totalGamers) {
+        if (teams[i].isNotEmpty) {
+          final Map<String, dynamic> gamerData = teams[i].removeAt(0);
+          gamers.add(gamerData);
+        }
+
+        if (i == widget.data['numberTeams'] - 1) {
+          i = 0;
+        } else {
+          i++;
+        }
       }
 
-      if (i == widget.data['numberTeams'] - 1) {
-        i = 0;
-      } else {
-        i++;
-      }
-    }
+      widget.data['gamers'] = gamers;
+      _fillTurnOrder();
 
-    widget.data['gamers'] = gamers;
-    _fillTurnOrder();
+      _isLoading = false;
+    });
 
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Порядок хода изменён')));
-
-    setState(() => _isLoading = false);
   }
 
   List<List<Map<String, dynamic>>> _getTeamsList() {
@@ -134,16 +138,16 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
   }
 
   void _reorder(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-    final Map<String, dynamic> gamerData = widget.data['gamers'].removeAt(
-      oldIndex,
-    );
-    widget.data['gamers'].insert(newIndex, gamerData);
-    _fillTurnOrder();
-
-    setState(() {});
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final Map<String, dynamic> gamerData = widget.data['gamers'].removeAt(
+        oldIndex,
+      );
+      widget.data['gamers'].insert(newIndex, gamerData);
+      _fillTurnOrder();
+    });
   }
 
   @override

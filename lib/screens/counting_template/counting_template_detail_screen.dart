@@ -32,8 +32,8 @@ class _CountingTemplateDetailScreenState
     );
 
     if (result == true) {
-      ref.invalidate(countingTemplateDataProvider); // Обновляем провайдер
-      setState(() {});
+      // Обновляем провайдер
+      setState(() => ref.invalidate(countingTemplateDataProvider));
     }
   }
 

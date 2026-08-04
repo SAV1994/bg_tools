@@ -36,9 +36,7 @@ class _ScoreCalcModalState extends ConsumerState<ScoreCalcModal> {
 
   void _updateAmount(String value) {
     final newAmount = int.tryParse(value) ?? 0;
-    setState(() {
-      _amount = newAmount;
-    });
+    setState(() => _amount = newAmount);
   }
 
   void _addToTemp() {

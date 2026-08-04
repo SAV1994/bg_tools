@@ -28,6 +28,20 @@ class ListWithModalFormConfig<T, D, C> {
   });
 }
 
+class ModalFormConfig<T, D, C> {
+  final AsyncNotifierProvider<BaseNotifier, dynamic> dataProvider;
+  final Provider<D> daoProvier;
+  final C Function(String name) companionFactory;
+  final String imputName;
+
+  const ModalFormConfig({
+    required this.dataProvider,
+    required this.daoProvier,
+    required this.companionFactory,
+    required this.imputName,
+  });
+}
+
 class ListWithModalFormScreen<T> extends ConsumerStatefulWidget {
   final ListWithModalFormConfig config;
 
@@ -49,8 +63,16 @@ class _ListWithModalFormScreenState
   void _showModalForm(BuildContext context, WidgetRef ref, [int? instanceId]) {
     showDialog(
       context: context,
-      builder: (context) =>
-          ModalForm(ref: ref, config: widget.config, instanceId: instanceId),
+      builder: (context) => ModalForm(
+        ref: ref,
+        config: ModalFormConfig(
+          dataProvider: widget.config.dataProvider,
+          daoProvier: widget.config.daoProvier,
+          companionFactory: widget.config.companionFactory,
+          imputName: widget.config.imputName,
+        ),
+        instanceId: instanceId,
+      ),
     );
   }
 
@@ -112,11 +134,7 @@ class _ListWithModalFormScreenState
               onPressed: () => notifier.toggleOrdering(),
             ),
             IconButton(
-              onPressed: () => {
-                setState(() {
-                  _isEditMode = !_isEditMode;
-                }),
-              },
+              onPressed: () => setState(() => _isEditMode = !_isEditMode),
               icon: _isEditMode
                   ? Icon(Icons.edit, color: textColor)
                   : Icon(gamesIcon, color: goldColor),
@@ -212,7 +230,7 @@ class _ListWithModalFormScreenState
 class ModalForm extends ConsumerStatefulWidget {
   final int? instanceId;
   final WidgetRef ref;
-  final ListWithModalFormConfig config;
+  final ModalFormConfig config;
 
   const ModalForm({
     super.key,
@@ -270,12 +288,9 @@ class _ModalFormState extends ConsumerState<ModalForm> {
       }
 
       ref.read(widget.config.dataProvider.notifier).refresh();
-
-      if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context, true);
     } catch (e) {
-      setState(() {
-        _generalError = 'Запись уже существует';
-      });
+      setState(() => _generalError = 'Запись уже существует');
     }
   }
 
@@ -356,7 +371,7 @@ class _ModalFormState extends ConsumerState<ModalForm> {
       ),
       actions: [
         TextButton(
-          onPressed: () => {Navigator.pop(context)},
+          onPressed: () => Navigator.pop(context, false),
           child: const Text('Отмена'),
         ),
         ElevatedButton(

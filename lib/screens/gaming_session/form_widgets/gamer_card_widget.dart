@@ -50,9 +50,7 @@ class _GamingSessionGamerCardState extends State<GamingSessionGamerCard> {
   }
 
   void _handleTeamChange(TeamsEnum? team) {
-    setState(() {
-      _selectedTeam = team;
-    });
+    setState(() => _selectedTeam = team);
     _notifyParent();
   }
 

@@ -32,28 +32,30 @@ class _SoloResultScreenState extends ConsumerState<SoloResultScreen> {
   Future<void> _loadData() async {
     List<Map<String, dynamic>> gamersData = widget.data['gamers']
         .cast<Map<String, dynamic>>();
-    _scoreController.text = gamersData[0]['score']?.toString() ?? '';
-    _isVictory = gamersData[0]['place'] == 1;
 
-    setState(() => _isLoading = false);
+    setState(() {
+      _scoreController.text = gamersData[0]['score']?.toString() ?? '';
+      _isVictory = gamersData[0]['place'] == 1;
+      _isLoading = false;
+    });
   }
 
   void _toggleResult() {
-    _isVictory = !_isVictory;
-    for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
-      gamerData['place'] = (_isVictory) ? 1 : null;
-    }
-
-    setState(() {});
+    setState(() {
+      _isVictory = !_isVictory;
+      for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
+        gamerData['place'] = (_isVictory) ? 1 : null;
+      }
+    });
   }
 
   void _updateScore(String value) {
     final newScore = int.tryParse(value);
-    for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
-      gamerData['score'] = newScore;
-    }
-
-    setState(() {});
+    setState(() {
+      for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
+        gamerData['score'] = newScore;
+      }
+    });
   }
 
   Widget _buildScoreInput() {

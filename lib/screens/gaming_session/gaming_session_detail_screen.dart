@@ -35,8 +35,8 @@ class _GamingSessionDetailScreenState
     );
 
     if (result == true) {
-      ref.invalidate(gamingSessionFullDataProvider); // Обновляем провайдер
-      setState(() {});
+      // Обновляем провайдер
+      setState(() => ref.invalidate(gamingSessionFullDataProvider));
     }
   }
 

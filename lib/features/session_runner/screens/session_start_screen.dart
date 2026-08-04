@@ -32,9 +32,10 @@ class _SessionStartScreenState extends ConsumerState<SessionStartScreen> {
                   title: 'Начать',
                   icon: Icons.play_arrow,
                   onPressed: () {
-                    widget.data['startedAt'] = DateTime.now().toIso8601String();
-
-                    setState(() {});
+                    setState(
+                      () => widget.data['startedAt'] = DateTime.now()
+                          .toIso8601String(),
+                    );
                   },
                 ),
               ),

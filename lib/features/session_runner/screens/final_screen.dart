@@ -124,9 +124,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
                   title: Text('Партия закончена?'),
                   value: _isFinished,
                   onChanged: (value) {
-                    setState(() {
-                      _isFinished = value!;
-                    });
+                    setState(() => _isFinished = value!);
                   },
                   controlAffinity: ListTileControlAffinity.leading,
                 ),

@@ -29,7 +29,8 @@ class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
 
   // Все метки
   Future<List<Tag>> getAll() async {
-    return await select(tags).get();
+    SimpleSelectStatement<$TagsTable, Tag> query = _getBaseQuery();
+    return await query.get();
   }
 
   // Метки с пагинацией

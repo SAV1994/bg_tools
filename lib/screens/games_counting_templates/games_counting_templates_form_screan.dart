@@ -40,9 +40,7 @@ class _GamesCountingTemplatesModalFormState
 
   late final GamesCountingTemplatesData? gamesCountingTemplatesData;
   // Локальное состояние формы
-  List<CountingTemplate> _countingTemplates = [];
   CountingTemplate? _selectedCountingTemplate;
-  List<Game> _expansions = [];
   Set<int> _selectedExpansionIds = {};
 
   bool _showRoundsScoreLimitInput = false;
@@ -66,13 +64,6 @@ class _GamesCountingTemplatesModalFormState
   }
 
   Future<void> _loadData() async {
-    // Загружаем все шаблоны
-    final countingTemplatesDao = ref.read(countingTemplateDaoProvider);
-    _countingTemplates = await countingTemplatesDao.getAll();
-    // Загружаем дополнения игры
-    final gameDao = ref.read(gameDaoProvider);
-    _expansions = await gameDao.getExpansions(widget.gameId);
-
     int? roundsScoreLimit;
 
     if (widget.gamesCountingTemplatesId == null) {
@@ -124,6 +115,16 @@ class _GamesCountingTemplatesModalFormState
     );
 
     setState(() => _isLoading = false);
+  }
+
+  Future<List<CountingTemplate>> getItemsForCountingTemplateSelect() async {
+    final countingTemplatesDao = ref.read(countingTemplateDaoProvider);
+    return await countingTemplatesDao.getAll();
+  }
+
+  Future<List<Game>> getItemsForExpansionsSelect() async {
+    final gameDao = ref.read(gameDaoProvider);
+    return await gameDao.getExpansions(widget.gameId);
   }
 
   void _submitForm() async {
@@ -178,9 +179,7 @@ class _GamesCountingTemplatesModalFormState
           );
         }
       } catch (e) {
-        setState(() {
-          _generalError = 'Ошибка';
-        });
+        setState(() => _generalError = 'Ошибка');
       }
     }
   }
@@ -241,9 +240,8 @@ class _GamesCountingTemplatesModalFormState
                   children: [
                     IconButton(
                       icon: const Icon(Icons.delete, color: redColor),
-                      onPressed: () => setState(() {
-                        _secretRolesConfig.removeAt(index);
-                      }),
+                      onPressed: () =>
+                          setState(() => _secretRolesConfig.removeAt(index)),
                       tooltip: 'Удалить команду',
                     ),
                   ],
@@ -359,9 +357,7 @@ class _GamesCountingTemplatesModalFormState
                 IconButton(
                   icon: const Icon(Icons.close, size: 16, color: redColor),
                   onPressed: () {
-                    setState(() {
-                      groups.removeAt(index);
-                    });
+                    setState(() => groups.removeAt(index));
                   },
                   tooltip: 'Удалить группу',
                 ),
@@ -427,9 +423,7 @@ class _GamesCountingTemplatesModalFormState
           IconButton(
             icon: const Icon(Icons.close, size: 14, color: redColor),
             onPressed: () {
-              setState(() {
-                roles.removeAt(index);
-              });
+              setState(() => roles.removeAt(index));
             },
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -756,12 +750,10 @@ class _GamesCountingTemplatesModalFormState
                       ),
                       MultiSelectWithSearch<Game>(
                         label: 'Дополнения',
-                        items: _expansions,
+                        getItems: () => getItemsForExpansionsSelect(),
                         selectedIds: _selectedExpansionIds,
                         onSelectionChanged: (newSelected) {
-                          setState(() {
-                            _selectedExpansionIds = newSelected;
-                          });
+                          setState(() => _selectedExpansionIds = newSelected);
                         },
                         displayName: (expansion) => expansion.name,
                         getId: (expansion) => expansion.id,
@@ -769,7 +761,7 @@ class _GamesCountingTemplatesModalFormState
                       ),
                       SelectWithSearch<CountingTemplate>(
                         label: 'Шаблон',
-                        items: _countingTemplates,
+                        getItems: () => getItemsForCountingTemplateSelect(),
                         selectedItem: _selectedCountingTemplate,
                         onSelectionChanged: (template) {
                           bool showRoundsScoreLimitInput = false;

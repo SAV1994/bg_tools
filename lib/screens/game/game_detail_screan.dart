@@ -95,8 +95,18 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          spacing: 5,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (game.isStandalone)
+              ElevatedButton(
+                onPressed: () => context.pushNamed(
+                  'games-add',
+                  queryParameters: {'baseGameId': game.id.toString()},
+                ),
+                child: Text('Добавить дополнение'),
+              ),
+
             // Заголовок с именем
             Card(
               child: Padding(
@@ -150,6 +160,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 ),
               ),
             ),
+
             // Основная информация
             const Text(
               'Основная информация',
@@ -207,6 +218,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                   );
                 },
               ),
+
             if (expansions.isNotEmpty)
               ListChips(
                 title: 'Дополнения',

@@ -91,7 +91,7 @@ class _NoteFormState extends ConsumerState<NoteForm> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
     }
   }
 

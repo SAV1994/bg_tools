@@ -51,6 +51,7 @@ class _OneWinnerSelectScreenState extends ConsumerState<OneWinnerSelectScreen> {
       _singleSelected = null;
       _multipleSelected = {};
     }
+
     setState(() => _isLoading = false);
   }
 

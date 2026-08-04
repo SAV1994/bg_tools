@@ -30,9 +30,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _loadData() async {
     final int pageLimit = await AppDataManager.loadPageLimit();
-    _pageLimitController = TextEditingController(text: pageLimit.toString());
 
-    setState(() => _isLoading = false);
+    setState(() {
+      _pageLimitController = TextEditingController(text: pageLimit.toString());
+      _isLoading = false;
+    });
   }
 
   @override
