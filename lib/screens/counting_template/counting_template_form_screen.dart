@@ -37,6 +37,7 @@ class _CountingTemplateFormFormState
   GameTypeEnum? _selectedGameType;
   FirstPlayerStartTypeEnum? _selectedFirstPlayerStartType;
   ResultTypeEnum? _selectedResultType;
+  GeneralDefeatTypeEnum? _selectedGeneralDefeatType;
   TeamPointTypeEnum? _selectedTeamPointType;
   PointTypeEnum? _selectedPointType;
   RoundsTypeEnum? _selectedRoundsType;
@@ -49,6 +50,7 @@ class _CountingTemplateFormFormState
   bool _showFirstPlayerStartType = false;
   bool _showResultType = false;
   bool _showPointType = false;
+  bool _showGeneralDefeatType = false;
   bool _showTeamPointType = false;
   bool _showRoundsType = false;
   bool _showAltVictoryType = false;
@@ -92,6 +94,9 @@ class _CountingTemplateFormFormState
           : null;
       _selectedResultType = templateData['resultType'] != null
           ? ResultTypeEnum.fromId(templateData['resultType'])
+          : null;
+      _selectedGeneralDefeatType = templateData['generalDefeatType'] != null
+          ? GeneralDefeatTypeEnum.fromId(templateData['generalDefeatType'])
           : null;
       _selectedTeamPointType = templateData['teamPointType'] != null
           ? TeamPointTypeEnum.fromId(templateData['teamPointType'])
@@ -146,6 +151,9 @@ class _CountingTemplateFormFormState
       _showResultType =
           _selectedGameType != null &&
           _selectedGameType != GameTypeEnum.secretRoles;
+      _showGeneralDefeatType =
+          _selectedGameType != null &&
+          ![GameTypeEnum.coop, GameTypeEnum.solo].contains(_selectedGameType);
       _showTeamPointType =
           _selectedGameType != null &&
           [
@@ -226,6 +234,14 @@ class _CountingTemplateFormFormState
       );
       return;
     }
+    if (_showGeneralDefeatType && _selectedGeneralDefeatType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Укажите есть ли возможность общего поражения'),
+        ),
+      );
+      return;
+    }
     if (_showTeamPointType && _selectedTeamPointType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -290,6 +306,7 @@ class _CountingTemplateFormFormState
       'gameType': _selectedGameType!.id,
       'firstPlayerStartType': _selectedFirstPlayerStartType?.id,
       'resultType': _selectedResultType?.id,
+      'generalDefeatType': _selectedGeneralDefeatType?.id,
       'teamPointType': _selectedTeamPointType?.id,
       'pointType': _selectedPointType?.id,
       'roundsType': _selectedRoundsType?.id,
@@ -412,7 +429,7 @@ class _CountingTemplateFormFormState
                       ),
 
                       EnumSelector(
-                        label: 'Тип игры *',
+                        label: 'Тип игры',
                         choices: GameTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
@@ -467,7 +484,7 @@ class _CountingTemplateFormFormState
 
                       if (_showFirstPlayerStartType)
                         EnumSelector(
-                          label: 'Тип определения первого игрока *',
+                          label: 'Тип определения первого игрока',
                           choices: FirstPlayerStartTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -493,7 +510,7 @@ class _CountingTemplateFormFormState
 
                       if (_showResultType)
                         EnumSelector(
-                          label: 'Тип определения результативности *',
+                          label: 'Тип определения результативности',
                           choices: ResultTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -528,9 +545,33 @@ class _CountingTemplateFormFormState
                           },
                         ),
 
+                      if (_showGeneralDefeatType)
+                        EnumSelector(
+                          label: 'Возможность общего поражения',
+                          choices: GeneralDefeatTypeEnum.values.map((val) {
+                            return DropdownMenuItem(
+                              value: val,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    val.label,
+                                    style: TextStyle(color: textColor),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          selected: _selectedGeneralDefeatType,
+                          onChanged: (value) {
+                            _selectedGeneralDefeatType = (value != null)
+                                ? value as GeneralDefeatTypeEnum
+                                : null;
+                          },
+                        ),
+
                       if (_showTeamPointType)
                         EnumSelector(
-                          label: 'Тип игровых очков при командной игре *',
+                          label: 'Тип игровых очков при командной игре',
                           choices: TeamPointTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -564,7 +605,7 @@ class _CountingTemplateFormFormState
 
                       if (_showPointType)
                         EnumSelector(
-                          label: 'Тип игровых очков *',
+                          label: 'Тип игровых очков',
                           choices: PointTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -590,7 +631,7 @@ class _CountingTemplateFormFormState
 
                       if (_showRoundsType)
                         EnumSelector(
-                          label: 'Тип раундов *',
+                          label: 'Тип раундов',
                           choices: RoundsTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -616,7 +657,7 @@ class _CountingTemplateFormFormState
 
                       if (_showAltVictoryType)
                         EnumSelector(
-                          label: 'Возможность победы другим путём *',
+                          label: 'Возможность победы другим путём',
                           choices: AltVictoryTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -642,7 +683,7 @@ class _CountingTemplateFormFormState
 
                       if (_showFirstPlayerRoundType)
                         EnumSelector(
-                          label: 'Тип определения первого игрока в раунде *',
+                          label: 'Тип определения первого игрока в раунде',
                           choices: FirstPlayerRoundTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -677,7 +718,7 @@ class _CountingTemplateFormFormState
 
                       if (_showSequencePlayersMovesType)
                         EnumSelector(
-                          label: 'Тип последовательности ходов игроков *',
+                          label: 'Тип последовательности ходов игроков',
                           choices: SequencePlayersMovesTypeEnum.values.map((
                             val,
                           ) {
@@ -706,7 +747,7 @@ class _CountingTemplateFormFormState
 
                       if (_showGameHostType)
                         EnumSelector(
-                          label: 'Тип организации игры *',
+                          label: 'Тип организации игры',
                           choices: GameHostTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -732,7 +773,7 @@ class _CountingTemplateFormFormState
 
                       if (_showSecretRolesDistributionType)
                         EnumSelector(
-                          label: 'Способ распределения ролей *',
+                          label: 'Способ распределения ролей',
                           choices: SecretRolesDistributionTypeEnum.values.map((
                             val,
                           ) {

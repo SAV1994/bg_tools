@@ -19,7 +19,7 @@ class ScoreInputScreen extends ConsumerStatefulWidget {
 
 class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
   // Контроллеры
-  final Map<TeamsEnum, dynamic> _generalScoreController = {};
+  final Map<TeamsEnum, dynamic> _generalScoreControllers = {};
   final Map<int, dynamic> _scoreControllers = {};
   // Загрузка
   bool _isLoading = false;
@@ -50,19 +50,20 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
 
       for (int i = 1; i <= widget.data['numberTeams']; i++) {
         final teamEnum = TeamsEnum.fromId(i);
-        _generalScoreController[teamEnum] = ({
+        _generalScoreControllers[teamEnum] = ({
           'team': teamEnum,
           'gamers': [],
           'controller': TextEditingController(
             text: widget.data['teamsData'][teamEnum.id.toString()]['score']
                 ?.toString(),
           ),
+          'focusNode': FocusNode(),
         });
       }
 
       for (Map<String, dynamic> gamerData in widget.data['gamers']) {
         final TeamsEnum teamEnum = TeamsEnum.fromId(gamerData['team']);
-        _generalScoreController[teamEnum]['gamers'].add(gamerData);
+        _generalScoreControllers[teamEnum]['gamers'].add(gamerData);
       }
     } else {
       List<Map<String, dynamic>> gamersData = widget.data['gamers']
@@ -73,6 +74,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
           'controller': TextEditingController(
             text: gamerData['score']?.toString() ?? '',
           ),
+          'focusNode': FocusNode(),
         };
       }
     }
@@ -89,7 +91,10 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
     }
   }
 
-  Widget _buildTeamCard(Map<String, dynamic> teamData) {
+  Widget _buildTeamCard(
+    Map<String, dynamic> teamData,
+    FocusNode? nextFocusnode,
+  ) {
     final TeamsEnum team = teamData['team'];
 
     return Container(
@@ -115,7 +120,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
             child: Row(
               spacing: 12,
               children: [
-                _buildPlaceInput(teamData),
+                _buildPlaceInput(teamData, nextFocusnode),
                 Expanded(
                   child: Column(
                     spacing: 4,
@@ -190,10 +195,22 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
     );
   }
 
-  Widget _buildPlaceInput(Map<String, dynamic> teamData) {
+  Widget _buildPlaceInput(
+    Map<String, dynamic> teamData,
+    FocusNode? nextFocusNode,
+  ) {
     return SizedBox(
       width: 120,
-      child: TextFormField(
+      child: TextField(
+        focusNode: teamData['focusNode'],
+        textInputAction: (nextFocusNode == null) ? null : TextInputAction.next,
+        onSubmitted: (_) {
+          if (nextFocusNode == null) {
+            FocusScope.of(context).unfocus();
+          } else {
+            FocusScope.of(context).requestFocus(nextFocusNode);
+          }
+        },
         controller: teamData['controller'],
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
@@ -222,11 +239,13 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
     for (final Map<String, dynamic> controllerData
         in _scoreControllers.values) {
       controllerData['controller'].dispose();
+      controllerData['focusNode'].dispose();
     }
 
     for (final Map<String, dynamic> controllerData
-        in _generalScoreController.values) {
+        in _generalScoreControllers.values) {
       controllerData['controller'].dispose();
+      controllerData['focusNode'].dispose();
     }
     super.dispose();
   }
@@ -240,7 +259,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
         }
 
         if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
-          final List<dynamic> teamsData = _generalScoreController.values
+          final List<dynamic> teamsData = _generalScoreControllers.values
               .toList();
 
           return Column(
@@ -248,10 +267,15 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
               Flexible(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: _generalScoreController.length,
+                  itemCount: _generalScoreControllers.length,
                   itemBuilder: (context, index) {
                     final teamData = teamsData[index];
-                    return _buildTeamCard(teamData);
+                    FocusNode? nextFocusNode;
+                    if (index < _generalScoreControllers.length - 1) {
+                      nextFocusNode = teamsData[index + 1]['focusNode'];
+                    }
+
+                    return _buildTeamCard(teamData, nextFocusNode);
                   },
                 ),
               ),
@@ -271,9 +295,17 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
                   itemBuilder: (context, index) {
                     final Map<String, dynamic> gamerData =
                         widget.data['gamers'][index];
+                    FocusNode? nextFocusNode;
+                    if (index < widget.data['gamers'].length - 1) {
+                      nextFocusNode =
+                          _scoreControllers[widget.data['gamers'][index +
+                              1]['id']]['focusNode'];
+                    }
+
                     return PlayerInputCard(
                       gamerId: gamerData['id'],
                       controllerData: _scoreControllers[gamerData['id']],
+                      nextFocusNode: nextFocusNode,
                       addCalcBtn: true,
                       digitsOnly: false,
                       updateScore: _updateScore,

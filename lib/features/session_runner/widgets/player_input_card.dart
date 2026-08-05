@@ -7,6 +7,7 @@ import 'package:bg_tools/features/session_runner/widgets/export.dart';
 class PlayerInputCard extends StatefulWidget {
   final int gamerId;
   final Map<String, dynamic> controllerData;
+  final FocusNode? nextFocusNode;
   final bool addCalcBtn;
   final bool digitsOnly;
   final Function updateScore;
@@ -22,6 +23,7 @@ class PlayerInputCard extends StatefulWidget {
     required this.updateScore,
     this.color,
     this.label,
+    this.nextFocusNode,
   });
 
   @override
@@ -74,7 +76,7 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: secondColor,
                   ),
                 ),
               ),
@@ -109,7 +111,20 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                     ),
                   // Поле ввода
                   Expanded(
-                    child: TextFormField(
+                    child: TextField(
+                      focusNode: widget.controllerData['focusNode'],
+                      textInputAction: (widget.nextFocusNode == null)
+                          ? null
+                          : TextInputAction.next,
+                      onSubmitted: (_) {
+                        if (widget.nextFocusNode == null) {
+                          FocusScope.of(context).unfocus();
+                        } else {
+                          FocusScope.of(
+                            context,
+                          ).requestFocus(widget.nextFocusNode);
+                        }
+                      },
                       controller: widget.controllerData['controller'],
                       textAlign: TextAlign.center,
                       style: const TextStyle(

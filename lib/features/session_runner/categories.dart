@@ -94,7 +94,34 @@ enum ResultTypeEnum {
   }
 }
 
-// 4 Тип игровых очков при командной игре
+// 4 Возможность общего поражения
+enum GeneralDefeatTypeEnum {
+  yes(1, 'Да'),
+  no(2, 'Нет');
+
+  final int id;
+  final String label;
+
+  const GeneralDefeatTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static GeneralDefeatTypeEnum fromId(int id) {
+    return GeneralDefeatTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => GeneralDefeatTypeEnum.no,
+    );
+  }
+
+  // Получить enum по названию
+  static GeneralDefeatTypeEnum fromLabel(String label) {
+    return GeneralDefeatTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => GeneralDefeatTypeEnum.no,
+    );
+  }
+}
+
+// 5 Тип игровых очков при командной игре
 enum TeamPointTypeEnum {
   personal(1, 'Личные очков'),
   general(2, 'Общие очков');
@@ -121,7 +148,7 @@ enum TeamPointTypeEnum {
   }
 }
 
-// 5 Тип игровых очков (Что нужно для победы?)
+// 6 Тип игровых очков (Что нужно для победы?)
 enum PointTypeEnum {
   max(1, 'Максимум очков'),
   min(2, 'Минимум очков');
@@ -148,7 +175,7 @@ enum PointTypeEnum {
   }
 }
 
-// 6 Тип раундов
+// 7 Тип раундов
 enum RoundsTypeEnum {
   fix(1, 'Фиксированное количество раундов'),
   dynamic(2, 'Произвольное количество раундов'),
@@ -176,10 +203,10 @@ enum RoundsTypeEnum {
   }
 }
 
-// 7 Алтернативные условия победы
+// 8 Алтернативные условия победы
 enum AltVictoryTypeEnum {
-  yes(1, 'есть'),
-  no(2, 'нет');
+  yes(1, 'Да'),
+  no(2, 'Нет');
 
   final int id;
   final String label;
@@ -203,7 +230,7 @@ enum AltVictoryTypeEnum {
   }
 }
 
-// 8 Определение первого игрока между раундами
+// 9 Определение первого игрока между раундами
 enum FirstPlayerRoundTypeEnum {
   queue(1, 'Следующий по часовой стрелке'),
   leader(2, 'Победитель ходит первым'),
@@ -233,7 +260,7 @@ enum FirstPlayerRoundTypeEnum {
   }
 }
 
-// 9 Тип последовательности ходов игроков
+// 10 Тип последовательности ходов игроков
 enum SequencePlayersMovesTypeEnum {
   clockwise(1, 'По часовой стрелке'),
   random(2, 'Вразнобой');
@@ -260,7 +287,7 @@ enum SequencePlayersMovesTypeEnum {
   }
 }
 
-// 10 Тип организации игры
+// 11 Тип организации игры
 enum GameHostTypeEnum {
   master(1, 'Есть ведущий'),
   noMaster(2, 'Без ведущего');
@@ -287,7 +314,7 @@ enum GameHostTypeEnum {
   }
 }
 
-// 11 Способ распределения ролей
+// 12 Способ распределения ролей
 enum SecretRolesDistributionTypeEnum {
   auto(1, 'Определяются приложением'),
   manually(2, 'Определяются вручную');

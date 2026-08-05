@@ -91,13 +91,16 @@ class _TeamOneWinnerSelectScreenState
       }
     }
 
-    if (winnerIds.length > 1) {
-      _mode = _SelectMode.multiple;
-      _multipleSelected.addAll(winnerIds);
-    } else if (winnerIds.length == 1) {
+    if (winnerIds.isEmpty) {
+      _sortByWinCondition();
+      _fillWinners(winnerIds);
+    }
+
+    if (winnerIds.length == 1) {
       _singleSelected = winnerIds[0];
     } else {
-      _sortByWinCondition();
+      _mode = _SelectMode.multiple;
+      _multipleSelected.addAll(winnerIds);
     }
 
     if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
@@ -153,6 +156,20 @@ class _TeamOneWinnerSelectScreenState
         return scoreA.compareTo(scoreB);
       }
     });
+  }
+
+  void _fillWinners(List<int> winnerIds) {
+    if (widget.data['resultType'] != ResultTypeEnum.condition.id) {
+      final int score = _teams[0]['score'];
+      for (int i = 0; i < _teams.length; i++) {
+        if (score == _teams[i]['score']) {
+          winnerIds.add(_teams[i]['team'].id);
+        } else if (score != _teams[i]['score']) {
+          break;
+        }
+      }
+      _updateData(winnerIds);
+    }
   }
 
   void _updateTeamScore(Map<String, dynamic> teamData) {
@@ -260,15 +277,18 @@ class _TeamOneWinnerSelectScreenState
                       ),
                       child: Center(
                         child: Text(
-                          widget
-                                  .data['teamsData'][teamData['team'].id
-                                      .toString()]['numWinRounds']
-                                  ?.toString() ??
-                              '0',
+                          (widget.data['resultType'] !=
+                                  ResultTypeEnum.condition.id)
+                              ? widget
+                                        .data['teamsData'][teamData['team'].id
+                                            .toString()]['numWinRounds']
+                                        ?.toString() ??
+                                    '0'
+                              : teamData['name'][0],
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: secondColor,
                           ),
                         ),
                       ),
@@ -290,7 +310,7 @@ class _TeamOneWinnerSelectScreenState
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          (widget.data['type'] != GameTypeEnum.secretRoles.id)
+                          (teamData['score'] != null)
                               ? 'Очки: ${widget.data['teamsData'][teamData['team'].id.toString()]['score'] ?? 0}'
                               : 'Количество игроков: ${teamData['gamers'].length}',
                           style: TextStyle(fontSize: 14, color: titleColor),
@@ -322,15 +342,13 @@ class _TeamOneWinnerSelectScreenState
                     children: [
                       CircleAvatar(
                         radius: 16,
-                        backgroundColor: teamData['team'].color.withOpacity(
-                          0.2,
-                        ),
+                        backgroundColor: teamData['team'].color,
                         child: Text(
                           gamer['username'][0].toUpperCase(),
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: teamData['team'].color,
+                            color: secondColor,
                           ),
                         ),
                       ),
@@ -338,28 +356,30 @@ class _TeamOneWinnerSelectScreenState
                       Expanded(
                         child: Text(
                           gamer['username'],
-                          style: const TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: teamData['team'].color.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          (widget.data['type'] != GameTypeEnum.secretRoles.id)
-                              ? '${gamer['score'] ?? 0}'
-                              : '${gamer['role']['roleName']}${gamer['role']['groupName'] != null ? ' (${gamer['role']['groupName']})' : ''}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                      if (widget.data['type'] == GameTypeEnum.secretRoles.id ||
+                          gamer['score'] != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
                             color: teamData['team'].color,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            (widget.data['type'] == GameTypeEnum.secretRoles.id)
+                                ? '${gamer['role']['roleName']}${gamer['role']['groupName'] != null ? ' (${gamer['role']['groupName']})' : ''}'
+                                : '${gamer['score']}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: secondColor,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 );
@@ -454,30 +474,31 @@ class _TeamOneWinnerSelectScreenState
                     ),
 
                   // Кнопка переключения режима
-                  if (widget.data['type'] != GameTypeEnum.secretRoles.id)
-                    SegmentedButton<_SelectMode>(
-                      segments: const [
-                        ButtonSegment(
-                          value: _SelectMode.single,
-                          label: Text('Один победитель'),
-                          icon: Icon(Icons.radio_button_unchecked),
-                        ),
-                        ButtonSegment(
-                          value: _SelectMode.multiple,
-                          label: Text('Ничья'),
-                          icon: Icon(Icons.check_box_outline_blank),
-                        ),
+                  SegmentedButton<_SelectMode>(
+                    segments: [
+                      ButtonSegment(
+                        value: _SelectMode.single,
+                        label: Text('Один победитель'),
+                        icon: Icon(Icons.radio_button_unchecked),
+                      ),
+                      ButtonSegment(
+                        value: _SelectMode.multiple,
+                        label: Text('Ничья'),
+                        icon: Icon(Icons.check_box_outline_blank),
+                      ),
+                      if (widget.data['generalDefeatType'] ==
+                          GeneralDefeatTypeEnum.yes.id)
                         ButtonSegment(
                           value: _SelectMode.none,
                           label: Text('Поражение'),
                           icon: Icon(Icons.sentiment_very_dissatisfied),
                         ),
-                      ],
-                      selected: {_mode},
-                      onSelectionChanged: (Set<_SelectMode> selection) {
-                        _toggleMode(selection.first);
-                      },
-                    ),
+                    ],
+                    selected: {_mode},
+                    onSelectionChanged: (Set<_SelectMode> selection) {
+                      _toggleMode(selection.first);
+                    },
+                  ),
 
                   if (_mode != _SelectMode.none)
                     // Информационная панель

@@ -24,6 +24,8 @@ Future<void> initSessionData(
   sessionData['firstPlayerStartType'] =
       countingTemplateData['firstPlayerStartType'] ?? 0;
   sessionData['resultType'] = countingTemplateData['resultType'] ?? 0;
+  sessionData['generalDefeatType'] =
+      countingTemplateData['generalDefeatType'] ?? 0;
   sessionData['teamPointType'] = countingTemplateData['teamPointType'] ?? 0;
   sessionData['pointType'] = countingTemplateData['pointType'] ?? 0;
   sessionData['roundsType'] = countingTemplateData['roundsType'] ?? 0;

@@ -151,6 +151,14 @@ class _CountingTemplateDetailScreenState
                                     ).label,
                                   ),
 
+                                if (templateData['generalDefeatType'] != null)
+                                  InfoRow(
+                                    label: 'Возможность общего поражения',
+                                    value: GeneralDefeatTypeEnum.fromId(
+                                      templateData['generalDefeatType'],
+                                    ).label,
+                                  ),
+
                                 if (templateData['resultType'] != null)
                                   InfoRow(
                                     label: 'Тип определения результативности',

@@ -35,7 +35,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   Future<void> _loadData() async {
     if (widget.data['gamers'][0]['place'] == null) {
       _sortByWinCondition();
-    } else if (hasDraw()) {
+    }
+    if (hasDraw()) {
       _mode = _SelectMode.draw;
     }
 
@@ -47,6 +48,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         'controller': TextEditingController(
           text: gamerData['place']?.toString() ?? '',
         ),
+        'focusNode': FocusNode(),
         'extraData': (widget.data['resultType'] != ResultTypeEnum.condition.id)
             ? gamerData['score']
             : null,
@@ -67,7 +69,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       }
     });
 
-    _fillPlace();
+    _firstFillPlace();
   }
 
   bool hasDraw() {
@@ -114,6 +116,23 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     }
   }
 
+  void _firstFillPlace() {
+    for (int i = 0; i < widget.data['gamers'].length; i++) {
+      if (i == 0) {
+        widget.data['gamers'][i]['place'] = 1;
+      } else {
+        if (widget.data['gamers'][i]['score'] ==
+            widget.data['gamers'][i - 1]['score']) {
+          widget.data['gamers'][i]['place'] =
+              widget.data['gamers'][i - 1]['place'];
+        } else {
+          widget.data['gamers'][i]['place'] =
+              widget.data['gamers'][i - 1]['place'] + 1;
+        }
+      }
+    }
+  }
+
   void _updatePlace(int gamerId, String value) {
     int? newPlace = int.tryParse(value);
     for (final Map<String, dynamic> gamerData in widget.data['gamers']) {
@@ -140,9 +159,17 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 itemCount: widget.data['gamers'].length,
                 itemBuilder: (context, index) {
                   final int gamerId = widget.data['gamers'][index]['id'];
+                  FocusNode? nextFocusNode;
+                  if (index < widget.data['gamers'].length - 1) {
+                    nextFocusNode =
+                        _scoreControllers[widget.data['gamers'][index +
+                            1]['id']]['focusNode'];
+                  }
+
                   return PlayerInputCard(
                     gamerId: gamerId,
                     controllerData: _scoreControllers[gamerId],
+                    nextFocusNode: nextFocusNode,
                     addCalcBtn: false,
                     digitsOnly: true,
                     updateScore: _updatePlace,
@@ -185,15 +212,23 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
 
   Widget _buildPlayerCard(int index, Map<String, dynamic> gamerData) {
     final isTop3 = index < 3;
+    late final Color color;
+    switch (index) {
+      case 0:
+        color = goldColor;
+      case 1:
+        color = silverColor;
+      case 2:
+        color = bronzeColor;
+      default:
+        color = textColor;
+    }
 
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: isTop3 ? goldColor : Colors.grey.shade200,
-          width: isTop3 ? 2 : 1,
-        ),
+        side: BorderSide(color: color, width: isTop3 ? 2 : 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -213,9 +248,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: isTop3
-                    ? Colors.amber.withValues(alpha: 0.2)
-                    : Colors.grey.shade200,
+                color: color,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
@@ -224,9 +257,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: isTop3
-                        ? Colors.amber.shade700
-                        : Colors.grey.shade600,
+                    color: secondColor,
                   ),
                 ),
               ),
@@ -253,7 +284,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.greenAccent,
+                  color: textColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -261,7 +292,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: secondColor,
                   ),
                 ),
               ),

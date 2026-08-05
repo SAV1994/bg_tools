@@ -241,7 +241,8 @@ final teamOneWinnerSelectStep = ScenarioStep(
         break;
       }
     }
-    if (data['type'] != GameTypeEnum.secretTeams.id && !isSelected) {
+    if (data['generalDefeatType'] != GeneralDefeatTypeEnum.yes.id &&
+        !isSelected) {
       throw StepWizardException('Выберите победителя');
     }
   },

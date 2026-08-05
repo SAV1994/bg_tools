@@ -76,6 +76,7 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
           'controller': TextEditingController(
             text: gamerData['score']?.toString() ?? '',
           ),
+          'focusNode': FocusNode(),
         };
       }
       _isVictory = gamersData[0]['place'] == 1;
@@ -238,9 +239,17 @@ class _CoopResultScreenState extends ConsumerState<CoopResultScreen> {
                   itemCount: widget.data['gamers'].length,
                   itemBuilder: (context, index) {
                     final int gamerId = widget.data['gamers'][index]['id'];
+                    FocusNode? nextFocusNode;
+                    if (index < widget.data['gamers'].length - 1) {
+                      nextFocusNode =
+                          _scoreControllers[widget.data['gamers'][index +
+                              1]['id']]['focusNode'];
+                    }
+
                     return PlayerInputCard(
                       gamerId: gamerId,
                       controllerData: _scoreControllers[gamerId],
+                      nextFocusNode: nextFocusNode,
                       addCalcBtn: true,
                       digitsOnly: false,
                       updateScore: _updateScore,
