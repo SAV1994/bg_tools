@@ -1,8 +1,8 @@
 export 'coop_result_screen.dart';
 export 'final_screen.dart';
 export 'first_screen.dart';
-export 'gamers_select_screen.dart';
-export 'gamers_turn_order_screen.dart';
+export 'players_select_screen.dart';
+export 'players_turn_order_screen.dart';
 export 'number_team_screen.dart';
 export 'one_winner_select_screen.dart';
 export 'player_roles_viewer.dart';

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
@@ -72,6 +73,7 @@ class _NoteFormState extends ConsumerState<NoteForm> {
 
       final notifier = ref.read(notesPaginatedProvider.notifier);
       notifier.refresh();
+      ref.invalidate(noteDataProvider);
 
       if (mounted) {
         Navigator.pop(context);

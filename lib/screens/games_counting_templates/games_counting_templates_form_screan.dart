@@ -138,6 +138,13 @@ class _GamesCountingTemplatesModalFormState
         'secretRolesConfig': _secretRolesConfig,
       };
 
+      if (_selectedCountingTemplate == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Выберите шаблон')));
+        return;
+      }
+
       final GamesCountingTemplatesCompanion gamesCountingTemplatesComp =
           GamesCountingTemplatesCompanion(
             gameId: Value(widget.gameId),

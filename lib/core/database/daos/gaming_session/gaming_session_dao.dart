@@ -217,7 +217,6 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
               mode: OrderingMode.asc,
             ),
           ]);
-    ;
 
     final rows = await query.get();
 

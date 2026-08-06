@@ -644,7 +644,7 @@ class _GamingSessionDetailScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Информация об игровой сессии'),
+        title: Icon(sessionsIcon, color: silverColor),
         actions: [
           // Кнопка редактирования
           IconButton(

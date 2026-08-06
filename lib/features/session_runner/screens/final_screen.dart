@@ -75,6 +75,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
 
       ref.read(gamingSessionsPaginatedProvider.notifier).refresh();
       ref.invalidate(gamingSessionFullDataProvider);
+      ref.invalidate(gameSessionCountDataProvider);
 
       if (mounted) {
         Navigator.pop(context);

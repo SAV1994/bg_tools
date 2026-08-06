@@ -125,8 +125,9 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.gamerId == null ? 'Новый игрок' : 'Редактирование игрока',
+        title: Icon(
+          gamersIcon,
+          color: widget.gamerId == null ? bronzeColor : blueColor,
         ),
         actions: [
           if (widget.gamerId != null && gamer!.isOwner == false)

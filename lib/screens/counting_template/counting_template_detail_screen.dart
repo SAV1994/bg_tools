@@ -25,6 +25,26 @@ class CountingTemplateDetailScreen extends ConsumerStatefulWidget {
 
 class _CountingTemplateDetailScreenState
     extends ConsumerState<CountingTemplateDetailScreen> {
+  late final int _gamesTemplateCount;
+  // Загрузка
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final gamesTemplateDao = ref.read(gamesCountingTemplatesDaoProvider);
+    _gamesTemplateCount = await gamesTemplateDao.getGamesTemplateCount(
+      widget.templateId,
+    );
+
+    setState(() => _isLoading = false);
+  }
+
   Future<void> _openUpdateForm() async {
     final result = await context.pushNamed(
       'templates-update',
@@ -39,13 +59,23 @@ class _CountingTemplateDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: Icon(sessionsIcon, color: silverColor)),
+        body: LoadingScreen(),
+      );
+    }
+
     final gamingSessionAsync = ref.watch(
       countingTemplateDataProvider(widget.templateId),
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Информация об шаблоне партии'),
+        title: Text(
+          _gamesTemplateCount.toString(),
+          style: TextStyle(color: silverColor, fontWeight: FontWeight.w900),
+        ),
         actions: [
           // Кнопка редактирования
           IconButton(

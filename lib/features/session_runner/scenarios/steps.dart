@@ -266,7 +266,19 @@ final teamResultStep = ScenarioStep(
   title: 'Результаты',
   description: 'Отметьте результаты партии',
   contentBuilder: (data) => TeamResultScreen(data: data),
-  validator: (data) {},
+  validator: (data) {
+    bool isSelected = false;
+    for (final Map<String, dynamic> teamData in data['teamsData'].values) {
+      if (teamData['place'] == 1) {
+        isSelected = true;
+        break;
+      }
+    }
+    if (data['generalDefeatType'] != GeneralDefeatTypeEnum.yes.id &&
+        !isSelected) {
+      throw StepWizardException('Выберите победителя');
+    }
+  },
 );
 
 final scoreInputStep = ScenarioStep(

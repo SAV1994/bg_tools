@@ -25,6 +25,15 @@ final gameFullDataProvider = FutureProvider.family<GameFullData?, int>((
   return await dao.getFullInfo(gameId);
 });
 
+// Количество партий в игру
+final gameSessionCountDataProvider = FutureProvider.family<int, int>((
+  ref,
+  gameId,
+) async {
+  final dao = ref.watch(gamingSessionDaoProvider);
+  return await dao.getTotalCount(onlyIsFinished: true, gameId: gameId);
+});
+
 // Владелец приложения
 final ownerDataProvider = FutureProvider<Gamer?>((ref) async {
   final dao = ref.watch(gamerDaoProvider);
@@ -44,4 +53,10 @@ final gamingSessionFullDataProvider =
 // Данные текущей сессии
 final sessionDataProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
   return AppDataManager.loadActiveSession();
+});
+
+// Заметка
+final noteDataProvider = FutureProvider.family<Note?, int>((ref, noteId) async {
+  final dao = ref.watch(noteDaoProvider);
+  return await dao.getSingle(noteId);
 });

@@ -160,8 +160,11 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/gaming-sessions',
       name: 'gaming-sessions-list',
-      builder: (BuildContext context, GoRouterState state) =>
-          const GamingSessionListScreen(),
+      builder: (BuildContext context, GoRouterState state) {
+        final gameId = int.tryParse(state.uri.queryParameters['gameId'] ?? '');
+
+        return GamingSessionListScreen(gameId: gameId);
+      },
     ),
     GoRoute(
       path: '/gaming-sessions/add',

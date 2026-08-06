@@ -13,7 +13,9 @@ import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class GamingSessionListScreen extends ConsumerStatefulWidget {
-  const GamingSessionListScreen({super.key});
+  final int? gameId;
+
+  const GamingSessionListScreen({super.key, this.gameId});
 
   @override
   ConsumerState<GamingSessionListScreen> createState() =>
@@ -23,6 +25,7 @@ class GamingSessionListScreen extends ConsumerStatefulWidget {
 class _GamingSessionListScreenState
     extends ConsumerState<GamingSessionListScreen> {
   List<Game> _games = [];
+  Game? _game;
   bool _isGameSelectOpen = false;
   // Контроллеры
   final ScrollController _scrollController = ScrollController();
@@ -39,6 +42,10 @@ class _GamingSessionListScreenState
   Future<void> _loadData() async {
     final GameDao gameDao = ref.read(gameDaoProvider);
     _games = await gameDao.getStandalones();
+    if (widget.gameId != null) {
+      _game = await gameDao.getSingle(widget.gameId!);
+      _isGameSelectOpen = true;
+    }
 
     setState(() => _isLoading = false);
   }
@@ -75,6 +82,9 @@ class _GamingSessionListScreenState
                     onSelectionChanged: (game) {
                       notifier.filterByGame(game?.id);
                     },
+                    selectedItem: (_game != null)
+                        ? SelectItem(_game!.id, _game!.name)
+                        : null,
                   )
                 : Icon(sessionsIcon),
           ),

@@ -7,12 +7,14 @@ import 'package:bg_tools/core/utils/export.dart';
 class AppBarSelect<T> extends StatefulWidget {
   final List<SelectItem> items;
   final Function(SelectItem?) onSelectionChanged;
+  final SelectItem? selectedItem;
   final String? placeholder;
 
   const AppBarSelect({
     super.key,
     required this.items,
     required this.onSelectionChanged,
+    this.selectedItem,
     this.placeholder,
   });
 
@@ -23,6 +25,12 @@ class AppBarSelect<T> extends StatefulWidget {
 class _AppBarSelectState<T> extends State<AppBarSelect<T>> {
   bool _isModalnOpen = false;
   SelectItem? _selectedItem;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedItem = widget.selectedItem;
+  }
 
   void _selectItem(SelectItem? item) {
     setState(() {

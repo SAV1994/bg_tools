@@ -6,7 +6,7 @@ import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
-enum _SelectMode { single, draw }
+enum _SelectMode { single, draw, none }
 
 enum _SelectScoreMode {
   max(1),
@@ -66,14 +66,16 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
       _teams[gamerData['team'] - 1]['gamers'].add(gamerData);
     }
 
-    if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
-      for (final teamData in _teams) {
-        _updateTeamScore(teamData);
-      }
-    } else {
-      for (final teamData in _teams) {
-        teamData['score'] =
-            widget.data['teamsData'][teamData['team'].id.toString()]['score'];
+    if (widget.data['resultType'] != ResultTypeEnum.condition.id) {
+      if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
+        for (final teamData in _teams) {
+          _updateTeamScore(teamData);
+        }
+      } else {
+        for (final teamData in _teams) {
+          teamData['score'] =
+              widget.data['teamsData'][teamData['team'].id.toString()]['score'];
+        }
       }
     }
 
@@ -84,19 +86,18 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
       }
     }
 
-    if (places.isEmpty) {
-      _sortByWinCondition();
-    } else if (places.length != _teams.length) {
-      _mode = _SelectMode.draw;
-      for (final entry in widget.data['teamsData'].asMap().entries) {
-        _setTeamPlace(int.parse(entry.key), entry.value['place']);
-      }
-    }
-
     for (final entry in _teams.asMap().entries) {
       entry.value['controller'] = TextEditingController(
         text: (entry.key + 1).toString(),
       );
+    }
+
+    if (widget.data['resultType'] != ResultTypeEnum.condition.id) {
+      if (places.isEmpty) {
+        _sortByWinCondition();
+      } else if (places.length != _teams.length) {
+        _setInitialDrawMode(hasDraw: true);
+      }
     }
 
     if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
@@ -110,11 +111,24 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
     setState(() => _isLoading = false);
   }
 
+  void _setInitialDrawMode({bool hasDraw = false}) {
+    if (hasDraw) {
+      _mode = _SelectMode.draw;
+      for (final entry in widget.data['teamsData'].entries) {
+        _setTeamPlace(int.parse(entry.key), entry.value['place']);
+      }
+    } else {
+      for (final entry in _teams.asMap().entries) {
+        entry.value['controller'].text = (entry.key + 1).toString();
+      }
+    }
+  }
+
   void _setTeamPlace(int teamId, int place) {
     final TeamsEnum teamEnum = TeamsEnum.fromId(teamId);
 
     final teamData = _teams.firstWhere((td) => td['team'].id == teamEnum.id);
-    teamData['controller'] = TextEditingController(text: place.toString());
+    teamData['controller'].text = place.toString();
     for (final Map<String, dynamic> gamerData in teamData['gamers']) {
       gamerData['place'] = place;
     }
@@ -161,10 +175,34 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
       }
     });
 
-    _fillPlace();
+    _initialFillPlace();
   }
 
-  void _fillPlace() {
+  void _initialFillPlace() {
+    bool hasDraw = false;
+    for (int i = 0; i < _teams.length; i++) {
+      final Map<String, dynamic> teamData =
+          widget.data['teamsData'][_teams[i]['team'].id.toString()];
+      if (i == 0) {
+        teamData['place'] = 1;
+      } else if (widget.data['resultType'] == ResultTypeEnum.condition.id) {
+        break;
+      } else {
+        final Map<String, dynamic> previousTeamData =
+            widget.data['teamsData'][_teams[i - 1]['team'].id.toString()];
+        if (teamData['score'] == previousTeamData['score']) {
+          hasDraw = true;
+          teamData['place'] = previousTeamData['place'];
+        } else {
+          teamData['place'] = previousTeamData['place'] + 1;
+        }
+      }
+    }
+
+    _setInitialDrawMode(hasDraw: hasDraw);
+  }
+
+  void _fillPlaceOneToOne() {
     for (final entry in _teams.asMap().entries) {
       widget.data['teamsData'][entry.value['team'].id.toString()]['place'] =
           entry.key + 1;
@@ -190,13 +228,22 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
     }
   }
 
-  void _toggleMode() {
+  void _toggleMode(_SelectMode selectedMode) {
     setState(() {
-      _mode = _mode == _SelectMode.single
-          ? _SelectMode.draw
-          : _SelectMode.single;
+      _mode = selectedMode;
       if (_mode == _SelectMode.single) {
-        _fillPlace();
+        _fillPlaceOneToOne();
+      } else if (_mode == _SelectMode.draw) {
+        _sortByWinCondition();
+      } else {
+        for (final teamData in _teams) {
+          widget.data['teamsData'][teamData['team'].id.toString()]['place'] =
+              null;
+
+          for (Map<String, dynamic> gamerData in teamData['gamers']) {
+            gamerData['place'] = null;
+          }
+        }
       }
     });
   }
@@ -222,7 +269,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
       final Map<String, dynamic> teamData = _teams.removeAt(oldIndex);
       _teams.insert(newIndex, teamData);
 
-      _fillPlace();
+      _fillPlaceOneToOne();
     });
   }
 
@@ -261,21 +308,20 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
       itemCount: _teams.length,
       itemBuilder: (context, index) {
         final team = _teams[index];
-        return _buildTeamCard(team, index + 1, showPlaceInput: true);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _buildTeamCard(team, index + 1),
+        );
       },
     );
   }
 
-  Widget _buildTeamCard(
-    Map<String, dynamic> teamData,
-    int currentPlace, {
-    bool showPlaceInput = false,
-  }) {
+  Widget _buildTeamCard(Map<String, dynamic> teamData, int currentPlace) {
     final TeamsEnum team = teamData['team'];
 
     return Container(
       decoration: BoxDecoration(
-        color: team.color.withValues(alpha: 0.1),
+        color: team.bgColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: team.color, width: 2),
       ),
@@ -295,23 +341,25 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
             child: Row(
               children: [
                 // Место
-                if (showPlaceInput)
+                if (_mode == _SelectMode.draw)
                   _buildPlaceInput(teamData, currentPlace)
                 else
                   Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: firstColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Center(
                       child: Text(
-                        '$currentPlace',
+                        (_mode == _SelectMode.none)
+                            ? team.label[0]
+                            : '$currentPlace',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: blackColor,
+                          color: team.color,
                         ),
                       ),
                     ),
@@ -327,7 +375,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: blackColor,
+                          color: firstColor,
                         ),
                       ),
                       if (widget.data['resultType'] !=
@@ -435,7 +483,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
   @override
   void dispose() {
     for (final Map<String, dynamic> teamData in _teams) {
-      teamData['controller']?.dispose();
+      teamData['controller'].dispose();
     }
     super.dispose();
   }
@@ -451,7 +499,7 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
                 children: [
                   // Кнопка переключения режима
                   SegmentedButton<_SelectMode>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: _SelectMode.single,
                         label: Text('1 команда - 1 место'),
@@ -462,10 +510,17 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
                         label: Text('Ничья'),
                         icon: Icon(Icons.check_box_outline_blank),
                       ),
+                      if (widget.data['generalDefeatType'] ==
+                          GeneralDefeatTypeEnum.yes.id)
+                        ButtonSegment(
+                          value: _SelectMode.none,
+                          label: Text('Поражение'),
+                          icon: Icon(Icons.sentiment_very_dissatisfied),
+                        ),
                     ],
                     selected: {_mode},
                     onSelectionChanged: (Set<_SelectMode> selection) {
-                      _toggleMode();
+                      _toggleMode(selection.first);
                     },
                   ),
 
@@ -507,9 +562,9 @@ class _TeamResultScreenState extends ConsumerState<TeamResultScreen> {
                       },
                     ),
 
-                  (_mode == _SelectMode.single)
-                      ? Flexible(child: _buildDragAndDropMode())
-                      : Flexible(child: _buildManualMode()),
+                  (_mode == _SelectMode.draw)
+                      ? Flexible(child: _buildManualMode())
+                      : Flexible(child: _buildDragAndDropMode()),
                 ],
               );
       },

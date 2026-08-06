@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/gaming_session_dataclasses.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
@@ -249,6 +250,7 @@ class _GamingSessionFormScreenState
         _formKey.currentState!.save();
 
         ref.read(gamingSessionsPaginatedProvider.notifier).refresh();
+        ref.invalidate(gameSessionCountDataProvider);
 
         if (mounted) {
           Navigator.pop(context, true);
@@ -306,10 +308,9 @@ class _GamingSessionFormScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.gamingSessionId == null
-              ? 'Новая запись о игровой сессии'
-              : 'Редактирование игровой сессии',
+        title: Icon(
+          sessionsIcon,
+          color: widget.gamingSessionId == null ? bronzeColor : blueColor,
         ),
         actions: [
           TextButton(

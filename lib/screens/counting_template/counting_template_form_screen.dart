@@ -377,10 +377,9 @@ class _CountingTemplateFormFormState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.templateId == null
-              ? 'Новаый шаблон'
-              : 'Редактирование шаблона',
+        title: Icon(
+          templatesIcon,
+          color: widget.templateId == null ? bronzeColor : blueColor,
         ),
       ),
       body: _isLoading
@@ -430,6 +429,7 @@ class _CountingTemplateFormFormState
 
                       EnumSelector(
                         label: 'Тип игры',
+                        required: true,
                         choices: GameTypeEnum.values.map((val) {
                           return DropdownMenuItem(
                             value: val,
@@ -485,6 +485,7 @@ class _CountingTemplateFormFormState
                       if (_showFirstPlayerStartType)
                         EnumSelector(
                           label: 'Тип определения первого игрока',
+                          required: true,
                           choices: FirstPlayerStartTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -511,6 +512,7 @@ class _CountingTemplateFormFormState
                       if (_showResultType)
                         EnumSelector(
                           label: 'Тип определения результативности',
+                          required: true,
                           choices: ResultTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -548,6 +550,7 @@ class _CountingTemplateFormFormState
                       if (_showGeneralDefeatType)
                         EnumSelector(
                           label: 'Возможность общего поражения',
+                          required: true,
                           choices: GeneralDefeatTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -572,6 +575,7 @@ class _CountingTemplateFormFormState
                       if (_showTeamPointType)
                         EnumSelector(
                           label: 'Тип игровых очков при командной игре',
+                          required: true,
                           choices: TeamPointTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -606,6 +610,7 @@ class _CountingTemplateFormFormState
                       if (_showPointType)
                         EnumSelector(
                           label: 'Тип игровых очков',
+                          required: true,
                           choices: PointTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -632,6 +637,7 @@ class _CountingTemplateFormFormState
                       if (_showRoundsType)
                         EnumSelector(
                           label: 'Тип раундов',
+                          required: true,
                           choices: RoundsTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -658,6 +664,7 @@ class _CountingTemplateFormFormState
                       if (_showAltVictoryType)
                         EnumSelector(
                           label: 'Возможность победы другим путём',
+                          required: true,
                           choices: AltVictoryTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -684,6 +691,7 @@ class _CountingTemplateFormFormState
                       if (_showFirstPlayerRoundType)
                         EnumSelector(
                           label: 'Тип определения первого игрока в раунде',
+                          required: true,
                           choices: FirstPlayerRoundTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -719,6 +727,7 @@ class _CountingTemplateFormFormState
                       if (_showSequencePlayersMovesType)
                         EnumSelector(
                           label: 'Тип последовательности ходов игроков',
+                          required: true,
                           choices: SequencePlayersMovesTypeEnum.values.map((
                             val,
                           ) {
@@ -748,6 +757,7 @@ class _CountingTemplateFormFormState
                       if (_showGameHostType)
                         EnumSelector(
                           label: 'Тип организации игры',
+                          required: true,
                           choices: GameHostTypeEnum.values.map((val) {
                             return DropdownMenuItem(
                               value: val,
@@ -774,6 +784,7 @@ class _CountingTemplateFormFormState
                       if (_showSecretRolesDistributionType)
                         EnumSelector(
                           label: 'Способ распределения ролей',
+                          required: true,
                           choices: SecretRolesDistributionTypeEnum.values.map((
                             val,
                           ) {

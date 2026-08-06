@@ -281,6 +281,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final counterAsync = ref.watch(gameSessionCountDataProvider(widget.gameId));
     final gameAsync = ref.watch(gameFullDataProvider(widget.gameId));
 
     return gameAsync.when(
@@ -291,7 +292,31 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
 
           return Scaffold(
             appBar: AppBar(
-              title: Text('Игра'),
+              title: counterAsync.when(
+                data: (sessionsCount) {
+                  return GestureDetector(
+                    onTap: () {
+                      final notifier = ref.read(
+                        gamingSessionsPaginatedProvider.notifier,
+                      );
+                      notifier.filterByGame(game.id);
+                      context.pushNamed(
+                        'gaming-sessions-list',
+                        queryParameters: {'gameId': game.id.toString()},
+                      );
+                    },
+                    child: Text(
+                      sessionsCount.toString(),
+                      style: TextStyle(
+                        color: goldColor,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  );
+                },
+                loading: () => Icon(gamesIcon, color: silverColor),
+                error: (error, _) => Icon(errorIcon, color: redColor),
+              ),
               actions: [
                 // Кнопка редактирования
                 IconButton(

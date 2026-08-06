@@ -91,17 +91,7 @@ class _TeamOneWinnerSelectScreenState
       }
     }
 
-    if (winnerIds.isEmpty) {
-      _sortByWinCondition();
-      _fillWinners(winnerIds);
-    }
-
-    if (winnerIds.length == 1) {
-      _singleSelected = winnerIds[0];
-    } else {
-      _mode = _SelectMode.multiple;
-      _multipleSelected.addAll(winnerIds);
-    }
+    _setInitialData(winnerIds);
 
     if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
       if (widget.data['resulScreenMode'] == null) {
@@ -114,18 +104,40 @@ class _TeamOneWinnerSelectScreenState
     setState(() => _isLoading = false);
   }
 
+  void _setInitialData(List<int> winnerIds) {
+    if (winnerIds.isEmpty) {
+      _sortByWinCondition();
+      _fillWinners(winnerIds);
+    }
+
+    if (winnerIds.length == 1) {
+      _singleSelected = winnerIds[0];
+    } else {
+      _mode = _SelectMode.multiple;
+      _multipleSelected.addAll(winnerIds);
+    }
+  }
+
   void _toggleMode(_SelectMode selectedMode) {
     setState(() {
       _mode = selectedMode;
-      if (_mode == _SelectMode.single && _multipleSelected.isNotEmpty) {
-        _singleSelected = _multipleSelected.first;
-        _updateData([_singleSelected!]);
-        _multipleSelected.clear();
-      } else if (_mode == _SelectMode.multiple && _singleSelected != null) {
-        _multipleSelected.add(_singleSelected!);
-        _updateData(_multipleSelected.toList());
-        _singleSelected = null;
-      } else if (_mode == _SelectMode.none) {
+      if (_mode == _SelectMode.single) {
+        if (_multipleSelected.isNotEmpty) {
+          _singleSelected = _multipleSelected.first;
+          _updateData([_singleSelected!]);
+          _multipleSelected.clear();
+        } else {
+          _setInitialData([]);
+        }
+      } else if (_mode == _SelectMode.multiple) {
+        if (_singleSelected != null) {
+          _multipleSelected.add(_singleSelected!);
+          _updateData(_multipleSelected.toList());
+          _singleSelected = null;
+        } else {
+          _setInitialData([]);
+        }
+      } else {
         _singleSelected = null;
         _multipleSelected.clear();
         _updateData([]);
@@ -168,8 +180,10 @@ class _TeamOneWinnerSelectScreenState
           break;
         }
       }
-      _updateData(winnerIds);
+    } else {
+      winnerIds.add(_teams[0]['team'].id);
     }
+    _updateData(winnerIds);
   }
 
   void _updateTeamScore(Map<String, dynamic> teamData) {
@@ -277,8 +291,7 @@ class _TeamOneWinnerSelectScreenState
                       ),
                       child: Center(
                         child: Text(
-                          (widget.data['resultType'] !=
-                                  ResultTypeEnum.condition.id)
+                          (widget.data['resultType'] == ResultTypeEnum.round.id)
                               ? widget
                                         .data['teamsData'][teamData['team'].id
                                             .toString()]['numWinRounds']

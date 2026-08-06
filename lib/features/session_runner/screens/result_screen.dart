@@ -7,7 +7,7 @@ import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
-enum _SelectMode { single, draw }
+enum _SelectMode { single, draw, none }
 
 class ResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
@@ -21,7 +21,7 @@ class ResultScreen extends ConsumerStatefulWidget {
 class _ResultScreenState extends ConsumerState<ResultScreen> {
   _SelectMode _mode = _SelectMode.single;
   // Контроллеры
-  final Map<int, dynamic> _scoreControllers = {};
+  final Map<int, dynamic> _placeControllers = {};
   // Загрузка
   bool _isLoading = false;
 
@@ -36,24 +36,24 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     if (widget.data['gamers'][0]['place'] == null) {
       _sortByWinCondition();
     }
-    if (hasDraw()) {
+    if (widget.data['resultType'] != ResultTypeEnum.condition.id &&
+        _hasDraw()) {
       _mode = _SelectMode.draw;
     }
 
-    List<Map<String, dynamic>> gamersData = widget.data['gamers']
+    List<Map<String, dynamic>> playersData = widget.data['gamers']
         .cast<Map<String, dynamic>>();
-    for (final Map<String, dynamic> gamerData in gamersData) {
-      _scoreControllers[gamerData['id']] = {
-        'username': gamerData['username'],
-        'controller': TextEditingController(
-          text: gamerData['place']?.toString() ?? '',
-        ),
+    for (final Map<String, dynamic> playerData in playersData) {
+      _placeControllers[playerData['id']] = {
+        'username': playerData['username'],
+        'controller': TextEditingController(),
         'focusNode': FocusNode(),
         'extraData': (widget.data['resultType'] != ResultTypeEnum.condition.id)
-            ? gamerData['score']
+            ? playerData['score']
             : null,
       };
     }
+    _setInitialDrawMode();
 
     setState(() => _isLoading = false);
   }
@@ -69,10 +69,10 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       }
     });
 
-    _firstFillPlace();
+    _initialFillPlace();
   }
 
-  bool hasDraw() {
+  bool _hasDraw() {
     for (int i = 0; i < widget.data['gamers'].length - 1; i++) {
       if (widget.data['gamers'][i]['place'] ==
           widget.data['gamers'][i + 1]['place']) {
@@ -82,13 +82,25 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     return false; // Нет одинаковых соседних значений
   }
 
-  void _toggleMode() {
+  void _setInitialDrawMode() {
+    for (final playerData in widget.data['gamers']) {
+      _placeControllers[playerData['id']]['controller'].text =
+          playerData['place'].toString();
+    }
+  }
+
+  void _toggleMode(_SelectMode selectedMode) {
     setState(() {
-      _mode = _mode == _SelectMode.single
-          ? _SelectMode.draw
-          : _SelectMode.single;
+      _mode = selectedMode;
       if (_mode == _SelectMode.single) {
-        _fillPlace();
+        _fillPlaceOneToOne();
+      } else if (_mode == _SelectMode.draw) {
+        _sortByWinCondition();
+        _initialFillPlace();
+      } else {
+        for (final playerData in widget.data['gamers']) {
+          playerData['place'] = null;
+        }
       }
     });
   }
@@ -102,11 +114,11 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         oldIndex,
       );
       widget.data['gamers'].insert(newIndex, gamerData);
-      _fillPlace();
+      _fillPlaceOneToOne();
     });
   }
 
-  void _fillPlace() {
+  void _fillPlaceOneToOne() {
     for (final entry in widget.data['gamers'].asMap().entries) {
       if (widget.data['type'] != GameTypeEnum.oneWinner.id || entry.key == 0) {
         entry.value['place'] = entry.key + 1;
@@ -116,10 +128,12 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     }
   }
 
-  void _firstFillPlace() {
+  void _initialFillPlace() {
     for (int i = 0; i < widget.data['gamers'].length; i++) {
       if (i == 0) {
         widget.data['gamers'][i]['place'] = 1;
+      } else if (widget.data['resultType'] == ResultTypeEnum.condition.id) {
+        break;
       } else {
         if (widget.data['gamers'][i]['score'] ==
             widget.data['gamers'][i - 1]['score']) {
@@ -162,13 +176,13 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   FocusNode? nextFocusNode;
                   if (index < widget.data['gamers'].length - 1) {
                     nextFocusNode =
-                        _scoreControllers[widget.data['gamers'][index +
+                        _placeControllers[widget.data['gamers'][index +
                             1]['id']]['focusNode'];
                   }
 
                   return PlayerInputCard(
                     gamerId: gamerId,
-                    controllerData: _scoreControllers[gamerId],
+                    controllerData: _placeControllers[gamerId],
                     nextFocusNode: nextFocusNode,
                     addCalcBtn: false,
                     digitsOnly: true,
@@ -185,6 +199,9 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     return ReorderableListView(
       padding: const EdgeInsets.all(16),
       onReorder: _reorder,
+      proxyDecorator: (child, index, animation) {
+        return Material(elevation: 0, color: Colors.transparent, child: child);
+      },
       children: List.generate(widget.data['gamers'].length, (index) {
         final Map<String, dynamic> gamerData = widget.data['gamers'][index];
 
@@ -235,35 +252,38 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         child: Row(
           spacing: 8,
           children: [
+            if (_mode == _SelectMode.single)
             // Drag handle
-            if (widget.data['altVictoryType'] == AltVictoryTypeEnum.yes.id ||
-                widget.data['resultType'] == ResultTypeEnum.condition.id)
-              ReorderableDragStartListener(
-                index: index,
-                child: Icon(Icons.drag_handle, color: Colors.grey),
-              ),
+            ...[
+              if ((widget.data['altVictoryType'] == AltVictoryTypeEnum.yes.id ||
+                  widget.data['resultType'] == ResultTypeEnum.condition.id))
+                ReorderableDragStartListener(
+                  index: index,
+                  child: Icon(Icons.drag_handle, color: Colors.grey),
+                ),
 
-            // Позиция
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  '${index + 1}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: secondColor,
+              // Позиция
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    '${index + 1}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: secondColor,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
+            ],
 
             // Имя игрока
             Expanded(
@@ -305,7 +325,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   @override
   void dispose() {
     for (final Map<String, dynamic> controllerData
-        in _scoreControllers.values) {
+        in _placeControllers.values) {
       controllerData['controller'].dispose();
     }
     super.dispose();
@@ -322,7 +342,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 children: [
                   // Кнопка переключения режима
                   SegmentedButton<_SelectMode>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: _SelectMode.single,
                         label: Text('1 игрок - 1 место'),
@@ -333,10 +353,17 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                         label: Text('Ничья'),
                         icon: Icon(Icons.check_box_outline_blank),
                       ),
+                      if (widget.data['generalDefeatType'] ==
+                          GeneralDefeatTypeEnum.yes.id)
+                        ButtonSegment(
+                          value: _SelectMode.none,
+                          label: Text('Поражение'),
+                          icon: Icon(Icons.sentiment_very_dissatisfied),
+                        ),
                     ],
                     selected: {_mode},
                     onSelectionChanged: (Set<_SelectMode> selection) {
-                      _toggleMode();
+                      _toggleMode(selection.first);
                     },
                   ),
 

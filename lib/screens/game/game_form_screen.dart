@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
@@ -206,10 +207,9 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            widget.gameId == null
-                ? 'Новая настольная игра'
-                : 'Редактирование игры',
+          title: Icon(
+            gamesIcon,
+            color: widget.gameId == null ? bronzeColor : blueColor,
           ),
         ),
         body: _isLoading
