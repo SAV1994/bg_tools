@@ -32,11 +32,15 @@ Future<void> initSessionData(
   sessionData['altVictoryType'] = countingTemplateData['altVictoryType'] ?? 0;
   sessionData['firstPlayerRoundType'] =
       countingTemplateData['firstPlayerRoundType'] ?? 0;
+  sessionData['firstPlayerRoundPointType'] =
+      countingTemplateData['firstPlayerRoundPointType'] ?? 0;
   sessionData['sequencePlayersMovesType'] =
       countingTemplateData['sequencePlayersMovesType'] ?? 0;
   sessionData['gameHostType'] = countingTemplateData['gameHostType'] ?? 0;
   sessionData['secretRolesDistributionType'] =
       countingTemplateData['secretRolesDistributionType'] ?? 0;
+  sessionData['uniquenessRolesType'] =
+      countingTemplateData['uniquenessRolesType'] ?? 0;
 
   sessionData['roundsScoreLimit'] = gameData['roundsScoreLimit'];
   sessionData['secretRolesConfig'] = gameData['secretRolesConfig'];

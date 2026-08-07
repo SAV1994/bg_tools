@@ -5,7 +5,7 @@ import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 class PlayerRoundInputCard extends StatefulWidget {
   final int index;
-  final List<Map<String, dynamic>> controllersData;
+  final Map<int, dynamic> controllersData;
   final Map<String, dynamic> sessionData;
   final bool isFinished;
 
@@ -24,17 +24,19 @@ class PlayerRoundInputCard extends StatefulWidget {
 class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> controllerData =
-        widget.controllersData[widget.index];
-    Map<String, dynamic>? nextControllerData;
-    if (widget.index + 1 < widget.controllersData.length) {
-      nextControllerData = widget.controllersData[widget.index + 1];
-    }
     final Map<String, dynamic> gamerData =
         widget.sessionData['gamers'][widget.index];
     final TeamsEnum? team = (gamerData['team'] != null)
         ? TeamsEnum.fromId(gamerData['team'])
         : null;
+    final Map<String, dynamic> controllerData =
+        widget.controllersData[gamerData['id']];
+    Map<String, dynamic>? nextControllerData;
+    if (widget.index + 1 < widget.sessionData['gamers'].length) {
+      final Map<String, dynamic>? nextGamerData =
+          widget.sessionData['gamers'][widget.index + 1];
+      nextControllerData = widget.controllersData[nextGamerData!['id']];
+    }
 
     return Container(
       key: Key(gamerData['id'].toString()),
@@ -100,12 +102,15 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
                 color: Colors.green.shade50,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                gamerData['score'].toString(),
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
+              child: Tooltip(
+                message: gamerData['scoreByrounds'].join(' /'),
+                child: Text(
+                  '${gamerData['score']} (${gamerData['scoreByrounds'].last})',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
                 ),
               ),
             ),

@@ -173,6 +173,15 @@ class _SecretRolesViewerScreenState
                           ),
                         ),
                       ),
+                      if (gamer['role']['description'].isNotEmpty)
+                        Tooltip(
+                          message: gamer['role']['description'],
+                          child: const Icon(
+                            Icons.comment,
+                            size: 20,
+                            color: textColor,
+                          ),
+                        ),
                     ],
                   ),
                 );

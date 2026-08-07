@@ -191,6 +191,7 @@ class _PlayerRolesViewScreenState extends State<PlayerRolesViewScreen> {
                   // Роль
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 5,
                     children: [
                       Text(
                         'Роль: ',
@@ -206,6 +207,15 @@ class _PlayerRolesViewScreenState extends State<PlayerRolesViewScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      if (playerData['role']['description'].isNotEmpty)
+                        Tooltip(
+                          message: playerData['role']['description'],
+                          child: const Icon(
+                            Icons.comment,
+                            size: 20,
+                            color: textColor,
+                          ),
+                        ),
                     ],
                   ),
                 ],

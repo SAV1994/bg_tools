@@ -35,7 +35,7 @@ class CountingTemplateDao extends DatabaseAccessor<AppDatabase>
 
   // Все шаблоны
   Future<List<CountingTemplate>> getAll() async {
-    return await select(countingTemplates).get();
+    return await _getBaseQuery().get();
   }
 
   // Шаблоны с пагинацией

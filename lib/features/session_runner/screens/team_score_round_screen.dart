@@ -24,7 +24,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
   bool _isFinished = false;
   late final int? _roundsScoreLimit;
   // Контроллеры
-  List<Map<String, dynamic>> _scoreControllers = [];
+  final Map<int, dynamic> _scoreControllers = {};
   List<Map<String, dynamic>> _teamScoreControllers = [];
   // Загрузка
   bool _isLoading = false;
@@ -42,13 +42,17 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
       for (int i = 1; i <= widget.data['numberTeams']; i++) {
         final teamEnum = TeamsEnum.fromId(i);
-        final int? score = widget.data['teamsData'][i.toString()]['score'];
+        final Map<String, dynamic> teamData =
+            widget.data['teamsData'][i.toString()];
+        final int? score = teamData['score'];
+        final List<int> scoreByrounds = teamData['scoreByrounds'] ?? [];
         _teamScoreControllers.add({
           'team': teamEnum,
           'controller': TextEditingController(),
           'focusNode': FocusNode(),
           'gamers': [],
           'score': score,
+          'scoreByrounds': scoreByrounds,
           'show': false,
         });
 
@@ -68,11 +72,11 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
       List<Map<String, dynamic>> gamersData = widget.data['gamers']
           .cast<Map<String, dynamic>>();
       for (final Map<String, dynamic> gamerData in gamersData) {
-        _scoreControllers.add({
+        _scoreControllers[gamerData['id']] = {
           'controller': TextEditingController(),
           'focusNode': FocusNode(),
           'score': gamerData['score'],
-        });
+        };
 
         if (_isFinished == false &&
             _roundsScoreLimit != null &&
@@ -84,8 +88,6 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
         }
       }
     }
-
-    _sortByCondition();
 
     setState(() => _isLoading = false);
   }
@@ -108,15 +110,16 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     _lastRoundFirst = widget.data['gamers'][0]['username'];
     List<(int, int)> roundResults = [];
 
-    for (int i = 0; i < _scoreControllers.length; i++) {
-      final Map<String, dynamic> controllerData = _scoreControllers[i];
-      final Map<String, dynamic> gamerData = widget.data['gamers'][i];
+    for (final gamerDataEntry in widget.data['gamers'].asMap().entries) {
+      final Map<String, dynamic> gamerData = gamerDataEntry.value;
+      final Map<String, dynamic> controllerData =
+          _scoreControllers[gamerData['id']];
 
       final newScore = int.tryParse(controllerData['controller'].text) ?? 0;
 
       controllerData['controller'].clear();
 
-      roundResults.add((i, newScore));
+      roundResults.add((gamerDataEntry.key, newScore));
 
       increaseEnsureCounter(gamerData, 'score', newScore);
 
@@ -172,6 +175,8 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
 
       controllerData['score'] =
           widget.data['teamsData'][team.id.toString()]['score'];
+      controllerData['scoreByrounds'] =
+          widget.data['teamsData'][team.id.toString()]['scoreByrounds'];
       if (_isFinished == false && _roundsScoreLimit != null) {
         if (_roundsScoreLimit < 0) {
           _isFinished =
@@ -216,59 +221,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
       _sortByLeaderCondition();
     } else if (widget.data['firstPlayerRoundType'] ==
         FirstPlayerRoundTypeEnum.loser.id) {
-      late final data;
-      if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
-        data = _teamScoreControllers;
-      } else {
-        data = widget.data['gamers'];
-      }
-
-      if (widget.data['sequencePlayersMovesType'] ==
-          SequencePlayersMovesTypeEnum.random.id) {
-        data.sort((a, b) {
-          final scoreA = a['score'] as int? ?? 0;
-          final scoreB = b['score'] as int? ?? 0;
-          if (widget.data['pointType'] == PointTypeEnum.max.id) {
-            return scoreA.compareTo(scoreB);
-          } else {
-            return scoreB.compareTo(scoreA);
-          }
-        });
-
-        if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
-          _scoreControllers.sort((a, b) {
-            final scoreA = a['score'] as int? ?? 0;
-            final scoreB = b['score'] as int? ?? 0;
-            if (widget.data['pointType'] == PointTypeEnum.max.id) {
-              return scoreA.compareTo(scoreB);
-            } else {
-              return scoreB.compareTo(scoreA);
-            }
-          });
-        }
-      } else {
-        final int loserIndex = data.asMap().entries.fold(null, (
-          fixed,
-          current,
-        ) {
-          final int currentScore = current.value['score'] ?? 0;
-          final int fixedScore = fixed?.value['score'] ?? 0;
-
-          if (widget.data['pointType'] == PointTypeEnum.max.id) {
-            if (fixed == null || currentScore < fixedScore) {
-              return current;
-            }
-          } else {
-            if (fixed == null || currentScore > fixedScore) {
-              return current;
-            }
-          }
-
-          return fixed;
-        })?.key;
-
-        _sortByClockwise(loserIndex);
-      }
+      _sortByLoserCondition();
     } else if (widget.data['firstPlayerRoundType'] ==
         FirstPlayerRoundTypeEnum.leaderNext.id) {
       _sortByLeaderCondition();
@@ -287,30 +240,35 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     if (widget.data['sequencePlayersMovesType'] ==
         SequencePlayersMovesTypeEnum.random.id) {
       data.sort((a, b) {
-        final scoreA = a['score'] as int? ?? 0;
-        final scoreB = b['score'] as int? ?? 0;
+        int scoreA = 0;
+        int scoreB = 0;
+        if (widget.data['firstPlayerRoundPointType'] ==
+            FirstPlayerRoundPointTypeEnum.round.id) {
+          scoreA = a['scoreByrounds'].last ?? scoreA;
+          scoreB = b['scoreByrounds'].last ?? scoreB;
+        } else {
+          scoreA = a['score'] ?? scoreA;
+          scoreB = b['score'] ?? scoreB;
+        }
+
         if (widget.data['pointType'] == PointTypeEnum.max.id) {
           return scoreB.compareTo(scoreA);
         } else {
           return scoreA.compareTo(scoreB);
         }
       });
-
-      if (widget.data['teamPointType'] == TeamPointTypeEnum.personal.id) {
-        _scoreControllers.sort((a, b) {
-          final scoreA = a['score'] as int? ?? 0;
-          final scoreB = b['score'] as int? ?? 0;
-          if (widget.data['pointType'] == PointTypeEnum.max.id) {
-            return scoreB.compareTo(scoreA);
-          } else {
-            return scoreA.compareTo(scoreB);
-          }
-        });
-      }
     } else {
       final int leaderIndex = data.asMap().entries.fold(null, (fixed, current) {
-        final int currentScore = current.value['score'] ?? 0;
-        final int fixedScore = fixed?.value['score'] ?? 0;
+        int currentScore = 0;
+        int fixedScore = 0;
+        if (widget.data['firstPlayerRoundPointType'] ==
+            FirstPlayerRoundPointTypeEnum.round.id) {
+          currentScore = current.value['scoreByrounds'].last ?? currentScore;
+          fixedScore = fixed?.value['scoreByrounds'].last ?? fixedScore;
+        } else {
+          currentScore = current.value['score'] ?? currentScore;
+          fixedScore = fixed?.value['score'] ?? fixedScore;
+        }
 
         if (widget.data['pointType'] == PointTypeEnum.max.id) {
           if (fixed == null || currentScore > fixedScore) {
@@ -329,6 +287,64 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     }
   }
 
+  void _sortByLoserCondition() {
+    late final data;
+    if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
+      data = _teamScoreControllers;
+    } else {
+      data = widget.data['gamers'];
+    }
+
+    if (widget.data['sequencePlayersMovesType'] ==
+        SequencePlayersMovesTypeEnum.random.id) {
+      data.sort((a, b) {
+        int scoreA = 0;
+        int scoreB = 0;
+        if (widget.data['firstPlayerRoundPointType'] ==
+            FirstPlayerRoundPointTypeEnum.round.id) {
+          scoreA = a['scoreByrounds'].last ?? scoreA;
+          scoreB = b['scoreByrounds'].last ?? scoreB;
+        } else {
+          scoreA = a['score'] ?? scoreA;
+          scoreB = b['score'] ?? scoreB;
+        }
+
+        if (widget.data['pointType'] == PointTypeEnum.max.id) {
+          return scoreA.compareTo(scoreB);
+        } else {
+          return scoreB.compareTo(scoreA);
+        }
+      });
+    } else {
+      final int loserIndex = data.asMap().entries.fold(null, (fixed, current) {
+        int currentScore = 0;
+        int fixedScore = 0;
+        if (widget.data['firstPlayerRoundPointType'] ==
+            FirstPlayerRoundPointTypeEnum.round.id) {
+          currentScore = current.value['scoreByrounds'].last ?? currentScore;
+          fixedScore = fixed?.value['scoreByrounds'].last ?? fixedScore;
+        } else {
+          currentScore = current.value['score'] ?? currentScore;
+          fixedScore = fixed?.value['score'] ?? fixedScore;
+        }
+
+        if (widget.data['pointType'] == PointTypeEnum.max.id) {
+          if (fixed == null || currentScore < fixedScore) {
+            return current;
+          }
+        } else {
+          if (fixed == null || currentScore > fixedScore) {
+            return current;
+          }
+        }
+
+        return fixed;
+      })?.key;
+
+      _sortByClockwise(loserIndex);
+    }
+  }
+
   void _sortByClockwise(int index) {
     late final List<Map<String, dynamic>> data;
     if (widget.data['teamPointType'] == TeamPointTypeEnum.general.id) {
@@ -343,10 +359,6 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
       _teamScoreControllers = reorderGamers;
     } else {
       widget.data['gamers'] = reorderGamers;
-      final List<dynamic> reorderControllers =
-          _scoreControllers.sublist(index) +
-          _scoreControllers.sublist(0, index);
-      _scoreControllers = reorderControllers as List<Map<String, dynamic>>;
     }
   }
 
@@ -360,11 +372,6 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
         oldIndex,
       );
       widget.data['gamers'].insert(newIndex, gamerData);
-
-      final Map<String, dynamic> controllerData = _scoreControllers.removeAt(
-        oldIndex,
-      );
-      _scoreControllers.insert(newIndex, controllerData);
     });
   }
 
@@ -671,7 +678,8 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
 
   @override
   void dispose() {
-    for (final Map<String, dynamic> controllerData in _scoreControllers) {
+    for (final Map<String, dynamic> controllerData
+        in _scoreControllers.values) {
       controllerData['controller'].dispose();
       controllerData['focusNode'].dispose();
     }

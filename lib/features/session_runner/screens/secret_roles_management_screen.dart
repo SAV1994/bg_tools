@@ -21,7 +21,7 @@ class _SecretRolesManagementScreenState
 
   void _addRole(
     Map<String, dynamic> teamData,
-    String roleName, [
+    Map<String, dynamic> roleName, [
     String? groupName,
   ]) {
     setState(() {
@@ -32,7 +32,8 @@ class _SecretRolesManagementScreenState
         'teamId': teamData['team'],
         'teamName': teamData['name'],
         'groupName': groupName,
-        'roleName': roleName,
+        'roleName': roleName['name'],
+        'description': roleName['description'],
         'isRequired': _isRequired,
       });
 
@@ -85,12 +86,26 @@ class _SecretRolesManagementScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    role['roleName'],
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    spacing: 6,
+                    children: [
+                      if (role['description'].isNotEmpty)
+                        Tooltip(
+                          message: role['description'],
+                          child: const Icon(
+                            Icons.comment,
+                            size: 16,
+                            color: textColor,
+                          ),
+                        ),
+                      Text(
+                        role['roleName'],
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
 
@@ -366,7 +381,7 @@ class _SecretRolesManagementScreenState
                     trailing: const Icon(Icons.check, color: Colors.green),
                     onTap: () {
                       Navigator.pop(context);
-                      _addRole(teamData, role['name'], groupName);
+                      _addRole(teamData, role, groupName);
                     },
                   );
                 }),

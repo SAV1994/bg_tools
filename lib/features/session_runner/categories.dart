@@ -1,6 +1,9 @@
-// 1 Тип игры
+import 'package:flutter/material.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 
+// 1 Тип игры
 enum GameTypeEnum {
   classic(1, 'Распределение по местам'),
   oneWinner(2, 'Один победитель'),
@@ -37,9 +40,22 @@ enum GameTypeEnum {
         .map((item) => SelectItem(item.id, item.label))
         .toList();
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return GameTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип игры';
 }
 
-// 2 Определение первого игрока в начале игры
+// 2 Тип определения первого игрока
 enum FirstPlayerStartTypeEnum {
   queue(1, 'Игроки ходят по очереди'),
   sameTime(2, 'Порядок хода не важен');
@@ -64,9 +80,22 @@ enum FirstPlayerStartTypeEnum {
       orElse: () => FirstPlayerStartTypeEnum.queue,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return FirstPlayerStartTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип определения первого игрока';
 }
 
-// 3 Тип процесса определения результативности
+// 3 Тип определения результативности
 enum ResultTypeEnum {
   end(1, 'Подсчёт в конце игры'),
   round(2, 'Подсчёт между раундами'),
@@ -92,6 +121,19 @@ enum ResultTypeEnum {
       orElse: () => ResultTypeEnum.end,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return ResultTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип определения результативности';
 }
 
 // 4 Возможность общего поражения
@@ -119,6 +161,19 @@ enum GeneralDefeatTypeEnum {
       orElse: () => GeneralDefeatTypeEnum.no,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return GeneralDefeatTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Возможность общего поражения';
 }
 
 // 5 Тип игровых очков при командной игре
@@ -146,9 +201,22 @@ enum TeamPointTypeEnum {
       orElse: () => TeamPointTypeEnum.personal,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return TeamPointTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип игровых очков при командной игре';
 }
 
-// 6 Тип игровых очков (Что нужно для победы?)
+// 6 Тип игровых очков
 enum PointTypeEnum {
   max(1, 'Максимум очков'),
   min(2, 'Минимум очков');
@@ -173,6 +241,19 @@ enum PointTypeEnum {
       orElse: () => PointTypeEnum.max,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return PointTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип игровых очков';
 }
 
 // 7 Тип раундов
@@ -201,6 +282,19 @@ enum RoundsTypeEnum {
       orElse: () => RoundsTypeEnum.fix,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return RoundsTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип раундов';
 }
 
 // 8 Алтернативные условия победы
@@ -228,9 +322,22 @@ enum AltVictoryTypeEnum {
       orElse: () => AltVictoryTypeEnum.no,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return AltVictoryTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Алтернативные условия победы';
 }
 
-// 9 Определение первого игрока между раундами
+// 9 Тип определения первого игрока в раунде
 enum FirstPlayerRoundTypeEnum {
   queue(1, 'Следующий по часовой стрелке'),
   leader(2, 'Победитель ходит первым'),
@@ -258,9 +365,62 @@ enum FirstPlayerRoundTypeEnum {
       orElse: () => FirstPlayerRoundTypeEnum.queue,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return FirstPlayerRoundTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип определения первого игрока в раунде';
 }
 
-// 10 Тип последовательности ходов игроков
+// 10 Тип очков для определения первого игрока
+enum FirstPlayerRoundPointTypeEnum {
+  total(1, 'Общее количество очков'),
+  round(2, 'Количество очков за раунд');
+
+  final int id;
+  final String label;
+
+  const FirstPlayerRoundPointTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static FirstPlayerRoundPointTypeEnum fromId(int id) {
+    return FirstPlayerRoundPointTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => FirstPlayerRoundPointTypeEnum.total,
+    );
+  }
+
+  // Получить enum по названию
+  static FirstPlayerRoundPointTypeEnum fromLabel(String label) {
+    return FirstPlayerRoundPointTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => FirstPlayerRoundPointTypeEnum.total,
+    );
+  }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return FirstPlayerRoundPointTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип очков для определения первого игрока';
+}
+
+// 11 Тип последовательности ходов игроков
 enum SequencePlayersMovesTypeEnum {
   clockwise(1, 'По часовой стрелке'),
   random(2, 'Вразнобой');
@@ -285,9 +445,22 @@ enum SequencePlayersMovesTypeEnum {
       orElse: () => FirstPlayerRoundTypeEnum.queue,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return SequencePlayersMovesTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип последовательности ходов игроков';
 }
 
-// 11 Тип организации игры
+// 12 Тип организации игры
 enum GameHostTypeEnum {
   master(1, 'Есть ведущий'),
   noMaster(2, 'Без ведущего');
@@ -312,9 +485,22 @@ enum GameHostTypeEnum {
       orElse: () => GameHostTypeEnum.noMaster,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return GameHostTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Тип организации игры';
 }
 
-// 12 Способ распределения ролей
+// 13 Способ распределения ролей
 enum SecretRolesDistributionTypeEnum {
   auto(1, 'Определяются приложением'),
   manually(2, 'Определяются вручную');
@@ -339,4 +525,57 @@ enum SecretRolesDistributionTypeEnum {
       orElse: () => SecretRolesDistributionTypeEnum.auto,
     );
   }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return SecretRolesDistributionTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Способ распределения ролей';
+}
+
+// 14 Уникальность ролей
+enum UniquenessRolesTypeEnum {
+  unique(1, 'Уникальные'),
+  repeat(2, 'Могут повторятся');
+
+  final int id;
+  final String label;
+
+  const UniquenessRolesTypeEnum(this.id, this.label);
+
+  // Получить enum по id
+  static UniquenessRolesTypeEnum fromId(int id) {
+    return UniquenessRolesTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => UniquenessRolesTypeEnum.repeat,
+    );
+  }
+
+  // Получить enum по названию
+  static UniquenessRolesTypeEnum fromLabel(String label) {
+    return UniquenessRolesTypeEnum.values.firstWhere(
+      (e) => e.label == label,
+      orElse: () => UniquenessRolesTypeEnum.repeat,
+    );
+  }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return UniquenessRolesTypeEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Уникальность ролей';
 }

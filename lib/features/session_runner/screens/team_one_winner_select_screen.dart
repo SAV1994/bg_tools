@@ -171,7 +171,10 @@ class _TeamOneWinnerSelectScreenState
   }
 
   void _fillWinners(List<int> winnerIds) {
-    if (widget.data['resultType'] != ResultTypeEnum.condition.id) {
+    if ([
+      ResultTypeEnum.end.id,
+      ResultTypeEnum.round.id,
+    ].contains(widget.data['resultType'])) {
       final int score = _teams[0]['score'];
       for (int i = 0; i < _teams.length; i++) {
         if (score == _teams[i]['score']) {

@@ -36,6 +36,7 @@ void distributeSecretRoles(Map<String, dynamic> sessionData) {
       'teamName': role['teamName'],
       'groupName': role['groupName'],
       'roleName': role['roleName'],
+      'description': role['description'],
     };
 
     if (sessionData['teamsData'][role['teamId'].toString()] == null) {

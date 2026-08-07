@@ -49,6 +49,7 @@ class _GamesCountingTemplatesModalFormState
 
   // Контроллеры
   final TextEditingController _controllerForModal = TextEditingController();
+  final TextEditingController _controllerForModal2 = TextEditingController();
   late final TextEditingController _nameController;
   late TextEditingController _roundsScoreLimitController;
   // Загрузка
@@ -415,7 +416,11 @@ class _GamesCountingTemplatesModalFormState
       ),
       child: Row(
         children: [
-          const Icon(Icons.person, size: 16, color: textColor),
+          if (role['description'].isNotEmpty)
+            Tooltip(
+              message: role['description'],
+              child: const Icon(Icons.comment, size: 16, color: textColor),
+            ),
           const SizedBox(width: 8),
           Expanded(
             child: GestureDetector(
@@ -620,25 +625,42 @@ class _GamesCountingTemplatesModalFormState
     if (index != null) {
       final role = roles[index];
       _controllerForModal.text = role['name'];
+      _controllerForModal2.text = role['description'] ?? '';
     }
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text((index == null) ? 'Новая роль' : 'Редактирование роли'),
-        content: TextField(
-          controller: _controllerForModal,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Название роли *',
-            border: OutlineInputBorder(),
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 25,
+          children: [
+            TextField(
+              controller: _controllerForModal,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Название роли *',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            TextField(
+              controller: _controllerForModal2,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Описание',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
         ),
+
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _controllerForModal.clear();
+              _controllerForModal2.clear();
               FocusScope.of(context).unfocus();
             },
             child: const Text('Отмена'),
@@ -650,14 +672,22 @@ class _GamesCountingTemplatesModalFormState
 
                 setState(() {
                   if (index == null) {
-                    roles.add({'name': _controllerForModal.text});
+                    roles.add({
+                      'name': _controllerForModal.text,
+                      'description': _controllerForModal2.text,
+                    });
                   } else {
                     roles[index]['name'] = _controllerForModal.text;
+                    roles[index]['description'] = _controllerForModal2.text;
                   }
                 });
-
                 _controllerForModal.clear();
+                _controllerForModal2.clear();
                 FocusScope.of(context).unfocus();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Введите название роли')),
+                );
               }
             },
             child: const Text('Сохранить'),
@@ -671,6 +701,7 @@ class _GamesCountingTemplatesModalFormState
   void dispose() {
     _nameController.dispose();
     _controllerForModal.dispose();
+    _controllerForModal2.dispose();
     super.dispose();
   }
 

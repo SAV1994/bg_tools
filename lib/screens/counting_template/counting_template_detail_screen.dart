@@ -156,7 +156,7 @@ class _CountingTemplateDetailScreenState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 InfoRow(
-                                  label: 'Тип игры',
+                                  label: GameTypeEnum.title,
                                   value: GameTypeEnum.fromId(
                                     templateData['gameType'],
                                   ).label,
@@ -166,40 +166,39 @@ class _CountingTemplateDetailScreenState
                                 if (templateData['firstPlayerStartType'] !=
                                     null)
                                   InfoRow(
-                                    label: 'Тип определения первого игрока',
+                                    label: FirstPlayerStartTypeEnum.title,
                                     value: FirstPlayerStartTypeEnum.fromId(
                                       templateData['firstPlayerStartType'],
                                     ).label,
                                   ),
 
-                                if (templateData['teamPointType'] != null)
-                                  InfoRow(
-                                    label:
-                                        'Тип игровых очков при командной игре',
-                                    value: TeamPointTypeEnum.fromId(
-                                      templateData['teamPointType'],
-                                    ).label,
-                                  ),
-
-                                if (templateData['generalDefeatType'] != null)
-                                  InfoRow(
-                                    label: 'Возможность общего поражения',
-                                    value: GeneralDefeatTypeEnum.fromId(
-                                      templateData['generalDefeatType'],
-                                    ).label,
-                                  ),
-
                                 if (templateData['resultType'] != null)
                                   InfoRow(
-                                    label: 'Тип определения результативности',
+                                    label: ResultTypeEnum.title,
                                     value: ResultTypeEnum.fromId(
                                       templateData['resultType'],
                                     ).label,
                                   ),
 
+                                if (templateData['generalDefeatType'] != null)
+                                  InfoRow(
+                                    label: GeneralDefeatTypeEnum.title,
+                                    value: GeneralDefeatTypeEnum.fromId(
+                                      templateData['generalDefeatType'],
+                                    ).label,
+                                  ),
+
+                                if (templateData['teamPointType'] != null)
+                                  InfoRow(
+                                    label: TeamPointTypeEnum.title,
+                                    value: TeamPointTypeEnum.fromId(
+                                      templateData['teamPointType'],
+                                    ).label,
+                                  ),
+
                                 if (templateData['pointType'] != null)
                                   InfoRow(
-                                    label: 'Тип игровых очков',
+                                    label: PointTypeEnum.title,
                                     value: PointTypeEnum.fromId(
                                       templateData['pointType'],
                                     ).label,
@@ -207,7 +206,7 @@ class _CountingTemplateDetailScreenState
 
                                 if (templateData['roundsType'] != null)
                                   InfoRow(
-                                    label: 'Тип раундов',
+                                    label: RoundsTypeEnum.title,
                                     value: RoundsTypeEnum.fromId(
                                       templateData['roundsType'],
                                     ).label,
@@ -215,7 +214,7 @@ class _CountingTemplateDetailScreenState
 
                                 if (templateData['altVictoryType'] != null)
                                   InfoRow(
-                                    label: 'Возможность победы другим путём',
+                                    label: AltVictoryTypeEnum.title,
                                     value: AltVictoryTypeEnum.fromId(
                                       templateData['altVictoryType'],
                                     ).label,
@@ -224,18 +223,25 @@ class _CountingTemplateDetailScreenState
                                 if (templateData['firstPlayerRoundType'] !=
                                     null)
                                   InfoRow(
-                                    label:
-                                        'Тип определения первого игрока в раунде',
+                                    label: FirstPlayerRoundTypeEnum.title,
                                     value: FirstPlayerRoundTypeEnum.fromId(
                                       templateData['firstPlayerRoundType'],
+                                    ).label,
+                                  ),
+
+                                if (templateData['firstPlayerRoundPointType'] !=
+                                    null)
+                                  InfoRow(
+                                    label: FirstPlayerRoundPointTypeEnum.title,
+                                    value: FirstPlayerRoundPointTypeEnum.fromId(
+                                      templateData['firstPlayerRoundPointType'],
                                     ).label,
                                   ),
 
                                 if (templateData['sequencePlayersMovesType'] !=
                                     null)
                                   InfoRow(
-                                    label:
-                                        'Тип последовательности ходов игроков',
+                                    label: SequencePlayersMovesTypeEnum.title,
                                     value: SequencePlayersMovesTypeEnum.fromId(
                                       templateData['sequencePlayersMovesType'],
                                     ).label,
@@ -243,7 +249,7 @@ class _CountingTemplateDetailScreenState
 
                                 if (templateData['gameHostType'] != null)
                                   InfoRow(
-                                    label: 'Тип организации игры',
+                                    label: GameHostTypeEnum.title,
                                     value: GameHostTypeEnum.fromId(
                                       templateData['gameHostType'],
                                     ).label,
@@ -252,9 +258,18 @@ class _CountingTemplateDetailScreenState
                                 if (templateData['secretRolesDistributionType'] !=
                                     null)
                                   InfoRow(
-                                    label: 'Способ распределения ролей',
+                                    label:
+                                        SecretRolesDistributionTypeEnum.title,
                                     value: SecretRolesDistributionTypeEnum.fromId(
                                       templateData['secretRolesDistributionType'],
+                                    ).label,
+                                  ),
+
+                                if (templateData['uniquenessRolesType'] != null)
+                                  InfoRow(
+                                    label: UniquenessRolesTypeEnum.title,
+                                    value: UniquenessRolesTypeEnum.fromId(
+                                      templateData['uniquenessRolesType'],
                                     ).label,
                                   ),
                               ],

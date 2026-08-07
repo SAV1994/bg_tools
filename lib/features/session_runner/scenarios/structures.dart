@@ -38,9 +38,11 @@ const Map<String, dynamic> sessionInitialData = {
   'roundsType': null,
   'altVictoryType': null,
   'firstPlayerRoundType': null,
+  'firstPlayerRoundPointType': null,
   'sequencePlayersMovesType': null,
   'gameHostType': null,
   'secretRolesDistributionType': null,
+  'uniquenessRolesType': null,
 
   'step': 0,
   'totalSteps': null,

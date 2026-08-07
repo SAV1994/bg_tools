@@ -420,21 +420,9 @@ class _GamingSessionFormScreenState
                           searchHint: 'Поиск дополнений...',
                         ),
                       EnumSelector(
-                        label: 'Тип игры',
+                        label: GameTypeEnum.title,
                         required: true,
-                        choices: GameTypeEnum.values.map((val) {
-                          return DropdownMenuItem(
-                            value: val,
-                            child: Row(
-                              children: [
-                                Text(
-                                  val.label,
-                                  style: TextStyle(color: textColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
+                        choices: GameTypeEnum.getDropdownMenuItems(),
                         selected: _selectedGameType,
                         onChanged: (value) {
                           setState(
