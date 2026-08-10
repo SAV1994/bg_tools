@@ -42,6 +42,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
   // Контроллеры
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
+  final ScrollController _scrollController = ScrollController();
   late final TextEditingController _yearController;
   late final TextEditingController _minPlayersController;
   late final TextEditingController _maxPlayersController;
@@ -190,6 +191,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _scrollController.dispose();
     _yearController.dispose();
     _minPlayersController.dispose();
     _maxPlayersController.dispose();
@@ -344,13 +346,19 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                             setState(() => _rating = value);
                           },
                         ),
-                        TextFormField(
-                          controller: _descriptionController,
-                          decoration: InputDecoration(
-                            labelText: 'Описание',
-                            border: OutlineInputBorder(),
+                        Scrollbar(
+                          controller: _scrollController,
+                          thumbVisibility: false,
+                          interactive: false,
+                          child: TextFormField(
+                            controller: _descriptionController,
+                            scrollController: _scrollController,
+                            decoration: InputDecoration(
+                              labelText: 'Описание',
+                              border: OutlineInputBorder(),
+                            ),
+                            maxLines: 5,
                           ),
-                          maxLines: 3,
                         ),
                         MultiSelectWithSearch<Game>(
                           label: 'Базовая игра',

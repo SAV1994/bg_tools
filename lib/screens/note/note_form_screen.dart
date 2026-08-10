@@ -151,7 +151,7 @@ class _NoteFormState extends ConsumerState<NoteForm> {
                       onContentChanged: (content) {
                         _richContent = content;
                       },
-                      height: 300,
+                      height: 500,
                     ),
 
                     const SizedBox(height: 24),

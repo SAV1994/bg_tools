@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bg_tools/core/custom_exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -15,7 +16,7 @@ import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
-enum _SelectMode { classic, onlyTeams, teamsFull }
+enum _SelectMode { classic, secretTeams, secretRoles }
 
 class GamesCountingTemplatesModalForm extends ConsumerStatefulWidget {
   final int gameId;
@@ -51,6 +52,7 @@ class _GamesCountingTemplatesModalFormState
   final TextEditingController _controllerForModal = TextEditingController();
   final TextEditingController _controllerForModal2 = TextEditingController();
   late final TextEditingController _nameController;
+  final ScrollController _scrollController = ScrollController();
   late TextEditingController _roundsScoreLimitController;
   // Загрузка
   bool _isLoading = false;
@@ -87,9 +89,9 @@ class _GamesCountingTemplatesModalFormState
         GameTypeEnum.secretTeams.id,
       ].contains(templatesData['gameType'])) {
         if (templatesData['gameType'] == GameTypeEnum.secretRoles.id) {
-          _mode = _SelectMode.teamsFull;
+          _mode = _SelectMode.secretRoles;
         } else {
-          _mode = _SelectMode.onlyTeams;
+          _mode = _SelectMode.secretTeams;
         }
         GamesCountingTemplate gamesCountingTemplate =
             gamesCountingTemplatesData!.gamesCountingTemplate;
@@ -130,6 +132,19 @@ class _GamesCountingTemplatesModalFormState
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      try {
+        if (_mode == _SelectMode.secretRoles) {
+          _validateSecretRoles();
+        } else if (_mode == _SelectMode.secretTeams) {
+          _validateSecretTeams();
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        return;
+      }
+
       final gamesCountingTemplatesDao = ref.read(
         gamesCountingTemplatesDaoProvider,
       );
@@ -188,6 +203,32 @@ class _GamesCountingTemplatesModalFormState
         }
       } catch (e) {
         setState(() => _generalError = 'Ошибка');
+      }
+    }
+  }
+
+  void _validateSecretTeams() {
+    if (_secretRolesConfig.isEmpty) {
+      throw ValidationException('Должны быть указаны команды');
+    }
+  }
+
+  void _validateSecretRoles() {
+    if (_secretRolesConfig.isEmpty) {
+      throw ValidationException('Должны быть указаны роли');
+    }
+
+    for (final Map<String, dynamic> teamData in _secretRolesConfig) {
+      if (teamData['groups'].isNotEmpty) {
+        for (final Map<String, dynamic> groupData in teamData['groups']) {
+          if (groupData['roles'].isEmpty) {
+            throw ValidationException('Не должно быть групп без ролей');
+          }
+        }
+      } else {
+        if (teamData['roles'].isEmpty) {
+          throw ValidationException('Не должно быть команд без ролей');
+        }
       }
     }
   }
@@ -256,10 +297,10 @@ class _GamesCountingTemplatesModalFormState
                 ),
               ],
             ),
-            if (_mode == _SelectMode.teamsFull) const SizedBox(height: 12),
+            if (_mode == _SelectMode.secretRoles) const SizedBox(height: 12),
 
             // Кнопки добавления групп и ролей
-            if (_mode == _SelectMode.teamsFull)
+            if (_mode == _SelectMode.secretRoles)
               Row(
                 spacing: 8,
                 children: [
@@ -302,6 +343,7 @@ class _GamesCountingTemplatesModalFormState
               const SizedBox(height: 8),
               ListView.builder(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: groups.length,
                 itemBuilder: (context, index) {
                   return _buildGroupCard(groups, index);
@@ -316,6 +358,7 @@ class _GamesCountingTemplatesModalFormState
               const SizedBox(height: 8),
               ListView.builder(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: roles.length,
                 itemBuilder: (context, index) {
                   return _buildRoleTile(roles, index);
@@ -700,6 +743,7 @@ class _GamesCountingTemplatesModalFormState
   @override
   void dispose() {
     _nameController.dispose();
+    _scrollController.dispose();
     _controllerForModal.dispose();
     _controllerForModal2.dispose();
     super.dispose();
@@ -715,7 +759,10 @@ class _GamesCountingTemplatesModalFormState
               : 'Редактирование шаблона',
         ),
         actions: [
-          if ([_SelectMode.onlyTeams, _SelectMode.teamsFull].contains(_mode) &&
+          if ([
+                _SelectMode.secretTeams,
+                _SelectMode.secretRoles,
+              ].contains(_mode) &&
               _secretRolesConfig.length < 4)
             IconButton(
               icon: const Icon(Icons.add),
@@ -732,6 +779,12 @@ class _GamesCountingTemplatesModalFormState
                   gamesCountingTemplatesDaoProvider,
                   mounted,
                   gamesCountingTemplatesData!.gamesCountingTemplate,
+                  () {
+                    final notifier = ref.read(
+                      gamesCountingTemplatesPaginatedProvider.notifier,
+                    );
+                    notifier.refresh();
+                  },
                 );
               },
             ),
@@ -776,15 +829,20 @@ class _GamesCountingTemplatesModalFormState
                             ],
                           ),
                         ),
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: 'Название *',
-                          border: OutlineInputBorder(),
+                      Scrollbar(
+                        controller: _scrollController,
+                        thumbVisibility: false,
+                        interactive: false,
+                        child: TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Название *',
+                            border: OutlineInputBorder(),
+                          ),
+                          maxLines: 5,
+                          validator: (v) =>
+                              v?.isEmpty == true ? 'Введите название' : null,
                         ),
-                        maxLines: 6,
-                        validator: (v) =>
-                            v?.isEmpty == true ? 'Введите название' : null,
                       ),
                       MultiSelectWithSearch<Game>(
                         label: 'Дополнения',
@@ -818,10 +876,10 @@ class _GamesCountingTemplatesModalFormState
                             }
                             if (templateData['gameType'] ==
                                 GameTypeEnum.secretRoles.id) {
-                              mode = _SelectMode.teamsFull;
+                              mode = _SelectMode.secretRoles;
                             } else if (templateData['gameType'] ==
                                 GameTypeEnum.secretTeams.id) {
-                              mode = _SelectMode.onlyTeams;
+                              mode = _SelectMode.secretTeams;
                             } else {
                               _secretRolesConfig.clear();
                             }
@@ -865,8 +923,8 @@ class _GamesCountingTemplatesModalFormState
                         ),
 
                       if ([
-                        _SelectMode.onlyTeams,
-                        _SelectMode.teamsFull,
+                        _SelectMode.secretTeams,
+                        _SelectMode.secretRoles,
                       ].contains(_mode))
                         _secretRolesConfig.isEmpty
                             ? Center(
@@ -896,6 +954,7 @@ class _GamesCountingTemplatesModalFormState
                               )
                             : ListView.builder(
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: _secretRolesConfig.length,
                                 itemBuilder: (context, index) {
                                   final team = _secretRolesConfig[index];

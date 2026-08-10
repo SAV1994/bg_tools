@@ -90,48 +90,51 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
               ),
             ],
           ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
-              children: [
-                // Информация о создании и обновлении
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: [
-                        InfoRow(
-                          label: 'Создана',
-                          value: DateFormats.formatDateTime(note.createdAt),
-                          addDivider: false,
-                        ),
+          body: Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
+                children: [
+                  // Информация о создании и обновлении
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          InfoRow(
+                            label: 'Создана',
+                            value: DateFormats.formatDateTime(note.createdAt),
+                            addDivider: false,
+                          ),
 
-                        InfoRow(
-                          label: 'Обновлена',
-                          value: DateFormats.formatDateTime(note.updatedAt),
-                        ),
-                      ],
+                          InfoRow(
+                            label: 'Обновлена',
+                            value: DateFormats.formatDateTime(note.updatedAt),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                // Содержимое заметки
-                const Text(
-                  'Содержание',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: FleatherEditor(
-                      controller: _controller,
-                      readOnly: true,
-                      focusNode: FocusNode(),
+                  // Содержимое заметки
+                  const Text(
+                    'Содержание',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: FleatherEditor(
+                        controller: _controller,
+                        readOnly: true,
+                        focusNode: FocusNode(),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

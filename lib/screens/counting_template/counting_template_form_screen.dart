@@ -30,6 +30,7 @@ class _CountingTemplateFormFormState
   // Контроллеры
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
+  final ScrollController _scrollController = ScrollController();
   // Переменные для валидации целостности связи с играми
   int _gamesTemplateCount = 0;
   GameTypeEnum? _oldSelectedGameType;
@@ -389,6 +390,7 @@ class _CountingTemplateFormFormState
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -437,13 +439,18 @@ class _CountingTemplateFormFormState
                         },
                       ),
 
-                      TextFormField(
-                        controller: _descriptionController,
-                        decoration: InputDecoration(
-                          labelText: 'Описание',
-                          border: OutlineInputBorder(),
+                      Scrollbar(
+                        controller: _scrollController,
+                        thumbVisibility: false,
+                        interactive: false,
+                        child: TextFormField(
+                          controller: _descriptionController,
+                          decoration: InputDecoration(
+                            labelText: 'Описание',
+                            border: OutlineInputBorder(),
+                          ),
+                          maxLines: 5,
                         ),
-                        maxLines: 3,
                       ),
 
                       EnumSelector(

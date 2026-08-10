@@ -4,6 +4,7 @@ const String sessionKey = 'session';
 const String gamersOfLastSessionKey = 'gamersOfLastSession';
 const String teamsOfLastSessionKey = 'teamsOfLastSession';
 const String gamerOfLastSessionKey = 'gamerOfLastSessionKey';
+const String secretRolesOfLastSessionKey = 'secretRolesOfLastSessionKey';
 
 // Настройки
 const String pageLimitKey = 'pageLimit';

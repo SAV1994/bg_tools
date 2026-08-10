@@ -333,6 +333,8 @@ final secretRoleManagementStep = ScenarioStep(
       );
     }
 
+    AppDataManager.saveLastSessionSecretRoles(data['secretRoles']);
+
     if (data['secretRolesDistributionType'] ==
         SecretRolesDistributionTypeEnum.auto.id) {
       distributeSecretRoles(data);

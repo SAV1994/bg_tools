@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// screens/role_management_screen.dart
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
 class SecretRolesManagementScreen extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -18,12 +20,65 @@ class SecretRolesManagementScreen extends StatefulWidget {
 class _SecretRolesManagementScreenState
     extends State<SecretRolesManagementScreen> {
   bool _isRequired = false;
+  final Set _uniqueRoles = {};
+  // Загрузка
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    _isLoading = true;
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    for (final Map<String, dynamic> teamData in widget.data['secretRoles']) {
+      _uniqueRoles.add((
+        teamData['teamId'],
+        teamData['groupName'],
+        teamData['roleName'],
+      ));
+    }
+
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _addLastSessionRoles() async {
+    setState(() => _isLoading = true);
+    final List<dynamic> secretRolesData =
+        await AppDataManager.loadLastSessionSecretRoles();
+    widget.data['secretRoles'] = secretRolesData;
+    _loadData();
+  }
 
   void _addRole(
     Map<String, dynamic> teamData,
     Map<String, dynamic> roleName, [
     String? groupName,
   ]) {
+    if (widget.data['uniquenessRolesType'] ==
+            UniquenessRolesTypeEnum.unique.id &&
+        _uniqueRoles.contains((
+          teamData['team'],
+          groupName,
+          roleName['name'],
+        ))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Данная роль уже есть в списке',
+            style: TextStyle(
+              color: textColor,
+              fontSize: 20,
+              fontWeight: FontWeight(800),
+            ),
+          ),
+          backgroundColor: redColor,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       final List<Map<String, dynamic>> secretRoles =
           List<Map<String, dynamic>>.from(widget.data['secretRoles']);
@@ -36,6 +91,8 @@ class _SecretRolesManagementScreenState
         'description': roleName['description'],
         'isRequired': _isRequired,
       });
+
+      _uniqueRoles.add((teamData['team'], groupName, roleName['name']));
 
       secretRoles.sort((dynamic a, dynamic b) {
         final mapA = a as Map<String, dynamic>;
@@ -187,8 +244,7 @@ class _SecretRolesManagementScreenState
     );
   }
 
-  // ========== МАСТЕР ДОБАВЛЕНИЯ РОЛИ ==========
-
+  /// ========== МАСТЕР ДОБАВЛЕНИЯ РОЛИ ==========
   // ========== ШАГ 1: ВЫБОР КОМАНДЫ ==========
   void _showSelectTeamDialog() {
     showDialog(
@@ -367,6 +423,12 @@ class _SecretRolesManagementScreenState
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 ...roles.map((role) {
+                  final bool isSelected = _uniqueRoles.contains(((
+                    teamData['team'],
+                    groupName,
+                    role['name'],
+                  )));
+
                   return ListTile(
                     dense: true,
                     leading: Icon(
@@ -376,9 +438,17 @@ class _SecretRolesManagementScreenState
                     ),
                     title: Text(
                       role['name'],
-                      style: const TextStyle(fontSize: 14),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isSelected ? goldColor : textColor,
+                      ),
                     ),
-                    trailing: const Icon(Icons.check, color: Colors.green),
+                    trailing: Icon(
+                      isSelected
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color: isSelected ? goldColor : textColor,
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       _addRole(teamData, role, groupName);
@@ -404,49 +474,64 @@ class _SecretRolesManagementScreenState
     return Consumer(
       builder: (context, ref, child) {
         return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: OutlinedButton.icon(
-                onPressed: _showSelectTeamDialog,
-                icon: const Icon(Icons.add),
-                label: const Text('Добавить роль'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 40),
-                ),
-              ),
-            ),
+          children: _isLoading
+              ? [LoadingScreen()]
+              : [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: OutlinedButton.icon(
+                      onPressed: _showSelectTeamDialog,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Добавить роль'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 40),
+                      ),
+                    ),
+                  ),
 
-            if (widget.data['secretRoles'].isEmpty)
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.people_outline,
-                      size: 64,
-                      color: Colors.grey.shade400,
+                  if (widget.data['secretRoles'].isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: OutlinedButton.icon(
+                        onPressed: _addLastSessionRoles,
+                        icon: const Icon(Icons.group),
+                        label: const Text('Добавить роли из прошлой сессии'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 40),
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Нет ролей',
-                      style: TextStyle(color: Colors.grey.shade600),
+
+                  if (widget.data['secretRoles'].isEmpty)
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.people_outline,
+                            size: 64,
+                            color: Colors.grey.shade400,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Нет ролей',
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(16),
-                itemCount: widget.data['secretRoles'].length,
-                itemBuilder: (context, index) {
-                  final role = widget.data['secretRoles'][index];
-                  return _buildRoleCard(role, index);
-                },
-              ),
-            ),
-          ],
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: widget.data['secretRoles'].length,
+                      itemBuilder: (context, index) {
+                        final role = widget.data['secretRoles'][index];
+                        return _buildRoleCard(role, index);
+                      },
+                    ),
+                  ),
+                ],
         );
       },
     );

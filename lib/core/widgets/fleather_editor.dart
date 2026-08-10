@@ -23,6 +23,7 @@ class FleatherEditorWidget extends StatefulWidget {
 
 class _FleatherEditorWidgetState extends State<FleatherEditorWidget> {
   late FleatherController _controller;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -52,6 +53,7 @@ class _FleatherEditorWidgetState extends State<FleatherEditorWidget> {
   void dispose() {
     _controller.removeListener(_onContentChange);
     _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -59,27 +61,34 @@ class _FleatherEditorWidgetState extends State<FleatherEditorWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
+        border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(8),
+        color: secondColor,
       ),
+      height: widget.height,
+      alignment: AlignmentGeometry.topStart,
       child: Column(
         children: [
-          // Панель инструментов
-          Container(
-            height: widget.height,
-            alignment: AlignmentGeometry.topStart,
-            color: secondColor,
-            child: Column(
-              children: [
-                FleatherToolbar.basic(
+          FleatherToolbar.basic(
+            controller: _controller,
+            hideHeadingStyle: true,
+            hideLink: true,
+          ),
+          SizedBox(height: 30),
+          Divider(height: 2),
+          Expanded(
+            child: Scrollbar(
+              thumbVisibility: true,
+              controller: _scrollController,
+              child: Padding(
+                padding: EdgeInsetsGeometry.all(5),
+                child: FleatherEditor(
                   controller: _controller,
-                  hideHeadingStyle: true,
-                  hideLink: true,
+                  scrollController: _scrollController,
+                  scrollPhysics: const ClampingScrollPhysics(),
+                  focusNode: FocusNode(),
                 ),
-                SizedBox(height: 30),
-                Divider(height: 2),
-                FleatherEditor(controller: _controller, focusNode: FocusNode()),
-              ],
+              ),
             ),
           ),
         ],

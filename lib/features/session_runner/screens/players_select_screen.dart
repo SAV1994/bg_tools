@@ -76,7 +76,15 @@ class _GamersSelectScreenState extends ConsumerState<GamersSelectScreen> {
 
     if (gamersData.isNotEmpty) {
       setState(() {
-        widget.data['gamers'] = gamersData;
+        if (widget.data['gamers'].isNotEmpty &&
+            !gamersData.any(
+              (element) => element['id'] == widget.data['gamers'][0]['id'],
+            )) {
+          widget.data['gamers'].addAll(gamersData);
+        } else {
+          widget.data['gamers'] = gamersData;
+        }
+
         if ([
           GameTypeEnum.solo.id,
           GameTypeEnum.coop.id,

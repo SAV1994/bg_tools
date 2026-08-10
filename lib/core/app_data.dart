@@ -87,6 +87,31 @@ class AppDataManager {
     await prefs.remove(gamerOfLastSessionKey);
   }
 
+  // Запись тайных ролей (JSON)
+  static Future<void> saveLastSessionSecretRoles(
+    List<dynamic> secretRolesData,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      secretRolesOfLastSessionKey,
+      jsonEncode(secretRolesData),
+    );
+  }
+
+  // Получение тайных ролей (JSON)
+  static Future<List<dynamic>> loadLastSessionSecretRoles() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString(secretRolesOfLastSessionKey);
+
+    return (json == null) ? [] : jsonDecode(json);
+  }
+
+  // Удаление тайных ролей (JSON)
+  static Future<void> clearLastSessionSecretRoles() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(secretRolesOfLastSessionKey);
+  }
+
   // Запись лимита записей настранице
   static Future<void> savePageLimit(int pageLimit) async {
     final prefs = await SharedPreferences.getInstance();
