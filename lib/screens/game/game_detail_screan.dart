@@ -12,6 +12,7 @@ import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.d
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
+import 'package:bg_tools/core/services/export_import_service/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/services/session_data_initializer.dart';
@@ -320,45 +321,60 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
               actions: [
                 // Кнопка редактирования
                 IconButton(
+                  visualDensity: VisualDensity(horizontal: -4.0),
                   icon: const Icon(Icons.edit),
                   onPressed: () async {
                     _openNewScreen('games-update');
                   },
                 ),
-                // Кнопка настройки шаблонов
-                IconButton(
-                  icon: const Icon(Icons.build),
-                  onPressed: () async {
-                    final notifier = ref.read(
-                      gamesCountingTemplatesPaginatedProvider.notifier,
-                    );
-                    notifier.filterByGame(game.id);
-
-                    _openNewScreen('counting-templates-list');
-                  },
-                ),
-                // Кнопка запуска партии
-                if (templatesCount > 0)
+                if (game.isStandalone) ...[
+                  // Кнопка настройки шаблонов
                   IconButton(
-                    icon: (templatesCount == 1)
-                        ? Icon(Icons.play_arrow)
-                        : Icon(Icons.play_arrow_outlined),
+                    visualDensity: VisualDensity(horizontal: -4.0),
+                    icon: const Icon(Icons.build),
                     onPressed: () async {
-                      if (templatesCount == 1) {
-                        _runSession();
-                      } else {
-                        final notifier = ref.read(
-                          gamesCountingTemplatesPaginatedProvider.notifier,
-                        );
-                        notifier.filterByGame(game.id);
+                      final notifier = ref.read(
+                        gamesCountingTemplatesPaginatedProvider.notifier,
+                      );
+                      notifier.filterByGame(game.id);
 
-                        _openNewScreen('counting-templates-select');
-                      }
+                      _openNewScreen('counting-templates-list');
                     },
                   ),
+                  // Кнопка запуска партии
+                  if (templatesCount > 0)
+                    IconButton(
+                      visualDensity: VisualDensity(horizontal: -4.0),
+                      icon: (templatesCount == 1)
+                          ? Icon(Icons.play_arrow)
+                          : Icon(Icons.play_arrow_outlined),
+                      onPressed: () async {
+                        if (templatesCount == 1) {
+                          _runSession();
+                        } else {
+                          final notifier = ref.read(
+                            gamesCountingTemplatesPaginatedProvider.notifier,
+                          );
+                          notifier.filterByGame(game.id);
+
+                          _openNewScreen('counting-templates-select');
+                        }
+                      },
+                    ),
+                  // Экспорт
+                  IconButton(
+                    visualDensity: VisualDensity(horizontal: -4.0),
+                    icon: const Icon(exportIcon),
+                    onPressed: () => exportData(
+                      context: context,
+                      mover: GameMover(gameId: widget.gameId),
+                    ),
+                  ),
+                ],
                 // Заметки
                 IconButton(
-                  icon: const Icon(Icons.note),
+                  visualDensity: VisualDensity(horizontal: -4.0),
+                  icon: const Icon(notesIcon),
                   onPressed: () {
                     final notifier = ref.read(notesPaginatedProvider.notifier);
                     notifier.filterByGame(game.id);
@@ -373,20 +389,19 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 ),
                 // Кнопка удаления
                 IconButton(
-                  icon: const Icon(Icons.delete_outlined, color: redColor),
-                  onPressed: () {
-                    buildDelModal(
-                      context,
-                      ref,
-                      gameDaoProvider,
-                      mounted,
-                      game,
-                      () {
-                        ref.invalidate(gamingSessionFullDataProvider);
-                        ref.read(gamesPaginatedProvider.notifier).refresh();
-                      },
-                    );
-                  },
+                  visualDensity: VisualDensity(horizontal: -4.0),
+                  icon: const Icon(delIcon, color: redColor),
+                  onPressed: () => buildDelModal(
+                    context,
+                    ref,
+                    gameDaoProvider,
+                    mounted,
+                    game,
+                    () {
+                      ref.invalidate(gamingSessionFullDataProvider);
+                      ref.read(gamesPaginatedProvider.notifier).refresh();
+                    },
+                  ),
                 ),
               ],
             ),

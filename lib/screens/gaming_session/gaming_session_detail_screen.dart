@@ -655,7 +655,7 @@ class _GamingSessionDetailScreenState
           ),
           // Кнопка удаления
           IconButton(
-            icon: const Icon(Icons.delete_outlined, color: redColor),
+            icon: const Icon(delIcon, color: redColor),
             onPressed: () {
               final gamingSession = gamingSessionAsync.value?.gamingSession;
               if (gamingSession != null) {

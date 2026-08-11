@@ -60,7 +60,7 @@ class _GamesCountingTemplateslistScreenState
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : Text('Настройка шаблонов'),
+                : Icon(gamesTemplatesIcon),
           ),
 
           actions: [

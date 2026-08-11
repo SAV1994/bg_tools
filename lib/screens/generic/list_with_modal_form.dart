@@ -316,7 +316,7 @@ class _ModalFormState extends ConsumerState<ModalForm> {
               : [
                   if (widget.instanceId != null)
                     IconButton(
-                      icon: const Icon(Icons.delete_outlined, color: redColor),
+                      icon: const Icon(delIcon, color: redColor),
                       onPressed: () {
                         buildDelModal(
                           context,

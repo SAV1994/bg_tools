@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
@@ -107,8 +108,9 @@ class _NoteFormState extends ConsumerState<NoteForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.noteId == null ? 'Новая заметка' : 'Редактировать заметку',
+        title: Icon(
+          notesIcon,
+          color: widget.noteId == null ? bronzeColor : blueColor,
         ),
       ),
       body: _isLoading
@@ -151,7 +153,7 @@ class _NoteFormState extends ConsumerState<NoteForm> {
                       onContentChanged: (content) {
                         _richContent = content;
                       },
-                      height: 500,
+                      height: 400,
                     ),
 
                     const SizedBox(height: 24),

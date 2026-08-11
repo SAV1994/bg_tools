@@ -106,7 +106,7 @@ class _NotesListScreentate extends ConsumerState<NotesListScreen> {
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : const Text('Заметки'),
+                : const Icon(notesIcon),
           ),
           actions: [
             IconButton(

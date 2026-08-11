@@ -345,11 +345,12 @@ class MultiSelectWithSearchState<T>
               spacing: 8,
               runSpacing: 4,
               children: _selectedIds.take(5).map((id) {
-                final item = items.firstWhere(
-                  (item) => widget.getId(item) == id,
-                  orElse: () => null as T,
-                );
-                if (item == null) return const SizedBox.shrink();
+                late final T item;
+                try {
+                  item = items.firstWhere((item) => widget.getId(item) == id);
+                } on StateError {
+                  return const SizedBox.shrink();
+                }
 
                 return Chip(
                   label: Text(widget.displayName(item)),

@@ -139,6 +139,11 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     )..where((g) => g.id.equals(gamingSessionId))).go();
   }
 
+  // Удаление всех записей
+  Future<int> delAll() async {
+    return await delete(gamingSessions).go();
+  }
+
   // Игровые сессии с пагинацией
   Future<List<GamingSessionData>> getPaginated({
     required int page,

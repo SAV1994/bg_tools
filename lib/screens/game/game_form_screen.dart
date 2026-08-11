@@ -11,7 +11,9 @@ import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
+import 'package:bg_tools/core/services/export_import_service/game_mover.dart';
 import 'package:bg_tools/core/services/image_service.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/screens/game/widgets/export.dart';
 import 'package:bg_tools/screens/generic/list_with_modal_form.dart';
@@ -213,6 +215,39 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
             gamesIcon,
             color: widget.gameId == null ? bronzeColor : blueColor,
           ),
+          actions: [
+            if (widget.gameId == null)
+              IconButton(
+                visualDensity: VisualDensity(horizontal: -4.0),
+                icon: Icon(importIcon),
+                onPressed: () => importData(
+                  context: context,
+                  mover: GameMover(),
+                  onSuccess: () {
+                    // Обновляем провайдеры
+                    ref.invalidate(countingTemplateDataProvider);
+                    ref.invalidate(gameFullDataProvider);
+                    // AsyncNotifierProvider
+                    final countingTemplatesNotifier = ref.read(
+                      countingTemplatesPaginatedProvider.notifier,
+                    );
+                    countingTemplatesNotifier.refresh();
+                    final gamesNotifier = ref.read(
+                      gamesPaginatedProvider.notifier,
+                    );
+                    gamesNotifier.refresh();
+                    final gamesCountingTemplatesNotifier = ref.read(
+                      gamesCountingTemplatesPaginatedProvider.notifier,
+                    );
+                    gamesCountingTemplatesNotifier.refresh();
+                  },
+                  warnStr:
+                      'Импорт добавит игру.\n'
+                      'Возможны дубликаты шаблонов, если игра у Вас уже есть.\n'
+                      'Вы уверены, что хотите продолжить?',
+                ),
+              ),
+          ],
         ),
         body: _isLoading
             ? LoadingScreen()

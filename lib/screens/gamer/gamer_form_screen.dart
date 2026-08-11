@@ -132,7 +132,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
         actions: [
           if (widget.gamerId != null && gamer!.isOwner == false)
             IconButton(
-              icon: Icon(Icons.delete_outlined, color: redColor),
+              icon: Icon(delIcon, color: redColor),
               onPressed: () => {
                 buildDelModal(
                   context,

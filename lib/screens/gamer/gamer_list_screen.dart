@@ -142,7 +142,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
 
                         return Card(
                           child: ListTile(
-                            leading: Icon(Icons.wc),
+                            leading: Icon(Icons.group),
                             title: Text(gamer.username),
                             subtitle: Text(fio),
                             trailing: Icon(Icons.edit),

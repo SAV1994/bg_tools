@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:bg_tools/core/custom_exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,10 +7,13 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/custom_exceptions.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.dart';
+import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
+import 'package:bg_tools/core/services/export_import_service/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
@@ -753,10 +755,11 @@ class _GamesCountingTemplatesModalFormState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.gamesCountingTemplatesId == null
-              ? 'Новый шаблон'
-              : 'Редактирование шаблона',
+        title: Icon(
+          gamesTemplatesIcon,
+          color: widget.gamesCountingTemplatesId == null
+              ? bronzeColor
+              : blueColor,
         ),
         actions: [
           if ([
@@ -769,9 +772,46 @@ class _GamesCountingTemplatesModalFormState
               onPressed: () => _showTeamModalForm(),
             ),
 
-          if (widget.gamesCountingTemplatesId != null)
+          if (widget.gamesCountingTemplatesId == null)
             IconButton(
-              icon: const Icon(Icons.delete_outlined, color: redColor),
+              visualDensity: VisualDensity(horizontal: -4.0),
+              icon: const Icon(importIcon),
+              onPressed: () => importData(
+                context: context,
+                mover: GameTemplateMover(gameId: widget.gameId),
+                onSuccess: () {
+                  // Обновляем провайдеры
+                  ref.invalidate(countingTemplateDataProvider);
+                  // AsyncNotifierProvider
+                  final countingTemplatesNotifier = ref.read(
+                    countingTemplatesPaginatedProvider.notifier,
+                  );
+                  countingTemplatesNotifier.refresh();
+                  final gamesCountingTemplatesNotifier = ref.read(
+                    gamesCountingTemplatesPaginatedProvider.notifier,
+                  );
+                  gamesCountingTemplatesNotifier.refresh();
+                },
+                warnStr:
+                    'Импорт добавит шаблон.\n'
+                    'Вы уверены, что хотите продолжить?',
+              ),
+            ),
+
+          if (widget.gamesCountingTemplatesId != null) ...[
+            IconButton(
+              visualDensity: VisualDensity(horizontal: -4.0),
+              icon: const Icon(exportIcon),
+              onPressed: () => exportData(
+                context: context,
+                mover: GameTemplateMover(
+                  gameId: widget.gameId,
+                  gameTemplateId: widget.gamesCountingTemplatesId,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(delIcon, color: redColor),
               onPressed: () {
                 buildDelModal(
                   context,
@@ -788,6 +828,7 @@ class _GamesCountingTemplatesModalFormState
                 );
               },
             ),
+          ],
         ],
       ),
       body: Scrollbar(

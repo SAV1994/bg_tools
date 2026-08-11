@@ -6,7 +6,7 @@ void increaseEnsureCounter(Map data, dynamic attr, int value) {
   }
 }
 
-void addToEnsureList(Map data, dynamic attr, dynamic value) {
+void addIntToEnsureList(Map data, dynamic attr, int value) {
   if (data[attr] != null) {
     data[attr].add(value);
   } else {

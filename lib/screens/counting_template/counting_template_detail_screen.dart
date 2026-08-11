@@ -86,7 +86,7 @@ class _CountingTemplateDetailScreenState
           ),
           // Кнопка удаления
           IconButton(
-            icon: const Icon(Icons.delete_outlined, color: redColor),
+            icon: const Icon(delIcon, color: redColor),
             onPressed: () {
               final template = gamingSessionAsync.value;
               if (template != null) {

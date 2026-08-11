@@ -13,7 +13,14 @@ class LoadingScreen extends StatelessWidget {
         children: [
           CircularProgressIndicator(),
           SizedBox(height: 16),
-          Text(getLoadingMsg()),
+          Text(
+            getLoadingMsg(),
+            style: TextStyle(
+              fontSize: 18,
+              color: textColor,
+              decoration: TextDecoration.none,
+            ),
+          ),
         ],
       ),
     );

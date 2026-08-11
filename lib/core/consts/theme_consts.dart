@@ -20,12 +20,17 @@ const double iconSize = 20;
 
 // Иконки
 const IconData gamesIcon = Icons.layers;
-const IconData gamersIcon = Icons.wc;
+const IconData gamersIcon = Icons.group;
 const IconData sessionsIcon = Icons.assignment;
-const IconData templatesIcon = Icons.build;
-const IconData tagsIcon = Icons.location_on;
+const IconData templatesIcon = Icons.extension;
+const IconData gamesTemplatesIcon = Icons.build;
+const IconData tagsIcon = Icons.insert_link;
 const IconData designersIcon = Icons.account_balance;
 const IconData artistsIcon = Icons.color_lens;
+const IconData notesIcon = Icons.receipt;
+const IconData delIcon = Icons.delete_outline;
+const IconData importIcon = Icons.system_update_alt;
+const IconData exportIcon = Icons.save_alt;
 const IconData loadingIcon = Icons.timer;
 const IconData addBtnIcon = Icons.add_box;
 const IconData errorIcon = Icons.report_problem;

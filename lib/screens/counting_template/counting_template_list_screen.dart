@@ -152,7 +152,7 @@ class _CountingTemplateListScreenListScreenState
 
                         return Card(
                           child: ListTile(
-                            leading: Icon(Icons.build),
+                            leading: Icon(templatesIcon),
                             title: Text(
                               template.name,
                               style: TextStyle(color: goldColor),

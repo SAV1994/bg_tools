@@ -1,75 +1,21 @@
-// services/backup_service.dart
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:archive/archive_io.dart';
 import 'package:drift/drift.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
 import 'package:bg_tools/core/app_data.dart';
+import 'package:bg_tools/core/consts/import_const.dart';
 import 'package:bg_tools/core/database/app_database.dart';
-import 'package:bg_tools/core/services/image_service.dart';
-import 'package:bg_tools/core/services/permissions_service.dart';
+import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/services/export_import_service/base_mover.dart';
+import 'package:bg_tools/core/services/export_import_service/obj_to_map/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 
-// Сервис импорта/экспорта
-class BackupService {
-  final AppDatabase database;
+class AllDataMover extends BaseMover {
+  final int type = ImportTypeEnum.all.id;
 
-  BackupService(this.database);
+  @override
+  Future<Map<String, dynamic>> extractToJson() async {
+    final database = container.read(databaseProvider);
 
-  // ЭКСПОРТ (Экспорт всех данных в ZIP файл)
-  Future<String?> exportAllData() async {
-    // Создаем временную папку
-    final Directory? rootDir = await getExternalStorageDirectory();
-    final Directory tempDir = Directory(path.join(rootDir!.path, 'export'));
-    final Directory exportDir = Directory(
-      path.join(
-        tempDir.path,
-        'export_${DateTime.now().millisecondsSinceEpoch}',
-      ),
-    );
-
-    try {
-      // Проверяем разрешение
-      final hasPermission = await PermissionService.hasWritePermission();
-
-      if (!hasPermission) {
-        // Запрашиваем
-        final granted = await PermissionService.requestWritePermission();
-        if (!granted) {
-          throw Exception('Нет разрешения на запись');
-        }
-      }
-
-      await exportDir.create(recursive: true);
-
-      // 1. Экспортируем данные из БД
-      await _exportDatabase(exportDir);
-
-      // 2. Экспортируем изображения
-      await _exportImages(exportDir);
-
-      // 3. Создаем ZIP архив
-      final tempZipPath = await _createZipArchive(tempDir, exportDir);
-
-      // 4. Сохраняем ZIP в выбранное место
-      final savedPath = await _saveZipFile(tempZipPath);
-
-      return savedPath;
-    } catch (e) {
-      print('Ошибка экспорта: $e');
-      return null;
-    } finally {
-      // Безопасно удаляем временную папку
-      await _safeDelete(tempDir);
-    }
-  }
-
-  /// Экспорт данных из БД в JSON
-  Future<void> _exportDatabase(Directory exportDir) async {
     // Получаем все данные из таблиц
     final artists = await database.select(database.artists).get();
     final countingTemplates = await database
@@ -101,21 +47,15 @@ class BackupService {
         .get();
 
     // Формируем JSON
-    final exportData = {
-      'version': 1,
+    final Map<String, dynamic> exportData = {
+      importDataVersionCodeKey: '${importDataVersionCode}_$type',
+      'type': ImportTypeEnum.all.id,
       'exportDate': DateTime.now().toIso8601String(),
       'artists': artists
           .map((artist) => {'id': artist.id, 'name': artist.name})
           .toList(),
       'countingTemplates': countingTemplates
-          .map(
-            (countingTemplate) => {
-              'id': countingTemplate.id,
-              'name': countingTemplate.name,
-              'description': countingTemplate.description,
-              'data': countingTemplate.data,
-            },
-          )
+          .map((countingTemplate) => getCountingTemplateData(countingTemplate))
           .toList(),
       'designers': designers
           .map((disigner) => {'id': disigner.id, 'name': disigner.name})
@@ -133,23 +73,7 @@ class BackupService {
             },
           )
           .toList(),
-      'games': games
-          .map(
-            (game) => {
-              'id': game.id,
-              'name': game.name,
-              'description': game.description,
-              'year': game.year,
-              'minPlayers': game.minPlayers,
-              'maxPlayers': game.maxPlayers,
-              'isInCollection': game.isInCollection,
-              'isFavorite': game.isFavorite,
-              'rating': game.rating,
-              'isStandalone': game.isStandalone,
-              'imagePath': game.imagePath,
-            },
-          )
-          .toList(),
+      'games': games.map((game) => getGameData(game)).toList(),
       'expansionsGames': expansionsGames
           .map((eg) => {'gameId': eg.gameId, 'expansionId': eg.expansionId})
           .toList(),
@@ -157,15 +81,7 @@ class BackupService {
           .map((ga) => {'gameId': ga.gameId, 'artistId': ga.artistId})
           .toList(),
       'gamesCountingTemplates': gamesCountingTemplates
-          .map(
-            (gct) => {
-              'id': gct.id,
-              'name': gct.name,
-              'data': gct.data,
-              'gameId': gct.gameId,
-              'countingTemplateId': gct.countingTemplateId,
-            },
-          )
+          .map((gct) => getGamesCountingTemplateData(gct))
           .toList(),
       'gamesCountingTemplateExpansions': gamesCountingTemplateExpansions
           .map(
@@ -231,156 +147,27 @@ class BackupService {
           .toList(),
     };
 
-    // Сохраняем JSON файл
-    final jsonFile = File(path.join(exportDir.path, 'data.json'));
-    await jsonFile.writeAsString(jsonEncode(exportData));
+    return exportData;
   }
 
-  /// Экспорт изображений
-  Future<void> _exportImages(Directory exportDir) async {
-    final games = await database.select(database.games).get();
-    final imagesDir = Directory(path.join(exportDir.path, 'images'));
-    await imagesDir.create();
+  @override
+  Future<List<Game>> getExportGames() async {
+    final database = container.read(databaseProvider);
 
-    for (final game in games) {
-      if (game.imagePath != null && game.imagePath!.isNotEmpty) {
-        final sourceFile = await ImageService.getImageFile(game.imagePath!);
-        await sourceFile!.copy(
-          path.join(imagesDir.path, path.basename(game.imagePath!)),
-        );
-      }
-    }
+    return await database.select(database.games).get();
   }
 
-  /// Создание ZIP архива
-  Future<String> _createZipArchive(
-    Directory tempDir,
-    Directory exportDir,
+  @override
+  String getZipFileNamePrefix() {
+    return 'backup_';
+  }
+
+  @override
+  Future<void> insertDataToDb(
+    AppDatabase database,
+    Map<String, String> newImagePaths,
+    Map data,
   ) async {
-    final encoder = ZipFileEncoder();
-    final tempZipPath = path.join(
-      tempDir.path,
-      'backup_${DateTime.now().millisecondsSinceEpoch}.zip',
-    );
-    await encoder.zipDirectory(exportDir, filename: tempZipPath);
-
-    return tempZipPath;
-  }
-
-  /// Сохранение ZIP файла (показываем диалог выбора места)
-  Future<String?> _saveZipFile(String tempZipPath) async {
-    // Читаем данные из файла
-    final bytes = await File(tempZipPath).readAsBytes();
-
-    final result = await FilePicker.saveFile(
-      dialogTitle: 'Сохранить резервную копию',
-      fileName:
-          'games_backup_${DateTime.now().day}_${DateTime.now().month}_${DateTime.now().year}.zip',
-      bytes: bytes,
-    );
-
-    return result;
-  }
-
-  // Безопасное удаление
-  Future<void> _safeDelete(Directory dir) async {
-    try {
-      if (await dir.exists()) {
-        await dir.delete(recursive: true);
-      }
-    } catch (e) {
-      print('⚠️ Не удалось удалить папку: $e');
-    }
-  }
-
-  // ИМПОРТ (Импорт данных из ZIP файла)
-  Future<bool> importData() async {
-    try {
-      // Проверяем разрешение
-      final hasPermission = await PermissionService.hasWritePermission();
-
-      if (!hasPermission) {
-        // Запрашиваем
-        final granted = await PermissionService.requestWritePermission();
-        if (!granted) {
-          throw Exception('Нет разрешения на запись');
-        }
-      }
-
-      // Выбираем ZIP файл
-      final result = await FilePicker.pickFiles(
-        dialogTitle: 'Выберите файл резервной копии',
-        type: FileType.custom,
-        allowedExtensions: ['zip'],
-      );
-
-      if (result == null) return false;
-
-      final zipPath = result.files.single.path!;
-
-      // Создаем временную папку для распаковки
-      final tempDir = await getExternalStorageDirectory();
-      final extractDir = Directory(
-        path.join(
-          tempDir!.path,
-          'import_${DateTime.now().millisecondsSinceEpoch}',
-        ),
-      );
-      await extractDir.create(recursive: true);
-
-      // Распаковываем ZIP
-      await _extractZip(zipPath, extractDir.path);
-
-      // Импортируем данные
-      await _importData(extractDir);
-
-      // Очищаем временную папку
-      await extractDir.delete(recursive: true);
-
-      return true;
-    } catch (e) {
-      print('Ошибка импорта: $e');
-      return false;
-    }
-  }
-
-  /// Распаковка ZIP
-  Future<void> _extractZip(String zipPath, String destPath) async {
-    final bytes = await File(zipPath).readAsBytes();
-    final archive = ZipDecoder().decodeBytes(bytes);
-
-    for (final file in archive) {
-      if (file.isFile) {
-        final filePath = path.join(destPath, file.name);
-        final outFile = File(filePath);
-        await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content as List<int>);
-      }
-    }
-  }
-
-  /// Импорт данных из распакованной папки
-  Future<void> _importData(Directory importDir) async {
-    // 1. Читаем JSON
-    final jsonFile = File(path.join(importDir.path, 'data.json'));
-    final jsonContent = await jsonFile.readAsString();
-    final data = json.decode(jsonContent);
-
-    // 2. Копируем изображения
-    final imagesDir = Directory(path.join(importDir.path, 'images'));
-    final Map<String, String> newImagePaths = {};
-
-    if (await imagesDir.exists()) {
-      final imageFiles = await imagesDir.list().toList();
-      for (final imageFile in imageFiles) {
-        if (imageFile is File) {
-          final newPath = await _saveImportedImage(imageFile);
-          newImagePaths[path.basename(imageFile.path)] = newPath;
-        }
-      }
-    }
-
-    // 3. Импортируем в БД в транзакции
     await database.transaction(() async {
       // Очищаем существующие данные
       await database.delete(database.artists).go();
@@ -548,13 +335,14 @@ class BackupService {
 
         if (gamingSessionJson['rootSessionId'] != null &&
             rootSessionId == null) {
-          addToEnsureList(
+          addIntToEnsureList(
             rootSessionLinks,
             gamingSessionJson['rootSessionId'],
             id,
           );
         }
       }
+
       for (final item in rootSessionLinks.entries) {
         await (database.update(
           database.gamingSessions,
@@ -654,18 +442,5 @@ class BackupService {
             );
       }
     });
-  }
-
-  /// Сохранение импортированного изображения
-  Future<String> _saveImportedImage(File imageFile) async {
-    final appDir = await getExternalStorageDirectory();
-    final imagesDir = Directory(path.join(appDir!.path, 'game_images'));
-    if (!await imagesDir.exists()) {
-      await imagesDir.create(recursive: true);
-    }
-    final fileName = path.basename(imageFile.path);
-    final destPath = path.join(imagesDir.path, fileName);
-    await imageFile.copy(destPath);
-    return destPath;
   }
 }

@@ -67,7 +67,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(note!.title),
+            title: Icon(notesIcon, color: silverColor),
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit),
@@ -75,7 +75,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                 tooltip: 'Редактировать',
               ),
               IconButton(
-                icon: const Icon(Icons.delete, color: redColor),
+                icon: const Icon(delIcon, color: redColor),
                 onPressed: () {
                   buildDelModal(
                     context,
@@ -104,10 +104,18 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         children: [
+                          Text(
+                            note!.title,
+                            style: TextStyle(
+                              color: goldColor,
+                              height: 3,
+                              fontSize: 18,
+                            ),
+                          ),
+
                           InfoRow(
                             label: 'Создана',
                             value: DateFormats.formatDateTime(note.createdAt),
-                            addDivider: false,
                           ),
 
                           InfoRow(

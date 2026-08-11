@@ -78,7 +78,7 @@ class _GamesCountingTemplatesSelectScreenState
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : Text('Выбор шаблона'),
+                : Icon(gamesTemplatesIcon, color: goldColor),
           ),
           actions: [
             IconButton(

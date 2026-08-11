@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/tag/tag_dao.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
@@ -16,7 +17,7 @@ class TagsListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListWithModalFormScreen<ListWithModalFormConfig>(
       config: ListWithModalFormConfig<Tag, TagDao, TagsCompanion>(
-        icon: Icons.location_on,
+        icon: tagsIcon,
         dataProvider: tagsPaginatedProvider,
         daoProvier: tagDaoProvider,
         companionFactory: (name) => TagsCompanion(name: Value(name)),

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -97,6 +98,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     }
                     return pageSize.toString();
                   },
+                ),
+                OutlinedButton.icon(
+                  onPressed: () =>
+                      buildClearSessionsModal(context, ref, mounted),
+                  icon: const Icon(delIcon),
+                  label: const Text('Очистить список игровых сессий'),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 40),
+                  ),
                 ),
               ],
             ),

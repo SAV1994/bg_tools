@@ -40,10 +40,7 @@ void buildDelModal(
               Navigator.pop(context); // Закрыть диалог
               Navigator.pop(context, true); // Вернуться назад
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Запись "$instName" удалена'),
-                  backgroundColor: Colors.red,
-                ),
+                SnackBar(content: Text('Запись "$instName" удалена')),
               );
             }
           },
