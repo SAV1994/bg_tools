@@ -8,3 +8,6 @@ const String secretRolesOfLastSessionKey = 'secretRolesOfLastSessionKey';
 
 // Настройки
 const String pageLimitKey = 'pageLimit';
+
+// Каунтеры
+const String countersKey = 'countersKey';

@@ -37,16 +37,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: Text(appName),
         actions: [
+          IconButton(
+            icon: Icon(countersIcon),
+            onPressed: () => context.pushNamed('counters'),
+            tooltip: 'Каунтеры',
+          ),
+
           ownerAsync.when(
             data: (owner) {
               return IconButton(
                 icon: Icon(Icons.face),
-                onPressed: () => {
-                  context.pushNamed(
-                    'gamers-update',
-                    pathParameters: {'gamerId': owner!.id.toString()},
-                  ),
-                },
+                onPressed: () => context.pushNamed(
+                  'gamers-update',
+                  pathParameters: {'gamerId': owner!.id.toString()},
+                ),
                 tooltip: 'Профиль',
               );
             },

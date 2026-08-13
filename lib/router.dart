@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 
+import 'package:bg_tools/features/counters/screens/export.dart';
 import 'package:bg_tools/features/session_runner/step_wizard.dart';
 import 'package:bg_tools/screens/export.dart';
 
@@ -252,6 +253,13 @@ final GoRouter goRouter = GoRouter(
       name: 'session-runner',
       builder: (BuildContext context, GoRouterState state) =>
           StepWizardScreen(),
+    ),
+
+    // Каунтеры
+    GoRoute(
+      path: '/counters',
+      name: 'counters',
+      builder: (BuildContext context, GoRouterState state) => CountersScreen(),
     ),
   ],
 );

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
@@ -108,6 +109,11 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
                 },
               ),
         actions: [
+          IconButton(
+            icon: Icon(countersIcon),
+            onPressed: () => context.pushNamed('counters'),
+            tooltip: 'Каунтеры',
+          ),
           TextButton(
             onPressed: () {
               ref.invalidate(sessionDataProvider);
