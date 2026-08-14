@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/features/counters/screens/export.dart';
+import 'package:bg_tools/features/randomizer/screens/export.dart';
 import 'package:bg_tools/features/session_runner/step_wizard.dart';
 import 'package:bg_tools/screens/export.dart';
 
@@ -260,6 +261,44 @@ final GoRouter goRouter = GoRouter(
       path: '/counters',
       name: 'counters',
       builder: (BuildContext context, GoRouterState state) => CountersScreen(),
+    ),
+
+    // Рандомайзер
+    GoRoute(
+      path: '/randomizer',
+      name: 'randomizer',
+      builder: (BuildContext context, GoRouterState state) =>
+          SelectionRandomizerScreen(),
+    ),
+    GoRoute(
+      path: '/randomizer/number',
+      name: 'randomizer-number',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomNumberScreen(),
+    ),
+    GoRoute(
+      path: '/randomizer/dice',
+      name: 'randomizer-dice',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomDiceScreen(),
+    ),
+    GoRoute(
+      path: '/randomizer/fate',
+      name: 'randomizer-fate',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomFateScreen(),
+    ),
+    GoRoute(
+      path: '/randomizer/coin',
+      name: 'randomizer-coin',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomCoinScreen(),
+    ),
+    GoRoute(
+      path: '/randomizer/touch',
+      name: 'randomizer-touch',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomTouchScreen(),
     ),
   ],
 );

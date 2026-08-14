@@ -24,29 +24,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final sessionDataAsync = ref.watch(sessionDataProvider);
     final ownerAsync = ref.watch(ownerDataProvider);
 
-    final ButtonStyle btnStyle = ElevatedButton.styleFrom(
-      textStyle: const TextStyle(fontSize: 30),
-      foregroundColor: textColor,
-      backgroundColor: secondColor,
-      side: const BorderSide(color: borderColor, width: 1.5),
-      fixedSize: Size(350, 50),
-      iconSize: 30,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Text(appName),
         actions: [
           IconButton(
+            visualDensity: VisualDensity(horizontal: -4.0),
+            icon: Icon(randomIcon),
+            onPressed: () => context.pushNamed('randomizer'),
+            tooltip: 'Рандомайзер',
+          ),
+
+          IconButton(
+            visualDensity: VisualDensity(horizontal: -4.0),
             icon: Icon(countersIcon),
             onPressed: () => context.pushNamed('counters'),
             tooltip: 'Каунтеры',
           ),
 
+          if (sessionDataAsync.value != null)
+            IconButton(
+              visualDensity: VisualDensity(horizontal: -4.0),
+              icon: Icon(Icons.play_arrow),
+              onPressed: () => {context.pushNamed('session-runner')},
+              tooltip: 'Продолжить сессию',
+            ),
+
           ownerAsync.when(
             data: (owner) {
               return IconButton(
-                icon: Icon(Icons.face),
+                visualDensity: VisualDensity(horizontal: -4.0),
+                icon: Icon(Icons.person),
                 onPressed: () => context.pushNamed(
                   'gamers-update',
                   pathParameters: {'gamerId': owner!.id.toString()},
@@ -57,13 +65,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             loading: () => Icon(loadingIcon, color: borderColor),
             error: (error, _) => ErrorNotification(),
           ),
-
-          if (sessionDataAsync.value != null)
-            IconButton(
-              icon: Icon(Icons.play_arrow),
-              onPressed: () => {context.pushNamed('session-runner')},
-              tooltip: 'Продолжить сессию',
-            ),
 
           // Меню
           PopupMenuButton(

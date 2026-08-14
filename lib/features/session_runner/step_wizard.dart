@@ -110,6 +110,13 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
               ),
         actions: [
           IconButton(
+            visualDensity: VisualDensity(horizontal: -4.0),
+            icon: Icon(randomIcon),
+            onPressed: () => context.pushNamed('randomizer'),
+            tooltip: 'Рандомайзер',
+          ),
+          IconButton(
+            visualDensity: VisualDensity(horizontal: -4.0),
             icon: Icon(countersIcon),
             onPressed: () => context.pushNamed('counters'),
             tooltip: 'Каунтеры',

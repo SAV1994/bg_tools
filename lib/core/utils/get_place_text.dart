@@ -20,17 +20,17 @@ Widget getPlaceText(int? place, {bool isFinished = true}) {
       );
     case 1:
       return Text(
-        '$firstPlaceMedal Победа',
+        '$firstPlaceMedalEmoji Победа',
         style: TextStyle(color: goldColor, fontSize: fontSize),
       );
     case 2:
       return Text(
-        '$secondPlaceMedal 2 место',
+        '$secondPlaceMedalEmoji 2 место',
         style: TextStyle(color: silverColor, fontSize: fontSize),
       );
     case 3:
       return Text(
-        '$thirdPlaceMedal 3 место',
+        '$thirdPlaceMedalEmoji 3 место',
         style: TextStyle(color: bronzeColor, fontSize: fontSize),
       );
     default:
