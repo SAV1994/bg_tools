@@ -16,12 +16,14 @@ class GamesListScreen extends ConsumerStatefulWidget {
   final int? artistId;
   final int? designerId;
   final int? tagId;
+  final bool opportunitiesShelf;
 
   const GamesListScreen({
     super.key,
     this.artistId,
     this.designerId,
     this.tagId,
+    this.opportunitiesShelf = false,
   });
 
   @override
@@ -129,7 +131,15 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                     message: filterObjTitle,
                     child: const Icon(gamesIcon, size: 25, color: goldColor),
                   )
-                : Icon(gamesIcon),
+                : IconButton(
+                    icon: Icon(
+                      notifier.opportunitiesShelf ? Icons.whatshot : gamesIcon,
+                      color: notifier.opportunitiesShelf
+                          ? goldColor
+                          : textColor,
+                    ),
+                    onPressed: () => notifier.toggleOpportunitiesShelf(),
+                  ),
           ),
           actions: [
             IconButton(

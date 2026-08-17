@@ -75,18 +75,6 @@ class _RandomNumberScreenState extends State<RandomNumberScreen>
     });
   }
 
-  void _copyResult() {
-    if (_result != null) {
-      // В реальном приложении - копирование в буфер
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Скопировано: $_result'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-    }
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
@@ -332,19 +320,6 @@ class _RandomNumberScreenState extends State<RandomNumberScreen>
                       ),
                     ),
                   ),
-
-                  if (_result != null)
-                    Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: IconButton(
-                        icon: Icon(Icons.copy, color: firstColor),
-                        onPressed: _copyResult,
-                        tooltip: 'Копировать',
-                        style: IconButton.styleFrom(
-                          backgroundColor: bronzeColor,
-                        ),
-                      ),
-                    ),
                 ],
               ),
 

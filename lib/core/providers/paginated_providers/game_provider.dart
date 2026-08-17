@@ -12,6 +12,7 @@ class GamesNotifier extends BaseNotifier {
   bool onlyFavorite = false;
   bool onlyStandalone = true;
   bool isInCollection = true;
+  bool opportunitiesShelf = false;
   int? artistId;
   int? designerId;
   int? tagId;
@@ -24,6 +25,7 @@ class GamesNotifier extends BaseNotifier {
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
       isInCollection: isInCollection,
+      opportunitiesShelf: opportunitiesShelf,
       artistId: artistId,
       designerId: designerId,
       tagId: tagId,
@@ -37,6 +39,7 @@ class GamesNotifier extends BaseNotifier {
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
       isInCollection: isInCollection,
+      opportunitiesShelf: opportunitiesShelf,
       artistId: artistId,
       designerId: designerId,
       tagId: tagId,
@@ -56,6 +59,11 @@ class GamesNotifier extends BaseNotifier {
 
   Future<void> toggleIsInCollection() async {
     isInCollection = !isInCollection;
+    state = await AsyncValue.guard(() => load());
+  }
+
+  Future<void> toggleOpportunitiesShelf() async {
+    opportunitiesShelf = !opportunitiesShelf;
     state = await AsyncValue.guard(() => load());
   }
 
@@ -82,6 +90,7 @@ class GamesNotifier extends BaseNotifier {
     onlyFavorite = false;
     onlyStandalone = true;
     isInCollection = true;
+    opportunitiesShelf = false;
     artistId = null;
     designerId = null;
     tagId = null;

@@ -144,7 +144,7 @@ class _GamingSessionFormScreenState
     }
 
     // Показываем диалог игрока
-    buildAddGamerModal(
+    buildAddPlayerModal(
       context,
       notSelectedGamers,
       (gamer) => _addGamerWithDetails(gamer),

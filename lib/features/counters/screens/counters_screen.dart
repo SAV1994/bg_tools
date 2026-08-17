@@ -221,6 +221,7 @@ class _CountersScreenState extends ConsumerState<CountersScreen> {
         actions: [
           if (!_isLoading &&
               _sessionData != null &&
+              _sessionData['gamers'].isNotEmpty &&
               _counterControllers.isEmpty)
             IconButton(
               icon: Icon(gamersIcon),

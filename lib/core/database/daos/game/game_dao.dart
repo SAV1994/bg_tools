@@ -1,12 +1,7 @@
 import 'package:drift/drift.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
-import 'package:bg_tools/core/database/tables/expansions_games.dart';
-import 'package:bg_tools/core/database/tables/game.dart';
-import 'package:bg_tools/core/database/tables/games_artists.dart';
-import 'package:bg_tools/core/database/tables/games_counting_templates.dart';
-import 'package:bg_tools/core/database/tables/games_designers.dart';
-import 'package:bg_tools/core/database/tables/games_tags.dart';
+import 'package:bg_tools/core/database/tables/export.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/services/image_service.dart';
 part 'game_dao.g.dart';
@@ -19,6 +14,7 @@ part 'game_dao.g.dart';
     GamesArtists,
     GamesTags,
     GamesCountingTemplates,
+    GamingSessions,
   ],
 )
 class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
@@ -174,6 +170,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     required bool onlyFavorite,
     required bool onlyStandalone,
     required bool isInCollection,
+    required bool opportunitiesShelf,
     int? artistId,
     int? designerId,
     int? tagId,
@@ -189,6 +186,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       onlyFavorite: onlyFavorite,
       onlyStandalone: onlyStandalone,
       isInCollection: isInCollection,
+      opportunitiesShelf: opportunitiesShelf,
       artistId: artistId,
       designerId: designerId,
       tagId: tagId,
@@ -203,6 +201,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     bool onlyFavorite = false,
     bool onlyStandalone = false,
     bool isInCollection = false,
+    bool opportunitiesShelf = false,
     int? artistId,
     int? designerId,
     int? tagId,
@@ -217,6 +216,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       tagId: tagId,
       onlyStandalone: onlyStandalone,
       isInCollection: isInCollection,
+      opportunitiesShelf: opportunitiesShelf,
     );
 
     return await query.get().then((list) => list.length);
@@ -350,6 +350,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     required bool onlyFavorite,
     required bool onlyStandalone,
     required bool isInCollection,
+    required bool opportunitiesShelf,
     int? artistId,
     int? designerId,
     int? tagId,
@@ -365,6 +366,16 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
     if (isInCollection) {
       query = query..where((g) => g.isInCollection.isValue(true));
+    }
+
+    if (opportunitiesShelf) {
+      final gamingSessionsQuery = selectOnly(gamingSessions, distinct: true)
+        ..addColumns([gamingSessions.gameId]);
+      final List<int> gamesPlayedIds = await gamingSessionsQuery
+          .map((row) => row.read(gamingSessions.gameId)!)
+          .get();
+
+      query = query..where((g) => g.id.isNotIn(gamesPlayedIds));
     }
 
     if (artistId != null) {

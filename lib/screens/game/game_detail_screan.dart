@@ -327,8 +327,9 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                     _openNewScreen('games-update');
                   },
                 ),
+
+                // Кнопка настройки шаблонов
                 if (game.isStandalone) ...[
-                  // Кнопка настройки шаблонов
                   IconButton(
                     visualDensity: VisualDensity(horizontal: -4.0),
                     icon: const Icon(Icons.build),
@@ -341,6 +342,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                       _openNewScreen('counting-templates-list');
                     },
                   ),
+
                   // Кнопка запуска партии
                   if (templatesCount > 0)
                     IconButton(
@@ -361,6 +363,26 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                         }
                       },
                     ),
+
+                  // Заметки
+                  IconButton(
+                    visualDensity: VisualDensity(horizontal: -4.0),
+                    icon: const Icon(notesIcon),
+                    onPressed: () {
+                      final notifier = ref.read(
+                        notesPaginatedProvider.notifier,
+                      );
+                      notifier.filterByGame(game.id);
+
+                      context.pushNamed(
+                        'notes-list',
+                        pathParameters: {
+                          'gameId': gameAsync.value!.game.id.toString(),
+                        },
+                      );
+                    },
+                  ),
+
                   // Экспорт
                   IconButton(
                     visualDensity: VisualDensity(horizontal: -4.0),
@@ -371,22 +393,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                     ),
                   ),
                 ],
-                // Заметки
-                IconButton(
-                  visualDensity: VisualDensity(horizontal: -4.0),
-                  icon: const Icon(notesIcon),
-                  onPressed: () {
-                    final notifier = ref.read(notesPaginatedProvider.notifier);
-                    notifier.filterByGame(game.id);
 
-                    context.pushNamed(
-                      'notes-list',
-                      pathParameters: {
-                        'gameId': gameAsync.value!.game.id.toString(),
-                      },
-                    );
-                  },
-                ),
                 // Кнопка удаления
                 IconButton(
                   visualDensity: VisualDensity(horizontal: -4.0),

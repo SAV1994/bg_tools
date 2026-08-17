@@ -50,52 +50,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               tooltip: 'Продолжить сессию',
             ),
 
+          // Меню
           ownerAsync.when(
             data: (owner) {
-              return IconButton(
-                visualDensity: VisualDensity(horizontal: -4.0),
-                icon: Icon(Icons.person),
-                onPressed: () => context.pushNamed(
-                  'gamers-update',
-                  pathParameters: {'gamerId': owner!.id.toString()},
-                ),
-                tooltip: 'Профиль',
+              return PopupMenuButton(
+                icon: Icon(Icons.more_vert),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(Icons.person, size: 18),
+                      title: const Text('Профиль'),
+                      dense: true,
+                    ),
+                    onTap: () => context.pushNamed(
+                      'gamers-update',
+                      pathParameters: {'gamerId': owner!.id.toString()},
+                    ),
+                  ),
+
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.settings,
+                        size: 18,
+                        color: goldColor,
+                      ),
+                      title: const Text('Настройки'),
+                      dense: true,
+                    ),
+                    onTap: () => context.pushNamed('settings'),
+                  ),
+
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.power_settings_new,
+                        size: 18,
+                        color: redColor,
+                      ),
+                      title: const Text('Выйти'),
+                      dense: true,
+                    ),
+                    onTap: () => SystemNavigator.pop(),
+                  ),
+                ],
               );
             },
             loading: () => Icon(loadingIcon, color: borderColor),
             error: (error, _) => ErrorNotification(),
-          ),
-
-          // Меню
-          PopupMenuButton(
-            icon: Icon(Icons.more_vert),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.settings,
-                    size: 18,
-                    color: goldColor,
-                  ),
-                  title: const Text('Настройки'),
-                  dense: true,
-                ),
-                onTap: () => context.pushNamed('settings'),
-              ),
-
-              PopupMenuItem(
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.power_settings_new,
-                    size: 18,
-                    color: redColor,
-                  ),
-                  title: const Text('Выйти'),
-                  dense: true,
-                ),
-                onTap: () => SystemNavigator.pop(),
-              ),
-            ],
           ),
         ],
       ),

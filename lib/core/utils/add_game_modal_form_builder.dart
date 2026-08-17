@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
-import 'package:bg_tools/core/utils/export.dart';
 
-void buildAddGamerModal(
+void buildAddGameModal(
   BuildContext context,
-  List<Gamer> notSelectedGamers,
+  List<Game> notSelectedGames,
   Function onSelect,
 ) {
   showDialog(
     context: context,
     builder: (context) {
       String searchQuery = '';
-      List<Gamer> localFiltered = List.from(notSelectedGamers);
+      List<Game> localFiltered = List.from(notSelectedGames);
       return StatefulBuilder(
         builder: (context, setDialogState) {
           // Функция обновления поиска
@@ -21,23 +20,19 @@ void buildAddGamerModal(
             setDialogState(() {
               searchQuery = query;
               if (query.isEmpty) {
-                localFiltered = List.from(notSelectedGamers);
+                localFiltered = List.from(notSelectedGames);
               } else {
-                localFiltered = notSelectedGamers.where((gamer) {
-                  final username = gamer.username.toLowerCase();
-                  final firstName = gamer.firstName.toLowerCase();
-                  final lastName = gamer.lastName?.toLowerCase() ?? '';
+                localFiltered = notSelectedGames.where((game) {
+                  final name = game.name.toLowerCase();
                   final searchLower = query.toLowerCase();
-                  return username.contains(searchLower) ||
-                      firstName.contains(searchLower) ||
-                      lastName.contains(searchLower);
+                  return name.contains(searchLower);
                 }).toList();
               }
             });
           }
 
           return AlertDialog(
-            title: const Text('Выберите игрока'),
+            title: const Text('Выберите игру'),
             content: SizedBox(
               width: 400,
               height: 500,
@@ -81,21 +76,16 @@ void buildAddGamerModal(
                             child: ListView.builder(
                               itemCount: localFiltered.length,
                               itemBuilder: (context, index) {
-                                final gamer = localFiltered[index];
-
-                                String fio = getGamerFio(gamer);
+                                final game = localFiltered[index];
 
                                 return ListTile(
                                   leading: CircleAvatar(
-                                    child: Text(
-                                      gamer.username[0].toUpperCase(),
-                                    ),
+                                    child: Text(game.name[0].toUpperCase()),
                                   ),
-                                  title: Text(gamer.username),
-                                  subtitle: Text(fio),
+                                  title: Text(game.name),
                                   onTap: () {
                                     Navigator.pop(context);
-                                    onSelect(gamer);
+                                    onSelect(game);
                                   },
                                 );
                               },

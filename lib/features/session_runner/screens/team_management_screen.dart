@@ -67,7 +67,7 @@ class _TeamManagementScreenState extends ConsumerState<TeamManagementScreen> {
     }
 
     // Показываем диалог игрока
-    buildAddGamerModal(context, notSelectedGamers, (gamer) {
+    buildAddPlayerModal(context, notSelectedGamers, (gamer) {
       final Map<String, dynamic> gamerData = getGamerData(gamer);
       gamerData['team'] = team.id;
 

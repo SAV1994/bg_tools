@@ -665,9 +665,12 @@ class _GamingSessionDetailScreenState
                   gamingSessionDaoProvider,
                   mounted,
                   gamingSession,
-                  () => ref
-                      .read(gamingSessionsPaginatedProvider.notifier)
-                      .refresh(),
+                  () {
+                    ref
+                        .read(gamingSessionsPaginatedProvider.notifier)
+                        .refresh();
+                    ref.read(gamesPaginatedProvider.notifier).refresh();
+                  },
                 );
               }
             },

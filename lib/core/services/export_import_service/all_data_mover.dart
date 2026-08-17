@@ -191,6 +191,8 @@ class AllDataMover extends BaseMover {
       await AppDataManager.clearLastSessionGamer();
       await AppDataManager.clearActiveSession();
       await AppDataManager.clearLastSessionTeams();
+      await AppDataManager.clearRandomGames();
+      await AppDataManager.clearRandomPlayers();
 
       final artistsIds = <int, int>{};
       for (final artistJson in data['artists']) {

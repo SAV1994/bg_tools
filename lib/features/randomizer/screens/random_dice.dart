@@ -61,6 +61,7 @@ class _RandomDiceScreenState extends State<RandomDiceScreen>
 
   // Анимация
   late AnimationController _animationController;
+
   final Random _random = Random();
 
   @override
@@ -349,10 +350,19 @@ class _RandomDiceScreenState extends State<RandomDiceScreen>
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'preset_Все по одному',
-                child: Text('🎲 Все по одному'),
+                child: Text(
+                  '🎲 Все по одному',
+                  style: TextStyle(color: textColor),
+                ),
               ),
               PopupMenuDivider(),
-              PopupMenuItem(value: 'reset', child: Text('🔄 Сбросить всё')),
+              PopupMenuItem(
+                value: 'reset',
+                child: Text(
+                  '🔄 Сбросить всё',
+                  style: TextStyle(color: textColor),
+                ),
+              ),
             ],
           ),
           TextButton(

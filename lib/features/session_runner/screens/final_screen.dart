@@ -74,6 +74,7 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
       await AppDataManager.clearActiveSession();
 
       ref.read(gamingSessionsPaginatedProvider.notifier).refresh();
+      ref.read(gamesPaginatedProvider.notifier).refresh();
       ref.invalidate(gamingSessionFullDataProvider);
       ref.invalidate(gameSessionCountDataProvider);
 

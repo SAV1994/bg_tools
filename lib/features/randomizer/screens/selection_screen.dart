@@ -39,13 +39,13 @@ class _SelectionRandomizerScreenState
                     icon: Icon(randNumIcon),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () => {},
+                    onPressed: () => context.pushNamed('randomizer-games'),
                     style: btnStyle,
                     label: Text('Случайная игра'),
                     icon: Icon(gamesIcon),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () => {},
+                    onPressed: () => context.pushNamed('randomizer-players'),
                     style: btnStyle,
                     label: Text('Случайный игрок'),
                     icon: Icon(gamersIcon),

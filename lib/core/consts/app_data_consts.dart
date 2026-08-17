@@ -11,3 +11,7 @@ const String pageLimitKey = 'pageLimit';
 
 // Каунтеры
 const String countersKey = 'countersKey';
+
+// Рандомайзер
+const String randomPlayersKey = 'randomPlayersKey';
+const String randomGamesKey = 'randomGamesKey';

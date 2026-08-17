@@ -155,4 +155,52 @@ class AppDataManager {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt(pageLimitKey) ?? pageSize;
   }
+
+  // -----------------------
+
+  // Запись данных рандомайзера игроков (JSON)
+  static Future<void> saveRandomPlayers(
+    Map<String, dynamic> randomPlayersData,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(randomPlayersKey, jsonEncode(randomPlayersData));
+  }
+
+  // Получение данных рандомайзера игроков (JSON)
+  static Future<Map<String, dynamic>?> loadRandomPlayers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString(randomPlayersKey);
+
+    return (json == null) ? null : jsonDecode(json);
+  }
+
+  // Удаление данных рандомайзера игроков (JSON)
+  static Future<void> clearRandomPlayers() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(randomPlayersKey);
+  }
+
+  // -----------------------
+
+  // Запись данных рандомайзера игр (JSON)
+  static Future<void> saveRandomGames(
+    Map<String, dynamic> randomGamesData,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(randomGamesKey, jsonEncode(randomGamesData));
+  }
+
+  // Получение данных рандомайзера игр (JSON)
+  static Future<Map<String, dynamic>?> loadRandomGames() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString(randomGamesKey);
+
+    return (json == null) ? null : jsonDecode(json);
+  }
+
+  // Удаление данных рандомайзера игр (JSON)
+  static Future<void> clearRandomGames() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(randomGamesKey);
+  }
 }

@@ -81,6 +81,9 @@ final gamersSelectStep = ScenarioStep(
   validator: (data) {
     if (data['gamers'].isEmpty) {
       throw StepWizardException('Добавте игроков');
+    } else if (data['type'] != GameTypeEnum.solo.id &&
+        data['gamers'].length == 1) {
+      throw StepWizardException('Недостаточно игроков для данного режима');
     }
 
     final List<dynamic> claenedGamersData = cleanGamersData(data['gamers']);

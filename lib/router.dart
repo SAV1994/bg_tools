@@ -277,6 +277,18 @@ final GoRouter goRouter = GoRouter(
           RandomNumberScreen(),
     ),
     GoRoute(
+      path: '/randomizer/players',
+      name: 'randomizer-players',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomPlayersScreen(),
+    ),
+    GoRoute(
+      path: '/randomizer/games',
+      name: 'randomizer-games',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomGamesScreen(),
+    ),
+    GoRoute(
       path: '/randomizer/dice',
       name: 'randomizer-dice',
       builder: (BuildContext context, GoRouterState state) =>

@@ -1,4 +1,5 @@
-export 'add_gamer_modal_form_builder.dart';
+export 'add_game_modal_form_builder.dart';
+export 'add_player_modal_form_builder.dart';
 export 'auto_scroll.dart';
 export 'bool_to_string.dart';
 export 'confirm_clear_sessions_modal_form_builder.dart';

@@ -16,6 +16,7 @@ mixin _$GameDaoMixin on DatabaseAccessor<AppDatabase> {
       attachedDatabase.countingTemplates;
   $GamesCountingTemplatesTable get gamesCountingTemplates =>
       attachedDatabase.gamesCountingTemplates;
+  $GamingSessionsTable get gamingSessions => attachedDatabase.gamingSessions;
   GameDaoManager get managers => GameDaoManager(this);
 }
 
@@ -53,5 +54,10 @@ class GameDaoManager {
       $$GamesCountingTemplatesTableTableManager(
         _db.attachedDatabase,
         _db.gamesCountingTemplates,
+      );
+  $$GamingSessionsTableTableManager get gamingSessions =>
+      $$GamingSessionsTableTableManager(
+        _db.attachedDatabase,
+        _db.gamingSessions,
       );
 }
