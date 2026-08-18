@@ -15,3 +15,6 @@ const String countersKey = 'countersKey';
 // Рандомайзер
 const String randomPlayersKey = 'randomPlayersKey';
 const String randomGamesKey = 'randomGamesKey';
+
+// Топ
+const String ratingProcessKey = 'ratingProcessKey';

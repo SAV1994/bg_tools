@@ -5215,8 +5215,57 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _artistIdMeta = const VerificationMeta(
+    'artistId',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, year, month, isActual, data];
+  late final GeneratedColumn<int> artistId = GeneratedColumn<int>(
+    'artist_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES artists (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _designerIdMeta = const VerificationMeta(
+    'designerId',
+  );
+  @override
+  late final GeneratedColumn<int> designerId = GeneratedColumn<int>(
+    'designer_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES designers (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
+  @override
+  late final GeneratedColumn<int> tagId = GeneratedColumn<int>(
+    'tag_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tags (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    year,
+    month,
+    isActual,
+    data,
+    artistId,
+    designerId,
+    tagId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -5260,6 +5309,24 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
     } else if (isInserting) {
       context.missing(_dataMeta);
     }
+    if (data.containsKey('artist_id')) {
+      context.handle(
+        _artistIdMeta,
+        artistId.isAcceptableOrUnknown(data['artist_id']!, _artistIdMeta),
+      );
+    }
+    if (data.containsKey('designer_id')) {
+      context.handle(
+        _designerIdMeta,
+        designerId.isAcceptableOrUnknown(data['designer_id']!, _designerIdMeta),
+      );
+    }
+    if (data.containsKey('tag_id')) {
+      context.handle(
+        _tagIdMeta,
+        tagId.isAcceptableOrUnknown(data['tag_id']!, _tagIdMeta),
+      );
+    }
     return context;
   }
 
@@ -5289,6 +5356,18 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
         DriftSqlType.string,
         data['${effectivePrefix}data'],
       )!,
+      artistId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}artist_id'],
+      ),
+      designerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}designer_id'],
+      ),
+      tagId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tag_id'],
+      ),
     );
   }
 
@@ -5304,12 +5383,18 @@ class Rating extends DataClass implements Insertable<Rating> {
   final int? month;
   final bool isActual;
   final String data;
+  final int? artistId;
+  final int? designerId;
+  final int? tagId;
   const Rating({
     required this.id,
     required this.year,
     this.month,
     required this.isActual,
     required this.data,
+    this.artistId,
+    this.designerId,
+    this.tagId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5321,6 +5406,15 @@ class Rating extends DataClass implements Insertable<Rating> {
     }
     map['is_actual'] = Variable<bool>(isActual);
     map['data'] = Variable<String>(data);
+    if (!nullToAbsent || artistId != null) {
+      map['artist_id'] = Variable<int>(artistId);
+    }
+    if (!nullToAbsent || designerId != null) {
+      map['designer_id'] = Variable<int>(designerId);
+    }
+    if (!nullToAbsent || tagId != null) {
+      map['tag_id'] = Variable<int>(tagId);
+    }
     return map;
   }
 
@@ -5333,6 +5427,15 @@ class Rating extends DataClass implements Insertable<Rating> {
           : Value(month),
       isActual: Value(isActual),
       data: Value(data),
+      artistId: artistId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(artistId),
+      designerId: designerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(designerId),
+      tagId: tagId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tagId),
     );
   }
 
@@ -5347,6 +5450,9 @@ class Rating extends DataClass implements Insertable<Rating> {
       month: serializer.fromJson<int?>(json['month']),
       isActual: serializer.fromJson<bool>(json['isActual']),
       data: serializer.fromJson<String>(json['data']),
+      artistId: serializer.fromJson<int?>(json['artistId']),
+      designerId: serializer.fromJson<int?>(json['designerId']),
+      tagId: serializer.fromJson<int?>(json['tagId']),
     );
   }
   @override
@@ -5358,6 +5464,9 @@ class Rating extends DataClass implements Insertable<Rating> {
       'month': serializer.toJson<int?>(month),
       'isActual': serializer.toJson<bool>(isActual),
       'data': serializer.toJson<String>(data),
+      'artistId': serializer.toJson<int?>(artistId),
+      'designerId': serializer.toJson<int?>(designerId),
+      'tagId': serializer.toJson<int?>(tagId),
     };
   }
 
@@ -5367,12 +5476,18 @@ class Rating extends DataClass implements Insertable<Rating> {
     Value<int?> month = const Value.absent(),
     bool? isActual,
     String? data,
+    Value<int?> artistId = const Value.absent(),
+    Value<int?> designerId = const Value.absent(),
+    Value<int?> tagId = const Value.absent(),
   }) => Rating(
     id: id ?? this.id,
     year: year ?? this.year,
     month: month.present ? month.value : this.month,
     isActual: isActual ?? this.isActual,
     data: data ?? this.data,
+    artistId: artistId.present ? artistId.value : this.artistId,
+    designerId: designerId.present ? designerId.value : this.designerId,
+    tagId: tagId.present ? tagId.value : this.tagId,
   );
   Rating copyWithCompanion(RatingsCompanion data) {
     return Rating(
@@ -5381,6 +5496,11 @@ class Rating extends DataClass implements Insertable<Rating> {
       month: data.month.present ? data.month.value : this.month,
       isActual: data.isActual.present ? data.isActual.value : this.isActual,
       data: data.data.present ? data.data.value : this.data,
+      artistId: data.artistId.present ? data.artistId.value : this.artistId,
+      designerId: data.designerId.present
+          ? data.designerId.value
+          : this.designerId,
+      tagId: data.tagId.present ? data.tagId.value : this.tagId,
     );
   }
 
@@ -5391,13 +5511,17 @@ class Rating extends DataClass implements Insertable<Rating> {
           ..write('year: $year, ')
           ..write('month: $month, ')
           ..write('isActual: $isActual, ')
-          ..write('data: $data')
+          ..write('data: $data, ')
+          ..write('artistId: $artistId, ')
+          ..write('designerId: $designerId, ')
+          ..write('tagId: $tagId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, year, month, isActual, data);
+  int get hashCode =>
+      Object.hash(id, year, month, isActual, data, artistId, designerId, tagId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5406,7 +5530,10 @@ class Rating extends DataClass implements Insertable<Rating> {
           other.year == this.year &&
           other.month == this.month &&
           other.isActual == this.isActual &&
-          other.data == this.data);
+          other.data == this.data &&
+          other.artistId == this.artistId &&
+          other.designerId == this.designerId &&
+          other.tagId == this.tagId);
 }
 
 class RatingsCompanion extends UpdateCompanion<Rating> {
@@ -5415,12 +5542,18 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
   final Value<int?> month;
   final Value<bool> isActual;
   final Value<String> data;
+  final Value<int?> artistId;
+  final Value<int?> designerId;
+  final Value<int?> tagId;
   const RatingsCompanion({
     this.id = const Value.absent(),
     this.year = const Value.absent(),
     this.month = const Value.absent(),
     this.isActual = const Value.absent(),
     this.data = const Value.absent(),
+    this.artistId = const Value.absent(),
+    this.designerId = const Value.absent(),
+    this.tagId = const Value.absent(),
   });
   RatingsCompanion.insert({
     this.id = const Value.absent(),
@@ -5428,6 +5561,9 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
     this.month = const Value.absent(),
     this.isActual = const Value.absent(),
     required String data,
+    this.artistId = const Value.absent(),
+    this.designerId = const Value.absent(),
+    this.tagId = const Value.absent(),
   }) : year = Value(year),
        data = Value(data);
   static Insertable<Rating> custom({
@@ -5436,6 +5572,9 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
     Expression<int>? month,
     Expression<bool>? isActual,
     Expression<String>? data,
+    Expression<int>? artistId,
+    Expression<int>? designerId,
+    Expression<int>? tagId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5443,6 +5582,9 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
       if (month != null) 'month': month,
       if (isActual != null) 'is_actual': isActual,
       if (data != null) 'data': data,
+      if (artistId != null) 'artist_id': artistId,
+      if (designerId != null) 'designer_id': designerId,
+      if (tagId != null) 'tag_id': tagId,
     });
   }
 
@@ -5452,6 +5594,9 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
     Value<int?>? month,
     Value<bool>? isActual,
     Value<String>? data,
+    Value<int?>? artistId,
+    Value<int?>? designerId,
+    Value<int?>? tagId,
   }) {
     return RatingsCompanion(
       id: id ?? this.id,
@@ -5459,6 +5604,9 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
       month: month ?? this.month,
       isActual: isActual ?? this.isActual,
       data: data ?? this.data,
+      artistId: artistId ?? this.artistId,
+      designerId: designerId ?? this.designerId,
+      tagId: tagId ?? this.tagId,
     );
   }
 
@@ -5480,6 +5628,15 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
     if (data.present) {
       map['data'] = Variable<String>(data.value);
     }
+    if (artistId.present) {
+      map['artist_id'] = Variable<int>(artistId.value);
+    }
+    if (designerId.present) {
+      map['designer_id'] = Variable<int>(designerId.value);
+    }
+    if (tagId.present) {
+      map['tag_id'] = Variable<int>(tagId.value);
+    }
     return map;
   }
 
@@ -5490,7 +5647,10 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
           ..write('year: $year, ')
           ..write('month: $month, ')
           ..write('isActual: $isActual, ')
-          ..write('data: $data')
+          ..write('data: $data, ')
+          ..write('artistId: $artistId, ')
+          ..write('designerId: $designerId, ')
+          ..write('tagId: $tagId')
           ..write(')'))
         .toString();
   }
@@ -6036,6 +6196,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
+        'artists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('ratings', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'designers',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('ratings', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tags',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('ratings', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
         'ratings',
         limitUpdateKind: UpdateKind.delete,
       ),
@@ -6080,6 +6261,25 @@ final class $$ArtistsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$RatingsTable, List<Rating>> _ratingsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.ratings,
+    aliasName: $_aliasNameGenerator(db.artists.id, db.ratings.artistId),
+  );
+
+  $$RatingsTableProcessedTableManager get ratingsRefs {
+    final manager = $$RatingsTableTableManager(
+      $_db,
+      $_db.ratings,
+    ).filter((f) => f.artistId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ratingsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$ArtistsTableFilterComposer
@@ -6117,6 +6317,31 @@ class $$ArtistsTableFilterComposer
           }) => $$GamesArtistsTableFilterComposer(
             $db: $db,
             $table: $db.gamesArtists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ratingsRefs(
+    Expression<bool> Function($$RatingsTableFilterComposer f) f,
+  ) {
+    final $$RatingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.artistId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableFilterComposer(
+            $db: $db,
+            $table: $db.ratings,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6186,6 +6411,31 @@ class $$ArtistsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> ratingsRefs<T extends Object>(
+    Expression<T> Function($$RatingsTableAnnotationComposer a) f,
+  ) {
+    final $$RatingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.artistId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ratings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ArtistsTableTableManager
@@ -6201,7 +6451,7 @@ class $$ArtistsTableTableManager
           $$ArtistsTableUpdateCompanionBuilder,
           (Artist, $$ArtistsTableReferences),
           Artist,
-          PrefetchHooks Function({bool gamesArtistsRefs})
+          PrefetchHooks Function({bool gamesArtistsRefs, bool ratingsRefs})
         > {
   $$ArtistsTableTableManager(_$AppDatabase db, $ArtistsTable table)
     : super(
@@ -6230,35 +6480,63 @@ class $$ArtistsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({gamesArtistsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (gamesArtistsRefs) db.gamesArtists],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (gamesArtistsRefs)
-                    await $_getPrefetchedData<
-                      Artist,
-                      $ArtistsTable,
-                      GamesArtist
-                    >(
-                      currentTable: table,
-                      referencedTable: $$ArtistsTableReferences
-                          ._gamesArtistsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$ArtistsTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).gamesArtistsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.artistId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({gamesArtistsRefs = false, ratingsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gamesArtistsRefs) db.gamesArtists,
+                    if (ratingsRefs) db.ratings,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gamesArtistsRefs)
+                        await $_getPrefetchedData<
+                          Artist,
+                          $ArtistsTable,
+                          GamesArtist
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ArtistsTableReferences
+                              ._gamesArtistsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ArtistsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesArtistsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.artistId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (ratingsRefs)
+                        await $_getPrefetchedData<
+                          Artist,
+                          $ArtistsTable,
+                          Rating
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ArtistsTableReferences
+                              ._ratingsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ArtistsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).ratingsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.artistId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -6275,7 +6553,7 @@ typedef $$ArtistsTableProcessedTableManager =
       $$ArtistsTableUpdateCompanionBuilder,
       (Artist, $$ArtistsTableReferences),
       Artist,
-      PrefetchHooks Function({bool gamesArtistsRefs})
+      PrefetchHooks Function({bool gamesArtistsRefs, bool ratingsRefs})
     >;
 typedef $$CountingTemplatesTableCreateCompanionBuilder =
     CountingTemplatesCompanion Function({
@@ -6617,6 +6895,25 @@ final class $$DesignersTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$RatingsTable, List<Rating>> _ratingsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.ratings,
+    aliasName: $_aliasNameGenerator(db.designers.id, db.ratings.designerId),
+  );
+
+  $$RatingsTableProcessedTableManager get ratingsRefs {
+    final manager = $$RatingsTableTableManager(
+      $_db,
+      $_db.ratings,
+    ).filter((f) => f.designerId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ratingsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$DesignersTableFilterComposer
@@ -6654,6 +6951,31 @@ class $$DesignersTableFilterComposer
           }) => $$GamesDesignersTableFilterComposer(
             $db: $db,
             $table: $db.gamesDesigners,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ratingsRefs(
+    Expression<bool> Function($$RatingsTableFilterComposer f) f,
+  ) {
+    final $$RatingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.designerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableFilterComposer(
+            $db: $db,
+            $table: $db.ratings,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6723,6 +7045,31 @@ class $$DesignersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> ratingsRefs<T extends Object>(
+    Expression<T> Function($$RatingsTableAnnotationComposer a) f,
+  ) {
+    final $$RatingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.designerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ratings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$DesignersTableTableManager
@@ -6738,7 +7085,7 @@ class $$DesignersTableTableManager
           $$DesignersTableUpdateCompanionBuilder,
           (Designer, $$DesignersTableReferences),
           Designer,
-          PrefetchHooks Function({bool gamesDesignersRefs})
+          PrefetchHooks Function({bool gamesDesignersRefs, bool ratingsRefs})
         > {
   $$DesignersTableTableManager(_$AppDatabase db, $DesignersTable table)
     : super(
@@ -6767,38 +7114,63 @@ class $$DesignersTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({gamesDesignersRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (gamesDesignersRefs) db.gamesDesigners,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (gamesDesignersRefs)
-                    await $_getPrefetchedData<
-                      Designer,
-                      $DesignersTable,
-                      GamesDesigner
-                    >(
-                      currentTable: table,
-                      referencedTable: $$DesignersTableReferences
-                          ._gamesDesignersRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$DesignersTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).gamesDesignersRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.designerId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({gamesDesignersRefs = false, ratingsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gamesDesignersRefs) db.gamesDesigners,
+                    if (ratingsRefs) db.ratings,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gamesDesignersRefs)
+                        await $_getPrefetchedData<
+                          Designer,
+                          $DesignersTable,
+                          GamesDesigner
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DesignersTableReferences
+                              ._gamesDesignersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DesignersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesDesignersRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.designerId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (ratingsRefs)
+                        await $_getPrefetchedData<
+                          Designer,
+                          $DesignersTable,
+                          Rating
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DesignersTableReferences
+                              ._ratingsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DesignersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).ratingsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.designerId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -6815,7 +7187,7 @@ typedef $$DesignersTableProcessedTableManager =
       $$DesignersTableUpdateCompanionBuilder,
       (Designer, $$DesignersTableReferences),
       Designer,
-      PrefetchHooks Function({bool gamesDesignersRefs})
+      PrefetchHooks Function({bool gamesDesignersRefs, bool ratingsRefs})
     >;
 typedef $$GamesTableCreateCompanionBuilder =
     GamesCompanion Function({
@@ -10254,6 +10626,25 @@ final class $$TagsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$RatingsTable, List<Rating>> _ratingsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.ratings,
+    aliasName: $_aliasNameGenerator(db.tags.id, db.ratings.tagId),
+  );
+
+  $$RatingsTableProcessedTableManager get ratingsRefs {
+    final manager = $$RatingsTableTableManager(
+      $_db,
+      $_db.ratings,
+    ).filter((f) => f.tagId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ratingsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$TagsTableFilterComposer extends Composer<_$AppDatabase, $TagsTable> {
@@ -10290,6 +10681,31 @@ class $$TagsTableFilterComposer extends Composer<_$AppDatabase, $TagsTable> {
           }) => $$GamesTagsTableFilterComposer(
             $db: $db,
             $table: $db.gamesTags,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ratingsRefs(
+    Expression<bool> Function($$RatingsTableFilterComposer f) f,
+  ) {
+    final $$RatingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.tagId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableFilterComposer(
+            $db: $db,
+            $table: $db.ratings,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -10358,6 +10774,31 @@ class $$TagsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> ratingsRefs<T extends Object>(
+    Expression<T> Function($$RatingsTableAnnotationComposer a) f,
+  ) {
+    final $$RatingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratings,
+      getReferencedColumn: (t) => t.tagId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ratings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$TagsTableTableManager
@@ -10373,7 +10814,7 @@ class $$TagsTableTableManager
           $$TagsTableUpdateCompanionBuilder,
           (Tag, $$TagsTableReferences),
           Tag,
-          PrefetchHooks Function({bool gamesTagsRefs})
+          PrefetchHooks Function({bool gamesTagsRefs, bool ratingsRefs})
         > {
   $$TagsTableTableManager(_$AppDatabase db, $TagsTable table)
     : super(
@@ -10400,28 +10841,50 @@ class $$TagsTableTableManager
                     (e.readTable(table), $$TagsTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({gamesTagsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (gamesTagsRefs) db.gamesTags],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (gamesTagsRefs)
-                    await $_getPrefetchedData<Tag, $TagsTable, GamesTag>(
-                      currentTable: table,
-                      referencedTable: $$TagsTableReferences
-                          ._gamesTagsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$TagsTableReferences(db, table, p0).gamesTagsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.tagId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({gamesTagsRefs = false, ratingsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gamesTagsRefs) db.gamesTags,
+                    if (ratingsRefs) db.ratings,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gamesTagsRefs)
+                        await $_getPrefetchedData<Tag, $TagsTable, GamesTag>(
+                          currentTable: table,
+                          referencedTable: $$TagsTableReferences
+                              ._gamesTagsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$TagsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).gamesTagsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.tagId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (ratingsRefs)
+                        await $_getPrefetchedData<Tag, $TagsTable, Rating>(
+                          currentTable: table,
+                          referencedTable: $$TagsTableReferences
+                              ._ratingsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TagsTableReferences(db, table, p0).ratingsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.tagId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -10438,7 +10901,7 @@ typedef $$TagsTableProcessedTableManager =
       $$TagsTableUpdateCompanionBuilder,
       (Tag, $$TagsTableReferences),
       Tag,
-      PrefetchHooks Function({bool gamesTagsRefs})
+      PrefetchHooks Function({bool gamesTagsRefs, bool ratingsRefs})
     >;
 typedef $$GamesTagsTableCreateCompanionBuilder =
     GamesTagsCompanion Function({
@@ -13008,6 +13471,9 @@ typedef $$RatingsTableCreateCompanionBuilder =
       Value<int?> month,
       Value<bool> isActual,
       required String data,
+      Value<int?> artistId,
+      Value<int?> designerId,
+      Value<int?> tagId,
     });
 typedef $$RatingsTableUpdateCompanionBuilder =
     RatingsCompanion Function({
@@ -13016,11 +13482,67 @@ typedef $$RatingsTableUpdateCompanionBuilder =
       Value<int?> month,
       Value<bool> isActual,
       Value<String> data,
+      Value<int?> artistId,
+      Value<int?> designerId,
+      Value<int?> tagId,
     });
 
 final class $$RatingsTableReferences
     extends BaseReferences<_$AppDatabase, $RatingsTable, Rating> {
   $$RatingsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ArtistsTable _artistIdTable(_$AppDatabase db) => db.artists
+      .createAlias($_aliasNameGenerator(db.ratings.artistId, db.artists.id));
+
+  $$ArtistsTableProcessedTableManager? get artistId {
+    final $_column = $_itemColumn<int>('artist_id');
+    if ($_column == null) return null;
+    final manager = $$ArtistsTableTableManager(
+      $_db,
+      $_db.artists,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_artistIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $DesignersTable _designerIdTable(_$AppDatabase db) =>
+      db.designers.createAlias(
+        $_aliasNameGenerator(db.ratings.designerId, db.designers.id),
+      );
+
+  $$DesignersTableProcessedTableManager? get designerId {
+    final $_column = $_itemColumn<int>('designer_id');
+    if ($_column == null) return null;
+    final manager = $$DesignersTableTableManager(
+      $_db,
+      $_db.designers,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_designerIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TagsTable _tagIdTable(_$AppDatabase db) =>
+      db.tags.createAlias($_aliasNameGenerator(db.ratings.tagId, db.tags.id));
+
+  $$TagsTableProcessedTableManager? get tagId {
+    final $_column = $_itemColumn<int>('tag_id');
+    if ($_column == null) return null;
+    final manager = $$TagsTableTableManager(
+      $_db,
+      $_db.tags,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_tagIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static MultiTypedResultKey<$RatingsGamesTable, List<RatingsGame>>
   _ratingsGamesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
@@ -13074,6 +13596,75 @@ class $$RatingsTableFilterComposer
     column: $table.data,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$ArtistsTableFilterComposer get artistId {
+    final $$ArtistsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.artistId,
+      referencedTable: $db.artists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ArtistsTableFilterComposer(
+            $db: $db,
+            $table: $db.artists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$DesignersTableFilterComposer get designerId {
+    final $$DesignersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.designerId,
+      referencedTable: $db.designers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DesignersTableFilterComposer(
+            $db: $db,
+            $table: $db.designers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TagsTableFilterComposer get tagId {
+    final $$TagsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tagId,
+      referencedTable: $db.tags,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TagsTableFilterComposer(
+            $db: $db,
+            $table: $db.tags,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   Expression<bool> ratingsGamesRefs(
     Expression<bool> Function($$RatingsGamesTableFilterComposer f) f,
@@ -13134,6 +13725,75 @@ class $$RatingsTableOrderingComposer
     column: $table.data,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$ArtistsTableOrderingComposer get artistId {
+    final $$ArtistsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.artistId,
+      referencedTable: $db.artists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ArtistsTableOrderingComposer(
+            $db: $db,
+            $table: $db.artists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$DesignersTableOrderingComposer get designerId {
+    final $$DesignersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.designerId,
+      referencedTable: $db.designers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DesignersTableOrderingComposer(
+            $db: $db,
+            $table: $db.designers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TagsTableOrderingComposer get tagId {
+    final $$TagsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tagId,
+      referencedTable: $db.tags,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TagsTableOrderingComposer(
+            $db: $db,
+            $table: $db.tags,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$RatingsTableAnnotationComposer
@@ -13159,6 +13819,75 @@ class $$RatingsTableAnnotationComposer
 
   GeneratedColumn<String> get data =>
       $composableBuilder(column: $table.data, builder: (column) => column);
+
+  $$ArtistsTableAnnotationComposer get artistId {
+    final $$ArtistsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.artistId,
+      referencedTable: $db.artists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ArtistsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.artists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$DesignersTableAnnotationComposer get designerId {
+    final $$DesignersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.designerId,
+      referencedTable: $db.designers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DesignersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.designers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TagsTableAnnotationComposer get tagId {
+    final $$TagsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tagId,
+      referencedTable: $db.tags,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TagsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tags,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   Expression<T> ratingsGamesRefs<T extends Object>(
     Expression<T> Function($$RatingsGamesTableAnnotationComposer a) f,
@@ -13199,7 +13928,12 @@ class $$RatingsTableTableManager
           $$RatingsTableUpdateCompanionBuilder,
           (Rating, $$RatingsTableReferences),
           Rating,
-          PrefetchHooks Function({bool ratingsGamesRefs})
+          PrefetchHooks Function({
+            bool artistId,
+            bool designerId,
+            bool tagId,
+            bool ratingsGamesRefs,
+          })
         > {
   $$RatingsTableTableManager(_$AppDatabase db, $RatingsTable table)
     : super(
@@ -13219,12 +13953,18 @@ class $$RatingsTableTableManager
                 Value<int?> month = const Value.absent(),
                 Value<bool> isActual = const Value.absent(),
                 Value<String> data = const Value.absent(),
+                Value<int?> artistId = const Value.absent(),
+                Value<int?> designerId = const Value.absent(),
+                Value<int?> tagId = const Value.absent(),
               }) => RatingsCompanion(
                 id: id,
                 year: year,
                 month: month,
                 isActual: isActual,
                 data: data,
+                artistId: artistId,
+                designerId: designerId,
+                tagId: tagId,
               ),
           createCompanionCallback:
               ({
@@ -13233,12 +13973,18 @@ class $$RatingsTableTableManager
                 Value<int?> month = const Value.absent(),
                 Value<bool> isActual = const Value.absent(),
                 required String data,
+                Value<int?> artistId = const Value.absent(),
+                Value<int?> designerId = const Value.absent(),
+                Value<int?> tagId = const Value.absent(),
               }) => RatingsCompanion.insert(
                 id: id,
                 year: year,
                 month: month,
                 isActual: isActual,
                 data: data,
+                artistId: artistId,
+                designerId: designerId,
+                tagId: tagId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -13248,35 +13994,103 @@ class $$RatingsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({ratingsGamesRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (ratingsGamesRefs) db.ratingsGames],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (ratingsGamesRefs)
-                    await $_getPrefetchedData<
-                      Rating,
-                      $RatingsTable,
-                      RatingsGame
-                    >(
-                      currentTable: table,
-                      referencedTable: $$RatingsTableReferences
-                          ._ratingsGamesRefsTable(db),
-                      managerFromTypedResult: (p0) => $$RatingsTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).ratingsGamesRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.ratingId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({
+                artistId = false,
+                designerId = false,
+                tagId = false,
+                ratingsGamesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (ratingsGamesRefs) db.ratingsGames,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (artistId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.artistId,
+                                    referencedTable: $$RatingsTableReferences
+                                        ._artistIdTable(db),
+                                    referencedColumn: $$RatingsTableReferences
+                                        ._artistIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (designerId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.designerId,
+                                    referencedTable: $$RatingsTableReferences
+                                        ._designerIdTable(db),
+                                    referencedColumn: $$RatingsTableReferences
+                                        ._designerIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (tagId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.tagId,
+                                    referencedTable: $$RatingsTableReferences
+                                        ._tagIdTable(db),
+                                    referencedColumn: $$RatingsTableReferences
+                                        ._tagIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (ratingsGamesRefs)
+                        await $_getPrefetchedData<
+                          Rating,
+                          $RatingsTable,
+                          RatingsGame
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RatingsTableReferences
+                              ._ratingsGamesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RatingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).ratingsGamesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.ratingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -13293,7 +14107,12 @@ typedef $$RatingsTableProcessedTableManager =
       $$RatingsTableUpdateCompanionBuilder,
       (Rating, $$RatingsTableReferences),
       Rating,
-      PrefetchHooks Function({bool ratingsGamesRefs})
+      PrefetchHooks Function({
+        bool artistId,
+        bool designerId,
+        bool tagId,
+        bool ratingsGamesRefs,
+      })
     >;
 typedef $$RatingsGamesTableCreateCompanionBuilder =
     RatingsGamesCompanion Function({

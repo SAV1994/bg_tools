@@ -45,6 +45,8 @@ class AllDataMover extends BaseMover {
     final gamingSessionsGamers = await database
         .select(database.gamingSessionsGamers)
         .get();
+    final ratings = await database.select(database.ratings).get();
+    final ratingsGames = await database.select(database.ratingsGames).get();
 
     // Формируем JSON
     final Map<String, dynamic> exportData = {
@@ -145,6 +147,30 @@ class AllDataMover extends BaseMover {
             },
           )
           .toList(),
+      'ratings': ratings
+          .map(
+            (r) => {
+              'id': r.id,
+              'year': r.year,
+              'month': r.month,
+              'isActual': r.isActual,
+              'data': r.data,
+              'artistId': r.artistId,
+              'designerId': r.designerId,
+              'tagId': r.tagId,
+            },
+          )
+          .toList(),
+      'ratingsGames': ratingsGames
+          .map(
+            (rg) => {
+              'ratingId': rg.ratingId,
+              'gameId': rg.gameId,
+              'score': rg.score,
+              'place': rg.place,
+            },
+          )
+          .toList(),
     };
 
     return exportData;
@@ -170,21 +196,23 @@ class AllDataMover extends BaseMover {
   ) async {
     await database.transaction(() async {
       // Очищаем существующие данные
+      await database.delete(database.gamesCountingTemplates).go();
+      await database.delete(database.gamesCountingTemplatesExpansions).go();
+      await database.delete(database.gamesArtists).go();
+      await database.delete(database.gamesDesigners).go();
+      await database.delete(database.gamesTags).go();
+      await database.delete(database.gamingSessionsExpansions).go();
+      await database.delete(database.gamingSessionsGamers).go();
+      await database.delete(database.gamingSessions).go();
+      await database.delete(database.expansionsGames).go();
+      await database.delete(database.ratingsGames).go();
+      await database.delete(database.ratings).go();
       await database.delete(database.artists).go();
       await database.delete(database.countingTemplates).go();
       await database.delete(database.designers).go();
       await database.delete(database.tags).go();
       await database.delete(database.gamers).go();
       await database.delete(database.games).go();
-      await database.delete(database.expansionsGames).go();
-      await database.delete(database.gamesArtists).go();
-      await database.delete(database.gamesCountingTemplates).go();
-      await database.delete(database.gamesCountingTemplatesExpansions).go();
-      await database.delete(database.gamesDesigners).go();
-      await database.delete(database.gamesTags).go();
-      await database.delete(database.gamingSessions).go();
-      await database.delete(database.gamingSessionsExpansions).go();
-      await database.delete(database.gamingSessionsGamers).go();
 
       // в AppDataManager тоже
       await AppDataManager.clearLastSessionGamers();
@@ -193,6 +221,7 @@ class AllDataMover extends BaseMover {
       await AppDataManager.clearLastSessionTeams();
       await AppDataManager.clearRandomGames();
       await AppDataManager.clearRandomPlayers();
+      await AppDataManager.clearRatingProcess();
 
       final artistsIds = <int, int>{};
       for (final artistJson in data['artists']) {
@@ -369,6 +398,24 @@ class AllDataMover extends BaseMover {
             );
       }
 
+      final ratingsIds = <int, int>{};
+      for (final ratingsJson in data['ratings'] ?? []) {
+        final id = await database
+            .into(database.ratings)
+            .insert(
+              RatingsCompanion(
+                year: Value(ratingsJson['year']),
+                month: Value(ratingsJson['month']),
+                isActual: Value(ratingsJson['isActual']),
+                data: Value(ratingsJson['data']),
+                artistId: Value(artistsIds[ratingsJson['artistId']]!),
+                designerId: Value(designersIds[ratingsJson['designerId']]!),
+                tagId: Value(tagsIds[ratingsJson['tagId']]!),
+              ),
+            );
+        ratingsIds[ratingsJson['id']] = id;
+      }
+
       // Импортируем связи
       for (final egJson in data['expansionsGames']) {
         await database
@@ -440,6 +487,19 @@ class AllDataMover extends BaseMover {
                 turnOrder: Value(gsgJson['turnOrder']),
                 team: Value(gsgJson['team']),
                 data: Value(gsgJson['data']),
+              ),
+            );
+      }
+
+      for (final rgJson in data['ratingsGames'] ?? []) {
+        await database
+            .into(database.ratingsGames)
+            .insert(
+              RatingsGamesCompanion(
+                ratingId: Value(ratingsIds[rgJson['ratingId']]!),
+                gameId: Value(gamesIds[rgJson['gameId']]!),
+                score: Value(rgJson['score']),
+                place: Value(rgJson['place']),
               ),
             );
       }

@@ -55,6 +55,11 @@ final sessionDataProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
   return AppDataManager.loadActiveSession();
 });
 
+// Данные о прогрессе ранжирования
+final ratingDataProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
+  return AppDataManager.loadRatingProcess();
+});
+
 // Заметка
 final noteDataProvider = FutureProvider.family<Note?, int>((ref, noteId) async {
   final dao = ref.watch(noteDaoProvider);

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:bg_tools/features/counters/screens/export.dart';
 import 'package:bg_tools/features/randomizer/screens/export.dart';
 import 'package:bg_tools/features/session_runner/step_wizard.dart';
+import 'package:bg_tools/features/top/screens/export.dart';
 import 'package:bg_tools/screens/export.dart';
 
 final GoRouter goRouter = GoRouter(
@@ -311,6 +312,18 @@ final GoRouter goRouter = GoRouter(
       name: 'randomizer-touch',
       builder: (BuildContext context, GoRouterState state) =>
           RandomTouchScreen(),
+    ),
+
+    // ТОП
+    GoRoute(
+      path: '/top',
+      name: 'top',
+      builder: (BuildContext context, GoRouterState state) => TopMainScreen(),
+    ),
+    GoRoute(
+      path: '/top/add',
+      name: 'top-add',
+      builder: (BuildContext context, GoRouterState state) => TopInitScreen(),
     ),
   ],
 );

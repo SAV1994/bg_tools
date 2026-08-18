@@ -203,4 +203,28 @@ class AppDataManager {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(randomGamesKey);
   }
+
+  // -----------------------
+
+  // Запись данных процесса определения рейтинга (JSON)
+  static Future<void> saveRatingProcess(
+    Map<String, dynamic> ratingProcessData,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(randomGamesKey, jsonEncode(ratingProcessData));
+  }
+
+  // Получение данных процесса определения рейтинга (JSON)
+  static Future<Map<String, dynamic>?> loadRatingProcess() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString(ratingProcessKey);
+
+    return (json == null) ? null : jsonDecode(json);
+  }
+
+  // Удаление данных процесса определения рейтинга (JSON)
+  static Future<void> clearRatingProcess() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(ratingProcessKey);
+  }
 }

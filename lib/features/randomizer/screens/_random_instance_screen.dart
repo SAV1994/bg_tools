@@ -52,7 +52,6 @@ abstract class RandomInstancesScreenStateState
     _loadData();
   }
 
-  @override
   Future<void> _loadData() async {
     await loadData();
 

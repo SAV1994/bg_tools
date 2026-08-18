@@ -5,7 +5,7 @@ import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/export.dart';
-import 'package:bg_tools/features/randomizer/screens/_random_instance.dart';
+import 'package:bg_tools/features/randomizer/screens/_random_instance_screen.dart';
 
 class RandomGamesScreen extends RandomInstancesScreen {
   const RandomGamesScreen({super.key});

@@ -1,5 +1,9 @@
 import 'package:drift/drift.dart';
 
+import 'package:bg_tools/core/database/tables/artist.dart';
+import 'package:bg_tools/core/database/tables/designer.dart';
+import 'package:bg_tools/core/database/tables/tag.dart';
+
 /// Таблица ТОПы настольный игр
 class Ratings extends Table {
   IntColumn get id => integer().autoIncrement()(); // ID
@@ -13,4 +17,19 @@ class Ratings extends Table {
     const Constant(true),
   )(); // Является актуальным на данный момент
   TextColumn get data => text()(); // Данные (JSON)
+  IntColumn get artistId => integer().nullable().references(
+    Artists,
+    #id,
+    onDelete: KeyAction.cascade,
+  )(); // Художник
+  IntColumn get designerId => integer().nullable().references(
+    Designers,
+    #id,
+    onDelete: KeyAction.cascade,
+  )(); // Геймдизайнер
+  IntColumn get tagId => integer().nullable().references(
+    Tags,
+    #id,
+    onDelete: KeyAction.cascade,
+  )(); // Тэг
 }

@@ -115,8 +115,9 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(
-            widget.gamerId == null ? 'Новый игрок' : 'Редактирование игрока',
+          title: Icon(
+            gamersIcon,
+            color: widget.gamerId == null ? bronzeColor : blueColor,
           ),
         ),
         body: LoadingScreen(),

@@ -28,6 +28,7 @@ const IconData tagsIcon = Icons.insert_link;
 const IconData designersIcon = Icons.account_balance;
 const IconData artistsIcon = Icons.color_lens;
 const IconData notesIcon = Icons.receipt;
+const IconData topsIcon = Icons.star;
 const IconData countersIcon = Icons.add_to_queue;
 const IconData delIcon = Icons.delete_outline;
 const IconData importIcon = Icons.system_update_alt;
