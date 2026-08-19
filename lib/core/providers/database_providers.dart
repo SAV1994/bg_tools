@@ -50,6 +50,11 @@ final noteDaoProvider = Provider<NoteDao>((ref) {
   return ref.read(databaseProvider).noteDao;
 });
 
+// Рейтинг (ДАО)
+final ratingDaoProvider = Provider<RatingDao>((ref) {
+  return ref.read(databaseProvider).ratingDao;
+});
+
 // Метка (ДАО)
 final tagDaoProvider = Provider<TagDao>((ref) {
   return ref.read(databaseProvider).tagDao;

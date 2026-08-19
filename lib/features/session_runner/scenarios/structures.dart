@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class ScenarioStep {
   final String title;
   final String description;
-  final Widget Function(Map<String, dynamic> data) contentBuilder;
+  final Widget Function(Map<String, dynamic> data, List<dynamic> counterData)
+  contentBuilder;
   final Function(Map<String, dynamic> data) validator;
 
   ScenarioStep({

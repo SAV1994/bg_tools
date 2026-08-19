@@ -29,8 +29,13 @@ enum _SelectMode {
 
 class CoopResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const CoopResultScreen({super.key, required this.data});
+  const CoopResultScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<CoopResultScreen> createState() => _CoopResultScreenState();

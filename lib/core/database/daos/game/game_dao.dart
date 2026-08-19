@@ -145,13 +145,27 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   Future<List<Game>> getAllExceptSelected(List<int> gameIds) async {
     var query = _getBaseQuery();
     query = query
-      ..where((g) => g.isStandalone.isValue(true) & g.id.isIn(gameIds).not());
+      ..where((g) => g.isStandalone.isValue(true) & g.id.isNotIn(gameIds));
+
     return await query.get();
   }
 
   // Все игры
-  Future<List<Game>> getAll() async {
-    final query = _getBaseQuery();
+  Future<List<Game>> getAll({
+    bool onlyStandalone = false,
+    int? artistId,
+    int? designerId,
+    int? tagId,
+  }) async {
+    var query = _getBaseQuery();
+    query = await _getFilteredQuery(
+      query: query,
+      onlyStandalone: onlyStandalone,
+      artistId: artistId,
+      designerId: designerId,
+      tagId: tagId,
+    );
+
     return await query.get();
   }
 
@@ -159,6 +173,19 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
   Future<List<Game>> getStandalones() async {
     var query = _getBaseQuery();
     query = query..where((g) => g.isStandalone.isValue(true));
+    return await query.get();
+  }
+
+  // Только по которым записаны партии
+  Future<List<Game>> getAlreadyPlayed() async {
+    final gamingSessionsQuery = selectOnly(gamingSessions, distinct: true)
+      ..addColumns([gamingSessions.gameId]);
+    final List<int> gamesPlayedIds = await gamingSessionsQuery
+        .map((row) => row.read(gamingSessions.gameId)!)
+        .get();
+
+    var query = _getBaseQuery();
+    query = query..where((g) => g.id.isIn(gamesPlayedIds));
     return await query.get();
   }
 
@@ -347,10 +374,10 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
   Future<SimpleSelectStatement<$GamesTable, Game>> _getFilteredQuery({
     required SimpleSelectStatement<$GamesTable, Game> query,
-    required bool onlyFavorite,
-    required bool onlyStandalone,
-    required bool isInCollection,
-    required bool opportunitiesShelf,
+    bool onlyFavorite = false,
+    bool onlyStandalone = false,
+    bool isInCollection = false,
+    bool opportunitiesShelf = false,
     int? artistId,
     int? designerId,
     int? tagId,

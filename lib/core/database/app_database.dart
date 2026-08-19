@@ -41,6 +41,7 @@ part 'app_database.g.dart';
     GamesCountingTemplatesDao,
     GamingSessionDao,
     NoteDao,
+    RatingDao,
     TagDao,
   ],
 )

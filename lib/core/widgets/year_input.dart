@@ -37,7 +37,7 @@ class _YearInputState extends State<YearInput> {
     return TextButton(
       onPressed: () {
         final newYear = _selectedYear + delta;
-        if (newYear >= 1900) {
+        if (newYear >= 2026) {
           _updateYear(newYear.toString());
         }
       },

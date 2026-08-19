@@ -8,8 +8,13 @@ enum _SelectMode { single, multiple }
 
 class OneWinnerSelectScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const OneWinnerSelectScreen({super.key, required this.data});
+  const OneWinnerSelectScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<OneWinnerSelectScreen> createState() =>

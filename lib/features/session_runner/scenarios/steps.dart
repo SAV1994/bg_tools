@@ -12,7 +12,8 @@ final rootSessionSelectStep = ScenarioStep(
       'Вы можете выбрать записанную ранее сессию для сохранения связи между '
       'серией игровых сессий. Может быть актуально для игр-компаний или если '
       'Вы были вынуждены прервать партию и хотите её доиграть',
-  contentBuilder: (data) => FirstScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      FirstScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id &&
         (data['totalRounds'] == null || data['totalRounds'] < 1)) {
@@ -34,7 +35,8 @@ final rootSessionSelectStep = ScenarioStep(
 final numberTeamsStep = ScenarioStep(
   title: 'Количество команд',
   description: 'Укажите количество команд',
-  contentBuilder: (data) => NumberTeamsScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      NumberTeamsScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['numberTeams'] == null) {
       throw StepWizardException('Укажите количество команд');
@@ -45,7 +47,8 @@ final numberTeamsStep = ScenarioStep(
 final teamManagementStep = ScenarioStep(
   title: 'Определение команд',
   description: 'Распределите игроков между командами',
-  contentBuilder: (data) => TeamManagementScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      TeamManagementScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['gamers'].isEmpty) {
       throw StepWizardException('Добавте игроков');
@@ -77,7 +80,8 @@ final teamManagementStep = ScenarioStep(
 final gamersSelectStep = ScenarioStep(
   title: 'Игроки',
   description: 'Выбирать игроков лучше в том же порядке, как они сидят',
-  contentBuilder: (data) => GamersSelectScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      GamersSelectScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['gamers'].isEmpty) {
       throw StepWizardException('Добавте игроков');
@@ -98,14 +102,16 @@ final gamersSelectStep = ScenarioStep(
 final gamersTurnOrderStep = ScenarioStep(
   title: 'Порядок хода',
   description: 'Определие порядок вручную или воспользуйтесь рандомайзером',
-  contentBuilder: (data) => GamersTurnOrderScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      GamersTurnOrderScreen(data: data, counterData: counterData),
   validator: (data) {},
 );
 
 final sessionStartStep = ScenarioStep(
   title: 'Запуск сессии',
   description: 'Установка времени начала сессии',
-  contentBuilder: (data) => SessionStartScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      SessionStartScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['startedAt'] == null) {
       throw StepWizardException('Запустите сессию');
@@ -116,7 +122,8 @@ final sessionStartStep = ScenarioStep(
 final sessionStartStopStep = ScenarioStep(
   title: 'Трекинг сессии',
   description: 'Фиксирование времени сессии',
-  contentBuilder: (data) => SessionStartStopScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      SessionStartStopScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['startedAt'] == null) {
       throw StepWizardException('Запустите сессию');
@@ -130,7 +137,8 @@ final sessionStartStopStep = ScenarioStep(
 final roundsStep = ScenarioStep(
   title: 'Подсчёт по раундами',
   description: 'Заполните результаты',
-  contentBuilder: (data) => ScoreRoundScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      ScoreRoundScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id) {
       if (data['round'] != data['totalRounds']) {
@@ -168,7 +176,8 @@ final roundsStep = ScenarioStep(
 final teamRoundsStep = ScenarioStep(
   title: 'Подсчёт по раундами',
   description: 'Заполните результаты',
-  contentBuilder: (data) => TeamScoreRoundScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      TeamScoreRoundScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['roundsType'] == RoundsTypeEnum.fix.id) {
       if (data['round'] != data['totalRounds']) {
@@ -209,7 +218,8 @@ final teamRoundsStep = ScenarioStep(
 final sessionStopStep = ScenarioStep(
   title: 'Конец сессии',
   description: 'Установка времени конца сессии',
-  contentBuilder: (data) => SessionStopScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      SessionStopScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['finishedAt'] == null) {
       throw StepWizardException('Остановите сессию');
@@ -220,7 +230,8 @@ final sessionStopStep = ScenarioStep(
 final oneWinnerSelectStep = ScenarioStep(
   title: 'Выбор победителя',
   description: 'Выберите победителя',
-  contentBuilder: (data) => OneWinnerSelectScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      OneWinnerSelectScreen(data: data, counterData: counterData),
   validator: (data) {
     final Map<String, dynamic>? winner = data['gamers'].firstWhere(
       (gameData) => gameData['place'] == 1,
@@ -235,7 +246,8 @@ final oneWinnerSelectStep = ScenarioStep(
 final teamOneWinnerSelectStep = ScenarioStep(
   title: 'Выбор победителя',
   description: 'Выберите победителя',
-  contentBuilder: (data) => TeamOneWinnerSelectScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      TeamOneWinnerSelectScreen(data: data, counterData: counterData),
   validator: (data) {
     bool isSelected = false;
     for (final Map<String, dynamic> teamData in data['teamsData'].values) {
@@ -254,21 +266,24 @@ final teamOneWinnerSelectStep = ScenarioStep(
 final soloResultStep = ScenarioStep(
   title: 'Результаты',
   description: 'Отметьте результаты партии',
-  contentBuilder: (data) => SoloResultScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      SoloResultScreen(data: data, counterData: counterData),
   validator: (data) {},
 );
 
 final coopResultStep = ScenarioStep(
   title: 'Результаты',
   description: 'Отметьте результаты партии',
-  contentBuilder: (data) => CoopResultScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      CoopResultScreen(data: data, counterData: counterData),
   validator: (data) {},
 );
 
 final teamResultStep = ScenarioStep(
   title: 'Результаты',
   description: 'Отметьте результаты партии',
-  contentBuilder: (data) => TeamResultScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      TeamResultScreen(data: data, counterData: counterData),
   validator: (data) {
     bool isSelected = false;
     for (final Map<String, dynamic> teamData in data['teamsData'].values) {
@@ -287,7 +302,8 @@ final teamResultStep = ScenarioStep(
 final scoreInputStep = ScenarioStep(
   title: 'Результаты',
   description: 'Отметьте результаты партии',
-  contentBuilder: (data) => ScoreInputScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      ScoreInputScreen(data: data, counterData: counterData),
   validator: (data) {
     if (data['teamPointType'] == TeamPointTypeEnum.general.id) {
       for (int i = 1; i <= data['numberTeams']; i++) {
@@ -309,14 +325,16 @@ final resultStep = ScenarioStep(
   title: 'Результаты',
   description:
       'Итоги партии. Если в игре есть возможность альтернативной победы - определите места.',
-  contentBuilder: (data) => ResultScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      ResultScreen(data: data, counterData: counterData),
   validator: (data) {},
 );
 
 final secretRoleManagementStep = ScenarioStep(
   title: 'Набор ролей',
   description: 'Выберети роли, которые будут участвовать в партии',
-  contentBuilder: (data) => SecretRolesManagementScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      SecretRolesManagementScreen(data: data, counterData: counterData),
   validator: (data) {
     int playersCount = data['gamers'].length;
     if (data['master'] != null) {
@@ -348,22 +366,24 @@ final secretRoleManagementStep = ScenarioStep(
 final playerRolesViewStep = ScenarioStep(
   title: 'Ознакомление с ролью',
   description: 'Посмотри и запомни роль, затем передай следующему игроку',
-  contentBuilder: (data) =>
-      PlayerRolesViewScreen.PlayerRolesViewScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      PlayerRolesViewScreen(data: data, counterData: counterData),
   validator: (data) {},
 );
 
 final secretRolesViewStep = ScenarioStep(
   title: 'Ознакомление ведущим',
   description: 'Ведущий ознакамливается с ролями игроков',
-  contentBuilder: (data) => SecretRolesViewScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      SecretRolesViewScreen(data: data, counterData: counterData),
   validator: (data) {},
 );
 
 final roleAssignmentStep = ScenarioStep(
   title: 'Распределение ролей',
   description: 'Укажите роли игроков',
-  contentBuilder: (data) => RoleAssignmentScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      RoleAssignmentScreen(data: data, counterData: counterData),
   validator: (data) {
     final int masterId = data['master'] ?? 0;
     final List<dynamic> playesrWithoutRole = data['gamers']
@@ -389,6 +409,7 @@ final roleAssignmentStep = ScenarioStep(
 final finalStep = ScenarioStep(
   title: 'Комментарий',
   description: 'Можете добавить кооментарий к партии',
-  contentBuilder: (data) => FinalScreen(data: data),
+  contentBuilder: (data, counterData) =>
+      FinalScreen(data: data, counterData: counterData),
   validator: (data) {},
 );

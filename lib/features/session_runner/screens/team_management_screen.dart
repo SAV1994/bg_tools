@@ -12,8 +12,13 @@ import 'package:bg_tools/features/session_runner/utils/export.dart';
 
 class TeamManagementScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const TeamManagementScreen({super.key, required this.data});
+  const TeamManagementScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<TeamManagementScreen> createState() =>

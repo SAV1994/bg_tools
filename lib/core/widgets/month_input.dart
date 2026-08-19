@@ -42,6 +42,7 @@ class _MonthsInputState extends State<MonthsInput> {
           SizedBox(height: 5),
           // Сетка месяцев
           GridView.builder(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

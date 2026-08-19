@@ -8,6 +8,7 @@ class PlayerRoundInputCard extends StatefulWidget {
   final Map<int, dynamic> controllersData;
   final Map<String, dynamic> sessionData;
   final bool isFinished;
+  final List? counterData;
 
   const PlayerRoundInputCard({
     super.key,
@@ -15,6 +16,7 @@ class PlayerRoundInputCard extends StatefulWidget {
     required this.controllersData,
     required this.sessionData,
     required this.isFinished,
+    this.counterData,
   });
 
   @override
@@ -36,6 +38,17 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
       final Map<String, dynamic>? nextGamerData =
           widget.sessionData['gamers'][widget.index + 1];
       nextControllerData = widget.controllersData[nextGamerData!['id']];
+    }
+
+    int? counter;
+    if (widget.counterData != null) {
+      final Map<String, dynamic>? countData = widget.counterData!.firstWhere(
+        (dataItem) => dataItem['label'] == gamerData['username'],
+        orElse: () => null,
+      );
+      if (countData != null) {
+        counter = countData['value'];
+      }
     }
 
     return Container(
@@ -63,15 +76,37 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
           Expanded(
             child: ReorderableDragStartListener(
               index: 0,
-              child: Text(
-                gamerData['username'],
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: textColor,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        gamerData['username'],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: textColor,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+
+                  if (counter != null)
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Icon(countersIcon),
+                        Text(
+                          counter.toString(),
+                          style: TextStyle(color: firstColor),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                ],
               ),
             ),
           ),

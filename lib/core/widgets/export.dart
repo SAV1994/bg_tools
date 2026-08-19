@@ -11,6 +11,7 @@ export 'import_btns.dart';
 export 'info_row.dart';
 export 'list_chips.dart';
 export 'loading_screen.dart';
+export 'menu_btn.dart';
 export 'month_input.dart';
 export 'multiple_select_with_search.dart';
 export 'pagination_panel.dart';

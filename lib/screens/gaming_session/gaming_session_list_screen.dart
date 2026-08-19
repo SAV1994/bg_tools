@@ -41,7 +41,7 @@ class _GamingSessionListScreenState
 
   Future<void> _loadData() async {
     final GameDao gameDao = ref.read(gameDaoProvider);
-    _games = await gameDao.getStandalones();
+    _games = await gameDao.getAlreadyPlayed();
     if (widget.gameId != null) {
       _game = await gameDao.getSingle(widget.gameId!);
       _isGameSelectOpen = true;

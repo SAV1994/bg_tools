@@ -6,4 +6,6 @@ export 'gamer_provider.dart';
 export 'games_counting_template.dart';
 export 'gaming_session_provider.dart';
 export 'note_provider.dart';
+export 'rating_games_provider.dart';
+export 'rating_provider.dart';
 export 'tag_provider.dart';

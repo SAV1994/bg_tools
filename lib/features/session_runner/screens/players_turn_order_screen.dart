@@ -10,8 +10,13 @@ import 'package:bg_tools/features/session_runner/categories.dart';
 
 class GamersTurnOrderScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const GamersTurnOrderScreen({super.key, required this.data});
+  const GamersTurnOrderScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<GamersTurnOrderScreen> createState() =>

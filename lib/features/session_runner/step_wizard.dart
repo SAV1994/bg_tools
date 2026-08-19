@@ -21,6 +21,7 @@ class StepWizardScreen extends ConsumerStatefulWidget {
 
 class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
   late Map<String, dynamic> sessionData;
+  late List<dynamic> counterData;
   late Scenario scenario;
   int _currentStep = 0;
   late ScenarioStep _currentScenarioStep;
@@ -41,6 +42,8 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
         await AppDataManager.loadActiveSession() ??
         json.decode(json.encode(sessionInitialData)) as Map<String, dynamic>;
     final int totalSteps = newSessionData['totalSteps'] ?? 1;
+
+    counterData = await AppDataManager.loadCounters();
 
     setState(() {
       sessionData = newSessionData;
@@ -91,6 +94,16 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
     }
   }
 
+  Future<void> _openCounter() async {
+    final result = await context.pushNamed('counters');
+
+    final List<dynamic> countData = await AppDataManager.loadCounters();
+
+    setState(() {
+      counterData = countData;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,7 +131,7 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
           IconButton(
             visualDensity: VisualDensity(horizontal: -4.0),
             icon: Icon(countersIcon),
-            onPressed: () => context.pushNamed('counters'),
+            onPressed: () => _openCounter(),
             tooltip: 'Каунтеры',
           ),
           TextButton(
@@ -185,7 +198,10 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
 
                 // Основной контент
                 Expanded(
-                  child: _currentScenarioStep.contentBuilder(sessionData),
+                  child: _currentScenarioStep.contentBuilder(
+                    sessionData,
+                    counterData,
+                  ),
                 ),
               ],
       ),

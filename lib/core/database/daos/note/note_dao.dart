@@ -1,7 +1,7 @@
-// database/daos/game_note_dao.dart
+import 'package:drift/drift.dart';
+
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/note.dart';
-import 'package:drift/drift.dart';
 
 part 'note_dao.g.dart';
 

@@ -14,8 +14,9 @@ import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 
 class FinalScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const FinalScreen({super.key, required this.data});
+  const FinalScreen({super.key, required this.data, required this.counterData});
 
   @override
   ConsumerState<FinalScreen> createState() => _FinalScreenState();

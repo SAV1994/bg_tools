@@ -325,5 +325,40 @@ final GoRouter goRouter = GoRouter(
       name: 'top-add',
       builder: (BuildContext context, GoRouterState state) => TopInitScreen(),
     ),
+    GoRoute(
+      path: '/top/process',
+      name: 'top-process',
+      builder: (BuildContext context, GoRouterState state) => RankingScreen(),
+    ),
+    GoRoute(
+      path: '/top/common',
+      name: 'top-common',
+      builder: (BuildContext context, GoRouterState state) =>
+          CommonTopListScreen(),
+    ),
+    GoRoute(
+      path: '/top/artists',
+      name: 'top-artists',
+      builder: (BuildContext context, GoRouterState state) =>
+          ByArtistsTopListScreen(),
+    ),
+    GoRoute(
+      path: '/top/designers',
+      name: 'top-designers',
+      builder: (BuildContext context, GoRouterState state) =>
+          ByDesignersTopListScreen(),
+    ),
+    GoRoute(
+      path: '/top/tags',
+      name: 'top-tags',
+      builder: (BuildContext context, GoRouterState state) =>
+          ByTagsTopListScreen(),
+    ),
+    GoRoute(
+      path: '/top/games',
+      name: 'top-games',
+      builder: (BuildContext context, GoRouterState state) =>
+          RatingGamesListScreen(),
+    ),
   ],
 );

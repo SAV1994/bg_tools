@@ -7,8 +7,13 @@ import 'package:bg_tools/core/widgets/pulsing_buttom.dart';
 
 class SessionStartScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const SessionStartScreen({super.key, required this.data});
+  const SessionStartScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<SessionStartScreen> createState() => _SessionStartScreenState();

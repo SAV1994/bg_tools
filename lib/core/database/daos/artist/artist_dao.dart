@@ -2,10 +2,11 @@ import 'package:drift/drift.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/artist.dart';
+import 'package:bg_tools/core/database/tables/rating.dart';
 
 part 'artist_dao.g.dart';
 
-@DriftAccessor(tables: [Artists])
+@DriftAccessor(tables: [Artists, Ratings])
 class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
   ArtistDao(super.db);
 
@@ -30,6 +31,20 @@ class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
   // Все художники
   Future<List<Artist>> getAll() async {
     SimpleSelectStatement<$ArtistsTable, Artist> query = _getBaseQuery();
+    return await query.get();
+  }
+
+  // Художники по которым есть топы
+  Future<List<Artist>> getHasTop() async {
+    final ratingsQuery = selectOnly(ratings, distinct: true)
+      ..addColumns([ratings.artistId])
+      ..where(ratings.artistId.isNotNull());
+    final List<int> artistsHasTop = await ratingsQuery
+        .map((row) => row.read(ratings.artistId)!)
+        .get();
+
+    var query = _getBaseQuery();
+    query = query..where((a) => a.id.isIn(artistsHasTop));
     return await query.get();
   }
 

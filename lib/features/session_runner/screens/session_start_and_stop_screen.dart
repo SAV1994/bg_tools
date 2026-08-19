@@ -6,8 +6,13 @@ import 'package:bg_tools/core/widgets/export.dart';
 
 class SessionStartStopScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const SessionStartStopScreen({super.key, required this.data});
+  const SessionStartStopScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<SessionStartStopScreen> createState() =>

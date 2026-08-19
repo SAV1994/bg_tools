@@ -1,3 +1,4 @@
+import 'package:bg_tools/features/top/consts.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/rating_provider.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class TopMainScreen extends ConsumerStatefulWidget {
   const TopMainScreen({super.key});
@@ -25,7 +28,7 @@ class _TopMainScreenState extends ConsumerState<TopMainScreen> {
           if (ratingDataAsync.value != null)
             IconButton(
               icon: Icon(Icons.play_arrow),
-              onPressed: () {},
+              onPressed: () => context.pushNamed('top-process'),
               tooltip: 'Продолжить ранжиование',
             ),
 
@@ -46,31 +49,40 @@ class _TopMainScreenState extends ConsumerState<TopMainScreen> {
                 spacing: 16,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: () => {context.pushNamed('games-list')},
-                    style: btnStyle,
-                    label: Text('Общий'),
-                    icon: Icon(gamesIcon),
+                  MenuButton(
+                    onPressed: () => {context.pushNamed('top-common')},
+                    label: 'Общий',
+                    icon: gamesIcon,
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () => {context.pushNamed('gamers-list')},
-                    style: btnStyle,
-                    label: Text('По геймдизайнеру'),
-                    icon: Icon(designersIcon),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () => {
-                      context.pushNamed('gaming-sessions-list'),
+                  MenuButton(
+                    onPressed: () {
+                      ref
+                          .read(ratingsPaginatedProvider.notifier)
+                          .setTopType(TopTypeEnum.byDesigner);
+                      context.pushNamed('top-designers');
                     },
-                    style: btnStyle,
-                    label: Text('По художнику'),
-                    icon: Icon(artistsIcon),
+                    label: 'По геймдизайнеру',
+                    icon: designersIcon,
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () => {context.pushNamed('templates-list')},
-                    style: btnStyle,
-                    label: Text('По тэгу категорий'),
-                    icon: Icon(tagsIcon),
+                  MenuButton(
+                    onPressed: () {
+                      ref
+                          .read(ratingsPaginatedProvider.notifier)
+                          .setTopType(TopTypeEnum.byArtist);
+                      context.pushNamed('top-artists');
+                    },
+                    label: 'По художнику',
+                    icon: artistsIcon,
+                  ),
+                  MenuButton(
+                    onPressed: () {
+                      ref
+                          .read(ratingsPaginatedProvider.notifier)
+                          .setTopType(TopTypeEnum.byTag);
+                      context.pushNamed('top-tags');
+                    },
+                    label: 'По тэгу категорий',
+                    icon: tagsIcon,
                   ),
                 ],
               ),

@@ -13,8 +13,13 @@ import 'package:bg_tools/features/session_runner/utils/export.dart';
 
 class GamersSelectScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const GamersSelectScreen({super.key, required this.data});
+  const GamersSelectScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<GamersSelectScreen> createState() => _GamersSelectScreenState();

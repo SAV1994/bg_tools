@@ -9,8 +9,8 @@ class RatingsGames extends Table {
       integer().references(Ratings, #id, onDelete: KeyAction.cascade)();
   IntColumn get gameId =>
       integer().references(Games, #id, onDelete: KeyAction.cascade)();
-  RealColumn get score => real().nullable()(); // Количество набранных очков
-  IntColumn get place => integer().nullable()(); // Занятое место
+  RealColumn get score => real()(); // Количество набранных очков
+  IntColumn get place => integer()(); // Занятое место
 
   // Составной первичный ключ, чтобы избежать дублирования
   @override

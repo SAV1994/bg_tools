@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
             foregroundColor: borderColor,
             side: const BorderSide(color: borderColor, width: 2.0),
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
           ),
         ),
@@ -59,8 +59,7 @@ class MyApp extends StatelessWidget {
           color: secondColor,
           margin: EdgeInsets.only(left: 8, right: 8, top: 5),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: borderColor, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
         dividerTheme: const DividerThemeData(
@@ -106,7 +105,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
             textStyle: const TextStyle(
               fontSize: 14,

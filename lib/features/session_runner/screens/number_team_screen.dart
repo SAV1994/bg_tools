@@ -7,8 +7,13 @@ import 'package:bg_tools/core/widgets/export.dart';
 
 class NumberTeamsScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const NumberTeamsScreen({super.key, required this.data});
+  const NumberTeamsScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<NumberTeamsScreen> createState() => _NumberTeamsScreenState();

@@ -399,7 +399,7 @@ class AllDataMover extends BaseMover {
       }
 
       final ratingsIds = <int, int>{};
-      for (final ratingsJson in data['ratings'] ?? []) {
+      for (final ratingsJson in data['ratings']) {
         final id = await database
             .into(database.ratings)
             .insert(
@@ -491,7 +491,7 @@ class AllDataMover extends BaseMover {
             );
       }
 
-      for (final rgJson in data['ratingsGames'] ?? []) {
+      for (final rgJson in data['ratingsGames']) {
         await database
             .into(database.ratingsGames)
             .insert(

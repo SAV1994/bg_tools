@@ -1,11 +1,12 @@
 import 'package:drift/drift.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/database/tables/rating.dart';
 import 'package:bg_tools/core/database/tables/tag.dart';
 
 part 'tag_dao.g.dart';
 
-@DriftAccessor(tables: [Tags])
+@DriftAccessor(tables: [Tags, Ratings])
 class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
   TagDao(super.db);
 
@@ -30,6 +31,20 @@ class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
   // Все метки
   Future<List<Tag>> getAll() async {
     SimpleSelectStatement<$TagsTable, Tag> query = _getBaseQuery();
+    return await query.get();
+  }
+
+  // Метки по которым есть топы
+  Future<List<Tag>> getHasTop() async {
+    final ratingsQuery = selectOnly(ratings, distinct: true)
+      ..addColumns([ratings.tagId])
+      ..where(ratings.tagId.isNotNull());
+    final List<int> tagsHasTop = await ratingsQuery
+        .map((row) => row.read(ratings.tagId)!)
+        .get();
+
+    var query = _getBaseQuery();
+    query = query..where((a) => a.id.isIn(tagsHasTop));
     return await query.get();
   }
 

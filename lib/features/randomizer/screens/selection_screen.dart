@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class SelectionRandomizerScreen extends ConsumerStatefulWidget {
   const SelectionRandomizerScreen({super.key});
@@ -32,47 +33,40 @@ class _SelectionRandomizerScreenState
                 spacing: 16,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-number'),
-                    style: btnStyle,
-                    label: Text('Случайное число'),
-                    icon: Icon(randNumIcon),
+                    label: 'Случайное число',
+                    icon: randNumIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-games'),
-                    style: btnStyle,
-                    label: Text('Случайная игра'),
-                    icon: Icon(gamesIcon),
+                    label: 'Случайная игра',
+                    icon: gamesIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-players'),
-                    style: btnStyle,
-                    label: Text('Случайный игрок'),
-                    icon: Icon(gamersIcon),
+                    label: 'Случайный игрок',
+                    icon: gamersIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-dice'),
-                    style: btnStyle,
-                    label: Text('Игральные кости'),
-                    icon: Icon(randomIcon),
+                    label: 'Игральные кости',
+                    icon: randomIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-fate'),
-                    style: btnStyle,
-                    label: Text('Жребий'),
-                    icon: const Icon(fateIcon),
+                    label: 'Жребий',
+                    icon: fateIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-coin'),
-                    style: btnStyle,
-                    label: Text('Монетка'),
-                    icon: const Icon(randCoinIcon),
+                    label: 'Монетка',
+                    icon: randCoinIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-touch'),
-                    style: btnStyle,
-                    label: Text('Касания'),
-                    icon: Icon(randTouchIcon),
+                    label: 'Касания',
+                    icon: randTouchIcon,
                   ),
                 ],
               ),

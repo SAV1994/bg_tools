@@ -14,8 +14,9 @@ import 'package:bg_tools/features/session_runner/utils/export.dart';
 
 class FirstScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const FirstScreen({super.key, required this.data});
+  const FirstScreen({super.key, required this.data, required this.counterData});
 
   @override
   ConsumerState<FirstScreen> createState() => _FirstScreenState();

@@ -7,12 +7,13 @@ import 'package:bg_tools/features/session_runner/widgets/export.dart';
 class PlayerInputCard extends StatefulWidget {
   final int gamerId;
   final Map<String, dynamic> controllerData;
-  final FocusNode? nextFocusNode;
   final bool addCalcBtn;
   final bool digitsOnly;
   final Function updateScore;
   final Color? color;
   final String? label;
+  final List? counterData;
+  final FocusNode? nextFocusNode;
 
   const PlayerInputCard({
     super.key,
@@ -23,6 +24,7 @@ class PlayerInputCard extends StatefulWidget {
     required this.updateScore,
     this.color,
     this.label,
+    this.counterData,
     this.nextFocusNode,
   });
 
@@ -33,6 +35,17 @@ class PlayerInputCard extends StatefulWidget {
 class _PlayerInputCardState extends State<PlayerInputCard> {
   @override
   Widget build(BuildContext context) {
+    int? counter;
+    if (widget.counterData != null) {
+      final Map<String, dynamic>? countData = widget.counterData!.firstWhere(
+        (dataItem) => dataItem['label'] == widget.controllerData['username'],
+        orElse: () => null,
+      );
+      if (countData != null) {
+        counter = countData['value'];
+      }
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       color: secondColor,
@@ -51,13 +64,35 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
           children: [
             // Имя игрока
             Expanded(
-              child: Text(
-                widget.controllerData['username'],
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        widget.controllerData['username'],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  if (counter != null)
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Icon(countersIcon),
+                        Text(
+                          counter.toString(),
+                          style: TextStyle(color: firstColor),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                ],
               ),
             ),
             // Дополнительная информация

@@ -7,8 +7,13 @@ import 'package:bg_tools/core/widgets/export.dart';
 
 class RoleAssignmentScreen extends StatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const RoleAssignmentScreen({super.key, required this.data});
+  const RoleAssignmentScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   State<RoleAssignmentScreen> createState() => _RoleAssignmentScreenState();

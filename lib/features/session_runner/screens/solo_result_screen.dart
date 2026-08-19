@@ -8,8 +8,13 @@ import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 class SoloResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const SoloResultScreen({super.key, required this.data});
+  const SoloResultScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<SoloResultScreen> createState() => _SoloResultScreenState();

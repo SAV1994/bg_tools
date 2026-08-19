@@ -11,8 +11,13 @@ enum _SelectMode { single, draw, none }
 
 class ResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const ResultScreen({super.key, required this.data});
+  const ResultScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<ResultScreen> createState() => _ResultScreenState();

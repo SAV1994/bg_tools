@@ -44,6 +44,7 @@ class _GamesCountingTemplatesModalFormState
   late final GamesCountingTemplatesData? gamesCountingTemplatesData;
   // Локальное состояние формы
   CountingTemplate? _selectedCountingTemplate;
+  bool _showExpansionSelect = false;
   Set<int> _selectedExpansionIds = {};
 
   bool _showRoundsScoreLimitInput = false;
@@ -108,6 +109,15 @@ class _GamesCountingTemplatesModalFormState
         );
         roundsScoreLimit = gameData['roundsScoreLimit'];
         _showRoundsScoreLimitInput = true;
+      }
+    }
+
+    if (_selectedExpansionIds.isNotEmpty) {
+      _showExpansionSelect = true;
+    } else {
+      final List<Game> expansions = await getItemsForExpansionsSelect();
+      if (expansions.isNotEmpty) {
+        _showExpansionSelect = true;
       }
     }
 
@@ -885,17 +895,20 @@ class _GamesCountingTemplatesModalFormState
                               v?.isEmpty == true ? 'Введите название' : null,
                         ),
                       ),
-                      MultiSelectWithSearch<Game>(
-                        label: 'Дополнения',
-                        getItems: () => getItemsForExpansionsSelect(),
-                        selectedIds: _selectedExpansionIds,
-                        onSelectionChanged: (newSelected) {
-                          setState(() => _selectedExpansionIds = newSelected);
-                        },
-                        displayName: (expansion) => expansion.name,
-                        getId: (expansion) => expansion.id,
-                        searchHint: 'Поиск дополнений...',
-                      ),
+
+                      if (_showExpansionSelect)
+                        MultiSelectWithSearch<Game>(
+                          label: 'Дополнения',
+                          getItems: () => getItemsForExpansionsSelect(),
+                          selectedIds: _selectedExpansionIds,
+                          onSelectionChanged: (newSelected) {
+                            setState(() => _selectedExpansionIds = newSelected);
+                          },
+                          displayName: (expansion) => expansion.name,
+                          getId: (expansion) => expansion.id,
+                          searchHint: 'Поиск дополнений...',
+                        ),
+
                       SelectWithSearch<CountingTemplate>(
                         label: 'Шаблон',
                         getItems: () => getItemsForCountingTemplateSelect(),

@@ -6,10 +6,12 @@ import 'package:bg_tools/core/consts/export.dart';
 
 class PlayerRolesViewScreen extends StatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const PlayerRolesViewScreen.PlayerRolesViewScreen({
+  const PlayerRolesViewScreen({
     super.key,
     required this.data,
+    required this.counterData,
   });
 
   @override

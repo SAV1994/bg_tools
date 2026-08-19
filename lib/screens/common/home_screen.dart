@@ -108,60 +108,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 spacing: 16,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('games-list'),
-                    style: btnStyle,
-                    label: Text('Настольные игры'),
-                    icon: Icon(gamesIcon),
+                    label: 'Настольные игры',
+                    icon: gamesIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('gamers-list'),
-                    style: btnStyle,
-                    label: Text('Список игроков'),
-                    icon: Icon(gamersIcon),
+                    label: 'Список игроков',
+                    icon: gamersIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('gaming-sessions-list'),
-
-                    style: btnStyle,
-                    label: Text('История партий'),
-                    icon: Icon(sessionsIcon),
+                    label: 'История партий',
+                    icon: sessionsIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('templates-list'),
-                    style: btnStyle,
-                    label: Text('Шаблоны партий'),
-                    icon: Icon(templatesIcon),
+                    label: 'Шаблоны партий',
+                    icon: templatesIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('tags'),
-                    style: btnStyle,
-                    label: Text('Тэги категорий'),
-                    icon: Icon(tagsIcon),
+                    label: 'Тэги категорий',
+                    icon: tagsIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('designers'),
-                    style: btnStyle,
-                    label: Text('Геймдизайнеры'),
-                    icon: Icon(designersIcon),
+                    label: 'Геймдизайнеры',
+                    icon: designersIcon,
                   ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('artists'),
-                    style: btnStyle,
-                    label: Text('Художники'),
-                    icon: Icon(artistsIcon),
+                    label: 'Художники',
+                    icon: artistsIcon,
                   ),
-                  // ElevatedButton.icon(
+                  // MenuButton(
                   //   onPressed: () => {},
-                  //   style: btnStyle,
-                  //   label: Text('Статистика'),
-                  //   icon: const Icon(Icons.trending_up),
+                  //   label: 'Статистика',
+                  //   icon: Icons.trending_up,
                   // ),
-                  ElevatedButton.icon(
+                  MenuButton(
                     onPressed: () => context.pushNamed('top'),
-                    style: btnStyle,
-                    label: Text('Мой рейтинг игр'),
-                    icon: Icon(topsIcon),
+                    label: 'Мой рейтинг игр',
+                    icon: topsIcon,
                   ),
                   BackupButtons(),
                 ],

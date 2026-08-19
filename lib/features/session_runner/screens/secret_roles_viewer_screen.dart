@@ -7,8 +7,13 @@ import 'package:bg_tools/core/widgets/export.dart';
 
 class SecretRolesViewScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const SecretRolesViewScreen({super.key, required this.data});
+  const SecretRolesViewScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<SecretRolesViewScreen> createState() =>

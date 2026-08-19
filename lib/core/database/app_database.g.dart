@@ -5179,17 +5179,17 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (month >= 2026 AND month <= 9999)',
+    $customConstraints: 'NOT NULL CHECK (year >= 2026 AND year <= 9999)',
   );
   static const VerificationMeta _monthMeta = const VerificationMeta('month');
   @override
   late final GeneratedColumn<int> month = GeneratedColumn<int>(
     'month',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'CHECK (month >= 1 AND month <= 12)',
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (month >= 1 AND month <= 12)',
   );
   static const VerificationMeta _isActualMeta = const VerificationMeta(
     'isActual',
@@ -5294,6 +5294,8 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
         _monthMeta,
         month.isAcceptableOrUnknown(data['month']!, _monthMeta),
       );
+    } else if (isInserting) {
+      context.missing(_monthMeta);
     }
     if (data.containsKey('is_actual')) {
       context.handle(
@@ -5347,7 +5349,7 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
       month: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}month'],
-      ),
+      )!,
       isActual: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_actual'],
@@ -5380,7 +5382,7 @@ class $RatingsTable extends Ratings with TableInfo<$RatingsTable, Rating> {
 class Rating extends DataClass implements Insertable<Rating> {
   final int id;
   final int year;
-  final int? month;
+  final int month;
   final bool isActual;
   final String data;
   final int? artistId;
@@ -5389,7 +5391,7 @@ class Rating extends DataClass implements Insertable<Rating> {
   const Rating({
     required this.id,
     required this.year,
-    this.month,
+    required this.month,
     required this.isActual,
     required this.data,
     this.artistId,
@@ -5401,9 +5403,7 @@ class Rating extends DataClass implements Insertable<Rating> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['year'] = Variable<int>(year);
-    if (!nullToAbsent || month != null) {
-      map['month'] = Variable<int>(month);
-    }
+    map['month'] = Variable<int>(month);
     map['is_actual'] = Variable<bool>(isActual);
     map['data'] = Variable<String>(data);
     if (!nullToAbsent || artistId != null) {
@@ -5422,9 +5422,7 @@ class Rating extends DataClass implements Insertable<Rating> {
     return RatingsCompanion(
       id: Value(id),
       year: Value(year),
-      month: month == null && nullToAbsent
-          ? const Value.absent()
-          : Value(month),
+      month: Value(month),
       isActual: Value(isActual),
       data: Value(data),
       artistId: artistId == null && nullToAbsent
@@ -5447,7 +5445,7 @@ class Rating extends DataClass implements Insertable<Rating> {
     return Rating(
       id: serializer.fromJson<int>(json['id']),
       year: serializer.fromJson<int>(json['year']),
-      month: serializer.fromJson<int?>(json['month']),
+      month: serializer.fromJson<int>(json['month']),
       isActual: serializer.fromJson<bool>(json['isActual']),
       data: serializer.fromJson<String>(json['data']),
       artistId: serializer.fromJson<int?>(json['artistId']),
@@ -5461,7 +5459,7 @@ class Rating extends DataClass implements Insertable<Rating> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'year': serializer.toJson<int>(year),
-      'month': serializer.toJson<int?>(month),
+      'month': serializer.toJson<int>(month),
       'isActual': serializer.toJson<bool>(isActual),
       'data': serializer.toJson<String>(data),
       'artistId': serializer.toJson<int?>(artistId),
@@ -5473,7 +5471,7 @@ class Rating extends DataClass implements Insertable<Rating> {
   Rating copyWith({
     int? id,
     int? year,
-    Value<int?> month = const Value.absent(),
+    int? month,
     bool? isActual,
     String? data,
     Value<int?> artistId = const Value.absent(),
@@ -5482,7 +5480,7 @@ class Rating extends DataClass implements Insertable<Rating> {
   }) => Rating(
     id: id ?? this.id,
     year: year ?? this.year,
-    month: month.present ? month.value : this.month,
+    month: month ?? this.month,
     isActual: isActual ?? this.isActual,
     data: data ?? this.data,
     artistId: artistId.present ? artistId.value : this.artistId,
@@ -5539,7 +5537,7 @@ class Rating extends DataClass implements Insertable<Rating> {
 class RatingsCompanion extends UpdateCompanion<Rating> {
   final Value<int> id;
   final Value<int> year;
-  final Value<int?> month;
+  final Value<int> month;
   final Value<bool> isActual;
   final Value<String> data;
   final Value<int?> artistId;
@@ -5558,13 +5556,14 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
   RatingsCompanion.insert({
     this.id = const Value.absent(),
     required int year,
-    this.month = const Value.absent(),
+    required int month,
     this.isActual = const Value.absent(),
     required String data,
     this.artistId = const Value.absent(),
     this.designerId = const Value.absent(),
     this.tagId = const Value.absent(),
   }) : year = Value(year),
+       month = Value(month),
        data = Value(data);
   static Insertable<Rating> custom({
     Expression<int>? id,
@@ -5591,7 +5590,7 @@ class RatingsCompanion extends UpdateCompanion<Rating> {
   RatingsCompanion copyWith({
     Value<int>? id,
     Value<int>? year,
-    Value<int?>? month,
+    Value<int>? month,
     Value<bool>? isActual,
     Value<String>? data,
     Value<int?>? artistId,
@@ -5693,18 +5692,18 @@ class $RatingsGamesTable extends RatingsGames
   late final GeneratedColumn<double> score = GeneratedColumn<double>(
     'score',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.double,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _placeMeta = const VerificationMeta('place');
   @override
   late final GeneratedColumn<int> place = GeneratedColumn<int>(
     'place',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   @override
   List<GeneratedColumn> get $columns => [ratingId, gameId, score, place];
@@ -5741,12 +5740,16 @@ class $RatingsGamesTable extends RatingsGames
         _scoreMeta,
         score.isAcceptableOrUnknown(data['score']!, _scoreMeta),
       );
+    } else if (isInserting) {
+      context.missing(_scoreMeta);
     }
     if (data.containsKey('place')) {
       context.handle(
         _placeMeta,
         place.isAcceptableOrUnknown(data['place']!, _placeMeta),
       );
+    } else if (isInserting) {
+      context.missing(_placeMeta);
     }
     return context;
   }
@@ -5768,11 +5771,11 @@ class $RatingsGamesTable extends RatingsGames
       score: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}score'],
-      ),
+      )!,
       place: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}place'],
-      ),
+      )!,
     );
   }
 
@@ -5785,25 +5788,21 @@ class $RatingsGamesTable extends RatingsGames
 class RatingsGame extends DataClass implements Insertable<RatingsGame> {
   final int ratingId;
   final int gameId;
-  final double? score;
-  final int? place;
+  final double score;
+  final int place;
   const RatingsGame({
     required this.ratingId,
     required this.gameId,
-    this.score,
-    this.place,
+    required this.score,
+    required this.place,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['rating_id'] = Variable<int>(ratingId);
     map['game_id'] = Variable<int>(gameId);
-    if (!nullToAbsent || score != null) {
-      map['score'] = Variable<double>(score);
-    }
-    if (!nullToAbsent || place != null) {
-      map['place'] = Variable<int>(place);
-    }
+    map['score'] = Variable<double>(score);
+    map['place'] = Variable<int>(place);
     return map;
   }
 
@@ -5811,12 +5810,8 @@ class RatingsGame extends DataClass implements Insertable<RatingsGame> {
     return RatingsGamesCompanion(
       ratingId: Value(ratingId),
       gameId: Value(gameId),
-      score: score == null && nullToAbsent
-          ? const Value.absent()
-          : Value(score),
-      place: place == null && nullToAbsent
-          ? const Value.absent()
-          : Value(place),
+      score: Value(score),
+      place: Value(place),
     );
   }
 
@@ -5828,8 +5823,8 @@ class RatingsGame extends DataClass implements Insertable<RatingsGame> {
     return RatingsGame(
       ratingId: serializer.fromJson<int>(json['ratingId']),
       gameId: serializer.fromJson<int>(json['gameId']),
-      score: serializer.fromJson<double?>(json['score']),
-      place: serializer.fromJson<int?>(json['place']),
+      score: serializer.fromJson<double>(json['score']),
+      place: serializer.fromJson<int>(json['place']),
     );
   }
   @override
@@ -5838,21 +5833,21 @@ class RatingsGame extends DataClass implements Insertable<RatingsGame> {
     return <String, dynamic>{
       'ratingId': serializer.toJson<int>(ratingId),
       'gameId': serializer.toJson<int>(gameId),
-      'score': serializer.toJson<double?>(score),
-      'place': serializer.toJson<int?>(place),
+      'score': serializer.toJson<double>(score),
+      'place': serializer.toJson<int>(place),
     };
   }
 
   RatingsGame copyWith({
     int? ratingId,
     int? gameId,
-    Value<double?> score = const Value.absent(),
-    Value<int?> place = const Value.absent(),
+    double? score,
+    int? place,
   }) => RatingsGame(
     ratingId: ratingId ?? this.ratingId,
     gameId: gameId ?? this.gameId,
-    score: score.present ? score.value : this.score,
-    place: place.present ? place.value : this.place,
+    score: score ?? this.score,
+    place: place ?? this.place,
   );
   RatingsGame copyWithCompanion(RatingsGamesCompanion data) {
     return RatingsGame(
@@ -5889,8 +5884,8 @@ class RatingsGame extends DataClass implements Insertable<RatingsGame> {
 class RatingsGamesCompanion extends UpdateCompanion<RatingsGame> {
   final Value<int> ratingId;
   final Value<int> gameId;
-  final Value<double?> score;
-  final Value<int?> place;
+  final Value<double> score;
+  final Value<int> place;
   final Value<int> rowid;
   const RatingsGamesCompanion({
     this.ratingId = const Value.absent(),
@@ -5902,11 +5897,13 @@ class RatingsGamesCompanion extends UpdateCompanion<RatingsGame> {
   RatingsGamesCompanion.insert({
     required int ratingId,
     required int gameId,
-    this.score = const Value.absent(),
-    this.place = const Value.absent(),
+    required double score,
+    required int place,
     this.rowid = const Value.absent(),
   }) : ratingId = Value(ratingId),
-       gameId = Value(gameId);
+       gameId = Value(gameId),
+       score = Value(score),
+       place = Value(place);
   static Insertable<RatingsGame> custom({
     Expression<int>? ratingId,
     Expression<int>? gameId,
@@ -5926,8 +5923,8 @@ class RatingsGamesCompanion extends UpdateCompanion<RatingsGame> {
   RatingsGamesCompanion copyWith({
     Value<int>? ratingId,
     Value<int>? gameId,
-    Value<double?>? score,
-    Value<int?>? place,
+    Value<double>? score,
+    Value<int>? place,
     Value<int>? rowid,
   }) {
     return RatingsGamesCompanion(
@@ -6016,6 +6013,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final NoteDao noteDao = NoteDao(this as AppDatabase);
+  late final RatingDao ratingDao = RatingDao(this as AppDatabase);
   late final TagDao tagDao = TagDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -13468,7 +13466,7 @@ typedef $$RatingsTableCreateCompanionBuilder =
     RatingsCompanion Function({
       Value<int> id,
       required int year,
-      Value<int?> month,
+      required int month,
       Value<bool> isActual,
       required String data,
       Value<int?> artistId,
@@ -13479,7 +13477,7 @@ typedef $$RatingsTableUpdateCompanionBuilder =
     RatingsCompanion Function({
       Value<int> id,
       Value<int> year,
-      Value<int?> month,
+      Value<int> month,
       Value<bool> isActual,
       Value<String> data,
       Value<int?> artistId,
@@ -13950,7 +13948,7 @@ class $$RatingsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> year = const Value.absent(),
-                Value<int?> month = const Value.absent(),
+                Value<int> month = const Value.absent(),
                 Value<bool> isActual = const Value.absent(),
                 Value<String> data = const Value.absent(),
                 Value<int?> artistId = const Value.absent(),
@@ -13970,7 +13968,7 @@ class $$RatingsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required int year,
-                Value<int?> month = const Value.absent(),
+                required int month,
                 Value<bool> isActual = const Value.absent(),
                 required String data,
                 Value<int?> artistId = const Value.absent(),
@@ -14118,16 +14116,16 @@ typedef $$RatingsGamesTableCreateCompanionBuilder =
     RatingsGamesCompanion Function({
       required int ratingId,
       required int gameId,
-      Value<double?> score,
-      Value<int?> place,
+      required double score,
+      required int place,
       Value<int> rowid,
     });
 typedef $$RatingsGamesTableUpdateCompanionBuilder =
     RatingsGamesCompanion Function({
       Value<int> ratingId,
       Value<int> gameId,
-      Value<double?> score,
-      Value<int?> place,
+      Value<double> score,
+      Value<int> place,
       Value<int> rowid,
     });
 
@@ -14397,8 +14395,8 @@ class $$RatingsGamesTableTableManager
               ({
                 Value<int> ratingId = const Value.absent(),
                 Value<int> gameId = const Value.absent(),
-                Value<double?> score = const Value.absent(),
-                Value<int?> place = const Value.absent(),
+                Value<double> score = const Value.absent(),
+                Value<int> place = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RatingsGamesCompanion(
                 ratingId: ratingId,
@@ -14411,8 +14409,8 @@ class $$RatingsGamesTableTableManager
               ({
                 required int ratingId,
                 required int gameId,
-                Value<double?> score = const Value.absent(),
-                Value<int?> place = const Value.absent(),
+                required double score,
+                required int place,
                 Value<int> rowid = const Value.absent(),
               }) => RatingsGamesCompanion.insert(
                 ratingId: ratingId,

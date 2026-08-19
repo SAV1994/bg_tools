@@ -211,7 +211,7 @@ class AppDataManager {
     Map<String, dynamic> ratingProcessData,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(randomGamesKey, jsonEncode(ratingProcessData));
+    await prefs.setString(ratingProcessKey, jsonEncode(ratingProcessData));
   }
 
   // Получение данных процесса определения рейтинга (JSON)

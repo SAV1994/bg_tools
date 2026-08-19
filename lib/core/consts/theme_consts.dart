@@ -36,6 +36,7 @@ const IconData exportIcon = Icons.save_alt;
 const IconData loadingIcon = Icons.timer;
 const IconData addBtnIcon = Icons.add_box;
 const IconData errorIcon = Icons.report_problem;
+const IconData commonSelectIcon = Icons.menu;
 
 const IconData randomIcon = Icons.casino;
 const IconData randNumIcon = Icons.filter_7;
@@ -48,13 +49,3 @@ const String firstPlaceMedalEmoji = '🥇';
 const String secondPlaceMedalEmoji = '🥈';
 const String thirdPlaceMedalEmoji = '🥉';
 const String diceEmoji = '🎲';
-
-// Стиль кнопок главного меню
-final ButtonStyle btnStyle = ElevatedButton.styleFrom(
-  textStyle: const TextStyle(fontSize: 30),
-  foregroundColor: textColor,
-  backgroundColor: secondColor,
-  side: const BorderSide(color: borderColor, width: 1.5),
-  fixedSize: Size(350, 50),
-  iconSize: 30,
-);

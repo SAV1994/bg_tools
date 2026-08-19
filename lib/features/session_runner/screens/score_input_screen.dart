@@ -10,8 +10,13 @@ import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 class ScoreInputScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const ScoreInputScreen({super.key, required this.data});
+  const ScoreInputScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<ScoreInputScreen> createState() => _ScoreInputScreenState();
@@ -312,6 +317,7 @@ class _ScoreInputScreenState extends ConsumerState<ScoreInputScreen> {
                       color: (gamerData['team'] != null)
                           ? TeamsEnum.fromId(gamerData['team']).color
                           : null,
+                      counterData: widget.counterData,
                     );
                   },
                 ),

@@ -11,8 +11,13 @@ import 'package:bg_tools/features/session_runner/widgets/export.dart';
 
 class TeamScoreRoundScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const TeamScoreRoundScreen({super.key, required this.data});
+  const TeamScoreRoundScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<TeamScoreRoundScreen> createState() =>
@@ -490,6 +495,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                         controllersData: _scoreControllers,
                         sessionData: widget.data,
                         isFinished: _isFinished,
+                        counterData: widget.counterData,
                       ),
                     ),
                   );

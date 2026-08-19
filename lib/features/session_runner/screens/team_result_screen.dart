@@ -29,8 +29,13 @@ enum _SelectScoreMode {
 
 class TeamResultScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const TeamResultScreen({super.key, required this.data});
+  const TeamResultScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   ConsumerState<TeamResultScreen> createState() => _TeamResultScreenState();

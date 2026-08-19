@@ -9,8 +9,13 @@ import 'package:bg_tools/features/session_runner/categories.dart';
 
 class SecretRolesManagementScreen extends StatefulWidget {
   final Map<String, dynamic> data;
+  final List<dynamic> counterData;
 
-  const SecretRolesManagementScreen({super.key, required this.data});
+  const SecretRolesManagementScreen({
+    super.key,
+    required this.data,
+    required this.counterData,
+  });
 
   @override
   State<SecretRolesManagementScreen> createState() =>

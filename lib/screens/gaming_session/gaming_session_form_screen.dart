@@ -37,6 +37,7 @@ class _GamingSessionFormScreenState
   late final GamingSessionFullData? gamingSessionData;
   // Локальное состояние формы
   Game? _selectedGame;
+  bool _showExpansionSelect = false;
   Set<int> _selectedExpansionIds = {};
   DateTime _startedAt = DateTime.now();
   bool _isFinished = true;
@@ -97,6 +98,12 @@ class _GamingSessionFormScreenState
       }
     }
 
+    if (_selectedExpansionIds.isNotEmpty) {
+      _showExpansionSelect = true;
+    } else if (_selectedGame != null) {
+      await _updateExpansionSelectVisibility();
+    }
+
     _commentController = TextEditingController(
       text: gamingSessionData?.gamingSession.comment,
     );
@@ -123,12 +130,28 @@ class _GamingSessionFormScreenState
   }
 
   Future<void> _onGameSelected(Game? game) async {
+    setState(() => _isLoading = true);
+
     _selectedExpansionIds.clear(); // Очищаем выбранные дополнения
     _selectedGamingSession = null;
     setState(() => _selectedGame = game);
 
+    await _updateExpansionSelectVisibility();
     _rootSessionsSelectKey.currentState?.loadData();
     _expansionsSelectKey.currentState?.loadData();
+
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _updateExpansionSelectVisibility() async {
+    if (_selectedGame != null) {
+      final List<Game> expansions = await getItemsForExpansionsSelect();
+      if (expansions.isNotEmpty) {
+        _showExpansionSelect = true;
+        return;
+      }
+    }
+    _showExpansionSelect = false;
   }
 
   void _showAddGamerDialog() {
@@ -406,7 +429,7 @@ class _GamingSessionFormScreenState
                         ),
                       ),
                       // Выбор дополнений (MultiSelect) - появляется только если есть дополнения
-                      if (_selectedGame != null)
+                      if (_showExpansionSelect)
                         MultiSelectWithSearch<Game>(
                           label: 'Дополнения',
                           key: _expansionsSelectKey,

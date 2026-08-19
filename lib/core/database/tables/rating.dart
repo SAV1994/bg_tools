@@ -8,11 +8,11 @@ import 'package:bg_tools/core/database/tables/tag.dart';
 class Ratings extends Table {
   IntColumn get id => integer().autoIncrement()(); // ID
   IntColumn get year => integer().customConstraint(
-    'NOT NULL CHECK (month >= 2026 AND month <= 9999)',
+    'NOT NULL CHECK (year >= 2026 AND year <= 9999)',
   )(); // Год
-  IntColumn get month => integer()
-      .customConstraint('CHECK (month >= 1 AND month <= 12)')
-      .nullable()(); // Месяц
+  IntColumn get month => integer().customConstraint(
+    'NOT NULL CHECK (month >= 1 AND month <= 12)',
+  )(); // Месяц
   BoolColumn get isActual => boolean().withDefault(
     const Constant(true),
   )(); // Является актуальным на данный момент
