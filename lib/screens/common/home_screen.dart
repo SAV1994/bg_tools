@@ -6,7 +6,10 @@ import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
+import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/features/export_import_service/services/export.dart';
+import 'package:bg_tools/features/export_import_service/utils/export.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -62,6 +65,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     onTap: () => context.pushNamed(
                       'gamers-update',
                       pathParameters: {'gamerId': owner!.id.toString()},
+                    ),
+                  ),
+
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(
+                        exportIcon,
+                        size: 18,
+                        color: greenColor,
+                      ),
+                      title: const Text('Экспорт'),
+                      dense: true,
+                    ),
+                    onTap: () =>
+                        exportData(context: context, mover: AllDataMover()),
+                  ),
+
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.restore,
+                        size: 18,
+                        color: titleColor,
+                      ),
+                      title: const Text('Импорт'),
+                      dense: true,
+                    ),
+                    onTap: () => importData(
+                      context: context,
+                      mover: AllDataMover(),
+                      onSuccess: () {
+                        // Обновляем провайдеры
+                        ref.invalidate(countingTemplateDataProvider);
+                        ref.invalidate(gameFullDataProvider);
+                        ref.invalidate(ownerDataProvider);
+                        ref.invalidate(gamingSessionFullDataProvider);
+                        // AppDataManager
+                        ref.invalidate(sessionDataProvider);
+                        // AsyncNotifierProvider
+                        final artistsNotifier = ref.read(
+                          artistsPaginatedProvider.notifier,
+                        );
+                        artistsNotifier.refresh();
+                        final countingTemplatesNotifier = ref.read(
+                          countingTemplatesPaginatedProvider.notifier,
+                        );
+                        countingTemplatesNotifier.refresh();
+                        final designersNotifier = ref.read(
+                          designersPaginatedProvider.notifier,
+                        );
+                        designersNotifier.refresh();
+                        final gamesNotifier = ref.read(
+                          gamesPaginatedProvider.notifier,
+                        );
+                        gamesNotifier.refresh();
+                        final gamersNotifier = ref.read(
+                          gamersPaginatedProvider.notifier,
+                        );
+                        gamersNotifier.refresh();
+                        final gamesCountingTemplatesNotifier = ref.read(
+                          gamesCountingTemplatesPaginatedProvider.notifier,
+                        );
+                        gamesCountingTemplatesNotifier.refresh();
+                        final gamingSessionsNotifier = ref.read(
+                          gamingSessionsPaginatedProvider.notifier,
+                        );
+                        gamingSessionsNotifier.refresh();
+                        final notesNotifier = ref.read(
+                          notesPaginatedProvider.notifier,
+                        );
+                        notesNotifier.refresh();
+                        final tagsNotifier = ref.read(
+                          tagsPaginatedProvider.notifier,
+                        );
+                        tagsNotifier.refresh();
+                        final ratingsNotifier = ref.read(
+                          ratingsPaginatedProvider.notifier,
+                        );
+                        ratingsNotifier.refresh();
+                        final ratingsGamesNotifier = ref.read(
+                          ratingsGamesPaginatedProvider.notifier,
+                        );
+                        ratingsGamesNotifier.refresh();
+                      },
+                      warnStr:
+                          'Импорт заменит все текущие данные!\n'
+                          'Вы уверены, что хотите продолжить?',
                     ),
                   ),
 
@@ -153,7 +243,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     label: 'Мой рейтинг игр',
                     icon: topsIcon,
                   ),
-                  BackupButtons(),
                 ],
               ),
             ),

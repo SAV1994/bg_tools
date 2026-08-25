@@ -155,6 +155,28 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
     });
   }
 
+  void _moveToStart(int index) {
+    if (index != 0) {
+      setState(() {
+        widget.data['gamers'] =
+            widget.data['gamers'].sublist(index) +
+            widget.data['gamers'].sublist(0, index);
+        _fillTurnOrder();
+      });
+    }
+  }
+
+  void _moveToEnd(int index) {
+    if (index != widget.data['gamers'].length - 1) {
+      setState(() {
+        widget.data['gamers'] =
+            widget.data['gamers'].sublist(index + 1) +
+            widget.data['gamers'].sublist(0, index + 1);
+        _fillTurnOrder();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -187,29 +209,85 @@ class _GamersTurnOrderScreenState extends ConsumerState<GamersTurnOrderScreen> {
                               horizontal: 16,
                               vertical: 4,
                             ),
-                            child: Card(
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: (gamerData['team'] != null)
-                                      ? TeamsEnum.fromId(
-                                          gamerData['team'],
-                                        ).color
-                                      : Colors.red,
-                                  child: Text(
-                                    '${index + 1}',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                                title: Text(gamerData['username']),
-                                subtitle: Text(gamerData['fio']),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                            child: Dismissible(
+                              key: Key(gamerData['id'].toString()),
+                              direction: DismissDirection.horizontal,
+                              onDismissed: (direction) {
+                                if (direction == DismissDirection.startToEnd) {
+                                  _moveToEnd(index);
+                                } else {
+                                  _moveToStart(index);
+                                }
+                              },
+
+                              confirmDismiss: (direction) async {
+                                if (direction == DismissDirection.startToEnd) {
+                                  return widget.data['gamers'].length - 1 !=
+                                      index;
+                                } else {
+                                  return index != 0;
+                                }
+                              },
+
+                              // Фон при свайпе вправо
+                              background: Container(
+                                color: redColor,
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.only(left: 20),
+                                child: Row(
                                   children: [
-                                    ReorderableDragStartListener(
-                                      index: index,
-                                      child: Icon(Icons.drag_handle),
+                                    Icon(Icons.last_page, color: textColor),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Конец',
+                                      style: TextStyle(color: textColor),
                                     ),
                                   ],
+                                ),
+                              ),
+
+                              // Фон при свайпе влево
+                              secondaryBackground: Container(
+                                color: greenColor,
+                                alignment: Alignment.centerRight,
+                                padding: EdgeInsets.only(right: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      'Начало',
+                                      style: TextStyle(color: textColor),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.first_page, color: textColor),
+                                  ],
+                                ),
+                              ),
+
+                              child: Card(
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: (gamerData['team'] != null)
+                                        ? TeamsEnum.fromId(
+                                            gamerData['team'],
+                                          ).color
+                                        : Colors.red,
+                                    child: Text(
+                                      '${index + 1}',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  title: Text(gamerData['username']),
+                                  subtitle: Text(gamerData['fio']),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ReorderableDragStartListener(
+                                        index: index,
+                                        child: Icon(Icons.drag_handle),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

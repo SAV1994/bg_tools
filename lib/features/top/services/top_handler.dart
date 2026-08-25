@@ -11,27 +11,19 @@ import 'package:bg_tools/core/dataclasses/rating_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/features/top/consts.dart';
+import 'package:bg_tools/features/top/dataclasses.dart';
+import 'package:bg_tools/features/top/services/base_top_handler.dart';
 
-class GameItem {
-  final String id;
-  final String name;
-  final String? imagePath;
-
-  GameItem({required this.id, required this.name, this.imagePath});
-}
-
-class RankingHandler {
-  int initialPairs = 0;
-  int totalPairs = 0;
-
+class RankingHandler extends BaseRankingHandler {
+  @override
   Future<List<GameItem>> getCurrentPair() async {
     Map<String, dynamic>? ratingData = await AppDataManager.loadRatingProcess();
     if (ratingData == null) {
       throw ValidationException('Данные ранжирования не инициализированы');
     }
 
-    initialPairs = ratingData['totalPairs'];
-    totalPairs = ratingData['pairs'].length;
+    initialSteps = ratingData['totalPairs'];
+    totalSteps = ratingData['pairs'].length;
 
     final String game1Id = ratingData['pairs'][0][0].toString();
     final Map<String, dynamic> game1Data = ratingData['gamesInfo'][game1Id];
@@ -52,18 +44,20 @@ class RankingHandler {
     ];
   }
 
+  @override
   Future<void> saveSelection(GameItem selected) async {
     Map<String, dynamic>? ratingData = await AppDataManager.loadRatingProcess();
     if (ratingData != null) {
       ratingData['gamesInfo'][selected.id]['score'] += 1;
       ratingData['pairs'].removeAt(0);
 
-      totalPairs = ratingData['pairs'].length;
+      totalSteps = ratingData['pairs'].length;
 
       await AppDataManager.saveRatingProcess(ratingData);
     }
   }
 
+  @override
   Future<void> finishRanking(WidgetRef ref) async {
     Map<String, dynamic>? ratingData = await AppDataManager.loadRatingProcess();
     if (ratingData != null) {
@@ -72,7 +66,7 @@ class RankingHandler {
         gamesInfo.add({
           'gameId': int.parse(entry.key),
           'score': double.parse(
-            (entry.value['score'] / ratingData['totalPairs'] * 100)
+            (entry.value['score'] / (ratingData['totalGames'] - 1) * 100)
                 .toStringAsFixed(2),
           ),
         });
@@ -97,7 +91,7 @@ class RankingHandler {
           year: Value(ratingData['year']),
           month: Value(ratingData['month']),
           isActual: Value(true),
-          data: Value(jsonEncode(ratingData['data'])),
+          data: Value(jsonEncode({'engine': ratingData['engine']})),
           artistId: Value(ratingData['artistId']),
           designerId: Value(ratingData['designerId']),
           tagId: Value(ratingData['tagId']),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/dataclasses/rating_dataclasses.dart';
+import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
@@ -34,8 +35,8 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ratingGamesAsync = ref.watch(ratingGamesPaginatedProvider);
-    final notifier = ref.read(ratingGamesPaginatedProvider.notifier);
+    final ratingGamesAsync = ref.watch(ratingsGamesPaginatedProvider);
+    final notifier = ref.read(ratingsGamesPaginatedProvider.notifier);
 
     return PopScope(
       canPop: true,
@@ -87,6 +88,35 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                   color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOrdering(),
+              ),
+
+              IconButton(
+                icon: const Icon(delIcon, color: redColor),
+                onPressed: () {
+                  final rating = ratingGamesAsync.value?[0].rating;
+                  buildDelModal(
+                    context,
+                    ref,
+                    ratingDaoProvider,
+                    mounted,
+                    rating,
+                    () {
+                      ref.read(ratingsPaginatedProvider.notifier).refresh();
+                      ref
+                          .read(ratingsGamesPaginatedProvider.notifier)
+                          .refresh();
+                    },
+                  );
+                },
+              ),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: const Text('Выйти', style: TextStyle(color: redColor)),
               ),
             ],
           ],

@@ -58,9 +58,7 @@ class RatingDao extends DatabaseAccessor<AppDatabase> with _$RatingDaoMixin {
 
   // Удалить рейтинг
   Future<void> delInstance(int ratingId) async {
-    await (delete(
-      ratingsGames,
-    )..where((rg) => rg.ratingId.equals(ratingId))).go();
+    await (delete(ratings)..where((r) => r.id.equals(ratingId))).go();
   }
 
   // Рейтинги с пагинацией

@@ -4,6 +4,7 @@ import 'package:bg_tools/core/database/daos/game/game_dao.dart';
 import 'package:bg_tools/features/top/consts.dart';
 
 class TopDataInitializer {
+  TopEngineEnum engine;
   int year;
   int month;
   GameDao gameDao;
@@ -12,10 +13,10 @@ class TopDataInitializer {
   int? artistId;
 
   int topType = TopTypeEnum.common.id;
-  final List<List<int>> pairs = [];
   final Map<String, dynamic> gamesInfo = {};
 
   TopDataInitializer({
+    required this.engine,
     required this.year,
     required this.month,
     required this.gameDao,
@@ -32,6 +33,18 @@ class TopDataInitializer {
       artistId: artistId,
     );
 
+    _setTopType();
+
+    if (engine == TopEngineEnum.completeOverkill) {
+      await _initCompleteOverkill(games);
+    } else {
+      await _initBranchAndBound(games);
+    }
+  }
+
+  Future<void> _initCompleteOverkill(List<Game> games) async {
+    final List<List<int>> pairs = [];
+
     for (int i = 0; i < games.length; i++) {
       _addGamesInfo(games[i]);
       for (int j = i + 1; j < games.length; j++) {
@@ -40,9 +53,9 @@ class TopDataInitializer {
     }
 
     pairs.shuffle();
-    _setTopType();
 
     await AppDataManager.saveRatingProcess({
+      'engine': engine.id,
       'topType': topType,
       'tagId': tagId,
       'designerId': designerId,
@@ -51,6 +64,32 @@ class TopDataInitializer {
       'month': month,
       'pairs': pairs,
       'totalPairs': pairs.length,
+      'totalGames': games.length,
+      'gamesInfo': gamesInfo,
+      'data': {},
+    });
+  }
+
+  Future<void> _initBranchAndBound(List<Game> games) async {
+    final List<int> gamesIds = [];
+    for (int i = 0; i < games.length; i++) {
+      _addGamesInfo(games[i]);
+      gamesIds.add(games[i].id);
+    }
+
+    gamesIds.shuffle();
+    final List<int> rankingGames = [gamesIds.removeAt(0)];
+
+    await AppDataManager.saveRatingProcess({
+      'engine': engine.id,
+      'topType': topType,
+      'tagId': tagId,
+      'designerId': designerId,
+      'artistId': artistId,
+      'year': year,
+      'month': month,
+      'games': gamesIds,
+      'rankingGames': rankingGames,
       'totalGames': games.length,
       'gamesInfo': gamesInfo,
       'data': {},

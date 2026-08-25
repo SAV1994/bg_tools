@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bg_tools/core/providers/database_providers.dart';
 
-final ratingGamesPaginatedProvider =
+final ratingsGamesPaginatedProvider =
     AsyncNotifierProvider<RatingGamesNotifier, List<dynamic>>(() {
       return RatingGamesNotifier();
     });

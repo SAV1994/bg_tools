@@ -7,6 +7,7 @@ import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/features/top/consts.dart';
 import 'package:bg_tools/features/top/services/top_data_initializer.dart';
 
 class TopInitScreen extends ConsumerStatefulWidget {
@@ -22,6 +23,7 @@ class _TopInitScreenState extends ConsumerState<TopInitScreen> {
   Tag? _selectedTag;
   Designer? _selectedDesigner;
   Artist? _selectedArtist;
+  TopEngineEnum _selectedTopEngine = TopEngineEnum.branchAndBound;
   int _totalGames = 0;
   // Загрузка
   bool _isLoading = false;
@@ -71,6 +73,7 @@ class _TopInitScreenState extends ConsumerState<TopInitScreen> {
 
       final gameDao = ref.read(gameDaoProvider);
       await TopDataInitializer(
+        engine: _selectedTopEngine,
         year: _selectedYear,
         month: _selectedMonth,
         gameDao: gameDao,
@@ -151,6 +154,16 @@ class _TopInitScreenState extends ConsumerState<TopInitScreen> {
                       searchHint: 'Поиск художника...',
                       placeholder: 'Не выбран',
                     ),
+
+                  EnumSelector(
+                    label: TopEngineEnum.title,
+                    required: true,
+                    choices: TopEngineEnum.getDropdownMenuItems(),
+                    selected: _selectedTopEngine,
+                    onChanged: (value) => setState(
+                      () => _selectedTopEngine = value as TopEngineEnum,
+                    ),
+                  ),
 
                   YearInput(
                     onChanged: (year) => _selectedYear = year,

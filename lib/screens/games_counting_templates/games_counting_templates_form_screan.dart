@@ -13,9 +13,10 @@ import 'package:bg_tools/core/dataclasses/games_counting_templates_dataclasses.d
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/services/export_import_service/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/features/export_import_service/services/export.dart';
+import 'package:bg_tools/features/export_import_service/utils/export.dart';
 import 'package:bg_tools/features/session_runner/categories.dart';
 
 enum _SelectMode { classic, secretTeams, secretRoles }

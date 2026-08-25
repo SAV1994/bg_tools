@@ -5,8 +5,8 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:bg_tools/core/dataclasses/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/services/export_import_service/base_mover.dart';
-import 'package:bg_tools/core/services/export_import_service/obj_to_map/export.dart';
+import 'package:bg_tools/features/export_import_service/services/base_mover.dart';
+import 'package:bg_tools/features/export_import_service/services/obj_to_map/export.dart';
 
 class GameTemplateMover extends BaseMover {
   @override

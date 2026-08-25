@@ -5,8 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-import 'package:bg_tools/core/services/export_import_service/base_mover.dart';
 import 'package:bg_tools/core/services/permissions_service.dart';
+import 'package:bg_tools/features/export_import_service/services/base_mover.dart';
 
 // Сервис импорта/экспорта
 class BackupService {

@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+
+import 'package:bg_tools/core/consts/theme_consts.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 
 enum TopTypeEnum {
@@ -19,4 +22,35 @@ enum TopTypeEnum {
       orElse: () => TopTypeEnum.common,
     );
   }
+}
+
+enum TopEngineEnum {
+  completeOverkill(1, 'Полный перебор'),
+  branchAndBound(2, 'Бинарный поиск');
+
+  final int id;
+  final String label;
+
+  const TopEngineEnum(this.id, this.label);
+
+  // Получить enum по id
+  static TopTypeEnum fromId(int id) {
+    return TopTypeEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => TopTypeEnum.common,
+    );
+  }
+
+  static Iterable<DropdownMenuItem<Enum>> getDropdownMenuItems() {
+    return TopEngineEnum.values.map((val) {
+      return DropdownMenuItem(
+        value: val,
+        child: Row(
+          children: [Text(val.label, style: TextStyle(color: textColor))],
+        ),
+      );
+    });
+  }
+
+  static String get title => 'Алгоритм';
 }

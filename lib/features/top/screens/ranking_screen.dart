@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/theme_consts.dart';
 import 'package:bg_tools/core/widgets/loading_screen.dart';
+import 'package:bg_tools/features/top/consts.dart';
+import 'package:bg_tools/features/top/dataclasses.dart';
+import 'package:bg_tools/features/top/services/base_top_handler.dart';
 import 'package:bg_tools/features/top/services/export.dart';
 
 class RankingScreen extends ConsumerStatefulWidget {
@@ -16,7 +20,8 @@ class RankingScreen extends ConsumerStatefulWidget {
 }
 
 class _RankingScreenState extends ConsumerState<RankingScreen> {
-  RankingHandler handler = RankingHandler();
+  late BaseRankingHandler handler;
+  TopEngineEnum _engine = TopEngineEnum.completeOverkill;
   // Текущая пара для сравнения
   GameItem? _game1;
   GameItem? _game2;
@@ -26,7 +31,23 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   @override
   void initState() {
     super.initState();
-    _nextPair();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() => _isLoading = true);
+
+    Map<String, dynamic>? ratingData = await AppDataManager.loadRatingProcess();
+    if (ratingData?['engine'] == TopEngineEnum.branchAndBound.id) {
+      handler = FastRankingHandler();
+      _engine = TopEngineEnum.branchAndBound;
+    } else {
+      handler = RankingHandler();
+    }
+
+    _nextPair(showLoading: false);
+
+    setState(() => _isLoading = false);
   }
 
   Future<void> _nextPair({bool showLoading = true}) async {
@@ -49,7 +70,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
     await handler.saveSelection(selected);
 
-    if (handler.totalPairs < 1) {
+    if (handler.totalSteps < 1) {
       await _finishRanking();
     } else {
       await _nextPair();
@@ -164,7 +185,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              'Осталось пар: ${handler.totalPairs}',
+              'Осталось ${(_engine == TopEngineEnum.completeOverkill) ? 'пар' : 'игр'}: '
+              '${handler.totalSteps}',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -178,8 +200,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
             // Прогресс
             LinearProgressIndicator(
               value:
-                  (handler.initialPairs - handler.totalPairs) /
-                  handler.initialPairs,
+                  (handler.initialSteps - handler.totalSteps) /
+                  handler.initialSteps,
               backgroundColor: Colors.grey.shade200,
               valueColor: AlwaysStoppedAnimation<Color>(secondColor),
               minHeight: 8,

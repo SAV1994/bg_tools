@@ -95,7 +95,7 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
   }
 
   Future<void> _openCounter() async {
-    final result = await context.pushNamed('counters');
+    await context.pushNamed('counters');
 
     final List<dynamic> countData = await AppDataManager.loadCounters();
 

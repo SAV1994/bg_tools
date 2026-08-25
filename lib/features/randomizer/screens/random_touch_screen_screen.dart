@@ -48,7 +48,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
   late AnimationController _animationController;
   final Random _random = Random();
 
-  final List<Color> _availableColors = [
+  final List<Color> _allColors = [
     Colors.red,
     Colors.blue,
     Colors.green,
@@ -60,6 +60,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
     Colors.amber,
     Colors.cyan,
   ];
+  final List<Color> _availableColors = [];
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
       vsync: this,
       duration: Duration(seconds: 3),
     );
+    _availableColors.addAll(_allColors);
   }
 
   @override
@@ -81,7 +83,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
     if (_touches.length >= 10 || _isSelecting) return;
 
     final id = event.pointer;
-    final color = _availableColors[_touches.length % _availableColors.length];
+    final color = _availableColors.removeAt(0);
 
     _touches[id] = TouchPoint(
       id: id,
@@ -105,6 +107,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
   void _removeTouch(PointerEvent event) {
     final id = event.pointer;
     if (_touches.containsKey(id)) {
+      _availableColors.add(_touches[id]!.color);
       _touches.remove(id);
       setState(() {});
       _resetSelectionTimer();

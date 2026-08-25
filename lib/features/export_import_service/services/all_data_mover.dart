@@ -5,9 +5,9 @@ import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/import_const.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/services/export_import_service/base_mover.dart';
-import 'package:bg_tools/core/services/export_import_service/obj_to_map/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
+import 'package:bg_tools/features/export_import_service/services/base_mover.dart';
+import 'package:bg_tools/features/export_import_service/services/obj_to_map/export.dart';
 
 class AllDataMover extends BaseMover {
   final int type = ImportTypeEnum.all.id;
@@ -400,6 +400,18 @@ class AllDataMover extends BaseMover {
 
       final ratingsIds = <int, int>{};
       for (final ratingsJson in data['ratings']) {
+        int? artistId;
+        if (ratingsJson['artistId'] != null) {
+          artistId = artistsIds[ratingsJson['artistId']];
+        }
+        int? designerId;
+        if (ratingsJson['designerId'] != null) {
+          designerId = designersIds[ratingsJson['designerId']];
+        }
+        int? tagId;
+        if (ratingsJson['tagId'] != null) {
+          tagId = tagsIds[ratingsJson['tagId']];
+        }
         final id = await database
             .into(database.ratings)
             .insert(
@@ -408,9 +420,9 @@ class AllDataMover extends BaseMover {
                 month: Value(ratingsJson['month']),
                 isActual: Value(ratingsJson['isActual']),
                 data: Value(ratingsJson['data']),
-                artistId: Value(artistsIds[ratingsJson['artistId']]!),
-                designerId: Value(designersIds[ratingsJson['designerId']]!),
-                tagId: Value(tagsIds[ratingsJson['tagId']]!),
+                artistId: Value(artistId),
+                designerId: Value(designerId),
+                tagId: Value(tagId),
               ),
             );
         ratingsIds[ratingsJson['id']] = id;

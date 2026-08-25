@@ -52,7 +52,7 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
   bool _isLoading = false;
 
   void _openRatingPage(int ratingId) {
-    final notifier = ref.read(ratingGamesPaginatedProvider.notifier);
+    final notifier = ref.read(ratingsGamesPaginatedProvider.notifier);
     notifier.setTopType(widget.topType);
     notifier.setRatingId(ratingId);
 
@@ -138,7 +138,7 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
                   });
                 },
               ),
-            if (!_isInstanceSelectOpen)
+            if (!_isInstanceSelectOpen) ...[
               IconButton(
                 visualDensity: VisualDensity(horizontal: -4.0),
                 icon: Icon(
@@ -149,6 +149,15 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
                 ),
                 onPressed: () => notifier.toggleOrdering(),
               ),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: const Text('Выйти', style: TextStyle(color: redColor)),
+              ),
+            ],
           ],
         ),
         body: _isLoading

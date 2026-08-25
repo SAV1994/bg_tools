@@ -11,10 +11,10 @@ import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/providers/data_providers.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/services/export_import_service/game_mover.dart';
 import 'package:bg_tools/core/services/image_service.dart';
-import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/features/export_import_service/services/game_mover.dart';
+import 'package:bg_tools/features/export_import_service/utils/export.dart';
 import 'package:bg_tools/screens/game/widgets/export.dart';
 import 'package:bg_tools/screens/generic/list_with_modal_form.dart';
 
