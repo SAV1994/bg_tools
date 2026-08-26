@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/dataclasses/rating_dataclasses.dart';
@@ -160,7 +161,12 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                             title: Text(ratingGame.game.name),
                             subtitle: Text(gameInfo),
                             trailing: Icon(Icons.arrow_forward_ios),
-                            onTap: () {},
+                            onTap: () => context.pushNamed(
+                              'games-detail',
+                              pathParameters: {
+                                'gameId': ratingGame.game.id.toString(),
+                              },
+                            ),
                           ),
                         );
                       },
@@ -169,7 +175,6 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                 },
                 loading: () => LoadingScreen(),
                 error: (err, _) {
-                  print(err);
                   return ErrorNotification();
                 },
               ),

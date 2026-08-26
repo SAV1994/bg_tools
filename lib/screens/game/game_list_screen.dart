@@ -67,27 +67,6 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
     setState(() => _isLoading = false);
   }
 
-  Future<void> _openAddForm() async {
-    final result = await context.pushNamed('games-add');
-
-    if (result == true) {
-      // Обновляем провайдер
-      setState(() => ref.invalidate(gameDaoProvider));
-    }
-  }
-
-  Future<void> _openDetailPage(int gameId) async {
-    final result = await context.pushNamed(
-      'games-detail',
-      pathParameters: {'gameId': gameId.toString()},
-    );
-
-    if (result == true) {
-      // Обновляем провайдер
-      setState(() => ref.invalidate(gameDaoProvider));
-    }
-  }
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -199,7 +178,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
               IconButton(
                 visualDensity: VisualDensity(horizontal: -4.0),
                 icon: Icon(addBtnIcon),
-                onPressed: () => {_openAddForm()},
+                onPressed: () => context.pushNamed('games-add'),
               ),
             ],
           ],
@@ -251,9 +230,10 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                             ),
                             subtitle: Text(gameInfo),
                             trailing: Icon(Icons.arrow_forward_ios),
-                            onTap: () {
-                              _openDetailPage(game.id);
-                            },
+                            onTap: () => context.pushNamed(
+                              'games-detail',
+                              pathParameters: {'gameId': game.id.toString()},
+                            ),
                           ),
                         );
                       },

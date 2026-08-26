@@ -7,26 +7,26 @@ import 'dart:math';
 class TouchPoint {
   final int id;
   final Offset position;
-  final Color color;
+  final (Color, int) colorData;
   final DateTime timestamp;
 
   TouchPoint({
     required this.id,
     required this.position,
-    required this.color,
+    required this.colorData,
     required this.timestamp,
   });
 
   TouchPoint copyWith({
     int? id,
     Offset? position,
-    Color? color,
+    (Color, int)? colorData,
     DateTime? timestamp,
   }) {
     return TouchPoint(
       id: id ?? this.id,
       position: position ?? this.position,
-      color: color ?? this.color,
+      colorData: colorData ?? this.colorData,
       timestamp: timestamp ?? this.timestamp,
     );
   }
@@ -43,24 +43,29 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
     with SingleTickerProviderStateMixin {
   final Map<int, TouchPoint> _touches = {};
   Timer? _selectionTimer;
-  Color? _selectedColor;
+  (Color, int)? _selectedColor;
   bool _isSelecting = false;
   late AnimationController _animationController;
   final Random _random = Random();
 
-  final List<Color> _allColors = [
-    Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.orange,
-    Colors.purple,
-    Colors.pink,
-    Colors.teal,
-    Colors.indigo,
-    Colors.amber,
-    Colors.cyan,
+  final List<(Color, int)> _allColors = [
+    (Colors.red, 1),
+    (Colors.blue, 2),
+    (Colors.green, 3),
+    (Colors.orange, 4),
+    (Colors.purple, 5),
+    (Colors.pink, 6),
+    (Colors.teal, 7),
+    (Colors.indigo, 8),
+    (Colors.amber, 9),
+    (Colors.cyan, 10),
+    (Colors.grey, 11),
+    (Colors.yellow, 12),
+    (Colors.lime, 13),
+    (Colors.brown, 14),
+    (Colors.teal, 15),
   ];
-  final List<Color> _availableColors = [];
+  List<(Color, int)> _availableColors = [];
 
   @override
   void initState() {
@@ -69,7 +74,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
       vsync: this,
       duration: Duration(seconds: 3),
     );
-    _availableColors.addAll(_allColors);
+    _availableColors = _allColors.toList();
   }
 
   @override
@@ -83,12 +88,12 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
     if (_touches.length >= 10 || _isSelecting) return;
 
     final id = event.pointer;
-    final color = _availableColors.removeAt(0);
+    final colorData = _availableColors.removeAt(0);
 
     _touches[id] = TouchPoint(
       id: id,
       position: event.position,
-      color: color,
+      colorData: colorData,
       timestamp: DateTime.now(),
     );
 
@@ -107,7 +112,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
   void _removeTouch(PointerEvent event) {
     final id = event.pointer;
     if (_touches.containsKey(id)) {
-      _availableColors.add(_touches[id]!.color);
+      _availableColors.add(_touches[id]!.colorData);
       _touches.remove(id);
       setState(() {});
       _resetSelectionTimer();
@@ -137,7 +142,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
     final selected = touchList[_random.nextInt(touchList.length)];
 
     setState(() {
-      _selectedColor = selected.color;
+      _selectedColor = selected.colorData;
     });
 
     _animationController.forward(from: 0);
@@ -147,10 +152,10 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
         setState(() {
           _isSelecting = false;
           _selectedColor = null;
+          _touches.clear();
+          _availableColors = _allColors.toList();
+          _animationController.reset();
         });
-        _touches.clear();
-        setState(() {});
-        _animationController.reset();
       }
     });
   }
@@ -165,7 +170,8 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
             Icon(randTouchIcon),
           ],
         ),
-        backgroundColor: _selectedColor?.withValues(alpha: 0.8) ?? secondColor,
+        backgroundColor:
+            _selectedColor?.$1.withValues(alpha: 0.8) ?? secondColor,
         foregroundColor: textColor,
         actions: [
           Container(
@@ -197,7 +203,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
         behavior: HitTestBehavior.translucent,
         child: AnimatedContainer(
           duration: Duration(milliseconds: 500),
-          color: _selectedColor ?? firstColor,
+          color: _selectedColor?.$1 ?? firstColor,
           child: Stack(
             children: [
               // Точки касания
@@ -212,11 +218,11 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
                     height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: touch.color.withValues(alpha: 0.8),
-                      border: Border.all(color: touch.color, width: 3),
+                      color: touch.colorData.$1.withValues(alpha: 0.8),
+                      border: Border.all(color: touch.colorData.$1, width: 3),
                       boxShadow: [
                         BoxShadow(
-                          color: touch.color.withValues(alpha: 0.5),
+                          color: touch.colorData.$1.withValues(alpha: 0.5),
                           blurRadius: 15,
                           spreadRadius: 3,
                         ),
@@ -224,7 +230,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
                     ),
                     child: Center(
                       child: Text(
-                        diceEmoji,
+                        touch.colorData.$2.toString(),
                         style: TextStyle(
                           color: textColor,
                           fontWeight: FontWeight.bold,
@@ -250,10 +256,10 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color:
-                                  _selectedColor?.withValues(alpha: 0.3) ??
+                                  _selectedColor?.$1.withValues(alpha: 0.3) ??
                                   Colors.transparent,
                               border: Border.all(
-                                color: _selectedColor ?? textColor,
+                                color: _selectedColor?.$1 ?? textColor,
                                 width: 4 - 2 * _animationController.value,
                               ),
                             ),
@@ -262,7 +268,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
                       ),
                       SizedBox(height: 20),
                       Text(
-                        'Выбрано!',
+                        'Выбрано! #${_selectedColor?.$2}',
                         style: TextStyle(
                           color: textColor,
                           fontSize: 28,
@@ -314,9 +320,8 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
                     value: _selectionTimer?.isActive ?? false ? 1.0 : 0.0,
                     backgroundColor: textColor,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      _availableColors[_random.nextInt(
-                        _availableColors.length,
-                      )],
+                      _availableColors[_random.nextInt(_availableColors.length)]
+                          .$1,
                     ),
                   ),
                 ),

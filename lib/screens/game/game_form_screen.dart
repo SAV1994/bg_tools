@@ -168,6 +168,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
 
         ref.invalidate(gameFullDataProvider);
         ref.read(gamesPaginatedProvider.notifier).refresh();
+        ref.read(ratingsGamesPaginatedProvider.notifier).refresh();
 
         if (mounted) {
           Navigator.pop(context, true);
