@@ -233,11 +233,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     label: 'Художники',
                     icon: artistsIcon,
                   ),
-                  // MenuButton(
-                  //   onPressed: () => {},
-                  //   label: 'Статистика',
-                  //   icon: Icons.trending_up,
-                  // ),
+                  MenuButton(
+                    onPressed: () => context.pushNamed('statistics'),
+                    label: 'Статистика',
+                    icon: statisticsIcon,
+                  ),
                   MenuButton(
                     onPressed: () => context.pushNamed('top'),
                     label: 'Мой рейтинг игр',

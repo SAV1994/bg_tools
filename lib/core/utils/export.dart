@@ -6,6 +6,7 @@ export 'confirm_clear_sessions_modal_form_builder.dart';
 export 'confirm_del_modal_builder.dart';
 export 'dateformats.dart';
 export 'ensure_map_attr.dart';
+export 'format_minutes.dart';
 export 'gamer_fio_builder.dart';
 export 'get_duration.dart';
 export 'get_place_text.dart';

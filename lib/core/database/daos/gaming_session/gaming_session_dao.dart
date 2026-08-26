@@ -144,6 +144,32 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     return await delete(gamingSessions).go();
   }
 
+  // Игровые сессии
+  Future<List<GamingSessionData>> getAllFinished({
+    int? gameId,
+    DateTime? periodStart,
+    DateTime? periodEnd,
+  }) async {
+    SimpleSelectStatement query = _getFilteredQuery(
+      query: _getBaseQuery(),
+      onlyIsFinished: true,
+      gameId: gameId,
+      periodStart: periodStart,
+      periodEnd: periodEnd,
+    );
+    final joinedQuery = query.join([
+      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
+    ]);
+
+    final rows = await joinedQuery.get();
+    return rows.map((row) {
+      final Game game = row.readTable(games);
+      final GamingSession gamingSession = row.readTable(gamingSessions);
+
+      return GamingSessionData(gamingSession: gamingSession, game: game);
+    }).toList();
+  }
+
   // Игровые сессии с пагинацией
   Future<List<GamingSessionData>> getPaginated({
     required int page,
@@ -371,6 +397,8 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     required bool onlyIsFinished,
     int? gameId,
     String? searchQuery,
+    DateTime? periodStart,
+    DateTime? periodEnd,
   }) {
     if (onlyIsFinished) {
       query = query..where((gs) => gs.isFinished.equals(true));
@@ -378,6 +406,16 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
     if (gameId != null) {
       query = query..where((gs) => gs.gameId.equals(gameId));
+    }
+
+    if (periodStart != null) {
+      query = query
+        ..where((gs) => gs.finishedAt.isBiggerOrEqualValue(periodStart));
+    }
+
+    if (periodEnd != null) {
+      query = query
+        ..where((gs) => gs.finishedAt.isSmallerOrEqualValue(periodEnd));
     }
 
     if (searchQuery != null && searchQuery.isNotEmpty) {

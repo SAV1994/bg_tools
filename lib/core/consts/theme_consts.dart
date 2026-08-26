@@ -38,6 +38,12 @@ const IconData addBtnIcon = Icons.add_box;
 const IconData errorIcon = Icons.report_problem;
 const IconData commonSelectIcon = Icons.menu;
 
+const IconData statisticsIcon = Icons.trending_up;
+const IconData sessionsStatIcon = Icons.pie_chart;
+const IconData winRateIcon = Icons.poll;
+const IconData competitiveStatIcon = Icons.flash_on;
+const IconData coopStatIcon = Icons.local_florist;
+
 const IconData randomIcon = Icons.casino;
 const IconData randNumIcon = Icons.filter_7;
 const IconData fateIcon = Icons.view_week;
@@ -49,3 +55,4 @@ const String firstPlaceMedalEmoji = '🥇';
 const String secondPlaceMedalEmoji = '🥈';
 const String thirdPlaceMedalEmoji = '🥉';
 const String diceEmoji = '🎲';
+const String timerEmoji = '⌚';

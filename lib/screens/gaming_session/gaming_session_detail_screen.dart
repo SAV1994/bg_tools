@@ -60,9 +60,7 @@ class _GamingSessionDetailScreenState
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ref.invalidate(
-                gamingSessionFullDataProvider(widget.gamingSessionId),
-              );
+              ref.invalidate(gamingSessionFullDataProvider);
             },
             child: const Text('Повторить'),
           ),
