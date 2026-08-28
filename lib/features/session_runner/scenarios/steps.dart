@@ -22,7 +22,7 @@ final rootSessionSelectStep = ScenarioStep(
       RoundsTypeEnum.dynamic.id,
       RoundsTypeEnum.condition.id,
     ].contains(data['roundsType'])) {
-      data['totalRounds'] = infNumRounds;
+      data['totalRounds'] = pseudoInfNum;
     }
 
     if (data['gameHostType'] == GameHostTypeEnum.master.id &&

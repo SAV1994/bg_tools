@@ -35,23 +35,17 @@ class _StatisticsMainScreenState extends ConsumerState<StatisticsMainScreen> {
                     icon: sessionsStatIcon,
                   ),
 
-                  // MenuButton(
-                  //   onPressed: () => context.pushNamed('statistics-win-rate'),
-                  //   label: 'Статистика побед',
-                  //   icon: winRateIcon,
-                  // ),
+                  MenuButton(
+                    onPressed: () => context.pushNamed('statistics-win-rate'),
+                    label: 'Статистика побед',
+                    icon: winRateIcon,
+                  ),
 
-                  // MenuButton(
-                  //   onPressed: () {},
-                  //   label: 'Соревновательные',
-                  //   icon: competitiveStatIcon,
-                  // ),
-
-                  // MenuButton(
-                  //   onPressed: () {},
-                  //   label: 'Кооперативные',
-                  //   icon: coopStatIcon,
-                  // ),
+                  MenuButton(
+                    onPressed: () {},
+                    label: 'Статистика по игре',
+                    icon: gameStatIcon,
+                  ),
                 ],
               ),
             ),

@@ -380,7 +380,7 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
               (widget.data['round'] < widget.data['totalRounds'] &&
                       _isFinished == false)
                   ? 'Раунд ${widget.data['round'] + 1} из '
-                        '${(widget.data['totalRounds'] == infNumRounds) ? '∞' : widget.data['totalRounds']}'
+                        '${(widget.data['totalRounds'] == pseudoInfNum) ? '∞' : widget.data['totalRounds']}'
                   : 'По итогу всех раундов',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),

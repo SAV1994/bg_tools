@@ -41,8 +41,7 @@ const IconData commonSelectIcon = Icons.menu;
 const IconData statisticsIcon = Icons.trending_up;
 const IconData sessionsStatIcon = Icons.pie_chart;
 const IconData winRateIcon = Icons.poll;
-const IconData competitiveStatIcon = Icons.flash_on;
-const IconData coopStatIcon = Icons.local_florist;
+const IconData gameStatIcon = Icons.score;
 
 const IconData randomIcon = Icons.casino;
 const IconData randNumIcon = Icons.filter_7;
@@ -51,8 +50,10 @@ const IconData randCoinIcon = Icons.stars;
 const IconData randTouchIcon = Icons.touch_app;
 
 // Эмодзи
+const String winEmoji = '🏆';
 const String firstPlaceMedalEmoji = '🥇';
 const String secondPlaceMedalEmoji = '🥈';
 const String thirdPlaceMedalEmoji = '🥉';
 const String diceEmoji = '🎲';
 const String timerEmoji = '⌚';
+const String statEmoji = '📊';

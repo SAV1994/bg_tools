@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/gaming_session.dart';
 import 'package:bg_tools/core/database/tables/gaming_sessions_expansions.dart';
@@ -145,7 +146,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Игровые сессии
-  Future<List<GamingSessionData>> getAllFinished({
+  Future<List<GamingSessionData>> getFinished({
     int? gameId,
     DateTime? periodStart,
     DateTime? periodEnd,
@@ -167,6 +168,76 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
       final GamingSession gamingSession = row.readTable(gamingSessions);
 
       return GamingSessionData(gamingSession: gamingSession, game: game);
+    }).toList();
+  }
+
+  // Игровые сессии (полная информация)
+  Future<List<GamingSessionFullData>> getFinishedFullData({
+    int? gameId,
+    DateTime? periodStart,
+    DateTime? periodEnd,
+  }) async {
+    SimpleSelectStatement query = _getFilteredQuery(
+      query: _getBaseQuery(),
+      onlyIsFinished: true,
+      gameId: gameId,
+      periodStart: periodStart,
+      periodEnd: periodEnd,
+    );
+    final joinedQuery = query.join([
+      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
+      innerJoin(
+        gamingSessionsGamers,
+        gamingSessionsGamers.gamingSessionId.equalsExp(gamingSessions.id),
+      ),
+      innerJoin(gamers, gamers.id.equalsExp(gamingSessionsGamers.gamerId)),
+    ]);
+
+    final rows = await joinedQuery.get();
+
+    final Map<int, dynamic> sessionsData = {};
+    for (TypedResult row in rows) {
+      final Game game = row.readTable(games);
+      final GamingSession gamingSession = row.readTable(gamingSessions);
+      final GamingSessionsGamer gamingSessionsGamer = row.readTable(
+        gamingSessionsGamers,
+      );
+      final Gamer gamer = row.readTable(gamers);
+      final GamingSessionGamerData gamerData = GamingSessionGamerData(
+        gamer: gamer,
+        score: gamingSessionsGamer.score,
+        place: gamingSessionsGamer.place,
+        turnOrder: gamingSessionsGamer.turnOrder,
+        team: gamingSessionsGamer.team,
+      );
+      if (sessionsData[gamingSession.id] == null) {
+        sessionsData[gamingSession.id] = {
+          'gamingSession': gamingSession,
+          'game': game,
+          'gamers': [gamerData],
+        };
+      } else {
+        sessionsData[gamingSession.id]['gamers'].add(gamerData);
+      }
+    }
+
+    return sessionsData.entries.map((entry) {
+      entry.value['gamers'].sort((a, b) {
+        final placeA = a.place as int? ?? pseudoInfNum;
+        final placeB = b.place as int? ?? pseudoInfNum;
+
+        return placeA.compareTo(placeB);
+      });
+
+      return GamingSessionFullData(
+        gamingSession: entry.value['gamingSession'],
+        game: entry.value['game'],
+        expansions: [],
+        selectedExpansionIds: {},
+        gamers: entry.value['gamers'],
+        sessionParts: [],
+        linkedSessions: [],
+      );
     }).toList();
   }
 
@@ -319,10 +390,10 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
     final expansions = await getExpansions(gamingSessionId);
     final selectedExpansionIds = expansions.map((g) => g.id).toSet();
-    final List<GamingSession?> sessionParts = await getBySession(
+    final List<GamingSession> sessionParts = await getBySession(
       gamingSessionId,
     );
-    final List<GamingSession?> linkedSessions = await getBySession(
+    final List<GamingSession> linkedSessions = await getBySession(
       gamingSessionId,
       isFinished: true,
     );

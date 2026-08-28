@@ -331,6 +331,7 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/statistics/win-rate',
       name: 'statistics-win-rate',
+      // builder: (BuildContext context, GoRouterState state) => WinRateScreen(),
       builder: (BuildContext context, GoRouterState state) => WinRateScreen(),
     ),
 

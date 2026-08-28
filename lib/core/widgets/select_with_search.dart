@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/loading_screen.dart';
 
 // Селект с возможностью поиска
@@ -46,7 +45,6 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
   bool _isLoading = false;
 
   String _searchQuery = '';
-  bool _isDropdownOpen = false;
 
   T? get _selectedItem => widget.selectedItem;
 
@@ -81,10 +79,10 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
   void _selectItem(T? item) {
     widget.onSelectionChanged(item);
     setState(() {
-      _isDropdownOpen = false;
       _searchQuery = '';
       _searchController.clear();
     });
+    Navigator.pop(context);
   }
 
   String _getSelectedName() {
@@ -94,182 +92,133 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
     return widget.displayName(_selectedItem as T);
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
+  void _showDropdownModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            final List<T> filteredItems = getFilteredItems();
 
-  @override
-  Widget build(BuildContext context) {
-    final List<T> filteredItems = getFilteredItems();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Метка
-        Row(
-          children: [
-            Text(
-              widget.label,
-              key: _dropdownKey,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
-            if (widget.isRequired) const Text(' *'),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Кнопка-селектор
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isDropdownOpen = !_isDropdownOpen;
-              scrollToDropdown(_dropdownKey);
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: _isDropdownOpen ? Colors.blue : Colors.grey.shade400,
-                width: _isDropdownOpen ? 2 : 1,
-              ),
-              borderRadius: BorderRadius.circular(8),
-              color: secondColor,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _getSelectedName(),
-                    style: TextStyle(
-                      color: _selectedItem == null ? Colors.red : textColor,
+            return Dialog(
+              insetPadding: EdgeInsets.zero,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: borderColor),
+                  borderRadius: BorderRadius.circular(8),
+                  color: secondColor,
+                ),
+                child: Column(
+                  children: [
+                    // Поле поиска
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: _searchController,
+                        autofocus: false,
+                        decoration: InputDecoration(
+                          hintText: widget.searchHint ?? 'Поиск...',
+                          prefixIcon: const Icon(Icons.search, size: 20),
+                          suffixIcon: _searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear, size: 20),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchController.clear();
+                                      _searchQuery = '';
+                                    });
+                                  },
+                                )
+                              : null,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() => _searchQuery = value);
+                        },
+                      ),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Icon(
-                  _isDropdownOpen ? Icons.expand_less : Icons.expand_more,
-                  color: Colors.grey.shade600,
-                ),
-              ],
-            ),
-          ),
-        ),
 
-        // Выпадающий список
-        if (_isDropdownOpen)
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            decoration: BoxDecoration(
-              border: Border.all(color: borderColor),
-              borderRadius: BorderRadius.circular(8),
-              color: secondColor,
-            ),
-            child: Column(
-              children: [
-                // Поле поиска
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _searchController,
-                    autofocus: false,
-                    decoration: InputDecoration(
-                      hintText: widget.searchHint ?? 'Поиск...',
-                      prefixIcon: const Icon(Icons.search, size: 20),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 20),
-                              onPressed: () {
-                                setState(() {
-                                  _searchController.clear();
-                                  _searchQuery = '';
-                                });
-                              },
+                    const Divider(height: 1),
+
+                    // Список элементов
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: widget.isRequired
+                            ? MediaQuery.of(context).size.height * 0.80
+                            : MediaQuery.of(context).size.height * 0.74,
+                      ),
+                      child: _isLoading
+                          ? LoadingScreen()
+                          : filteredItems.isEmpty
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.search_off,
+                                      size: 48,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Ничего не найдено',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             )
-                          : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() => _searchQuery = value);
-                    },
-                  ),
-                ),
+                          : Scrollbar(
+                              controller: _scrollController,
+                              thumbVisibility: true,
+                              child: ListView.builder(
+                                controller: _scrollController,
+                                shrinkWrap: true,
+                                itemCount: filteredItems.length,
+                                itemBuilder: (context, index) {
+                                  final item = filteredItems[index];
+                                  final isSelected = _selectedItem == item;
 
-                const Divider(height: 1),
-
-                // Список элементов
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.4,
-                  ),
-                  child: _isLoading
-                      ? LoadingScreen()
-                      : filteredItems.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(32.0),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.search_off,
-                                  size: 48,
-                                  color: Colors.grey.shade400,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Ничего не найдено',
-                                  style: TextStyle(color: Colors.grey.shade600),
-                                ),
-                              ],
+                                  return _buildListItem(item, isSelected);
+                                },
+                              ),
                             ),
-                          ),
-                        )
-                      : Scrollbar(
-                          controller: _scrollController,
-                          thumbVisibility: true,
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            shrinkWrap: true,
-                            itemCount: filteredItems.length,
-                            itemBuilder: (context, index) {
-                              final item = filteredItems[index];
-                              final isSelected = _selectedItem == item;
+                    ),
 
-                              return _buildListItem(item, isSelected);
-                            },
+                    // Кнопка очистки (если не обязательное поле)
+                    if (!widget.isRequired)
+                      Column(
+                        children: [
+                          const Divider(height: 1),
+                          ListTile(
+                            leading: const Icon(Icons.clear, color: Colors.red),
+                            title: Text(
+                              (_selectedItem == null) ? 'Закрыть' : 'Очистить',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onTap: () => _selectItem(null),
                           ),
-                        ),
-                ),
-
-                // Кнопка очистки (если не обязательное поле)
-                if (!widget.isRequired && _selectedItem != null)
-                  Column(
-                    children: [
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: const Icon(Icons.clear, color: Colors.red),
-                        title: const Text(
-                          'Очистить',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        onTap: () => _selectItem(null),
+                        ],
                       ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-      ],
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -307,6 +256,63 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
           ),
         ),
       ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Метка
+        Row(
+          children: [
+            Text(
+              widget.label,
+              key: _dropdownKey,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            if (widget.isRequired) const Text(' *'),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        // Кнопка-селектор
+        GestureDetector(
+          onTap: () {
+            _showDropdownModal();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: textColor),
+              borderRadius: BorderRadius.circular(8),
+              color: secondColor,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _getSelectedName(),
+                    style: TextStyle(
+                      color: _selectedItem == null ? Colors.red : textColor,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(Icons.expand_more, color: Colors.grey.shade600),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

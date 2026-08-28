@@ -33,10 +33,10 @@ class GamingSessionFullData {
   final Game game;
   final List<Game> expansions;
   final Set<int> selectedExpansionIds;
-  final List<GamingSessionGamerData?> gamers;
+  final List<GamingSessionGamerData> gamers;
   final GamingSession? rootSession;
-  final List<GamingSession?> sessionParts;
-  final List<GamingSession?> linkedSessions;
+  final List<GamingSession> sessionParts;
+  final List<GamingSession> linkedSessions;
 
   GamingSessionFullData({
     required this.gamingSession,

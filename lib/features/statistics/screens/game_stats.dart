@@ -31,14 +31,14 @@ class PlayerStats {
   });
 }
 
-class WinRateScreen extends ConsumerStatefulWidget {
-  const WinRateScreen({super.key});
+class GameStatsScreen extends ConsumerStatefulWidget {
+  const GameStatsScreen({super.key});
 
   @override
-  ConsumerState<WinRateScreen> createState() => _WinRateScreenState();
+  ConsumerState<GameStatsScreen> createState() => _GameStatsScreenState();
 }
 
-class _WinRateScreenState extends ConsumerState<WinRateScreen>
+class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
     with StatisticsMixin {
   late List<Color> _colors;
   Set<int> gamesIds = {};

@@ -8,6 +8,7 @@ import 'package:bg_tools/core/dataclasses/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/loading_screen.dart';
+import 'package:bg_tools/features/statistics/screens/statistics_mixin.dart';
 
 class SessionsStatisticsScreen extends ConsumerStatefulWidget {
   const SessionsStatisticsScreen({super.key});
@@ -18,42 +19,27 @@ class SessionsStatisticsScreen extends ConsumerStatefulWidget {
 }
 
 class _SessionsStatisticsScreenState
-    extends ConsumerState<SessionsStatisticsScreen> {
+    extends ConsumerState<SessionsStatisticsScreen>
+    with StatisticsMixin {
   final List<Map<String, dynamic>> _gamesStat = [];
   int _totalSesions = 0;
   int _totalTimes = 0;
   final List<Color> _colors = [];
   int? _touchedIndex;
-  late DateTime _periodStart;
-  late DateTime _periodEnd;
-  // Загрузка
-  bool _isLoading = false;
 
   @override
-  void initState() {
-    super.initState();
-    _isLoading = true;
-    _load();
-  }
-
-  Future<void> _load() async {
-    final DateTime now = DateTime.now();
-    _periodStart = DateTime(now.year, now.month - 1, now.day);
-    _periodEnd = DateTime(now.year, now.month, now.day);
-
-    await _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
+  Future<void> loadData() async {
+    setState(() => isLoading = true);
 
     final gamingSessionDao = ref.read(gamingSessionDaoProvider);
     _gamesStat.clear();
+    _colors.clear();
     _totalSesions = 0;
     _totalTimes = 0;
+    _touchedIndex = null;
 
     final List<GamingSessionData> gamingSessions = await gamingSessionDao
-        .getAllFinished(periodStart: _periodStart, periodEnd: _periodEnd);
+        .getFinished(periodStart: periodStart, periodEnd: periodEnd);
 
     Map<int, dynamic> gamesStat = {};
     for (final GamingSessionData sessionData in gamingSessions) {
@@ -83,64 +69,9 @@ class _SessionsStatisticsScreenState
 
     _gamesStat.sort((a, b) => a['sessionsCount'].compareTo(b['sessionsCount']));
 
-    _colors.addAll(_generateColors(_gamesStat.length));
+    _colors.addAll(generateColors(_gamesStat.length));
 
-    setState(() => _isLoading = false);
-  }
-
-  List<Color> _generateColors(int count) {
-    final List<Color> colorPalette = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-      Colors.pink,
-      Colors.amber,
-      Colors.indigo,
-      Colors.cyan,
-      Colors.pink,
-      Colors.grey,
-      Colors.brown,
-    ];
-
-    // Если игр больше, чем цветов, повторяем с разной прозрачностью
-    if (count <= colorPalette.length) {
-      return colorPalette.sublist(0, count);
-    } else {
-      final colors = <Color>[];
-      for (int i = 0; i < count; i++) {
-        final color = colorPalette[i % colorPalette.length];
-        final opacity = 1.0 - (i ~/ colorPalette.length) * 0.15;
-        colors.add(color.withValues(alpha: opacity));
-      }
-      return colors;
-    }
-  }
-
-  Future<void> _selectDate({bool isPeriodEnd = false}) async {
-    final DateTime initialDate = isPeriodEnd ? _periodEnd : _periodStart;
-
-    final date = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-
-    if (date == null) return;
-
-    if (mounted) {
-      setState(() {
-        if (isPeriodEnd) {
-          _periodEnd = date;
-        } else {
-          _periodStart = date;
-        }
-        _loadData();
-      });
-    }
+    setState(() => isLoading = false);
   }
 
   @override
@@ -164,7 +95,7 @@ class _SessionsStatisticsScreenState
         ],
       ),
 
-      body: _isLoading
+      body: isLoading
           ? LoadingScreen()
           : Scrollbar(
               thumbVisibility: true,
@@ -184,7 +115,7 @@ class _SessionsStatisticsScreenState
                           Expanded(
                             child: InkWell(
                               onTap: () async {
-                                _selectDate();
+                                selectDate();
                               },
                               child: InputDecorator(
                                 decoration: const InputDecoration(
@@ -192,7 +123,7 @@ class _SessionsStatisticsScreenState
                                   border: OutlineInputBorder(),
                                 ),
                                 child: Text(
-                                  DateFormats.formatDate(_periodStart),
+                                  DateFormats.formatDate(periodStart),
                                 ),
                               ),
                             ),
@@ -200,14 +131,14 @@ class _SessionsStatisticsScreenState
                           Expanded(
                             child: InkWell(
                               onTap: () async {
-                                _selectDate(isPeriodEnd: true);
+                                selectDate(isPeriodEnd: true);
                               },
                               child: InputDecorator(
                                 decoration: const InputDecoration(
                                   labelText: 'Конец периода *',
                                   border: OutlineInputBorder(),
                                 ),
-                                child: Text(DateFormats.formatDate(_periodEnd)),
+                                child: Text(DateFormats.formatDate(periodEnd)),
                               ),
                             ),
                           ),
@@ -334,8 +265,7 @@ class _SessionsStatisticsScreenState
                                             pieTouchResponse,
                                           ) {
                                             setState(() {
-                                              if ((event is FlTapDownEvent ||
-                                                  event is FlLongPressStart)) {
+                                              if (event is FlTapUpEvent) {
                                                 _touchedIndex = pieTouchResponse
                                                     ?.touchedSection
                                                     ?.touchedSectionIndex;
@@ -425,8 +355,7 @@ class _SessionsStatisticsScreenState
                                             FlTouchEvent event,
                                             pieTouchResponse,
                                           ) {
-                                            if (event is FlTapDownEvent ||
-                                                event is FlLongPressStart) {
+                                            if (event is FlTapUpEvent) {
                                               final int? touchedIndex =
                                                   pieTouchResponse
                                                       ?.touchedSection

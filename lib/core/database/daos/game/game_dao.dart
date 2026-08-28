@@ -156,6 +156,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     int? artistId,
     int? designerId,
     int? tagId,
+    Set<int>? ids,
   }) async {
     var query = _getBaseQuery();
     query = await _getFilteredQuery(
@@ -164,6 +165,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       artistId: artistId,
       designerId: designerId,
       tagId: tagId,
+      ids: ids,
     );
 
     return await query.get();
@@ -382,6 +384,7 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     int? designerId,
     int? tagId,
     String? searchQuery,
+    Set<int>? ids,
   }) async {
     if (onlyFavorite) {
       query = query..where((g) => g.isFavorite.isValue(true));
@@ -426,6 +429,10 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
           .map((gamesTag) => gamesTag.gameId)
           .get();
       query = query..where((g) => g.id.isIn(gamesIds));
+    }
+
+    if (ids != null) {
+      query = query..where((g) => g.id.isIn(ids));
     }
 
     if (searchQuery != null && searchQuery.isNotEmpty) {
