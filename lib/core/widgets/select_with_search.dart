@@ -48,13 +48,6 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
 
   T? get _selectedItem => widget.selectedItem;
 
-  @override
-  void initState() {
-    super.initState();
-
-    loadData();
-  }
-
   Future<void> loadData() async {
     setState(() => _isLoading = true);
 
@@ -92,134 +85,143 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
     return widget.displayName(_selectedItem as T);
   }
 
-  void _showDropdownModal() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            final List<T> filteredItems = getFilteredItems();
+  Future<void> _showDropdownModal() async {
+    await loadData();
 
-            return Dialog(
-              insetPadding: EdgeInsets.zero,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: borderColor),
-                  borderRadius: BorderRadius.circular(8),
-                  color: secondColor,
-                ),
-                child: Column(
-                  children: [
-                    // Поле поиска
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _searchController,
-                        autofocus: false,
-                        decoration: InputDecoration(
-                          hintText: widget.searchHint ?? 'Поиск...',
-                          prefixIcon: const Icon(Icons.search, size: 20),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear, size: 20),
-                                  onPressed: () {
-                                    setState(() {
-                                      _searchController.clear();
-                                      _searchQuery = '';
-                                    });
-                                  },
-                                )
-                              : null,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setStateDialog) {
+              final List<T> filteredItems = getFilteredItems();
+
+              return Dialog(
+                insetPadding: EdgeInsets.zero,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: borderColor),
+                    borderRadius: BorderRadius.circular(8),
+                    color: secondColor,
+                  ),
+                  child: Column(
+                    children: [
+                      // Поле поиска
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _searchController,
+                          autofocus: false,
+                          decoration: InputDecoration(
+                            hintText: widget.searchHint ?? 'Поиск...',
+                            prefixIcon: const Icon(Icons.search, size: 20),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear, size: 20),
+                                    onPressed: () {
+                                      setState(() {
+                                        _searchController.clear();
+                                        _searchQuery = '';
+                                      });
+                                    },
+                                  )
+                                : null,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
+                          onChanged: (value) {
+                            setState(() => _searchQuery = value);
+                          },
                         ),
-                        onChanged: (value) {
-                          setState(() => _searchQuery = value);
-                        },
                       ),
-                    ),
 
-                    const Divider(height: 1),
+                      const Divider(height: 1),
 
-                    // Список элементов
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: widget.isRequired
-                            ? MediaQuery.of(context).size.height * 0.80
-                            : MediaQuery.of(context).size.height * 0.74,
-                      ),
-                      child: _isLoading
-                          ? LoadingScreen()
-                          : filteredItems.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(32.0),
-                                child: Column(
-                                  children: [
-                                    Icon(
-                                      Icons.search_off,
-                                      size: 48,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Ничего не найдено',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade600,
+                      // Список элементов
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: widget.isRequired
+                              ? MediaQuery.of(context).size.height * 0.80
+                              : MediaQuery.of(context).size.height * 0.74,
+                        ),
+                        child: _isLoading
+                            ? LoadingScreen()
+                            : filteredItems.isEmpty
+                            ? Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(32.0),
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.search_off,
+                                        size: 48,
+                                        color: Colors.grey.shade400,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Ничего не найдено',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Scrollbar(
+                                controller: _scrollController,
+                                thumbVisibility: true,
+                                child: ListView.builder(
+                                  controller: _scrollController,
+                                  shrinkWrap: true,
+                                  itemCount: filteredItems.length,
+                                  itemBuilder: (context, index) {
+                                    final item = filteredItems[index];
+                                    final isSelected = _selectedItem == item;
+
+                                    return _buildListItem(item, isSelected);
+                                  },
                                 ),
                               ),
-                            )
-                          : Scrollbar(
-                              controller: _scrollController,
-                              thumbVisibility: true,
-                              child: ListView.builder(
-                                controller: _scrollController,
-                                shrinkWrap: true,
-                                itemCount: filteredItems.length,
-                                itemBuilder: (context, index) {
-                                  final item = filteredItems[index];
-                                  final isSelected = _selectedItem == item;
-
-                                  return _buildListItem(item, isSelected);
-                                },
-                              ),
-                            ),
-                    ),
-
-                    // Кнопка очистки (если не обязательное поле)
-                    if (!widget.isRequired)
-                      Column(
-                        children: [
-                          const Divider(height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.clear, color: Colors.red),
-                            title: Text(
-                              (_selectedItem == null) ? 'Закрыть' : 'Очистить',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            onTap: () => _selectItem(null),
-                          ),
-                        ],
                       ),
-                  ],
+
+                      // Кнопка очистки (если не обязательное поле)
+                      if (!widget.isRequired)
+                        Column(
+                          children: [
+                            const Divider(height: 1),
+                            ListTile(
+                              leading: const Icon(
+                                Icons.clear,
+                                color: Colors.red,
+                              ),
+                              title: Text(
+                                (_selectedItem == null)
+                                    ? 'Закрыть'
+                                    : 'Очистить',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              onTap: () => _selectItem(null),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
+              );
+            },
+          );
+        },
+      );
+    }
   }
 
   Widget _buildListItem(T item, bool isSelected) {

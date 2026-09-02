@@ -9,6 +9,7 @@ class InfoRow extends ConsumerStatefulWidget {
   final String? value;
   final Color? valueColor;
   final bool addDivider;
+  final Function? onTap;
 
   const InfoRow({
     super.key,
@@ -16,6 +17,7 @@ class InfoRow extends ConsumerStatefulWidget {
     this.value,
     this.valueColor,
     this.addDivider = true,
+    this.onTap,
   });
 
   @override
@@ -23,6 +25,13 @@ class InfoRow extends ConsumerStatefulWidget {
 }
 
 class _InfoRowState extends ConsumerState<InfoRow> {
+  Widget getText() {
+    return Text(
+      widget.value ?? emptyVal,
+      style: TextStyle(fontWeight: FontWeight.w500, color: widget.valueColor),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -40,13 +49,12 @@ class _InfoRowState extends ConsumerState<InfoRow> {
                 child: Text(widget.label, style: TextStyle(color: titleColor)),
               ),
               Expanded(
-                child: Text(
-                  widget.value ?? emptyVal,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: widget.valueColor,
-                  ),
-                ),
+                child: widget.onTap == null
+                    ? getText()
+                    : GestureDetector(
+                        onTap: () => widget.onTap!(),
+                        child: getText(),
+                      ),
               ),
             ],
           ),

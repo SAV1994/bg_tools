@@ -80,7 +80,7 @@ class _GamingSessionDetailScreenState
           .map(
             (session) =>
                 getDuration(
-                      session!.startedAt,
+                      session.startedAt,
                       session.finishedAt,
                       convertToStr: false,
                     )

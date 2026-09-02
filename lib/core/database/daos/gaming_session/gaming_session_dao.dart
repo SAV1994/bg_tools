@@ -345,6 +345,25 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     )..where((g) => g.id.equals(gamingSessionId))).getSingleOrNull();
   }
 
+  // Последняя сессия
+  Future<GamingSessionData?> getLast() async {
+    SimpleSelectStatement query = _getFilteredQuery(
+      query: _getBaseQuery(reverse: true),
+      onlyIsFinished: true,
+    )..limit(1);
+    final joinedQuery = query.join([
+      innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
+    ]);
+
+    final rows = await joinedQuery.get();
+    return rows.map((row) {
+      final Game game = row.readTable(games);
+      final GamingSession gamingSession = row.readTable(gamingSessions);
+
+      return GamingSessionData(gamingSession: gamingSession, game: game);
+    }).first;
+  }
+
   // Игровая сессия со всеми игроками
   Future<GamingSessionFullData?> getFullInfo(int gamingSessionId) async {
     final gamingSession = await getSingle(gamingSessionId);

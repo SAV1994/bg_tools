@@ -42,7 +42,7 @@ class _StatisticsMainScreenState extends ConsumerState<StatisticsMainScreen> {
                   ),
 
                   MenuButton(
-                    onPressed: () {},
+                    onPressed: () => context.pushNamed('statistics-game'),
                     label: 'Статистика по игре',
                     icon: gameStatIcon,
                   ),

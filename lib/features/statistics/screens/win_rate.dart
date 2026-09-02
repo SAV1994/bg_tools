@@ -10,8 +10,10 @@ import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/statistics/screens/statistics_mixin.dart';
+import 'package:bg_tools/features/statistics/widgets/empty_players_list_banner.dart';
+import 'package:bg_tools/features/statistics/widgets/legend_indicator.dart';
 
-class PlayerStats {
+class _PlayerStats {
   final String name;
   int totalPlayed;
   int wins;
@@ -20,14 +22,14 @@ class PlayerStats {
   Color? color;
   double? rating;
 
-  PlayerStats({
+  _PlayerStats({
     required this.name,
     required this.totalPlayed,
     required this.wins,
     required this.secondPlace,
     required this.thirdPlace,
-    this.color,
-    this.rating,
+    required this.color,
+    required this.rating,
   });
 }
 
@@ -46,6 +48,8 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
   List<dynamic> _playersStat = [];
   List<dynamic> _selectedPlayers = [];
   int? _selectedIndex;
+  // Контроллеры
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Future<void> loadData() async {
@@ -70,12 +74,14 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
       final int playersCount = sessionData.gamers.length;
       for (final GamingSessionGamerData playerData in sessionData.gamers) {
         if (playersStat[playerData.gamer.id] == null) {
-          playersStat[playerData.gamer.id] = PlayerStats(
+          playersStat[playerData.gamer.id] = _PlayerStats(
             name: playerData.gamer.username,
             totalPlayed: 0,
             wins: 0,
             secondPlace: 0,
             thirdPlace: 0,
+            color: null,
+            rating: 0,
           );
         }
         playersStat[playerData.gamer.id].totalPlayed += 1;
@@ -95,7 +101,7 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
       }
     }
 
-    for (final PlayerStats playerStats in playersStat.values) {
+    for (final _PlayerStats playerStats in playersStat.values) {
       final double coefficient = (playerStats.totalPlayed > 10)
           ? 1.1
           : 1 + playerStats.totalPlayed / 100;
@@ -125,7 +131,7 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
     loadData();
   }
 
-  bool _isSelected(PlayerStats player) {
+  bool _isSelected(_PlayerStats player) {
     return _selectedPlayers.contains(player);
   }
 
@@ -139,7 +145,7 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
     }
   }
 
-  void _togglePlayer(PlayerStats player) {
+  void _togglePlayer(_PlayerStats player) {
     if (_isSelected(player)) {
       _selectedPlayers.remove(player);
     } else if (_selectedPlayers.length < 5) {
@@ -231,6 +237,7 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
                       child: Padding(
                         padding: EdgeInsets.all(12),
                         child: TextField(
+                          controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Поиск игроков...',
                             prefixIcon: Icon(Icons.search),
@@ -244,8 +251,10 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
                                 ? IconButton(
                                     icon: Icon(Icons.clear),
                                     onPressed: () {
+                                      FocusScope.of(context).unfocus();
                                       setStateDialog(() {
                                         searchQuery = '';
+                                        _searchController.clear();
                                       });
                                     },
                                   )
@@ -440,6 +449,7 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
                               style: TextStyle(color: textColor),
                             ),
                           ),
+                          Spacer(),
                           TextButton(
                             onPressed: () {
                               setState(() {
@@ -452,18 +462,6 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
                               style: TextStyle(color: textColor),
                             ),
                           ),
-                          Spacer(),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {});
-                              Navigator.pop(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: goldColor,
-                              foregroundColor: firstColor,
-                            ),
-                            child: Text('Применить'),
-                          ),
                         ],
                       ),
                     ),
@@ -474,23 +472,6 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
           },
         );
       },
-    );
-  }
-
-  Widget _buildLegendIndicator(String label, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(3),
-          ),
-        ),
-        SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 11, color: textColor)),
-      ],
     );
   }
 
@@ -555,6 +536,12 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final maxY = _selectedPlayers.isEmpty
         ? 10
@@ -602,382 +589,398 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
       ),
       body: isLoading
           ? LoadingScreen()
-          : Padding(
-              padding: EdgeInsetsGeometry.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              child: Column(
-                spacing: 10,
-                children: [
-                  Row(
-                    spacing: 5,
+          : Scrollbar(
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsetsGeometry.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    spacing: 10,
                     children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () async {
-                            selectDate();
-                          },
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              labelText: 'Начало периода *',
-                              border: OutlineInputBorder(),
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                selectDate();
+                              },
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  labelText: 'Начало периода *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                child: Text(
+                                  DateFormats.formatDate(periodStart),
+                                ),
+                              ),
                             ),
-                            child: Text(DateFormats.formatDate(periodStart)),
                           ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                selectDate(isPeriodEnd: true);
+                              },
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  labelText: 'Конец периода *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                child: Text(DateFormats.formatDate(periodEnd)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SelectWithSearch<Game>(
+                        label: 'Игра',
+                        getItems: () => getItemsForGameSelect(),
+                        selectedItem: _selectedGame,
+                        onSelectionChanged: (game) {
+                          _onGameSelected(game);
+                        },
+                        displayName: (game) => game.name,
+                        getId: (game) => game.id,
+                        searchHint: 'Поиск игры...',
+                        placeholder: 'Не выбрана',
+                        customItemBuilder: (game) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              game.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () async {
-                            selectDate(isPeriodEnd: true);
-                          },
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              labelText: 'Конец периода *',
-                              border: OutlineInputBorder(),
-                            ),
-                            child: Text(DateFormats.formatDate(periodEnd)),
+
+                      if (_selectedPlayers.isEmpty) EmptyPlayersListBanner(),
+
+                      // Диаграмма
+                      if (_selectedPlayers.isNotEmpty) ...[
+                        Container(
+                          padding: EdgeInsetsGeometry.symmetric(
+                            vertical: 2,
+                            horizontal: 16,
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SelectWithSearch<Game>(
-                    label: 'Игра',
-                    getItems: () => getItemsForGameSelect(),
-                    selectedItem: _selectedGame,
-                    onSelectionChanged: (baseGame) {
-                      _onGameSelected(baseGame);
-                    },
-                    displayName: (baseGame) => baseGame.name,
-                    getId: (baseGame) => baseGame.id,
-                    searchHint: 'Поиск игры...',
-                    placeholder: 'Не выбрана',
-                    customItemBuilder: (baseGame) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          baseGame.name,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Диаграмма
-                  if (_selectedPlayers.isNotEmpty)
-                    Expanded(
-                      flex: 3,
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: BarChart(
-                          BarChartData(
-                            alignment: BarChartAlignment.spaceAround,
-                            maxY: maxY.toDouble(),
-                            barTouchData: BarTouchData(
-                              touchTooltipData: BarTouchTooltipData(
-                                getTooltipColor: (group) {
-                                  final index = group.x.toInt();
-                                  return _selectedPlayers[index].color!;
-                                },
-                                getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                                  final player =
-                                      _selectedPlayers[group.x.toInt()];
-                                  if (player.totalPlayed == 0) {
+                          height: 350,
+                          child: BarChart(
+                            BarChartData(
+                              alignment: BarChartAlignment.spaceAround,
+                              maxY: maxY.toDouble(),
+                              barTouchData: BarTouchData(
+                                touchTooltipData: BarTouchTooltipData(
+                                  getTooltipColor: (group) {
+                                    final index = group.x.toInt();
+                                    return _selectedPlayers[index].color!;
+                                  },
+                                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                    final player =
+                                        _selectedPlayers[group.x.toInt()];
+                                    if (player.totalPlayed == 0) {
+                                      return BarTooltipItem(
+                                        '${player.name}\n🎮 Нет игр',
+                                        TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      );
+                                    }
+                                    final winRate =
+                                        (player.wins /
+                                        player.totalPlayed *
+                                        100);
                                     return BarTooltipItem(
-                                      '${player.name}\n🎮 Нет игр',
+                                      '${player.name}\n'
+                                      '$diceEmoji: ${player.totalPlayed} $winEmoji: ${player.wins}\n'
+                                      '$secondPlaceMedalEmoji: ${player.secondPlace} $thirdPlaceMedalEmoji: ${player.thirdPlace}\n'
+                                      '$statEmoji: ${winRate.toStringAsFixed(1)}%',
                                       TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                       ),
                                     );
-                                  }
-                                  final winRate =
-                                      (player.wins / player.totalPlayed * 100);
-                                  return BarTooltipItem(
-                                    '${player.name}\n'
-                                    '$diceEmoji: ${player.totalPlayed} $winEmoji: ${player.wins}\n'
-                                    '$secondPlaceMedalEmoji: ${player.secondPlace} $thirdPlaceMedalEmoji: ${player.thirdPlace}\n'
-                                    '$statEmoji: ${winRate.toStringAsFixed(1)}%',
-                                    TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
+                                  },
+                                ),
+                                touchCallback:
+                                    (
+                                      FlTouchEvent event,
+                                      BarTouchResponse? response,
+                                    ) {
+                                      setState(() {
+                                        if (event is FlTapUpEvent) {
+                                          final index = response
+                                              ?.spot
+                                              ?.touchedBarGroupIndex;
+                                          if (index != null &&
+                                              index >= 0 &&
+                                              index < _selectedPlayers.length) {
+                                            _selectedIndex = index;
+                                          }
+                                        } else {
+                                          _selectedIndex = null;
+                                        }
+                                      });
+                                    },
+                              ),
+                              titlesData: FlTitlesData(
+                                show: true,
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 75,
+                                    getTitlesWidget: (value, meta) {
+                                      final index = value.toInt();
+                                      if (index < 0 ||
+                                          index >= _selectedPlayers.length) {
+                                        return Container();
+                                      }
+                                      final player = _selectedPlayers[index];
+                                      final isSelected =
+                                          _selectedIndex == index;
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                          top: 4,
+                                          bottom: 4,
+                                        ),
+                                        child: Transform.rotate(
+                                          angle:
+                                              -45 *
+                                              3.14159 /
+                                              180, // -45 градусов
+                                          child: FittedBox(
+                                            fit: BoxFit
+                                                .scaleDown, // ← Уменьшает, но не увеличивает
+                                            child: Text(
+                                              player.name,
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: isSelected
+                                                    ? FontWeight.bold
+                                                    : FontWeight.w500,
+                                                color: isSelected
+                                                    ? player.color
+                                                    : Colors.grey.shade600,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 40,
+                                    getTitlesWidget: (value, meta) {
+                                      return Text(
+                                        value.toInt().toString(),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                topTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                rightTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                              ),
+                              borderData: FlBorderData(
+                                show: true,
+                                border: Border(
+                                  left: BorderSide(color: Colors.grey.shade300),
+                                  bottom: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                              ),
+                              gridData: FlGridData(
+                                show: true,
+                                horizontalInterval: 5,
+                                drawVerticalLine: false,
+                                getDrawingHorizontalLine: (value) {
+                                  return FlLine(
+                                    color: Colors.grey.shade200,
+                                    strokeWidth: 1,
+                                    dashArray: [5, 5],
                                   );
                                 },
                               ),
-                              touchCallback:
-                                  (
-                                    FlTouchEvent event,
-                                    BarTouchResponse? response,
-                                  ) {
-                                    setState(() {
-                                      if (event is FlTapUpEvent) {
-                                        final index = response
-                                            ?.spot
-                                            ?.touchedBarGroupIndex;
-                                        if (index != null &&
-                                            index >= 0 &&
-                                            index < _selectedPlayers.length) {
-                                          _selectedIndex = index;
-                                        }
-                                      } else {
-                                        _selectedIndex = null;
-                                      }
-                                    });
-                                  },
+                              barGroups: _buildBarGroups(),
                             ),
-                            titlesData: FlTitlesData(
-                              show: true,
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitlesWidget: (value, meta) {
-                                    final index = value.toInt();
-                                    if (index < 0 ||
-                                        index >= _selectedPlayers.length) {
-                                      return Container();
-                                    }
-                                    final player = _selectedPlayers[index];
-                                    final isSelected = _selectedIndex == index;
-                                    return Padding(
-                                      padding: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        player.name,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.w500,
-                                          color: isSelected
-                                              ? player.color
-                                              : Colors.grey.shade600,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    );
-                                  },
-                                  reservedSize: 40,
-                                ),
-                              ),
-                              leftTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 40,
-                                  getTitlesWidget: (value, meta) {
-                                    return Text(
-                                      value.toInt().toString(),
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              topTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
-                              rightTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
-                            ),
-                            borderData: FlBorderData(
-                              show: true,
-                              border: Border(
-                                left: BorderSide(color: Colors.grey.shade300),
-                                bottom: BorderSide(color: Colors.grey.shade300),
-                              ),
-                            ),
-                            gridData: FlGridData(
-                              show: true,
-                              horizontalInterval: 5,
-                              drawVerticalLine: false,
-                              getDrawingHorizontalLine: (value) {
-                                return FlLine(
-                                  color: Colors.grey.shade200,
-                                  strokeWidth: 1,
-                                  dashArray: [5, 5],
-                                );
-                              },
-                            ),
-                            barGroups: _buildBarGroups(),
                           ),
                         ),
-                      ),
-                    ),
 
-                  if (_selectedPlayers.isEmpty)
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.people_outline,
-                              size: 64,
-                              color: textColor,
+                        Container(
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: secondColor,
+                            border: Border(
+                              top: BorderSide(color: Colors.grey.shade200),
                             ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Не выбрано игроков',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: textColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                  if (_selectedPlayers.isNotEmpty)
-                    Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: secondColor,
-                        border: Border(
-                          top: BorderSide(color: Colors.grey.shade200),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Легенда:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
                               Row(
-                                spacing: 5,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  _buildLegendIndicator(
-                                    'Всего игр',
-                                    Colors.grey.shade300,
+                                  Text(
+                                    'Легенда:',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10,
+                                    ),
                                   ),
-                                  _buildLegendIndicator('Победы', firstColor),
-                                  _buildLegendIndicator('2 место', silverColor),
-                                  _buildLegendIndicator('3 место', bronzeColor),
+                                  Row(
+                                    spacing: 3,
+                                    children: [
+                                      LegendIndicator(
+                                        label: 'Победы',
+                                        color: firstColor,
+                                      ),
+                                      LegendIndicator(
+                                        label: '2 место',
+                                        color: silverColor,
+                                      ),
+                                      LegendIndicator(
+                                        label: '3 место',
+                                        color: bronzeColor,
+                                      ),
+                                      LegendIndicator(
+                                        label: 'Поражение',
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ],
+                                  ),
                                 ],
+                              ),
+                              SizedBox(height: 10),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _selectedPlayers.asMap().entries.map((
+                                  entry,
+                                ) {
+                                  final index = entry.key;
+                                  final player = entry.value;
+                                  final isSelected = _selectedIndex == index;
+                                  final winRate = player.totalPlayed > 0
+                                      ? (player.wins / player.totalPlayed * 100)
+                                      : 0.0;
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        // Если кликаем на уже выбранный элемент - снимаем выделение
+                                        if (_selectedIndex == index) {
+                                          _selectedIndex = null;
+                                        } else {
+                                          _selectedIndex = index;
+                                        }
+                                      });
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: Duration(milliseconds: 300),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? player.color!.withOpacity(0.2)
+                                            : firstColor,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? player.color!
+                                              : Colors.grey.shade300,
+                                          width: isSelected ? 2 : 1,
+                                        ),
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: player.color!
+                                                      .withOpacity(0.3),
+                                                  blurRadius: 8,
+                                                  spreadRadius: 2,
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          AnimatedContainer(
+                                            duration: Duration(
+                                              milliseconds: 300,
+                                            ),
+                                            width: isSelected ? 14 : 10,
+                                            height: isSelected ? 14 : 10,
+                                            decoration: BoxDecoration(
+                                              color: player.color,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 2,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            '${player.name} $diceEmoji ${player.totalPlayed} $winEmoji ${player.wins} '
+                                            '$secondPlaceMedalEmoji ${player.secondPlace} $thirdPlaceMedalEmoji ${player.thirdPlace} '
+                                            '$statEmoji ${winRate.toStringAsFixed(0)}%',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.bold
+                                                  : FontWeight.w500,
+                                              color: isSelected
+                                                  ? firstColor
+                                                  : textColor,
+                                            ),
+                                          ),
+
+                                          if (isSelected)
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 4),
+                                              child: Icon(
+                                                Icons.check_circle,
+                                                size: 16,
+                                                color: player.color,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                             ],
                           ),
-                          SizedBox(height: 10),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _selectedPlayers.asMap().entries.map((
-                              entry,
-                            ) {
-                              final index = entry.key;
-                              final player = entry.value;
-                              final isSelected = _selectedIndex == index;
-                              final winRate = player.totalPlayed > 0
-                                  ? (player.wins / player.totalPlayed * 100)
-                                  : 0.0;
-
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    // Если кликаем на уже выбранный элемент - снимаем выделение
-                                    if (_selectedIndex == index) {
-                                      _selectedIndex = null;
-                                    } else {
-                                      _selectedIndex = index;
-                                    }
-                                  });
-                                },
-                                child: AnimatedContainer(
-                                  duration: Duration(milliseconds: 300),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? player.color!.withOpacity(0.2)
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? player.color!
-                                          : Colors.grey.shade300,
-                                      width: isSelected ? 2 : 1,
-                                    ),
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: player.color!.withOpacity(
-                                                0.3,
-                                              ),
-                                              blurRadius: 8,
-                                              spreadRadius: 2,
-                                            ),
-                                          ]
-                                        : null,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      AnimatedContainer(
-                                        duration: Duration(milliseconds: 300),
-                                        width: isSelected ? 14 : 10,
-                                        height: isSelected ? 14 : 10,
-                                        decoration: BoxDecoration(
-                                          color: player.color,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        '${player.name} $diceEmoji ${player.totalPlayed} $winEmoji ${player.wins} '
-                                        '$secondPlaceMedalEmoji ${player.secondPlace} $thirdPlaceMedalEmoji ${player.thirdPlace} '
-                                        '$statEmoji ${winRate.toStringAsFixed(0)}%',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.w500,
-                                          color: isSelected
-                                              ? player.color
-                                              : Colors.grey.shade700,
-                                        ),
-                                      ),
-
-                                      if (isSelected)
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 4),
-                                          child: Icon(
-                                            Icons.check_circle,
-                                            size: 16,
-                                            color: player.color,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
             ),
     );

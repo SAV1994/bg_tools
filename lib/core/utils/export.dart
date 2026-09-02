@@ -12,6 +12,7 @@ export 'get_duration.dart';
 export 'get_place_text.dart';
 export 'initial_player_data.dart';
 export 'initial_session_data.dart';
+export 'math.dart';
 export 'modal_select_list_builder.dart';
 export 'players_count_to_str.dart';
 export 'score_list_to_str.dart';

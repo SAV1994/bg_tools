@@ -342,7 +342,7 @@ class _GamingSessionFormScreenState
               children: [
                 Icon(Icons.add),
                 SizedBox(width: 4),
-                Text('Добавить игрока'),
+                Text('Добавить игрока', style: TextStyle(color: textColor)),
               ],
             ),
           ),
