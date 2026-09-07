@@ -13,6 +13,12 @@ part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
+    ListItems,
+    RandomLists,
+    RandomSetups,
+    RandomSetupsLists,
+    SavedSetups,
+    SavedSetupsListItems,
     Artists,
     CountingTemplates,
     Designers,
@@ -41,6 +47,7 @@ part 'app_database.g.dart';
     GamesCountingTemplatesDao,
     GamingSessionDao,
     NoteDao,
+    RandomListDao,
     RatingDao,
     TagDao,
   ],

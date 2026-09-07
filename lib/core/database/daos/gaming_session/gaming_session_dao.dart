@@ -99,7 +99,6 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     final updateResult = await (update(
       gamingSessions,
     )..where((gs) => gs.id.equals(gamingSessionId))).write(gamingSession);
-
     // 2. Удаляем старые связи
     await (delete(
       gamingSessionsGamers,

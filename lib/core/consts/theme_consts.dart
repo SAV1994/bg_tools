@@ -31,6 +31,7 @@ const IconData notesIcon = Icons.receipt;
 const IconData topsIcon = Icons.star;
 const IconData countersIcon = Icons.add_to_queue;
 const IconData delIcon = Icons.delete_outline;
+const IconData saveIcon = Icons.save;
 const IconData importIcon = Icons.system_update_alt;
 const IconData exportIcon = Icons.save_alt;
 const IconData loadingIcon = Icons.timer;
@@ -44,10 +45,13 @@ const IconData winRateIcon = Icons.poll;
 const IconData gameStatIcon = Icons.score;
 
 const IconData randomIcon = Icons.casino;
+const IconData randomListIcon = Icons.clear_all;
 const IconData randNumIcon = Icons.filter_7;
 const IconData fateIcon = Icons.view_week;
 const IconData randCoinIcon = Icons.stars;
 const IconData randTouchIcon = Icons.touch_app;
+
+const IconData rolesManagementIcon = Icons.folder_shared;
 
 // Эмодзи
 const String winEmoji = '🏆';

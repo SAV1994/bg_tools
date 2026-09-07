@@ -59,3 +59,8 @@ final ratingDaoProvider = Provider<RatingDao>((ref) {
 final tagDaoProvider = Provider<TagDao>((ref) {
   return ref.read(databaseProvider).tagDao;
 });
+
+// Рандомный список (ДАО)
+final randomListDaoProvider = Provider<RandomListDao>((ref) {
+  return ref.read(databaseProvider).randomListDao;
+});

@@ -104,8 +104,23 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
     });
   }
 
+  Future<void> _openRolesManagement() async {
+    await context.pushNamed('roles');
+
+    final Map<String, dynamic>? newSessionData =
+        await AppDataManager.loadActiveSession();
+
+    setState(() {
+      sessionData = newSessionData!;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return LoadingScreen();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(appName),
@@ -128,12 +143,23 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
             onPressed: () => context.pushNamed('randomizer'),
             tooltip: 'Рандомайзер',
           ),
+
           IconButton(
             visualDensity: VisualDensity(horizontal: -4.0),
             icon: Icon(countersIcon),
             onPressed: () => _openCounter(),
             tooltip: 'Каунтеры',
           ),
+
+          if (sessionData['gamers'].isNotEmpty &&
+              sessionData['roles'].isNotEmpty)
+            IconButton(
+              visualDensity: VisualDensity(horizontal: -4.0),
+              icon: Icon(rolesManagementIcon),
+              onPressed: () => _openRolesManagement(),
+              tooltip: 'Назначние роли/персонажа ',
+            ),
+
           TextButton(
             onPressed: () {
               ref.invalidate(sessionDataProvider);
@@ -144,66 +170,64 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
         ],
       ),
       body: Column(
-        children: _isLoading
-            ? [LoadingScreen()]
-            : [
-                // Прогресс
-                LinearProgressIndicator(
-                  value: (_currentStep + 1) / scenario.steps.length,
-                ),
+        children: [
+          // Прогресс
+          LinearProgressIndicator(
+            value: (_currentStep + 1) / scenario.steps.length,
+          ),
 
-                // Заголовок
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: (_currentStep >= 1)
-                          ? Icon(Icons.arrow_back_ios, color: goldColor)
-                          : Icon(Icons.do_not_disturb, color: redColor),
-                      onPressed: () {
-                        if (_currentStep >= 1) {
-                          _previousStep();
-                        }
-                      },
-                    ),
-                    Row(
-                      spacing: 5,
-                      children: [
-                        Text(
-                          _currentScenarioStep.title,
-                          style: TextStyle(fontSize: 16, color: titleColor),
-                        ),
-                        Tooltip(
-                          message: _currentScenarioStep.description,
-                          child: const Icon(
-                            Icons.info_outline,
-                            size: 25,
-                            color: titleColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      icon: (isLastStep)
-                          ? Icon(Icons.arrow_forward_ios, color: goldColor)
-                          : Icon(Icons.do_not_disturb, color: redColor),
-                      onPressed: () {
-                        if (isLastStep) {
-                          _nextStep();
-                        }
-                      },
-                    ),
-                  ],
-                ),
-
-                // Основной контент
-                Expanded(
-                  child: _currentScenarioStep.contentBuilder(
-                    sessionData,
-                    counterData,
+          // Заголовок
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: (_currentStep >= 1)
+                    ? Icon(Icons.arrow_back_ios, color: goldColor)
+                    : Icon(Icons.do_not_disturb, color: redColor),
+                onPressed: () {
+                  if (_currentStep >= 1) {
+                    _previousStep();
+                  }
+                },
+              ),
+              Row(
+                spacing: 5,
+                children: [
+                  Text(
+                    _currentScenarioStep.title,
+                    style: TextStyle(fontSize: 16, color: titleColor),
                   ),
-                ),
-              ],
+                  Tooltip(
+                    message: _currentScenarioStep.description,
+                    child: const Icon(
+                      Icons.info_outline,
+                      size: 25,
+                      color: titleColor,
+                    ),
+                  ),
+                ],
+              ),
+              IconButton(
+                icon: (isLastStep)
+                    ? Icon(Icons.arrow_forward_ios, color: goldColor)
+                    : Icon(Icons.do_not_disturb, color: redColor),
+                onPressed: () {
+                  if (isLastStep) {
+                    _nextStep();
+                  }
+                },
+              ),
+            ],
+          ),
+
+          // Основной контент
+          Expanded(
+            child: _currentScenarioStep.contentBuilder(
+              sessionData,
+              counterData,
+            ),
+          ),
+        ],
       ),
     );
   }

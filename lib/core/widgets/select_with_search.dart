@@ -121,7 +121,7 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                                 ? IconButton(
                                     icon: const Icon(Icons.clear, size: 20),
                                     onPressed: () {
-                                      setState(() {
+                                      setStateDialog(() {
                                         _searchController.clear();
                                         _searchQuery = '';
                                       });
@@ -138,7 +138,7 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                             ),
                           ),
                           onChanged: (value) {
-                            setState(() => _searchQuery = value);
+                            setStateDialog(() => _searchQuery = value);
                           },
                         ),
                       ),
@@ -148,7 +148,9 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                       // Список элементов
                       ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: widget.isRequired
+                          maxHeight: filteredItems.isEmpty
+                              ? MediaQuery.of(context).size.height * 0.40
+                              : widget.isRequired
                               ? MediaQuery.of(context).size.height * 0.80
                               : MediaQuery.of(context).size.height * 0.74,
                         ),
@@ -163,14 +165,12 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                                       Icon(
                                         Icons.search_off,
                                         size: 48,
-                                        color: Colors.grey.shade400,
+                                        color: textColor,
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
                                         'Ничего не найдено',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                        ),
+                                        style: TextStyle(color: textColor),
                                       ),
                                     ],
                                   ),

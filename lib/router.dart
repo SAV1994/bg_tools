@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/features/counters/screens/export.dart';
 import 'package:bg_tools/features/randomizer/screens/export.dart';
+import 'package:bg_tools/features/session_runner/screens/roles_management_screen.dart';
 import 'package:bg_tools/features/session_runner/step_wizard.dart';
 import 'package:bg_tools/features/statistics/screens/export.dart';
 import 'package:bg_tools/features/top/screens/export.dart';
@@ -265,6 +266,14 @@ final GoRouter goRouter = GoRouter(
       builder: (BuildContext context, GoRouterState state) => CountersScreen(),
     ),
 
+    // Назначение ролей / персонажей
+    GoRoute(
+      path: '/roles',
+      name: 'roles',
+      builder: (BuildContext context, GoRouterState state) =>
+          RoleManagementScreen(),
+    ),
+
     // Рандомайзер
     GoRoute(
       path: '/randomizer',
@@ -289,6 +298,12 @@ final GoRouter goRouter = GoRouter(
       name: 'randomizer-games',
       builder: (BuildContext context, GoRouterState state) =>
           RandomGamesScreen(),
+    ),
+    GoRoute(
+      path: '/randomizer/list',
+      name: 'randomizer-list',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomListScreen(),
     ),
     GoRoute(
       path: '/randomizer/dice',
