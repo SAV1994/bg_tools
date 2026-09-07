@@ -229,13 +229,13 @@ class _RandomFateScreenState extends State<RandomFateScreen> {
               Navigator.pop(context);
               _reset();
             },
-            child: Text('Повторить'),
+            child: Text('Повторить', style: TextStyle(color: textColor)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('Закрыть'),
+            child: Text('Закрыть', style: TextStyle(color: redColor)),
           ),
         ],
       ),
@@ -308,15 +308,6 @@ class _RandomFateScreenState extends State<RandomFateScreen> {
 
                         if (otherSum + newCount <= _totalBlocks) {
                           _setLabelCount(entry.key, newCount);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Сумма меток не может превышать $_totalBlocks',
-                              ),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
                         }
                       },
                     ),
@@ -471,14 +462,20 @@ class _RandomFateScreenState extends State<RandomFateScreen> {
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('Отмена'),
+                        child: Text(
+                          'Отмена',
+                          style: TextStyle(color: textColor),
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context);
                           _reset();
                         },
-                        child: Text('Сбросить'),
+                        child: Text(
+                          'Сбросить',
+                          style: TextStyle(color: redColor),
+                        ),
                       ),
                     ],
                   ),

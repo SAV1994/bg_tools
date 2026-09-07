@@ -93,7 +93,7 @@ class _GamingSessionFormScreenState
       _finishedAt = gamingSession.finishedAt;
       if (gamersData.isNotEmpty) {
         for (final gamerData in gamingSessionData!.gamers) {
-          _selectedGamers[gamerData!.gamer.id] = gamerData;
+          _selectedGamers[gamerData.gamer.id] = gamerData;
         }
       }
     }

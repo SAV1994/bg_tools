@@ -396,12 +396,12 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
                       child: Scrollbar(
                         thumbVisibility: true,
                         child: GridView.builder(
-                          padding: EdgeInsets.all(12),
+                          padding: EdgeInsets.all(4),
                           gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 220,
+                                crossAxisSpacing: 3,
+                                mainAxisSpacing: 6,
                                 childAspectRatio: _gameStat['scores'].isNotEmpty
                                     ? 1.1
                                     : 1.9,
@@ -428,7 +428,7 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
                                   ),
                                 ),
                                 child: Container(
-                                  padding: EdgeInsets.all(12),
+                                  padding: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
                                     color: secondColor,
@@ -496,7 +496,7 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
                                       ),
                                       // Статистика
                                       Row(
-                                        spacing: 4,
+                                        spacing: 2,
                                         children: [
                                           _buildStatChip(
                                             '${player.totalPlayed}',
@@ -516,7 +516,7 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
                                         ],
                                       ),
                                       Row(
-                                        spacing: 4,
+                                        spacing: 2,
                                         children: [
                                           _buildStatChip(
                                             '${player.secondPlace}',
@@ -534,13 +534,13 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
                                       if (player.scores.isNotEmpty) ...[
                                         Row(children: [Text('Победные очки')]),
                                         Row(
+                                          spacing: 2,
                                           children: [
                                             _buildStatChip(
                                               '${player.maxWP}',
                                               'макс',
                                               Colors.orange.shade600,
                                             ),
-                                            SizedBox(width: 4),
                                             _buildStatChip(
                                               '${player.minWP}',
                                               'мин',
@@ -1192,7 +1192,7 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
             margin: EdgeInsets.symmetric(vertical: 8),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
