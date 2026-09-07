@@ -199,6 +199,16 @@ class _GamingSessionFormScreenState
       initialDate: initialDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: secondColor),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (date == null) return;

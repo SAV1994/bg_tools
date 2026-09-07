@@ -44,6 +44,7 @@ Future<void> initSessionData(
 
   sessionData['roundsScoreLimit'] = gameData['roundsScoreLimit'];
   sessionData['secretRolesConfig'] = gameData['secretRolesConfig'];
+  sessionData['roles'] = gameData['roles'];
 
   late final String selector;
   if (sessionData['type'] == GameTypeEnum.secretRoles.id) {

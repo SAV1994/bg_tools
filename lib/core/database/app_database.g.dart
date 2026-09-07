@@ -3,6 +3,2760 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class $RandomListsTable extends RandomLists
+    with TableInfo<$RandomListsTable, RandomList> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RandomListsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<int> type = GeneratedColumn<int>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isUniqueMeta = const VerificationMeta(
+    'isUnique',
+  );
+  @override
+  late final GeneratedColumn<bool> isUnique = GeneratedColumn<bool>(
+    'is_unique',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_unique" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _itemsNumMeta = const VerificationMeta(
+    'itemsNum',
+  );
+  @override
+  late final GeneratedColumn<int> itemsNum = GeneratedColumn<int>(
+    'items_num',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, type, isUnique, itemsNum];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'random_lists';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RandomList> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('is_unique')) {
+      context.handle(
+        _isUniqueMeta,
+        isUnique.isAcceptableOrUnknown(data['is_unique']!, _isUniqueMeta),
+      );
+    }
+    if (data.containsKey('items_num')) {
+      context.handle(
+        _itemsNumMeta,
+        itemsNum.isAcceptableOrUnknown(data['items_num']!, _itemsNumMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemsNumMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RandomList map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RandomList(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}type'],
+      )!,
+      isUnique: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_unique'],
+      )!,
+      itemsNum: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}items_num'],
+      )!,
+    );
+  }
+
+  @override
+  $RandomListsTable createAlias(String alias) {
+    return $RandomListsTable(attachedDatabase, alias);
+  }
+}
+
+class RandomList extends DataClass implements Insertable<RandomList> {
+  final int id;
+  final String name;
+  final int type;
+  final bool isUnique;
+  final int itemsNum;
+  const RandomList({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.isUnique,
+    required this.itemsNum,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['type'] = Variable<int>(type);
+    map['is_unique'] = Variable<bool>(isUnique);
+    map['items_num'] = Variable<int>(itemsNum);
+    return map;
+  }
+
+  RandomListsCompanion toCompanion(bool nullToAbsent) {
+    return RandomListsCompanion(
+      id: Value(id),
+      name: Value(name),
+      type: Value(type),
+      isUnique: Value(isUnique),
+      itemsNum: Value(itemsNum),
+    );
+  }
+
+  factory RandomList.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RandomList(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      type: serializer.fromJson<int>(json['type']),
+      isUnique: serializer.fromJson<bool>(json['isUnique']),
+      itemsNum: serializer.fromJson<int>(json['itemsNum']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'type': serializer.toJson<int>(type),
+      'isUnique': serializer.toJson<bool>(isUnique),
+      'itemsNum': serializer.toJson<int>(itemsNum),
+    };
+  }
+
+  RandomList copyWith({
+    int? id,
+    String? name,
+    int? type,
+    bool? isUnique,
+    int? itemsNum,
+  }) => RandomList(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    type: type ?? this.type,
+    isUnique: isUnique ?? this.isUnique,
+    itemsNum: itemsNum ?? this.itemsNum,
+  );
+  RandomList copyWithCompanion(RandomListsCompanion data) {
+    return RandomList(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      type: data.type.present ? data.type.value : this.type,
+      isUnique: data.isUnique.present ? data.isUnique.value : this.isUnique,
+      itemsNum: data.itemsNum.present ? data.itemsNum.value : this.itemsNum,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RandomList(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('type: $type, ')
+          ..write('isUnique: $isUnique, ')
+          ..write('itemsNum: $itemsNum')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, type, isUnique, itemsNum);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RandomList &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.type == this.type &&
+          other.isUnique == this.isUnique &&
+          other.itemsNum == this.itemsNum);
+}
+
+class RandomListsCompanion extends UpdateCompanion<RandomList> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> type;
+  final Value<bool> isUnique;
+  final Value<int> itemsNum;
+  const RandomListsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.type = const Value.absent(),
+    this.isUnique = const Value.absent(),
+    this.itemsNum = const Value.absent(),
+  });
+  RandomListsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int type,
+    this.isUnique = const Value.absent(),
+    required int itemsNum,
+  }) : name = Value(name),
+       type = Value(type),
+       itemsNum = Value(itemsNum);
+  static Insertable<RandomList> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? type,
+    Expression<bool>? isUnique,
+    Expression<int>? itemsNum,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (type != null) 'type': type,
+      if (isUnique != null) 'is_unique': isUnique,
+      if (itemsNum != null) 'items_num': itemsNum,
+    });
+  }
+
+  RandomListsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? type,
+    Value<bool>? isUnique,
+    Value<int>? itemsNum,
+  }) {
+    return RandomListsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      isUnique: isUnique ?? this.isUnique,
+      itemsNum: itemsNum ?? this.itemsNum,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<int>(type.value);
+    }
+    if (isUnique.present) {
+      map['is_unique'] = Variable<bool>(isUnique.value);
+    }
+    if (itemsNum.present) {
+      map['items_num'] = Variable<int>(itemsNum.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RandomListsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('type: $type, ')
+          ..write('isUnique: $isUnique, ')
+          ..write('itemsNum: $itemsNum')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ListItemsTable extends ListItems
+    with TableInfo<$ListItemsTable, ListItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ListItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _randomListIdMeta = const VerificationMeta(
+    'randomListId',
+  );
+  @override
+  late final GeneratedColumn<int> randomListId = GeneratedColumn<int>(
+    'random_list_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES random_lists (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _copiesNumMeta = const VerificationMeta(
+    'copiesNum',
+  );
+  @override
+  late final GeneratedColumn<int> copiesNum = GeneratedColumn<int>(
+    'copies_num',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    randomListId,
+    copiesNum,
+    imagePath,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'list_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ListItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('random_list_id')) {
+      context.handle(
+        _randomListIdMeta,
+        randomListId.isAcceptableOrUnknown(
+          data['random_list_id']!,
+          _randomListIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_randomListIdMeta);
+    }
+    if (data.containsKey('copies_num')) {
+      context.handle(
+        _copiesNumMeta,
+        copiesNum.isAcceptableOrUnknown(data['copies_num']!, _copiesNumMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_copiesNumMeta);
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ListItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ListItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      randomListId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}random_list_id'],
+      )!,
+      copiesNum: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}copies_num'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+    );
+  }
+
+  @override
+  $ListItemsTable createAlias(String alias) {
+    return $ListItemsTable(attachedDatabase, alias);
+  }
+}
+
+class ListItem extends DataClass implements Insertable<ListItem> {
+  final int id;
+  final String name;
+  final int randomListId;
+  final int copiesNum;
+  final String? imagePath;
+  const ListItem({
+    required this.id,
+    required this.name,
+    required this.randomListId,
+    required this.copiesNum,
+    this.imagePath,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['random_list_id'] = Variable<int>(randomListId);
+    map['copies_num'] = Variable<int>(copiesNum);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    return map;
+  }
+
+  ListItemsCompanion toCompanion(bool nullToAbsent) {
+    return ListItemsCompanion(
+      id: Value(id),
+      name: Value(name),
+      randomListId: Value(randomListId),
+      copiesNum: Value(copiesNum),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+    );
+  }
+
+  factory ListItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ListItem(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      randomListId: serializer.fromJson<int>(json['randomListId']),
+      copiesNum: serializer.fromJson<int>(json['copiesNum']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'randomListId': serializer.toJson<int>(randomListId),
+      'copiesNum': serializer.toJson<int>(copiesNum),
+      'imagePath': serializer.toJson<String?>(imagePath),
+    };
+  }
+
+  ListItem copyWith({
+    int? id,
+    String? name,
+    int? randomListId,
+    int? copiesNum,
+    Value<String?> imagePath = const Value.absent(),
+  }) => ListItem(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    randomListId: randomListId ?? this.randomListId,
+    copiesNum: copiesNum ?? this.copiesNum,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+  );
+  ListItem copyWithCompanion(ListItemsCompanion data) {
+    return ListItem(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      randomListId: data.randomListId.present
+          ? data.randomListId.value
+          : this.randomListId,
+      copiesNum: data.copiesNum.present ? data.copiesNum.value : this.copiesNum,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ListItem(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('randomListId: $randomListId, ')
+          ..write('copiesNum: $copiesNum, ')
+          ..write('imagePath: $imagePath')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, randomListId, copiesNum, imagePath);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ListItem &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.randomListId == this.randomListId &&
+          other.copiesNum == this.copiesNum &&
+          other.imagePath == this.imagePath);
+}
+
+class ListItemsCompanion extends UpdateCompanion<ListItem> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> randomListId;
+  final Value<int> copiesNum;
+  final Value<String?> imagePath;
+  const ListItemsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.randomListId = const Value.absent(),
+    this.copiesNum = const Value.absent(),
+    this.imagePath = const Value.absent(),
+  });
+  ListItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int randomListId,
+    required int copiesNum,
+    this.imagePath = const Value.absent(),
+  }) : name = Value(name),
+       randomListId = Value(randomListId),
+       copiesNum = Value(copiesNum);
+  static Insertable<ListItem> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? randomListId,
+    Expression<int>? copiesNum,
+    Expression<String>? imagePath,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (randomListId != null) 'random_list_id': randomListId,
+      if (copiesNum != null) 'copies_num': copiesNum,
+      if (imagePath != null) 'image_path': imagePath,
+    });
+  }
+
+  ListItemsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? randomListId,
+    Value<int>? copiesNum,
+    Value<String?>? imagePath,
+  }) {
+    return ListItemsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      randomListId: randomListId ?? this.randomListId,
+      copiesNum: copiesNum ?? this.copiesNum,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (randomListId.present) {
+      map['random_list_id'] = Variable<int>(randomListId.value);
+    }
+    if (copiesNum.present) {
+      map['copies_num'] = Variable<int>(copiesNum.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ListItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('randomListId: $randomListId, ')
+          ..write('copiesNum: $copiesNum, ')
+          ..write('imagePath: $imagePath')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GamesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<String> year = GeneratedColumn<String>(
+    'year',
+    aliasedName,
+    true,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 5,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _minPlayersMeta = const VerificationMeta(
+    'minPlayers',
+  );
+  @override
+  late final GeneratedColumn<int> minPlayers = GeneratedColumn<int>(
+    'min_players',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _maxPlayersMeta = const VerificationMeta(
+    'maxPlayers',
+  );
+  @override
+  late final GeneratedColumn<int> maxPlayers = GeneratedColumn<int>(
+    'max_players',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isInCollectionMeta = const VerificationMeta(
+    'isInCollection',
+  );
+  @override
+  late final GeneratedColumn<bool> isInCollection = GeneratedColumn<bool>(
+    'is_in_collection',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_in_collection" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isFavoriteMeta = const VerificationMeta(
+    'isFavorite',
+  );
+  @override
+  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+    'is_favorite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_favorite" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
+  @override
+  late final GeneratedColumn<double> rating = GeneratedColumn<double>(
+    'rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    $customConstraints: 'CHECK (rating >= 0 AND rating <= 10)',
+  );
+  static const VerificationMeta _isStandaloneMeta = const VerificationMeta(
+    'isStandalone',
+  );
+  @override
+  late final GeneratedColumn<bool> isStandalone = GeneratedColumn<bool>(
+    'is_standalone',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_standalone" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    description,
+    year,
+    minPlayers,
+    maxPlayers,
+    isInCollection,
+    isFavorite,
+    rating,
+    isStandalone,
+    imagePath,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'games';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Game> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    }
+    if (data.containsKey('min_players')) {
+      context.handle(
+        _minPlayersMeta,
+        minPlayers.isAcceptableOrUnknown(data['min_players']!, _minPlayersMeta),
+      );
+    }
+    if (data.containsKey('max_players')) {
+      context.handle(
+        _maxPlayersMeta,
+        maxPlayers.isAcceptableOrUnknown(data['max_players']!, _maxPlayersMeta),
+      );
+    }
+    if (data.containsKey('is_in_collection')) {
+      context.handle(
+        _isInCollectionMeta,
+        isInCollection.isAcceptableOrUnknown(
+          data['is_in_collection']!,
+          _isInCollectionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_favorite')) {
+      context.handle(
+        _isFavoriteMeta,
+        isFavorite.isAcceptableOrUnknown(data['is_favorite']!, _isFavoriteMeta),
+      );
+    }
+    if (data.containsKey('rating')) {
+      context.handle(
+        _ratingMeta,
+        rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta),
+      );
+    }
+    if (data.containsKey('is_standalone')) {
+      context.handle(
+        _isStandaloneMeta,
+        isStandalone.isAcceptableOrUnknown(
+          data['is_standalone']!,
+          _isStandaloneMeta,
+        ),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Game map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Game(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}year'],
+      ),
+      minPlayers: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}min_players'],
+      ),
+      maxPlayers: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}max_players'],
+      ),
+      isInCollection: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_in_collection'],
+      )!,
+      isFavorite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_favorite'],
+      )!,
+      rating: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}rating'],
+      ),
+      isStandalone: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_standalone'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+    );
+  }
+
+  @override
+  $GamesTable createAlias(String alias) {
+    return $GamesTable(attachedDatabase, alias);
+  }
+}
+
+class Game extends DataClass implements Insertable<Game> {
+  final int id;
+  final String name;
+  final String? description;
+  final String? year;
+  final int? minPlayers;
+  final int? maxPlayers;
+  final bool isInCollection;
+  final bool isFavorite;
+  final double? rating;
+  final bool isStandalone;
+  final String? imagePath;
+  const Game({
+    required this.id,
+    required this.name,
+    this.description,
+    this.year,
+    this.minPlayers,
+    this.maxPlayers,
+    required this.isInCollection,
+    required this.isFavorite,
+    this.rating,
+    required this.isStandalone,
+    this.imagePath,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || year != null) {
+      map['year'] = Variable<String>(year);
+    }
+    if (!nullToAbsent || minPlayers != null) {
+      map['min_players'] = Variable<int>(minPlayers);
+    }
+    if (!nullToAbsent || maxPlayers != null) {
+      map['max_players'] = Variable<int>(maxPlayers);
+    }
+    map['is_in_collection'] = Variable<bool>(isInCollection);
+    map['is_favorite'] = Variable<bool>(isFavorite);
+    if (!nullToAbsent || rating != null) {
+      map['rating'] = Variable<double>(rating);
+    }
+    map['is_standalone'] = Variable<bool>(isStandalone);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    return map;
+  }
+
+  GamesCompanion toCompanion(bool nullToAbsent) {
+    return GamesCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      year: year == null && nullToAbsent ? const Value.absent() : Value(year),
+      minPlayers: minPlayers == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minPlayers),
+      maxPlayers: maxPlayers == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maxPlayers),
+      isInCollection: Value(isInCollection),
+      isFavorite: Value(isFavorite),
+      rating: rating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rating),
+      isStandalone: Value(isStandalone),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+    );
+  }
+
+  factory Game.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Game(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      year: serializer.fromJson<String?>(json['year']),
+      minPlayers: serializer.fromJson<int?>(json['minPlayers']),
+      maxPlayers: serializer.fromJson<int?>(json['maxPlayers']),
+      isInCollection: serializer.fromJson<bool>(json['isInCollection']),
+      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      rating: serializer.fromJson<double?>(json['rating']),
+      isStandalone: serializer.fromJson<bool>(json['isStandalone']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'year': serializer.toJson<String?>(year),
+      'minPlayers': serializer.toJson<int?>(minPlayers),
+      'maxPlayers': serializer.toJson<int?>(maxPlayers),
+      'isInCollection': serializer.toJson<bool>(isInCollection),
+      'isFavorite': serializer.toJson<bool>(isFavorite),
+      'rating': serializer.toJson<double?>(rating),
+      'isStandalone': serializer.toJson<bool>(isStandalone),
+      'imagePath': serializer.toJson<String?>(imagePath),
+    };
+  }
+
+  Game copyWith({
+    int? id,
+    String? name,
+    Value<String?> description = const Value.absent(),
+    Value<String?> year = const Value.absent(),
+    Value<int?> minPlayers = const Value.absent(),
+    Value<int?> maxPlayers = const Value.absent(),
+    bool? isInCollection,
+    bool? isFavorite,
+    Value<double?> rating = const Value.absent(),
+    bool? isStandalone,
+    Value<String?> imagePath = const Value.absent(),
+  }) => Game(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description.present ? description.value : this.description,
+    year: year.present ? year.value : this.year,
+    minPlayers: minPlayers.present ? minPlayers.value : this.minPlayers,
+    maxPlayers: maxPlayers.present ? maxPlayers.value : this.maxPlayers,
+    isInCollection: isInCollection ?? this.isInCollection,
+    isFavorite: isFavorite ?? this.isFavorite,
+    rating: rating.present ? rating.value : this.rating,
+    isStandalone: isStandalone ?? this.isStandalone,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+  );
+  Game copyWithCompanion(GamesCompanion data) {
+    return Game(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      year: data.year.present ? data.year.value : this.year,
+      minPlayers: data.minPlayers.present
+          ? data.minPlayers.value
+          : this.minPlayers,
+      maxPlayers: data.maxPlayers.present
+          ? data.maxPlayers.value
+          : this.maxPlayers,
+      isInCollection: data.isInCollection.present
+          ? data.isInCollection.value
+          : this.isInCollection,
+      isFavorite: data.isFavorite.present
+          ? data.isFavorite.value
+          : this.isFavorite,
+      rating: data.rating.present ? data.rating.value : this.rating,
+      isStandalone: data.isStandalone.present
+          ? data.isStandalone.value
+          : this.isStandalone,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Game(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('year: $year, ')
+          ..write('minPlayers: $minPlayers, ')
+          ..write('maxPlayers: $maxPlayers, ')
+          ..write('isInCollection: $isInCollection, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('rating: $rating, ')
+          ..write('isStandalone: $isStandalone, ')
+          ..write('imagePath: $imagePath')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    description,
+    year,
+    minPlayers,
+    maxPlayers,
+    isInCollection,
+    isFavorite,
+    rating,
+    isStandalone,
+    imagePath,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Game &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.year == this.year &&
+          other.minPlayers == this.minPlayers &&
+          other.maxPlayers == this.maxPlayers &&
+          other.isInCollection == this.isInCollection &&
+          other.isFavorite == this.isFavorite &&
+          other.rating == this.rating &&
+          other.isStandalone == this.isStandalone &&
+          other.imagePath == this.imagePath);
+}
+
+class GamesCompanion extends UpdateCompanion<Game> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<String?> year;
+  final Value<int?> minPlayers;
+  final Value<int?> maxPlayers;
+  final Value<bool> isInCollection;
+  final Value<bool> isFavorite;
+  final Value<double?> rating;
+  final Value<bool> isStandalone;
+  final Value<String?> imagePath;
+  const GamesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.year = const Value.absent(),
+    this.minPlayers = const Value.absent(),
+    this.maxPlayers = const Value.absent(),
+    this.isInCollection = const Value.absent(),
+    this.isFavorite = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.isStandalone = const Value.absent(),
+    this.imagePath = const Value.absent(),
+  });
+  GamesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.description = const Value.absent(),
+    this.year = const Value.absent(),
+    this.minPlayers = const Value.absent(),
+    this.maxPlayers = const Value.absent(),
+    this.isInCollection = const Value.absent(),
+    this.isFavorite = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.isStandalone = const Value.absent(),
+    this.imagePath = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<Game> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<String>? year,
+    Expression<int>? minPlayers,
+    Expression<int>? maxPlayers,
+    Expression<bool>? isInCollection,
+    Expression<bool>? isFavorite,
+    Expression<double>? rating,
+    Expression<bool>? isStandalone,
+    Expression<String>? imagePath,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (year != null) 'year': year,
+      if (minPlayers != null) 'min_players': minPlayers,
+      if (maxPlayers != null) 'max_players': maxPlayers,
+      if (isInCollection != null) 'is_in_collection': isInCollection,
+      if (isFavorite != null) 'is_favorite': isFavorite,
+      if (rating != null) 'rating': rating,
+      if (isStandalone != null) 'is_standalone': isStandalone,
+      if (imagePath != null) 'image_path': imagePath,
+    });
+  }
+
+  GamesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String?>? description,
+    Value<String?>? year,
+    Value<int?>? minPlayers,
+    Value<int?>? maxPlayers,
+    Value<bool>? isInCollection,
+    Value<bool>? isFavorite,
+    Value<double?>? rating,
+    Value<bool>? isStandalone,
+    Value<String?>? imagePath,
+  }) {
+    return GamesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      year: year ?? this.year,
+      minPlayers: minPlayers ?? this.minPlayers,
+      maxPlayers: maxPlayers ?? this.maxPlayers,
+      isInCollection: isInCollection ?? this.isInCollection,
+      isFavorite: isFavorite ?? this.isFavorite,
+      rating: rating ?? this.rating,
+      isStandalone: isStandalone ?? this.isStandalone,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<String>(year.value);
+    }
+    if (minPlayers.present) {
+      map['min_players'] = Variable<int>(minPlayers.value);
+    }
+    if (maxPlayers.present) {
+      map['max_players'] = Variable<int>(maxPlayers.value);
+    }
+    if (isInCollection.present) {
+      map['is_in_collection'] = Variable<bool>(isInCollection.value);
+    }
+    if (isFavorite.present) {
+      map['is_favorite'] = Variable<bool>(isFavorite.value);
+    }
+    if (rating.present) {
+      map['rating'] = Variable<double>(rating.value);
+    }
+    if (isStandalone.present) {
+      map['is_standalone'] = Variable<bool>(isStandalone.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GamesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('year: $year, ')
+          ..write('minPlayers: $minPlayers, ')
+          ..write('maxPlayers: $maxPlayers, ')
+          ..write('isInCollection: $isInCollection, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('rating: $rating, ')
+          ..write('isStandalone: $isStandalone, ')
+          ..write('imagePath: $imagePath')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RandomSetupsTable extends RandomSetups
+    with TableInfo<$RandomSetupsTable, RandomSetup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RandomSetupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES games (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, gameId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'random_setups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RandomSetup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RandomSetup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RandomSetup(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_id'],
+      )!,
+    );
+  }
+
+  @override
+  $RandomSetupsTable createAlias(String alias) {
+    return $RandomSetupsTable(attachedDatabase, alias);
+  }
+}
+
+class RandomSetup extends DataClass implements Insertable<RandomSetup> {
+  final int id;
+  final String name;
+  final int gameId;
+  const RandomSetup({
+    required this.id,
+    required this.name,
+    required this.gameId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['game_id'] = Variable<int>(gameId);
+    return map;
+  }
+
+  RandomSetupsCompanion toCompanion(bool nullToAbsent) {
+    return RandomSetupsCompanion(
+      id: Value(id),
+      name: Value(name),
+      gameId: Value(gameId),
+    );
+  }
+
+  factory RandomSetup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RandomSetup(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      gameId: serializer.fromJson<int>(json['gameId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'gameId': serializer.toJson<int>(gameId),
+    };
+  }
+
+  RandomSetup copyWith({int? id, String? name, int? gameId}) => RandomSetup(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    gameId: gameId ?? this.gameId,
+  );
+  RandomSetup copyWithCompanion(RandomSetupsCompanion data) {
+    return RandomSetup(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RandomSetup(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('gameId: $gameId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, gameId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RandomSetup &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.gameId == this.gameId);
+}
+
+class RandomSetupsCompanion extends UpdateCompanion<RandomSetup> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> gameId;
+  const RandomSetupsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.gameId = const Value.absent(),
+  });
+  RandomSetupsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int gameId,
+  }) : name = Value(name),
+       gameId = Value(gameId);
+  static Insertable<RandomSetup> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? gameId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (gameId != null) 'game_id': gameId,
+    });
+  }
+
+  RandomSetupsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? gameId,
+  }) {
+    return RandomSetupsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      gameId: gameId ?? this.gameId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RandomSetupsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('gameId: $gameId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RandomSetupsListsTable extends RandomSetupsLists
+    with TableInfo<$RandomSetupsListsTable, RandomSetupsList> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RandomSetupsListsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _randomSetupIdMeta = const VerificationMeta(
+    'randomSetupId',
+  );
+  @override
+  late final GeneratedColumn<int> randomSetupId = GeneratedColumn<int>(
+    'random_setup_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES random_setups (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _randomListIdMeta = const VerificationMeta(
+    'randomListId',
+  );
+  @override
+  late final GeneratedColumn<int> randomListId = GeneratedColumn<int>(
+    'random_list_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES random_lists (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _isUniqueMeta = const VerificationMeta(
+    'isUnique',
+  );
+  @override
+  late final GeneratedColumn<bool> isUnique = GeneratedColumn<bool>(
+    'is_unique',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_unique" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _itemsNumMeta = const VerificationMeta(
+    'itemsNum',
+  );
+  @override
+  late final GeneratedColumn<int> itemsNum = GeneratedColumn<int>(
+    'items_num',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    randomSetupId,
+    randomListId,
+    isUnique,
+    itemsNum,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'random_setups_lists';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RandomSetupsList> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('random_setup_id')) {
+      context.handle(
+        _randomSetupIdMeta,
+        randomSetupId.isAcceptableOrUnknown(
+          data['random_setup_id']!,
+          _randomSetupIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_randomSetupIdMeta);
+    }
+    if (data.containsKey('random_list_id')) {
+      context.handle(
+        _randomListIdMeta,
+        randomListId.isAcceptableOrUnknown(
+          data['random_list_id']!,
+          _randomListIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_randomListIdMeta);
+    }
+    if (data.containsKey('is_unique')) {
+      context.handle(
+        _isUniqueMeta,
+        isUnique.isAcceptableOrUnknown(data['is_unique']!, _isUniqueMeta),
+      );
+    }
+    if (data.containsKey('items_num')) {
+      context.handle(
+        _itemsNumMeta,
+        itemsNum.isAcceptableOrUnknown(data['items_num']!, _itemsNumMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemsNumMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RandomSetupsList map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RandomSetupsList(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      randomSetupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}random_setup_id'],
+      )!,
+      randomListId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}random_list_id'],
+      )!,
+      isUnique: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_unique'],
+      )!,
+      itemsNum: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}items_num'],
+      )!,
+    );
+  }
+
+  @override
+  $RandomSetupsListsTable createAlias(String alias) {
+    return $RandomSetupsListsTable(attachedDatabase, alias);
+  }
+}
+
+class RandomSetupsList extends DataClass
+    implements Insertable<RandomSetupsList> {
+  final int id;
+  final String name;
+  final int randomSetupId;
+  final int randomListId;
+  final bool isUnique;
+  final int itemsNum;
+  const RandomSetupsList({
+    required this.id,
+    required this.name,
+    required this.randomSetupId,
+    required this.randomListId,
+    required this.isUnique,
+    required this.itemsNum,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['random_setup_id'] = Variable<int>(randomSetupId);
+    map['random_list_id'] = Variable<int>(randomListId);
+    map['is_unique'] = Variable<bool>(isUnique);
+    map['items_num'] = Variable<int>(itemsNum);
+    return map;
+  }
+
+  RandomSetupsListsCompanion toCompanion(bool nullToAbsent) {
+    return RandomSetupsListsCompanion(
+      id: Value(id),
+      name: Value(name),
+      randomSetupId: Value(randomSetupId),
+      randomListId: Value(randomListId),
+      isUnique: Value(isUnique),
+      itemsNum: Value(itemsNum),
+    );
+  }
+
+  factory RandomSetupsList.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RandomSetupsList(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      randomSetupId: serializer.fromJson<int>(json['randomSetupId']),
+      randomListId: serializer.fromJson<int>(json['randomListId']),
+      isUnique: serializer.fromJson<bool>(json['isUnique']),
+      itemsNum: serializer.fromJson<int>(json['itemsNum']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'randomSetupId': serializer.toJson<int>(randomSetupId),
+      'randomListId': serializer.toJson<int>(randomListId),
+      'isUnique': serializer.toJson<bool>(isUnique),
+      'itemsNum': serializer.toJson<int>(itemsNum),
+    };
+  }
+
+  RandomSetupsList copyWith({
+    int? id,
+    String? name,
+    int? randomSetupId,
+    int? randomListId,
+    bool? isUnique,
+    int? itemsNum,
+  }) => RandomSetupsList(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    randomSetupId: randomSetupId ?? this.randomSetupId,
+    randomListId: randomListId ?? this.randomListId,
+    isUnique: isUnique ?? this.isUnique,
+    itemsNum: itemsNum ?? this.itemsNum,
+  );
+  RandomSetupsList copyWithCompanion(RandomSetupsListsCompanion data) {
+    return RandomSetupsList(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      randomSetupId: data.randomSetupId.present
+          ? data.randomSetupId.value
+          : this.randomSetupId,
+      randomListId: data.randomListId.present
+          ? data.randomListId.value
+          : this.randomListId,
+      isUnique: data.isUnique.present ? data.isUnique.value : this.isUnique,
+      itemsNum: data.itemsNum.present ? data.itemsNum.value : this.itemsNum,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RandomSetupsList(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('randomSetupId: $randomSetupId, ')
+          ..write('randomListId: $randomListId, ')
+          ..write('isUnique: $isUnique, ')
+          ..write('itemsNum: $itemsNum')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, randomSetupId, randomListId, isUnique, itemsNum);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RandomSetupsList &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.randomSetupId == this.randomSetupId &&
+          other.randomListId == this.randomListId &&
+          other.isUnique == this.isUnique &&
+          other.itemsNum == this.itemsNum);
+}
+
+class RandomSetupsListsCompanion extends UpdateCompanion<RandomSetupsList> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> randomSetupId;
+  final Value<int> randomListId;
+  final Value<bool> isUnique;
+  final Value<int> itemsNum;
+  const RandomSetupsListsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.randomSetupId = const Value.absent(),
+    this.randomListId = const Value.absent(),
+    this.isUnique = const Value.absent(),
+    this.itemsNum = const Value.absent(),
+  });
+  RandomSetupsListsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int randomSetupId,
+    required int randomListId,
+    this.isUnique = const Value.absent(),
+    required int itemsNum,
+  }) : name = Value(name),
+       randomSetupId = Value(randomSetupId),
+       randomListId = Value(randomListId),
+       itemsNum = Value(itemsNum);
+  static Insertable<RandomSetupsList> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? randomSetupId,
+    Expression<int>? randomListId,
+    Expression<bool>? isUnique,
+    Expression<int>? itemsNum,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (randomSetupId != null) 'random_setup_id': randomSetupId,
+      if (randomListId != null) 'random_list_id': randomListId,
+      if (isUnique != null) 'is_unique': isUnique,
+      if (itemsNum != null) 'items_num': itemsNum,
+    });
+  }
+
+  RandomSetupsListsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? randomSetupId,
+    Value<int>? randomListId,
+    Value<bool>? isUnique,
+    Value<int>? itemsNum,
+  }) {
+    return RandomSetupsListsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      randomSetupId: randomSetupId ?? this.randomSetupId,
+      randomListId: randomListId ?? this.randomListId,
+      isUnique: isUnique ?? this.isUnique,
+      itemsNum: itemsNum ?? this.itemsNum,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (randomSetupId.present) {
+      map['random_setup_id'] = Variable<int>(randomSetupId.value);
+    }
+    if (randomListId.present) {
+      map['random_list_id'] = Variable<int>(randomListId.value);
+    }
+    if (isUnique.present) {
+      map['is_unique'] = Variable<bool>(isUnique.value);
+    }
+    if (itemsNum.present) {
+      map['items_num'] = Variable<int>(itemsNum.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RandomSetupsListsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('randomSetupId: $randomSetupId, ')
+          ..write('randomListId: $randomListId, ')
+          ..write('isUnique: $isUnique, ')
+          ..write('itemsNum: $itemsNum')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SavedSetupsTable extends SavedSetups
+    with TableInfo<$SavedSetupsTable, SavedSetup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedSetupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _randomSetupIdMeta = const VerificationMeta(
+    'randomSetupId',
+  );
+  @override
+  late final GeneratedColumn<int> randomSetupId = GeneratedColumn<int>(
+    'random_setup_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES random_setups (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, description, randomSetupId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_setups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedSetup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('random_setup_id')) {
+      context.handle(
+        _randomSetupIdMeta,
+        randomSetupId.isAcceptableOrUnknown(
+          data['random_setup_id']!,
+          _randomSetupIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_randomSetupIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavedSetup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedSetup(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      randomSetupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}random_setup_id'],
+      )!,
+    );
+  }
+
+  @override
+  $SavedSetupsTable createAlias(String alias) {
+    return $SavedSetupsTable(attachedDatabase, alias);
+  }
+}
+
+class SavedSetup extends DataClass implements Insertable<SavedSetup> {
+  final int id;
+  final String name;
+  final String? description;
+  final int randomSetupId;
+  const SavedSetup({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.randomSetupId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['random_setup_id'] = Variable<int>(randomSetupId);
+    return map;
+  }
+
+  SavedSetupsCompanion toCompanion(bool nullToAbsent) {
+    return SavedSetupsCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      randomSetupId: Value(randomSetupId),
+    );
+  }
+
+  factory SavedSetup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedSetup(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      randomSetupId: serializer.fromJson<int>(json['randomSetupId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'randomSetupId': serializer.toJson<int>(randomSetupId),
+    };
+  }
+
+  SavedSetup copyWith({
+    int? id,
+    String? name,
+    Value<String?> description = const Value.absent(),
+    int? randomSetupId,
+  }) => SavedSetup(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description.present ? description.value : this.description,
+    randomSetupId: randomSetupId ?? this.randomSetupId,
+  );
+  SavedSetup copyWithCompanion(SavedSetupsCompanion data) {
+    return SavedSetup(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      randomSetupId: data.randomSetupId.present
+          ? data.randomSetupId.value
+          : this.randomSetupId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSetup(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('randomSetupId: $randomSetupId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, description, randomSetupId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedSetup &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.randomSetupId == this.randomSetupId);
+}
+
+class SavedSetupsCompanion extends UpdateCompanion<SavedSetup> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<int> randomSetupId;
+  const SavedSetupsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.randomSetupId = const Value.absent(),
+  });
+  SavedSetupsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.description = const Value.absent(),
+    required int randomSetupId,
+  }) : name = Value(name),
+       randomSetupId = Value(randomSetupId);
+  static Insertable<SavedSetup> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<int>? randomSetupId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (randomSetupId != null) 'random_setup_id': randomSetupId,
+    });
+  }
+
+  SavedSetupsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String?>? description,
+    Value<int>? randomSetupId,
+  }) {
+    return SavedSetupsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      randomSetupId: randomSetupId ?? this.randomSetupId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (randomSetupId.present) {
+      map['random_setup_id'] = Variable<int>(randomSetupId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSetupsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('randomSetupId: $randomSetupId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SavedSetupsListItemsTable extends SavedSetupsListItems
+    with TableInfo<$SavedSetupsListItemsTable, SavedSetupsListItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedSetupsListItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _savedSetupIdMeta = const VerificationMeta(
+    'savedSetupId',
+  );
+  @override
+  late final GeneratedColumn<int> savedSetupId = GeneratedColumn<int>(
+    'saved_setup_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES saved_setups (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _randomSetupListIdMeta = const VerificationMeta(
+    'randomSetupListId',
+  );
+  @override
+  late final GeneratedColumn<int> randomSetupListId = GeneratedColumn<int>(
+    'random_setup_list_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES random_setups_lists (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _listItemsIdMeta = const VerificationMeta(
+    'listItemsId',
+  );
+  @override
+  late final GeneratedColumn<int> listItemsId = GeneratedColumn<int>(
+    'list_items_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES list_items (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    savedSetupId,
+    randomSetupListId,
+    listItemsId,
+    position,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_setups_list_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedSetupsListItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('saved_setup_id')) {
+      context.handle(
+        _savedSetupIdMeta,
+        savedSetupId.isAcceptableOrUnknown(
+          data['saved_setup_id']!,
+          _savedSetupIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_savedSetupIdMeta);
+    }
+    if (data.containsKey('random_setup_list_id')) {
+      context.handle(
+        _randomSetupListIdMeta,
+        randomSetupListId.isAcceptableOrUnknown(
+          data['random_setup_list_id']!,
+          _randomSetupListIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_randomSetupListIdMeta);
+    }
+    if (data.containsKey('list_items_id')) {
+      context.handle(
+        _listItemsIdMeta,
+        listItemsId.isAcceptableOrUnknown(
+          data['list_items_id']!,
+          _listItemsIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_listItemsIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavedSetupsListItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedSetupsListItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      savedSetupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}saved_setup_id'],
+      )!,
+      randomSetupListId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}random_setup_list_id'],
+      )!,
+      listItemsId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}list_items_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $SavedSetupsListItemsTable createAlias(String alias) {
+    return $SavedSetupsListItemsTable(attachedDatabase, alias);
+  }
+}
+
+class SavedSetupsListItem extends DataClass
+    implements Insertable<SavedSetupsListItem> {
+  final int id;
+  final int savedSetupId;
+  final int randomSetupListId;
+  final int listItemsId;
+  final int position;
+  const SavedSetupsListItem({
+    required this.id,
+    required this.savedSetupId,
+    required this.randomSetupListId,
+    required this.listItemsId,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['saved_setup_id'] = Variable<int>(savedSetupId);
+    map['random_setup_list_id'] = Variable<int>(randomSetupListId);
+    map['list_items_id'] = Variable<int>(listItemsId);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  SavedSetupsListItemsCompanion toCompanion(bool nullToAbsent) {
+    return SavedSetupsListItemsCompanion(
+      id: Value(id),
+      savedSetupId: Value(savedSetupId),
+      randomSetupListId: Value(randomSetupListId),
+      listItemsId: Value(listItemsId),
+      position: Value(position),
+    );
+  }
+
+  factory SavedSetupsListItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedSetupsListItem(
+      id: serializer.fromJson<int>(json['id']),
+      savedSetupId: serializer.fromJson<int>(json['savedSetupId']),
+      randomSetupListId: serializer.fromJson<int>(json['randomSetupListId']),
+      listItemsId: serializer.fromJson<int>(json['listItemsId']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'savedSetupId': serializer.toJson<int>(savedSetupId),
+      'randomSetupListId': serializer.toJson<int>(randomSetupListId),
+      'listItemsId': serializer.toJson<int>(listItemsId),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  SavedSetupsListItem copyWith({
+    int? id,
+    int? savedSetupId,
+    int? randomSetupListId,
+    int? listItemsId,
+    int? position,
+  }) => SavedSetupsListItem(
+    id: id ?? this.id,
+    savedSetupId: savedSetupId ?? this.savedSetupId,
+    randomSetupListId: randomSetupListId ?? this.randomSetupListId,
+    listItemsId: listItemsId ?? this.listItemsId,
+    position: position ?? this.position,
+  );
+  SavedSetupsListItem copyWithCompanion(SavedSetupsListItemsCompanion data) {
+    return SavedSetupsListItem(
+      id: data.id.present ? data.id.value : this.id,
+      savedSetupId: data.savedSetupId.present
+          ? data.savedSetupId.value
+          : this.savedSetupId,
+      randomSetupListId: data.randomSetupListId.present
+          ? data.randomSetupListId.value
+          : this.randomSetupListId,
+      listItemsId: data.listItemsId.present
+          ? data.listItemsId.value
+          : this.listItemsId,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSetupsListItem(')
+          ..write('id: $id, ')
+          ..write('savedSetupId: $savedSetupId, ')
+          ..write('randomSetupListId: $randomSetupListId, ')
+          ..write('listItemsId: $listItemsId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, savedSetupId, randomSetupListId, listItemsId, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedSetupsListItem &&
+          other.id == this.id &&
+          other.savedSetupId == this.savedSetupId &&
+          other.randomSetupListId == this.randomSetupListId &&
+          other.listItemsId == this.listItemsId &&
+          other.position == this.position);
+}
+
+class SavedSetupsListItemsCompanion
+    extends UpdateCompanion<SavedSetupsListItem> {
+  final Value<int> id;
+  final Value<int> savedSetupId;
+  final Value<int> randomSetupListId;
+  final Value<int> listItemsId;
+  final Value<int> position;
+  const SavedSetupsListItemsCompanion({
+    this.id = const Value.absent(),
+    this.savedSetupId = const Value.absent(),
+    this.randomSetupListId = const Value.absent(),
+    this.listItemsId = const Value.absent(),
+    this.position = const Value.absent(),
+  });
+  SavedSetupsListItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required int savedSetupId,
+    required int randomSetupListId,
+    required int listItemsId,
+    required int position,
+  }) : savedSetupId = Value(savedSetupId),
+       randomSetupListId = Value(randomSetupListId),
+       listItemsId = Value(listItemsId),
+       position = Value(position);
+  static Insertable<SavedSetupsListItem> custom({
+    Expression<int>? id,
+    Expression<int>? savedSetupId,
+    Expression<int>? randomSetupListId,
+    Expression<int>? listItemsId,
+    Expression<int>? position,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (savedSetupId != null) 'saved_setup_id': savedSetupId,
+      if (randomSetupListId != null) 'random_setup_list_id': randomSetupListId,
+      if (listItemsId != null) 'list_items_id': listItemsId,
+      if (position != null) 'position': position,
+    });
+  }
+
+  SavedSetupsListItemsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? savedSetupId,
+    Value<int>? randomSetupListId,
+    Value<int>? listItemsId,
+    Value<int>? position,
+  }) {
+    return SavedSetupsListItemsCompanion(
+      id: id ?? this.id,
+      savedSetupId: savedSetupId ?? this.savedSetupId,
+      randomSetupListId: randomSetupListId ?? this.randomSetupListId,
+      listItemsId: listItemsId ?? this.listItemsId,
+      position: position ?? this.position,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (savedSetupId.present) {
+      map['saved_setup_id'] = Variable<int>(savedSetupId.value);
+    }
+    if (randomSetupListId.present) {
+      map['random_setup_list_id'] = Variable<int>(randomSetupListId.value);
+    }
+    if (listItemsId.present) {
+      map['list_items_id'] = Variable<int>(listItemsId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedSetupsListItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('savedSetupId: $savedSetupId, ')
+          ..write('randomSetupListId: $randomSetupListId, ')
+          ..write('listItemsId: $listItemsId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ArtistsTable extends Artists with TableInfo<$ArtistsTable, Artist> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -686,682 +3440,6 @@ class DesignersCompanion extends UpdateCompanion<Designer> {
     return (StringBuffer('DesignersCompanion(')
           ..write('id: $id, ')
           ..write('name: $name')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $GamesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 255,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta(
-    'description',
-  );
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-    'description',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _yearMeta = const VerificationMeta('year');
-  @override
-  late final GeneratedColumn<String> year = GeneratedColumn<String>(
-    'year',
-    aliasedName,
-    true,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 5,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _minPlayersMeta = const VerificationMeta(
-    'minPlayers',
-  );
-  @override
-  late final GeneratedColumn<int> minPlayers = GeneratedColumn<int>(
-    'min_players',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _maxPlayersMeta = const VerificationMeta(
-    'maxPlayers',
-  );
-  @override
-  late final GeneratedColumn<int> maxPlayers = GeneratedColumn<int>(
-    'max_players',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _isInCollectionMeta = const VerificationMeta(
-    'isInCollection',
-  );
-  @override
-  late final GeneratedColumn<bool> isInCollection = GeneratedColumn<bool>(
-    'is_in_collection',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_in_collection" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _isFavoriteMeta = const VerificationMeta(
-    'isFavorite',
-  );
-  @override
-  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
-    'is_favorite',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_favorite" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
-  @override
-  late final GeneratedColumn<double> rating = GeneratedColumn<double>(
-    'rating',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-    $customConstraints: 'CHECK (rating >= 0 AND rating <= 10)',
-  );
-  static const VerificationMeta _isStandaloneMeta = const VerificationMeta(
-    'isStandalone',
-  );
-  @override
-  late final GeneratedColumn<bool> isStandalone = GeneratedColumn<bool>(
-    'is_standalone',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_standalone" IN (0, 1))',
-    ),
-    defaultValue: const Constant(true),
-  );
-  static const VerificationMeta _imagePathMeta = const VerificationMeta(
-    'imagePath',
-  );
-  @override
-  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
-    'image_path',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    name,
-    description,
-    year,
-    minPlayers,
-    maxPlayers,
-    isInCollection,
-    isFavorite,
-    rating,
-    isStandalone,
-    imagePath,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'games';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<Game> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-        _descriptionMeta,
-        description.isAcceptableOrUnknown(
-          data['description']!,
-          _descriptionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('year')) {
-      context.handle(
-        _yearMeta,
-        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
-      );
-    }
-    if (data.containsKey('min_players')) {
-      context.handle(
-        _minPlayersMeta,
-        minPlayers.isAcceptableOrUnknown(data['min_players']!, _minPlayersMeta),
-      );
-    }
-    if (data.containsKey('max_players')) {
-      context.handle(
-        _maxPlayersMeta,
-        maxPlayers.isAcceptableOrUnknown(data['max_players']!, _maxPlayersMeta),
-      );
-    }
-    if (data.containsKey('is_in_collection')) {
-      context.handle(
-        _isInCollectionMeta,
-        isInCollection.isAcceptableOrUnknown(
-          data['is_in_collection']!,
-          _isInCollectionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_favorite')) {
-      context.handle(
-        _isFavoriteMeta,
-        isFavorite.isAcceptableOrUnknown(data['is_favorite']!, _isFavoriteMeta),
-      );
-    }
-    if (data.containsKey('rating')) {
-      context.handle(
-        _ratingMeta,
-        rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta),
-      );
-    }
-    if (data.containsKey('is_standalone')) {
-      context.handle(
-        _isStandaloneMeta,
-        isStandalone.isAcceptableOrUnknown(
-          data['is_standalone']!,
-          _isStandaloneMeta,
-        ),
-      );
-    }
-    if (data.containsKey('image_path')) {
-      context.handle(
-        _imagePathMeta,
-        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Game map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Game(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      ),
-      year: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}year'],
-      ),
-      minPlayers: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}min_players'],
-      ),
-      maxPlayers: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}max_players'],
-      ),
-      isInCollection: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_in_collection'],
-      )!,
-      isFavorite: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_favorite'],
-      )!,
-      rating: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}rating'],
-      ),
-      isStandalone: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_standalone'],
-      )!,
-      imagePath: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}image_path'],
-      ),
-    );
-  }
-
-  @override
-  $GamesTable createAlias(String alias) {
-    return $GamesTable(attachedDatabase, alias);
-  }
-}
-
-class Game extends DataClass implements Insertable<Game> {
-  final int id;
-  final String name;
-  final String? description;
-  final String? year;
-  final int? minPlayers;
-  final int? maxPlayers;
-  final bool isInCollection;
-  final bool isFavorite;
-  final double? rating;
-  final bool isStandalone;
-  final String? imagePath;
-  const Game({
-    required this.id,
-    required this.name,
-    this.description,
-    this.year,
-    this.minPlayers,
-    this.maxPlayers,
-    required this.isInCollection,
-    required this.isFavorite,
-    this.rating,
-    required this.isStandalone,
-    this.imagePath,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
-    if (!nullToAbsent || year != null) {
-      map['year'] = Variable<String>(year);
-    }
-    if (!nullToAbsent || minPlayers != null) {
-      map['min_players'] = Variable<int>(minPlayers);
-    }
-    if (!nullToAbsent || maxPlayers != null) {
-      map['max_players'] = Variable<int>(maxPlayers);
-    }
-    map['is_in_collection'] = Variable<bool>(isInCollection);
-    map['is_favorite'] = Variable<bool>(isFavorite);
-    if (!nullToAbsent || rating != null) {
-      map['rating'] = Variable<double>(rating);
-    }
-    map['is_standalone'] = Variable<bool>(isStandalone);
-    if (!nullToAbsent || imagePath != null) {
-      map['image_path'] = Variable<String>(imagePath);
-    }
-    return map;
-  }
-
-  GamesCompanion toCompanion(bool nullToAbsent) {
-    return GamesCompanion(
-      id: Value(id),
-      name: Value(name),
-      description: description == null && nullToAbsent
-          ? const Value.absent()
-          : Value(description),
-      year: year == null && nullToAbsent ? const Value.absent() : Value(year),
-      minPlayers: minPlayers == null && nullToAbsent
-          ? const Value.absent()
-          : Value(minPlayers),
-      maxPlayers: maxPlayers == null && nullToAbsent
-          ? const Value.absent()
-          : Value(maxPlayers),
-      isInCollection: Value(isInCollection),
-      isFavorite: Value(isFavorite),
-      rating: rating == null && nullToAbsent
-          ? const Value.absent()
-          : Value(rating),
-      isStandalone: Value(isStandalone),
-      imagePath: imagePath == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imagePath),
-    );
-  }
-
-  factory Game.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Game(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String?>(json['description']),
-      year: serializer.fromJson<String?>(json['year']),
-      minPlayers: serializer.fromJson<int?>(json['minPlayers']),
-      maxPlayers: serializer.fromJson<int?>(json['maxPlayers']),
-      isInCollection: serializer.fromJson<bool>(json['isInCollection']),
-      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
-      rating: serializer.fromJson<double?>(json['rating']),
-      isStandalone: serializer.fromJson<bool>(json['isStandalone']),
-      imagePath: serializer.fromJson<String?>(json['imagePath']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String?>(description),
-      'year': serializer.toJson<String?>(year),
-      'minPlayers': serializer.toJson<int?>(minPlayers),
-      'maxPlayers': serializer.toJson<int?>(maxPlayers),
-      'isInCollection': serializer.toJson<bool>(isInCollection),
-      'isFavorite': serializer.toJson<bool>(isFavorite),
-      'rating': serializer.toJson<double?>(rating),
-      'isStandalone': serializer.toJson<bool>(isStandalone),
-      'imagePath': serializer.toJson<String?>(imagePath),
-    };
-  }
-
-  Game copyWith({
-    int? id,
-    String? name,
-    Value<String?> description = const Value.absent(),
-    Value<String?> year = const Value.absent(),
-    Value<int?> minPlayers = const Value.absent(),
-    Value<int?> maxPlayers = const Value.absent(),
-    bool? isInCollection,
-    bool? isFavorite,
-    Value<double?> rating = const Value.absent(),
-    bool? isStandalone,
-    Value<String?> imagePath = const Value.absent(),
-  }) => Game(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    description: description.present ? description.value : this.description,
-    year: year.present ? year.value : this.year,
-    minPlayers: minPlayers.present ? minPlayers.value : this.minPlayers,
-    maxPlayers: maxPlayers.present ? maxPlayers.value : this.maxPlayers,
-    isInCollection: isInCollection ?? this.isInCollection,
-    isFavorite: isFavorite ?? this.isFavorite,
-    rating: rating.present ? rating.value : this.rating,
-    isStandalone: isStandalone ?? this.isStandalone,
-    imagePath: imagePath.present ? imagePath.value : this.imagePath,
-  );
-  Game copyWithCompanion(GamesCompanion data) {
-    return Game(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      description: data.description.present
-          ? data.description.value
-          : this.description,
-      year: data.year.present ? data.year.value : this.year,
-      minPlayers: data.minPlayers.present
-          ? data.minPlayers.value
-          : this.minPlayers,
-      maxPlayers: data.maxPlayers.present
-          ? data.maxPlayers.value
-          : this.maxPlayers,
-      isInCollection: data.isInCollection.present
-          ? data.isInCollection.value
-          : this.isInCollection,
-      isFavorite: data.isFavorite.present
-          ? data.isFavorite.value
-          : this.isFavorite,
-      rating: data.rating.present ? data.rating.value : this.rating,
-      isStandalone: data.isStandalone.present
-          ? data.isStandalone.value
-          : this.isStandalone,
-      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Game(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('description: $description, ')
-          ..write('year: $year, ')
-          ..write('minPlayers: $minPlayers, ')
-          ..write('maxPlayers: $maxPlayers, ')
-          ..write('isInCollection: $isInCollection, ')
-          ..write('isFavorite: $isFavorite, ')
-          ..write('rating: $rating, ')
-          ..write('isStandalone: $isStandalone, ')
-          ..write('imagePath: $imagePath')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    name,
-    description,
-    year,
-    minPlayers,
-    maxPlayers,
-    isInCollection,
-    isFavorite,
-    rating,
-    isStandalone,
-    imagePath,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Game &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.description == this.description &&
-          other.year == this.year &&
-          other.minPlayers == this.minPlayers &&
-          other.maxPlayers == this.maxPlayers &&
-          other.isInCollection == this.isInCollection &&
-          other.isFavorite == this.isFavorite &&
-          other.rating == this.rating &&
-          other.isStandalone == this.isStandalone &&
-          other.imagePath == this.imagePath);
-}
-
-class GamesCompanion extends UpdateCompanion<Game> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<String?> description;
-  final Value<String?> year;
-  final Value<int?> minPlayers;
-  final Value<int?> maxPlayers;
-  final Value<bool> isInCollection;
-  final Value<bool> isFavorite;
-  final Value<double?> rating;
-  final Value<bool> isStandalone;
-  final Value<String?> imagePath;
-  const GamesCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.description = const Value.absent(),
-    this.year = const Value.absent(),
-    this.minPlayers = const Value.absent(),
-    this.maxPlayers = const Value.absent(),
-    this.isInCollection = const Value.absent(),
-    this.isFavorite = const Value.absent(),
-    this.rating = const Value.absent(),
-    this.isStandalone = const Value.absent(),
-    this.imagePath = const Value.absent(),
-  });
-  GamesCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    this.description = const Value.absent(),
-    this.year = const Value.absent(),
-    this.minPlayers = const Value.absent(),
-    this.maxPlayers = const Value.absent(),
-    this.isInCollection = const Value.absent(),
-    this.isFavorite = const Value.absent(),
-    this.rating = const Value.absent(),
-    this.isStandalone = const Value.absent(),
-    this.imagePath = const Value.absent(),
-  }) : name = Value(name);
-  static Insertable<Game> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<String>? description,
-    Expression<String>? year,
-    Expression<int>? minPlayers,
-    Expression<int>? maxPlayers,
-    Expression<bool>? isInCollection,
-    Expression<bool>? isFavorite,
-    Expression<double>? rating,
-    Expression<bool>? isStandalone,
-    Expression<String>? imagePath,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (description != null) 'description': description,
-      if (year != null) 'year': year,
-      if (minPlayers != null) 'min_players': minPlayers,
-      if (maxPlayers != null) 'max_players': maxPlayers,
-      if (isInCollection != null) 'is_in_collection': isInCollection,
-      if (isFavorite != null) 'is_favorite': isFavorite,
-      if (rating != null) 'rating': rating,
-      if (isStandalone != null) 'is_standalone': isStandalone,
-      if (imagePath != null) 'image_path': imagePath,
-    });
-  }
-
-  GamesCompanion copyWith({
-    Value<int>? id,
-    Value<String>? name,
-    Value<String?>? description,
-    Value<String?>? year,
-    Value<int?>? minPlayers,
-    Value<int?>? maxPlayers,
-    Value<bool>? isInCollection,
-    Value<bool>? isFavorite,
-    Value<double?>? rating,
-    Value<bool>? isStandalone,
-    Value<String?>? imagePath,
-  }) {
-    return GamesCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      year: year ?? this.year,
-      minPlayers: minPlayers ?? this.minPlayers,
-      maxPlayers: maxPlayers ?? this.maxPlayers,
-      isInCollection: isInCollection ?? this.isInCollection,
-      isFavorite: isFavorite ?? this.isFavorite,
-      rating: rating ?? this.rating,
-      isStandalone: isStandalone ?? this.isStandalone,
-      imagePath: imagePath ?? this.imagePath,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (year.present) {
-      map['year'] = Variable<String>(year.value);
-    }
-    if (minPlayers.present) {
-      map['min_players'] = Variable<int>(minPlayers.value);
-    }
-    if (maxPlayers.present) {
-      map['max_players'] = Variable<int>(maxPlayers.value);
-    }
-    if (isInCollection.present) {
-      map['is_in_collection'] = Variable<bool>(isInCollection.value);
-    }
-    if (isFavorite.present) {
-      map['is_favorite'] = Variable<bool>(isFavorite.value);
-    }
-    if (rating.present) {
-      map['rating'] = Variable<double>(rating.value);
-    }
-    if (isStandalone.present) {
-      map['is_standalone'] = Variable<bool>(isStandalone.value);
-    }
-    if (imagePath.present) {
-      map['image_path'] = Variable<String>(imagePath.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('GamesCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('description: $description, ')
-          ..write('year: $year, ')
-          ..write('minPlayers: $minPlayers, ')
-          ..write('maxPlayers: $maxPlayers, ')
-          ..write('isInCollection: $isInCollection, ')
-          ..write('isFavorite: $isFavorite, ')
-          ..write('rating: $rating, ')
-          ..write('isStandalone: $isStandalone, ')
-          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
@@ -5973,11 +8051,19 @@ class RatingsGamesCompanion extends UpdateCompanion<RatingsGame> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $RandomListsTable randomLists = $RandomListsTable(this);
+  late final $ListItemsTable listItems = $ListItemsTable(this);
+  late final $GamesTable games = $GamesTable(this);
+  late final $RandomSetupsTable randomSetups = $RandomSetupsTable(this);
+  late final $RandomSetupsListsTable randomSetupsLists =
+      $RandomSetupsListsTable(this);
+  late final $SavedSetupsTable savedSetups = $SavedSetupsTable(this);
+  late final $SavedSetupsListItemsTable savedSetupsListItems =
+      $SavedSetupsListItemsTable(this);
   late final $ArtistsTable artists = $ArtistsTable(this);
   late final $CountingTemplatesTable countingTemplates =
       $CountingTemplatesTable(this);
   late final $DesignersTable designers = $DesignersTable(this);
-  late final $GamesTable games = $GamesTable(this);
   late final $ExpansionsGamesTable expansionsGames = $ExpansionsGamesTable(
     this,
   );
@@ -6013,6 +8099,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final NoteDao noteDao = NoteDao(this as AppDatabase);
+  late final RandomListDao randomListDao = RandomListDao(this as AppDatabase);
   late final RatingDao ratingDao = RatingDao(this as AppDatabase);
   late final TagDao tagDao = TagDao(this as AppDatabase);
   @override
@@ -6020,10 +8107,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    randomLists,
+    listItems,
+    games,
+    randomSetups,
+    randomSetupsLists,
+    savedSetups,
+    savedSetupsListItems,
     artists,
     countingTemplates,
     designers,
-    games,
     expansionsGames,
     gamesArtists,
     gamesCountingTemplates,
@@ -6041,6 +8134,62 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'random_lists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('list_items', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'games',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('random_setups', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'random_setups',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('random_setups_lists', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'random_lists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('random_setups_lists', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'random_setups',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('saved_setups', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'saved_setups',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('saved_setups_list_items', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'random_setups_lists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('saved_setups_list_items', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'list_items',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('saved_setups_list_items', kind: UpdateKind.delete)],
+    ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'games',
@@ -6233,6 +8382,4292 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
+typedef $$RandomListsTableCreateCompanionBuilder =
+    RandomListsCompanion Function({
+      Value<int> id,
+      required String name,
+      required int type,
+      Value<bool> isUnique,
+      required int itemsNum,
+    });
+typedef $$RandomListsTableUpdateCompanionBuilder =
+    RandomListsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> type,
+      Value<bool> isUnique,
+      Value<int> itemsNum,
+    });
+
+final class $$RandomListsTableReferences
+    extends BaseReferences<_$AppDatabase, $RandomListsTable, RandomList> {
+  $$RandomListsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$ListItemsTable, List<ListItem>>
+  _listItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.listItems,
+    aliasName: $_aliasNameGenerator(
+      db.randomLists.id,
+      db.listItems.randomListId,
+    ),
+  );
+
+  $$ListItemsTableProcessedTableManager get listItemsRefs {
+    final manager = $$ListItemsTableTableManager(
+      $_db,
+      $_db.listItems,
+    ).filter((f) => f.randomListId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_listItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RandomSetupsListsTable, List<RandomSetupsList>>
+  _randomSetupsListsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.randomSetupsLists,
+        aliasName: $_aliasNameGenerator(
+          db.randomLists.id,
+          db.randomSetupsLists.randomListId,
+        ),
+      );
+
+  $$RandomSetupsListsTableProcessedTableManager get randomSetupsListsRefs {
+    final manager = $$RandomSetupsListsTableTableManager(
+      $_db,
+      $_db.randomSetupsLists,
+    ).filter((f) => f.randomListId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _randomSetupsListsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$RandomListsTableFilterComposer
+    extends Composer<_$AppDatabase, $RandomListsTable> {
+  $$RandomListsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isUnique => $composableBuilder(
+    column: $table.isUnique,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get itemsNum => $composableBuilder(
+    column: $table.itemsNum,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> listItemsRefs(
+    Expression<bool> Function($$ListItemsTableFilterComposer f) f,
+  ) {
+    final $$ListItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.randomListId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> randomSetupsListsRefs(
+    Expression<bool> Function($$RandomSetupsListsTableFilterComposer f) f,
+  ) {
+    final $$RandomSetupsListsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.randomSetupsLists,
+      getReferencedColumn: (t) => t.randomListId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsListsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomSetupsLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RandomListsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RandomListsTable> {
+  $$RandomListsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isUnique => $composableBuilder(
+    column: $table.isUnique,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get itemsNum => $composableBuilder(
+    column: $table.itemsNum,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RandomListsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RandomListsTable> {
+  $$RandomListsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<bool> get isUnique =>
+      $composableBuilder(column: $table.isUnique, builder: (column) => column);
+
+  GeneratedColumn<int> get itemsNum =>
+      $composableBuilder(column: $table.itemsNum, builder: (column) => column);
+
+  Expression<T> listItemsRefs<T extends Object>(
+    Expression<T> Function($$ListItemsTableAnnotationComposer a) f,
+  ) {
+    final $$ListItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.randomListId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> randomSetupsListsRefs<T extends Object>(
+    Expression<T> Function($$RandomSetupsListsTableAnnotationComposer a) f,
+  ) {
+    final $$RandomSetupsListsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.randomSetupsLists,
+          getReferencedColumn: (t) => t.randomListId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RandomSetupsListsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.randomSetupsLists,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$RandomListsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RandomListsTable,
+          RandomList,
+          $$RandomListsTableFilterComposer,
+          $$RandomListsTableOrderingComposer,
+          $$RandomListsTableAnnotationComposer,
+          $$RandomListsTableCreateCompanionBuilder,
+          $$RandomListsTableUpdateCompanionBuilder,
+          (RandomList, $$RandomListsTableReferences),
+          RandomList,
+          PrefetchHooks Function({
+            bool listItemsRefs,
+            bool randomSetupsListsRefs,
+          })
+        > {
+  $$RandomListsTableTableManager(_$AppDatabase db, $RandomListsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RandomListsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RandomListsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RandomListsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> type = const Value.absent(),
+                Value<bool> isUnique = const Value.absent(),
+                Value<int> itemsNum = const Value.absent(),
+              }) => RandomListsCompanion(
+                id: id,
+                name: name,
+                type: type,
+                isUnique: isUnique,
+                itemsNum: itemsNum,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int type,
+                Value<bool> isUnique = const Value.absent(),
+                required int itemsNum,
+              }) => RandomListsCompanion.insert(
+                id: id,
+                name: name,
+                type: type,
+                isUnique: isUnique,
+                itemsNum: itemsNum,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RandomListsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({listItemsRefs = false, randomSetupsListsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (listItemsRefs) db.listItems,
+                    if (randomSetupsListsRefs) db.randomSetupsLists,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (listItemsRefs)
+                        await $_getPrefetchedData<
+                          RandomList,
+                          $RandomListsTable,
+                          ListItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RandomListsTableReferences
+                              ._listItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RandomListsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).listItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.randomListId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (randomSetupsListsRefs)
+                        await $_getPrefetchedData<
+                          RandomList,
+                          $RandomListsTable,
+                          RandomSetupsList
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RandomListsTableReferences
+                              ._randomSetupsListsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RandomListsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).randomSetupsListsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.randomListId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RandomListsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RandomListsTable,
+      RandomList,
+      $$RandomListsTableFilterComposer,
+      $$RandomListsTableOrderingComposer,
+      $$RandomListsTableAnnotationComposer,
+      $$RandomListsTableCreateCompanionBuilder,
+      $$RandomListsTableUpdateCompanionBuilder,
+      (RandomList, $$RandomListsTableReferences),
+      RandomList,
+      PrefetchHooks Function({bool listItemsRefs, bool randomSetupsListsRefs})
+    >;
+typedef $$ListItemsTableCreateCompanionBuilder =
+    ListItemsCompanion Function({
+      Value<int> id,
+      required String name,
+      required int randomListId,
+      required int copiesNum,
+      Value<String?> imagePath,
+    });
+typedef $$ListItemsTableUpdateCompanionBuilder =
+    ListItemsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> randomListId,
+      Value<int> copiesNum,
+      Value<String?> imagePath,
+    });
+
+final class $$ListItemsTableReferences
+    extends BaseReferences<_$AppDatabase, $ListItemsTable, ListItem> {
+  $$ListItemsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RandomListsTable _randomListIdTable(_$AppDatabase db) =>
+      db.randomLists.createAlias(
+        $_aliasNameGenerator(db.listItems.randomListId, db.randomLists.id),
+      );
+
+  $$RandomListsTableProcessedTableManager get randomListId {
+    final $_column = $_itemColumn<int>('random_list_id')!;
+
+    final manager = $$RandomListsTableTableManager(
+      $_db,
+      $_db.randomLists,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_randomListIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SavedSetupsListItemsTable,
+    List<SavedSetupsListItem>
+  >
+  _savedSetupsListItemsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savedSetupsListItems,
+        aliasName: $_aliasNameGenerator(
+          db.listItems.id,
+          db.savedSetupsListItems.listItemsId,
+        ),
+      );
+
+  $$SavedSetupsListItemsTableProcessedTableManager
+  get savedSetupsListItemsRefs {
+    final manager = $$SavedSetupsListItemsTableTableManager(
+      $_db,
+      $_db.savedSetupsListItems,
+    ).filter((f) => f.listItemsId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savedSetupsListItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ListItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $ListItemsTable> {
+  $$ListItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get copiesNum => $composableBuilder(
+    column: $table.copiesNum,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RandomListsTableFilterComposer get randomListId {
+    final $$RandomListsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> savedSetupsListItemsRefs(
+    Expression<bool> Function($$SavedSetupsListItemsTableFilterComposer f) f,
+  ) {
+    final $$SavedSetupsListItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savedSetupsListItems,
+      getReferencedColumn: (t) => t.listItemsId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsListItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.savedSetupsListItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ListItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ListItemsTable> {
+  $$ListItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get copiesNum => $composableBuilder(
+    column: $table.copiesNum,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RandomListsTableOrderingComposer get randomListId {
+    final $$RandomListsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableOrderingComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ListItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ListItemsTable> {
+  $$ListItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get copiesNum =>
+      $composableBuilder(column: $table.copiesNum, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  $$RandomListsTableAnnotationComposer get randomListId {
+    final $$RandomListsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> savedSetupsListItemsRefs<T extends Object>(
+    Expression<T> Function($$SavedSetupsListItemsTableAnnotationComposer a) f,
+  ) {
+    final $$SavedSetupsListItemsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savedSetupsListItems,
+          getReferencedColumn: (t) => t.listItemsId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavedSetupsListItemsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savedSetupsListItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$ListItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ListItemsTable,
+          ListItem,
+          $$ListItemsTableFilterComposer,
+          $$ListItemsTableOrderingComposer,
+          $$ListItemsTableAnnotationComposer,
+          $$ListItemsTableCreateCompanionBuilder,
+          $$ListItemsTableUpdateCompanionBuilder,
+          (ListItem, $$ListItemsTableReferences),
+          ListItem,
+          PrefetchHooks Function({
+            bool randomListId,
+            bool savedSetupsListItemsRefs,
+          })
+        > {
+  $$ListItemsTableTableManager(_$AppDatabase db, $ListItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ListItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ListItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ListItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> randomListId = const Value.absent(),
+                Value<int> copiesNum = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+              }) => ListItemsCompanion(
+                id: id,
+                name: name,
+                randomListId: randomListId,
+                copiesNum: copiesNum,
+                imagePath: imagePath,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int randomListId,
+                required int copiesNum,
+                Value<String?> imagePath = const Value.absent(),
+              }) => ListItemsCompanion.insert(
+                id: id,
+                name: name,
+                randomListId: randomListId,
+                copiesNum: copiesNum,
+                imagePath: imagePath,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ListItemsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({randomListId = false, savedSetupsListItemsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (savedSetupsListItemsRefs) db.savedSetupsListItems,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (randomListId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.randomListId,
+                                    referencedTable: $$ListItemsTableReferences
+                                        ._randomListIdTable(db),
+                                    referencedColumn: $$ListItemsTableReferences
+                                        ._randomListIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (savedSetupsListItemsRefs)
+                        await $_getPrefetchedData<
+                          ListItem,
+                          $ListItemsTable,
+                          SavedSetupsListItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ListItemsTableReferences
+                              ._savedSetupsListItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ListItemsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savedSetupsListItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.listItemsId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ListItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ListItemsTable,
+      ListItem,
+      $$ListItemsTableFilterComposer,
+      $$ListItemsTableOrderingComposer,
+      $$ListItemsTableAnnotationComposer,
+      $$ListItemsTableCreateCompanionBuilder,
+      $$ListItemsTableUpdateCompanionBuilder,
+      (ListItem, $$ListItemsTableReferences),
+      ListItem,
+      PrefetchHooks Function({bool randomListId, bool savedSetupsListItemsRefs})
+    >;
+typedef $$GamesTableCreateCompanionBuilder =
+    GamesCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<String?> description,
+      Value<String?> year,
+      Value<int?> minPlayers,
+      Value<int?> maxPlayers,
+      Value<bool> isInCollection,
+      Value<bool> isFavorite,
+      Value<double?> rating,
+      Value<bool> isStandalone,
+      Value<String?> imagePath,
+    });
+typedef $$GamesTableUpdateCompanionBuilder =
+    GamesCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String?> description,
+      Value<String?> year,
+      Value<int?> minPlayers,
+      Value<int?> maxPlayers,
+      Value<bool> isInCollection,
+      Value<bool> isFavorite,
+      Value<double?> rating,
+      Value<bool> isStandalone,
+      Value<String?> imagePath,
+    });
+
+final class $$GamesTableReferences
+    extends BaseReferences<_$AppDatabase, $GamesTable, Game> {
+  $$GamesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$RandomSetupsTable, List<RandomSetup>>
+  _randomSetupsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.randomSetups,
+    aliasName: $_aliasNameGenerator(db.games.id, db.randomSetups.gameId),
+  );
+
+  $$RandomSetupsTableProcessedTableManager get randomSetupsRefs {
+    final manager = $$RandomSetupsTableTableManager(
+      $_db,
+      $_db.randomSetups,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_randomSetupsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ExpansionsGamesTable, List<ExpansionsGame>>
+  _expansionsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.expansionsGames,
+    aliasName: $_aliasNameGenerator(
+      db.games.id,
+      db.expansionsGames.expansionId,
+    ),
+  );
+
+  $$ExpansionsGamesTableProcessedTableManager get expansions {
+    final manager = $$ExpansionsGamesTableTableManager(
+      $_db,
+      $_db.expansionsGames,
+    ).filter((f) => f.expansionId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_expansionsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ExpansionsGamesTable, List<ExpansionsGame>>
+  _basesTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.expansionsGames,
+    aliasName: $_aliasNameGenerator(db.games.id, db.expansionsGames.gameId),
+  );
+
+  $$ExpansionsGamesTableProcessedTableManager get bases {
+    final manager = $$ExpansionsGamesTableTableManager(
+      $_db,
+      $_db.expansionsGames,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_basesTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$GamesArtistsTable, List<GamesArtist>>
+  _gamesArtistsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.gamesArtists,
+    aliasName: $_aliasNameGenerator(db.games.id, db.gamesArtists.gameId),
+  );
+
+  $$GamesArtistsTableProcessedTableManager get gamesArtistsRefs {
+    final manager = $$GamesArtistsTableTableManager(
+      $_db,
+      $_db.gamesArtists,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_gamesArtistsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $GamesCountingTemplatesTable,
+    List<GamesCountingTemplate>
+  >
+  _gamesCountingTemplatesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gamesCountingTemplates,
+        aliasName: $_aliasNameGenerator(
+          db.games.id,
+          db.gamesCountingTemplates.gameId,
+        ),
+      );
+
+  $$GamesCountingTemplatesTableProcessedTableManager
+  get gamesCountingTemplatesRefs {
+    final manager = $$GamesCountingTemplatesTableTableManager(
+      $_db,
+      $_db.gamesCountingTemplates,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gamesCountingTemplatesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $GamesCountingTemplatesExpansionsTable,
+    List<GamesCountingTemplatesExpansion>
+  >
+  _gamesCountingTemplatesExpansionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gamesCountingTemplatesExpansions,
+        aliasName: $_aliasNameGenerator(
+          db.games.id,
+          db.gamesCountingTemplatesExpansions.gameId,
+        ),
+      );
+
+  $$GamesCountingTemplatesExpansionsTableProcessedTableManager
+  get gamesCountingTemplatesExpansionsRefs {
+    final manager = $$GamesCountingTemplatesExpansionsTableTableManager(
+      $_db,
+      $_db.gamesCountingTemplatesExpansions,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gamesCountingTemplatesExpansionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$GamesDesignersTable, List<GamesDesigner>>
+  _gamesDesignersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.gamesDesigners,
+    aliasName: $_aliasNameGenerator(db.games.id, db.gamesDesigners.gameId),
+  );
+
+  $$GamesDesignersTableProcessedTableManager get gamesDesignersRefs {
+    final manager = $$GamesDesignersTableTableManager(
+      $_db,
+      $_db.gamesDesigners,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_gamesDesignersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$GamesTagsTable, List<GamesTag>>
+  _gamesTagsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.gamesTags,
+    aliasName: $_aliasNameGenerator(db.games.id, db.gamesTags.gameId),
+  );
+
+  $$GamesTagsTableProcessedTableManager get gamesTagsRefs {
+    final manager = $$GamesTagsTableTableManager(
+      $_db,
+      $_db.gamesTags,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_gamesTagsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$GamingSessionsTable, List<GamingSession>>
+  _gamingSessionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.gamingSessions,
+    aliasName: $_aliasNameGenerator(db.games.id, db.gamingSessions.gameId),
+  );
+
+  $$GamingSessionsTableProcessedTableManager get gamingSessionsRefs {
+    final manager = $$GamingSessionsTableTableManager(
+      $_db,
+      $_db.gamingSessions,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_gamingSessionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $GamingSessionsExpansionsTable,
+    List<GamingSessionsExpansion>
+  >
+  _gamingSessionsExpansionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.gamingSessionsExpansions,
+        aliasName: $_aliasNameGenerator(
+          db.games.id,
+          db.gamingSessionsExpansions.gameId,
+        ),
+      );
+
+  $$GamingSessionsExpansionsTableProcessedTableManager
+  get gamingSessionsExpansionsRefs {
+    final manager = $$GamingSessionsExpansionsTableTableManager(
+      $_db,
+      $_db.gamingSessionsExpansions,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _gamingSessionsExpansionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$NotesTable, List<Note>> _notesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.notes,
+    aliasName: $_aliasNameGenerator(db.games.id, db.notes.gameId),
+  );
+
+  $$NotesTableProcessedTableManager get notesRefs {
+    final manager = $$NotesTableTableManager(
+      $_db,
+      $_db.notes,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_notesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RatingsGamesTable, List<RatingsGame>>
+  _ratingsGamesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.ratingsGames,
+    aliasName: $_aliasNameGenerator(db.games.id, db.ratingsGames.gameId),
+  );
+
+  $$RatingsGamesTableProcessedTableManager get ratingsGamesRefs {
+    final manager = $$RatingsGamesTableTableManager(
+      $_db,
+      $_db.ratingsGames,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ratingsGamesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
+  $$GamesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minPlayers => $composableBuilder(
+    column: $table.minPlayers,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get maxPlayers => $composableBuilder(
+    column: $table.maxPlayers,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isInCollection => $composableBuilder(
+    column: $table.isInCollection,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isStandalone => $composableBuilder(
+    column: $table.isStandalone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> randomSetupsRefs(
+    Expression<bool> Function($$RandomSetupsTableFilterComposer f) f,
+  ) {
+    final $$RandomSetupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> expansions(
+    Expression<bool> Function($$ExpansionsGamesTableFilterComposer f) f,
+  ) {
+    final $$ExpansionsGamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expansionsGames,
+      getReferencedColumn: (t) => t.expansionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpansionsGamesTableFilterComposer(
+            $db: $db,
+            $table: $db.expansionsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> bases(
+    Expression<bool> Function($$ExpansionsGamesTableFilterComposer f) f,
+  ) {
+    final $$ExpansionsGamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expansionsGames,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpansionsGamesTableFilterComposer(
+            $db: $db,
+            $table: $db.expansionsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> gamesArtistsRefs(
+    Expression<bool> Function($$GamesArtistsTableFilterComposer f) f,
+  ) {
+    final $$GamesArtistsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamesArtists,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesArtistsTableFilterComposer(
+            $db: $db,
+            $table: $db.gamesArtists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> gamesCountingTemplatesRefs(
+    Expression<bool> Function($$GamesCountingTemplatesTableFilterComposer f) f,
+  ) {
+    final $$GamesCountingTemplatesTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableFilterComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> gamesCountingTemplatesExpansionsRefs(
+    Expression<bool> Function(
+      $$GamesCountingTemplatesExpansionsTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$GamesCountingTemplatesExpansionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplatesExpansions,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesExpansionsTableFilterComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplatesExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> gamesDesignersRefs(
+    Expression<bool> Function($$GamesDesignersTableFilterComposer f) f,
+  ) {
+    final $$GamesDesignersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamesDesigners,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesDesignersTableFilterComposer(
+            $db: $db,
+            $table: $db.gamesDesigners,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> gamesTagsRefs(
+    Expression<bool> Function($$GamesTagsTableFilterComposer f) f,
+  ) {
+    final $$GamesTagsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamesTags,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTagsTableFilterComposer(
+            $db: $db,
+            $table: $db.gamesTags,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> gamingSessionsRefs(
+    Expression<bool> Function($$GamingSessionsTableFilterComposer f) f,
+  ) {
+    final $$GamingSessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamingSessions,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamingSessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.gamingSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> gamingSessionsExpansionsRefs(
+    Expression<bool> Function($$GamingSessionsExpansionsTableFilterComposer f)
+    f,
+  ) {
+    final $$GamingSessionsExpansionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamingSessionsExpansions,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamingSessionsExpansionsTableFilterComposer(
+                $db: $db,
+                $table: $db.gamingSessionsExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> notesRefs(
+    Expression<bool> Function($$NotesTableFilterComposer f) f,
+  ) {
+    final $$NotesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.notes,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$NotesTableFilterComposer(
+            $db: $db,
+            $table: $db.notes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ratingsGamesRefs(
+    Expression<bool> Function($$RatingsGamesTableFilterComposer f) f,
+  ) {
+    final $$RatingsGamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratingsGames,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsGamesTableFilterComposer(
+            $db: $db,
+            $table: $db.ratingsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$GamesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GamesTable> {
+  $$GamesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minPlayers => $composableBuilder(
+    column: $table.minPlayers,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get maxPlayers => $composableBuilder(
+    column: $table.maxPlayers,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isInCollection => $composableBuilder(
+    column: $table.isInCollection,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isStandalone => $composableBuilder(
+    column: $table.isStandalone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GamesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GamesTable> {
+  $$GamesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<int> get minPlayers => $composableBuilder(
+    column: $table.minPlayers,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get maxPlayers => $composableBuilder(
+    column: $table.maxPlayers,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isInCollection => $composableBuilder(
+    column: $table.isInCollection,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get rating =>
+      $composableBuilder(column: $table.rating, builder: (column) => column);
+
+  GeneratedColumn<bool> get isStandalone => $composableBuilder(
+    column: $table.isStandalone,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  Expression<T> randomSetupsRefs<T extends Object>(
+    Expression<T> Function($$RandomSetupsTableAnnotationComposer a) f,
+  ) {
+    final $$RandomSetupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> expansions<T extends Object>(
+    Expression<T> Function($$ExpansionsGamesTableAnnotationComposer a) f,
+  ) {
+    final $$ExpansionsGamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expansionsGames,
+      getReferencedColumn: (t) => t.expansionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpansionsGamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expansionsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> bases<T extends Object>(
+    Expression<T> Function($$ExpansionsGamesTableAnnotationComposer a) f,
+  ) {
+    final $$ExpansionsGamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expansionsGames,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpansionsGamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expansionsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> gamesArtistsRefs<T extends Object>(
+    Expression<T> Function($$GamesArtistsTableAnnotationComposer a) f,
+  ) {
+    final $$GamesArtistsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamesArtists,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesArtistsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gamesArtists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> gamesCountingTemplatesRefs<T extends Object>(
+    Expression<T> Function($$GamesCountingTemplatesTableAnnotationComposer a) f,
+  ) {
+    final $$GamesCountingTemplatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplates,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> gamesCountingTemplatesExpansionsRefs<T extends Object>(
+    Expression<T> Function(
+      $$GamesCountingTemplatesExpansionsTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$GamesCountingTemplatesExpansionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamesCountingTemplatesExpansions,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamesCountingTemplatesExpansionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamesCountingTemplatesExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> gamesDesignersRefs<T extends Object>(
+    Expression<T> Function($$GamesDesignersTableAnnotationComposer a) f,
+  ) {
+    final $$GamesDesignersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamesDesigners,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesDesignersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gamesDesigners,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> gamesTagsRefs<T extends Object>(
+    Expression<T> Function($$GamesTagsTableAnnotationComposer a) f,
+  ) {
+    final $$GamesTagsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamesTags,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTagsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gamesTags,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> gamingSessionsRefs<T extends Object>(
+    Expression<T> Function($$GamingSessionsTableAnnotationComposer a) f,
+  ) {
+    final $$GamingSessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gamingSessions,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamingSessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gamingSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> gamingSessionsExpansionsRefs<T extends Object>(
+    Expression<T> Function($$GamingSessionsExpansionsTableAnnotationComposer a)
+    f,
+  ) {
+    final $$GamingSessionsExpansionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.gamingSessionsExpansions,
+          getReferencedColumn: (t) => t.gameId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GamingSessionsExpansionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.gamingSessionsExpansions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> notesRefs<T extends Object>(
+    Expression<T> Function($$NotesTableAnnotationComposer a) f,
+  ) {
+    final $$NotesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.notes,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$NotesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.notes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> ratingsGamesRefs<T extends Object>(
+    Expression<T> Function($$RatingsGamesTableAnnotationComposer a) f,
+  ) {
+    final $$RatingsGamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.ratingsGames,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RatingsGamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ratingsGames,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$GamesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GamesTable,
+          Game,
+          $$GamesTableFilterComposer,
+          $$GamesTableOrderingComposer,
+          $$GamesTableAnnotationComposer,
+          $$GamesTableCreateCompanionBuilder,
+          $$GamesTableUpdateCompanionBuilder,
+          (Game, $$GamesTableReferences),
+          Game,
+          PrefetchHooks Function({
+            bool randomSetupsRefs,
+            bool expansions,
+            bool bases,
+            bool gamesArtistsRefs,
+            bool gamesCountingTemplatesRefs,
+            bool gamesCountingTemplatesExpansionsRefs,
+            bool gamesDesignersRefs,
+            bool gamesTagsRefs,
+            bool gamingSessionsRefs,
+            bool gamingSessionsExpansionsRefs,
+            bool notesRefs,
+            bool ratingsGamesRefs,
+          })
+        > {
+  $$GamesTableTableManager(_$AppDatabase db, $GamesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GamesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GamesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GamesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> year = const Value.absent(),
+                Value<int?> minPlayers = const Value.absent(),
+                Value<int?> maxPlayers = const Value.absent(),
+                Value<bool> isInCollection = const Value.absent(),
+                Value<bool> isFavorite = const Value.absent(),
+                Value<double?> rating = const Value.absent(),
+                Value<bool> isStandalone = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+              }) => GamesCompanion(
+                id: id,
+                name: name,
+                description: description,
+                year: year,
+                minPlayers: minPlayers,
+                maxPlayers: maxPlayers,
+                isInCollection: isInCollection,
+                isFavorite: isFavorite,
+                rating: rating,
+                isStandalone: isStandalone,
+                imagePath: imagePath,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<String?> description = const Value.absent(),
+                Value<String?> year = const Value.absent(),
+                Value<int?> minPlayers = const Value.absent(),
+                Value<int?> maxPlayers = const Value.absent(),
+                Value<bool> isInCollection = const Value.absent(),
+                Value<bool> isFavorite = const Value.absent(),
+                Value<double?> rating = const Value.absent(),
+                Value<bool> isStandalone = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+              }) => GamesCompanion.insert(
+                id: id,
+                name: name,
+                description: description,
+                year: year,
+                minPlayers: minPlayers,
+                maxPlayers: maxPlayers,
+                isInCollection: isInCollection,
+                isFavorite: isFavorite,
+                rating: rating,
+                isStandalone: isStandalone,
+                imagePath: imagePath,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$GamesTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                randomSetupsRefs = false,
+                expansions = false,
+                bases = false,
+                gamesArtistsRefs = false,
+                gamesCountingTemplatesRefs = false,
+                gamesCountingTemplatesExpansionsRefs = false,
+                gamesDesignersRefs = false,
+                gamesTagsRefs = false,
+                gamingSessionsRefs = false,
+                gamingSessionsExpansionsRefs = false,
+                notesRefs = false,
+                ratingsGamesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (randomSetupsRefs) db.randomSetups,
+                    if (expansions) db.expansionsGames,
+                    if (bases) db.expansionsGames,
+                    if (gamesArtistsRefs) db.gamesArtists,
+                    if (gamesCountingTemplatesRefs) db.gamesCountingTemplates,
+                    if (gamesCountingTemplatesExpansionsRefs)
+                      db.gamesCountingTemplatesExpansions,
+                    if (gamesDesignersRefs) db.gamesDesigners,
+                    if (gamesTagsRefs) db.gamesTags,
+                    if (gamingSessionsRefs) db.gamingSessions,
+                    if (gamingSessionsExpansionsRefs)
+                      db.gamingSessionsExpansions,
+                    if (notesRefs) db.notes,
+                    if (ratingsGamesRefs) db.ratingsGames,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (randomSetupsRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          RandomSetup
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._randomSetupsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).randomSetupsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (expansions)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          ExpansionsGame
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._expansionsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(db, table, p0).expansions,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.expansionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (bases)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          ExpansionsGame
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences._basesTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(db, table, p0).bases,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamesArtistsRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamesArtist
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamesArtistsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesArtistsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamesCountingTemplatesRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamesCountingTemplate
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamesCountingTemplatesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesCountingTemplatesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamesCountingTemplatesExpansionsRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamesCountingTemplatesExpansion
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamesCountingTemplatesExpansionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesCountingTemplatesExpansionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamesDesignersRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamesDesigner
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamesDesignersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesDesignersRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamesTagsRefs)
+                        await $_getPrefetchedData<Game, $GamesTable, GamesTag>(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamesTagsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamesTagsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamingSessionsRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamingSession
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamingSessionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamingSessionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (gamingSessionsExpansionsRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          GamingSessionsExpansion
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._gamingSessionsExpansionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gamingSessionsExpansionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (notesRefs)
+                        await $_getPrefetchedData<Game, $GamesTable, Note>(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._notesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(db, table, p0).notesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (ratingsGamesRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          RatingsGame
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._ratingsGamesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).ratingsGamesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$GamesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GamesTable,
+      Game,
+      $$GamesTableFilterComposer,
+      $$GamesTableOrderingComposer,
+      $$GamesTableAnnotationComposer,
+      $$GamesTableCreateCompanionBuilder,
+      $$GamesTableUpdateCompanionBuilder,
+      (Game, $$GamesTableReferences),
+      Game,
+      PrefetchHooks Function({
+        bool randomSetupsRefs,
+        bool expansions,
+        bool bases,
+        bool gamesArtistsRefs,
+        bool gamesCountingTemplatesRefs,
+        bool gamesCountingTemplatesExpansionsRefs,
+        bool gamesDesignersRefs,
+        bool gamesTagsRefs,
+        bool gamingSessionsRefs,
+        bool gamingSessionsExpansionsRefs,
+        bool notesRefs,
+        bool ratingsGamesRefs,
+      })
+    >;
+typedef $$RandomSetupsTableCreateCompanionBuilder =
+    RandomSetupsCompanion Function({
+      Value<int> id,
+      required String name,
+      required int gameId,
+    });
+typedef $$RandomSetupsTableUpdateCompanionBuilder =
+    RandomSetupsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> gameId,
+    });
+
+final class $$RandomSetupsTableReferences
+    extends BaseReferences<_$AppDatabase, $RandomSetupsTable, RandomSetup> {
+  $$RandomSetupsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $GamesTable _gameIdTable(_$AppDatabase db) => db.games.createAlias(
+    $_aliasNameGenerator(db.randomSetups.gameId, db.games.id),
+  );
+
+  $$GamesTableProcessedTableManager get gameId {
+    final $_column = $_itemColumn<int>('game_id')!;
+
+    final manager = $$GamesTableTableManager(
+      $_db,
+      $_db.games,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$RandomSetupsListsTable, List<RandomSetupsList>>
+  _randomSetupsListsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.randomSetupsLists,
+        aliasName: $_aliasNameGenerator(
+          db.randomSetups.id,
+          db.randomSetupsLists.randomSetupId,
+        ),
+      );
+
+  $$RandomSetupsListsTableProcessedTableManager get randomSetupsListsRefs {
+    final manager = $$RandomSetupsListsTableTableManager(
+      $_db,
+      $_db.randomSetupsLists,
+    ).filter((f) => f.randomSetupId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _randomSetupsListsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$SavedSetupsTable, List<SavedSetup>>
+  _savedSetupsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.savedSetups,
+    aliasName: $_aliasNameGenerator(
+      db.randomSetups.id,
+      db.savedSetups.randomSetupId,
+    ),
+  );
+
+  $$SavedSetupsTableProcessedTableManager get savedSetupsRefs {
+    final manager = $$SavedSetupsTableTableManager(
+      $_db,
+      $_db.savedSetups,
+    ).filter((f) => f.randomSetupId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_savedSetupsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$RandomSetupsTableFilterComposer
+    extends Composer<_$AppDatabase, $RandomSetupsTable> {
+  $$RandomSetupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GamesTableFilterComposer get gameId {
+    final $$GamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableFilterComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> randomSetupsListsRefs(
+    Expression<bool> Function($$RandomSetupsListsTableFilterComposer f) f,
+  ) {
+    final $$RandomSetupsListsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.randomSetupsLists,
+      getReferencedColumn: (t) => t.randomSetupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsListsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomSetupsLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> savedSetupsRefs(
+    Expression<bool> Function($$SavedSetupsTableFilterComposer f) f,
+  ) {
+    final $$SavedSetupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savedSetups,
+      getReferencedColumn: (t) => t.randomSetupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsTableFilterComposer(
+            $db: $db,
+            $table: $db.savedSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RandomSetupsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RandomSetupsTable> {
+  $$RandomSetupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GamesTableOrderingComposer get gameId {
+    final $$GamesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableOrderingComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RandomSetupsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RandomSetupsTable> {
+  $$RandomSetupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  $$GamesTableAnnotationComposer get gameId {
+    final $$GamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> randomSetupsListsRefs<T extends Object>(
+    Expression<T> Function($$RandomSetupsListsTableAnnotationComposer a) f,
+  ) {
+    final $$RandomSetupsListsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.randomSetupsLists,
+          getReferencedColumn: (t) => t.randomSetupId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RandomSetupsListsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.randomSetupsLists,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> savedSetupsRefs<T extends Object>(
+    Expression<T> Function($$SavedSetupsTableAnnotationComposer a) f,
+  ) {
+    final $$SavedSetupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savedSetups,
+      getReferencedColumn: (t) => t.randomSetupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savedSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RandomSetupsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RandomSetupsTable,
+          RandomSetup,
+          $$RandomSetupsTableFilterComposer,
+          $$RandomSetupsTableOrderingComposer,
+          $$RandomSetupsTableAnnotationComposer,
+          $$RandomSetupsTableCreateCompanionBuilder,
+          $$RandomSetupsTableUpdateCompanionBuilder,
+          (RandomSetup, $$RandomSetupsTableReferences),
+          RandomSetup,
+          PrefetchHooks Function({
+            bool gameId,
+            bool randomSetupsListsRefs,
+            bool savedSetupsRefs,
+          })
+        > {
+  $$RandomSetupsTableTableManager(_$AppDatabase db, $RandomSetupsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RandomSetupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RandomSetupsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RandomSetupsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> gameId = const Value.absent(),
+              }) => RandomSetupsCompanion(id: id, name: name, gameId: gameId),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int gameId,
+              }) => RandomSetupsCompanion.insert(
+                id: id,
+                name: name,
+                gameId: gameId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RandomSetupsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                gameId = false,
+                randomSetupsListsRefs = false,
+                savedSetupsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (randomSetupsListsRefs) db.randomSetupsLists,
+                    if (savedSetupsRefs) db.savedSetups,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (gameId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.gameId,
+                                    referencedTable:
+                                        $$RandomSetupsTableReferences
+                                            ._gameIdTable(db),
+                                    referencedColumn:
+                                        $$RandomSetupsTableReferences
+                                            ._gameIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (randomSetupsListsRefs)
+                        await $_getPrefetchedData<
+                          RandomSetup,
+                          $RandomSetupsTable,
+                          RandomSetupsList
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RandomSetupsTableReferences
+                              ._randomSetupsListsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RandomSetupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).randomSetupsListsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.randomSetupId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (savedSetupsRefs)
+                        await $_getPrefetchedData<
+                          RandomSetup,
+                          $RandomSetupsTable,
+                          SavedSetup
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RandomSetupsTableReferences
+                              ._savedSetupsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RandomSetupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savedSetupsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.randomSetupId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RandomSetupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RandomSetupsTable,
+      RandomSetup,
+      $$RandomSetupsTableFilterComposer,
+      $$RandomSetupsTableOrderingComposer,
+      $$RandomSetupsTableAnnotationComposer,
+      $$RandomSetupsTableCreateCompanionBuilder,
+      $$RandomSetupsTableUpdateCompanionBuilder,
+      (RandomSetup, $$RandomSetupsTableReferences),
+      RandomSetup,
+      PrefetchHooks Function({
+        bool gameId,
+        bool randomSetupsListsRefs,
+        bool savedSetupsRefs,
+      })
+    >;
+typedef $$RandomSetupsListsTableCreateCompanionBuilder =
+    RandomSetupsListsCompanion Function({
+      Value<int> id,
+      required String name,
+      required int randomSetupId,
+      required int randomListId,
+      Value<bool> isUnique,
+      required int itemsNum,
+    });
+typedef $$RandomSetupsListsTableUpdateCompanionBuilder =
+    RandomSetupsListsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> randomSetupId,
+      Value<int> randomListId,
+      Value<bool> isUnique,
+      Value<int> itemsNum,
+    });
+
+final class $$RandomSetupsListsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $RandomSetupsListsTable,
+          RandomSetupsList
+        > {
+  $$RandomSetupsListsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $RandomSetupsTable _randomSetupIdTable(_$AppDatabase db) =>
+      db.randomSetups.createAlias(
+        $_aliasNameGenerator(
+          db.randomSetupsLists.randomSetupId,
+          db.randomSetups.id,
+        ),
+      );
+
+  $$RandomSetupsTableProcessedTableManager get randomSetupId {
+    final $_column = $_itemColumn<int>('random_setup_id')!;
+
+    final manager = $$RandomSetupsTableTableManager(
+      $_db,
+      $_db.randomSetups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_randomSetupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $RandomListsTable _randomListIdTable(_$AppDatabase db) =>
+      db.randomLists.createAlias(
+        $_aliasNameGenerator(
+          db.randomSetupsLists.randomListId,
+          db.randomLists.id,
+        ),
+      );
+
+  $$RandomListsTableProcessedTableManager get randomListId {
+    final $_column = $_itemColumn<int>('random_list_id')!;
+
+    final manager = $$RandomListsTableTableManager(
+      $_db,
+      $_db.randomLists,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_randomListIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SavedSetupsListItemsTable,
+    List<SavedSetupsListItem>
+  >
+  _savedSetupsListItemsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savedSetupsListItems,
+        aliasName: $_aliasNameGenerator(
+          db.randomSetupsLists.id,
+          db.savedSetupsListItems.randomSetupListId,
+        ),
+      );
+
+  $$SavedSetupsListItemsTableProcessedTableManager
+  get savedSetupsListItemsRefs {
+    final manager = $$SavedSetupsListItemsTableTableManager(
+      $_db,
+      $_db.savedSetupsListItems,
+    ).filter((f) => f.randomSetupListId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savedSetupsListItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$RandomSetupsListsTableFilterComposer
+    extends Composer<_$AppDatabase, $RandomSetupsListsTable> {
+  $$RandomSetupsListsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isUnique => $composableBuilder(
+    column: $table.isUnique,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get itemsNum => $composableBuilder(
+    column: $table.itemsNum,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RandomSetupsTableFilterComposer get randomSetupId {
+    final $$RandomSetupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupId,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RandomListsTableFilterComposer get randomListId {
+    final $$RandomListsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> savedSetupsListItemsRefs(
+    Expression<bool> Function($$SavedSetupsListItemsTableFilterComposer f) f,
+  ) {
+    final $$SavedSetupsListItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savedSetupsListItems,
+      getReferencedColumn: (t) => t.randomSetupListId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsListItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.savedSetupsListItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RandomSetupsListsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RandomSetupsListsTable> {
+  $$RandomSetupsListsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isUnique => $composableBuilder(
+    column: $table.isUnique,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get itemsNum => $composableBuilder(
+    column: $table.itemsNum,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RandomSetupsTableOrderingComposer get randomSetupId {
+    final $$RandomSetupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupId,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RandomListsTableOrderingComposer get randomListId {
+    final $$RandomListsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableOrderingComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RandomSetupsListsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RandomSetupsListsTable> {
+  $$RandomSetupsListsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<bool> get isUnique =>
+      $composableBuilder(column: $table.isUnique, builder: (column) => column);
+
+  GeneratedColumn<int> get itemsNum =>
+      $composableBuilder(column: $table.itemsNum, builder: (column) => column);
+
+  $$RandomSetupsTableAnnotationComposer get randomSetupId {
+    final $$RandomSetupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupId,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RandomListsTableAnnotationComposer get randomListId {
+    final $$RandomListsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> savedSetupsListItemsRefs<T extends Object>(
+    Expression<T> Function($$SavedSetupsListItemsTableAnnotationComposer a) f,
+  ) {
+    final $$SavedSetupsListItemsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savedSetupsListItems,
+          getReferencedColumn: (t) => t.randomSetupListId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavedSetupsListItemsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savedSetupsListItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$RandomSetupsListsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RandomSetupsListsTable,
+          RandomSetupsList,
+          $$RandomSetupsListsTableFilterComposer,
+          $$RandomSetupsListsTableOrderingComposer,
+          $$RandomSetupsListsTableAnnotationComposer,
+          $$RandomSetupsListsTableCreateCompanionBuilder,
+          $$RandomSetupsListsTableUpdateCompanionBuilder,
+          (RandomSetupsList, $$RandomSetupsListsTableReferences),
+          RandomSetupsList,
+          PrefetchHooks Function({
+            bool randomSetupId,
+            bool randomListId,
+            bool savedSetupsListItemsRefs,
+          })
+        > {
+  $$RandomSetupsListsTableTableManager(
+    _$AppDatabase db,
+    $RandomSetupsListsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RandomSetupsListsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RandomSetupsListsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RandomSetupsListsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> randomSetupId = const Value.absent(),
+                Value<int> randomListId = const Value.absent(),
+                Value<bool> isUnique = const Value.absent(),
+                Value<int> itemsNum = const Value.absent(),
+              }) => RandomSetupsListsCompanion(
+                id: id,
+                name: name,
+                randomSetupId: randomSetupId,
+                randomListId: randomListId,
+                isUnique: isUnique,
+                itemsNum: itemsNum,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int randomSetupId,
+                required int randomListId,
+                Value<bool> isUnique = const Value.absent(),
+                required int itemsNum,
+              }) => RandomSetupsListsCompanion.insert(
+                id: id,
+                name: name,
+                randomSetupId: randomSetupId,
+                randomListId: randomListId,
+                isUnique: isUnique,
+                itemsNum: itemsNum,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RandomSetupsListsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                randomSetupId = false,
+                randomListId = false,
+                savedSetupsListItemsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (savedSetupsListItemsRefs) db.savedSetupsListItems,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (randomSetupId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.randomSetupId,
+                                    referencedTable:
+                                        $$RandomSetupsListsTableReferences
+                                            ._randomSetupIdTable(db),
+                                    referencedColumn:
+                                        $$RandomSetupsListsTableReferences
+                                            ._randomSetupIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (randomListId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.randomListId,
+                                    referencedTable:
+                                        $$RandomSetupsListsTableReferences
+                                            ._randomListIdTable(db),
+                                    referencedColumn:
+                                        $$RandomSetupsListsTableReferences
+                                            ._randomListIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (savedSetupsListItemsRefs)
+                        await $_getPrefetchedData<
+                          RandomSetupsList,
+                          $RandomSetupsListsTable,
+                          SavedSetupsListItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RandomSetupsListsTableReferences
+                              ._savedSetupsListItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RandomSetupsListsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savedSetupsListItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.randomSetupListId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RandomSetupsListsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RandomSetupsListsTable,
+      RandomSetupsList,
+      $$RandomSetupsListsTableFilterComposer,
+      $$RandomSetupsListsTableOrderingComposer,
+      $$RandomSetupsListsTableAnnotationComposer,
+      $$RandomSetupsListsTableCreateCompanionBuilder,
+      $$RandomSetupsListsTableUpdateCompanionBuilder,
+      (RandomSetupsList, $$RandomSetupsListsTableReferences),
+      RandomSetupsList,
+      PrefetchHooks Function({
+        bool randomSetupId,
+        bool randomListId,
+        bool savedSetupsListItemsRefs,
+      })
+    >;
+typedef $$SavedSetupsTableCreateCompanionBuilder =
+    SavedSetupsCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<String?> description,
+      required int randomSetupId,
+    });
+typedef $$SavedSetupsTableUpdateCompanionBuilder =
+    SavedSetupsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String?> description,
+      Value<int> randomSetupId,
+    });
+
+final class $$SavedSetupsTableReferences
+    extends BaseReferences<_$AppDatabase, $SavedSetupsTable, SavedSetup> {
+  $$SavedSetupsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RandomSetupsTable _randomSetupIdTable(_$AppDatabase db) =>
+      db.randomSetups.createAlias(
+        $_aliasNameGenerator(db.savedSetups.randomSetupId, db.randomSetups.id),
+      );
+
+  $$RandomSetupsTableProcessedTableManager get randomSetupId {
+    final $_column = $_itemColumn<int>('random_setup_id')!;
+
+    final manager = $$RandomSetupsTableTableManager(
+      $_db,
+      $_db.randomSetups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_randomSetupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SavedSetupsListItemsTable,
+    List<SavedSetupsListItem>
+  >
+  _savedSetupsListItemsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savedSetupsListItems,
+        aliasName: $_aliasNameGenerator(
+          db.savedSetups.id,
+          db.savedSetupsListItems.savedSetupId,
+        ),
+      );
+
+  $$SavedSetupsListItemsTableProcessedTableManager
+  get savedSetupsListItemsRefs {
+    final manager = $$SavedSetupsListItemsTableTableManager(
+      $_db,
+      $_db.savedSetupsListItems,
+    ).filter((f) => f.savedSetupId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savedSetupsListItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$SavedSetupsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedSetupsTable> {
+  $$SavedSetupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RandomSetupsTableFilterComposer get randomSetupId {
+    final $$RandomSetupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupId,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> savedSetupsListItemsRefs(
+    Expression<bool> Function($$SavedSetupsListItemsTableFilterComposer f) f,
+  ) {
+    final $$SavedSetupsListItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savedSetupsListItems,
+      getReferencedColumn: (t) => t.savedSetupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsListItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.savedSetupsListItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$SavedSetupsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedSetupsTable> {
+  $$SavedSetupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RandomSetupsTableOrderingComposer get randomSetupId {
+    final $$RandomSetupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupId,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavedSetupsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedSetupsTable> {
+  $$SavedSetupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  $$RandomSetupsTableAnnotationComposer get randomSetupId {
+    final $$RandomSetupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupId,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> savedSetupsListItemsRefs<T extends Object>(
+    Expression<T> Function($$SavedSetupsListItemsTableAnnotationComposer a) f,
+  ) {
+    final $$SavedSetupsListItemsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savedSetupsListItems,
+          getReferencedColumn: (t) => t.savedSetupId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavedSetupsListItemsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savedSetupsListItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$SavedSetupsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedSetupsTable,
+          SavedSetup,
+          $$SavedSetupsTableFilterComposer,
+          $$SavedSetupsTableOrderingComposer,
+          $$SavedSetupsTableAnnotationComposer,
+          $$SavedSetupsTableCreateCompanionBuilder,
+          $$SavedSetupsTableUpdateCompanionBuilder,
+          (SavedSetup, $$SavedSetupsTableReferences),
+          SavedSetup,
+          PrefetchHooks Function({
+            bool randomSetupId,
+            bool savedSetupsListItemsRefs,
+          })
+        > {
+  $$SavedSetupsTableTableManager(_$AppDatabase db, $SavedSetupsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedSetupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedSetupsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedSetupsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int> randomSetupId = const Value.absent(),
+              }) => SavedSetupsCompanion(
+                id: id,
+                name: name,
+                description: description,
+                randomSetupId: randomSetupId,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<String?> description = const Value.absent(),
+                required int randomSetupId,
+              }) => SavedSetupsCompanion.insert(
+                id: id,
+                name: name,
+                description: description,
+                randomSetupId: randomSetupId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SavedSetupsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({randomSetupId = false, savedSetupsListItemsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (savedSetupsListItemsRefs) db.savedSetupsListItems,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (randomSetupId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.randomSetupId,
+                                    referencedTable:
+                                        $$SavedSetupsTableReferences
+                                            ._randomSetupIdTable(db),
+                                    referencedColumn:
+                                        $$SavedSetupsTableReferences
+                                            ._randomSetupIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (savedSetupsListItemsRefs)
+                        await $_getPrefetchedData<
+                          SavedSetup,
+                          $SavedSetupsTable,
+                          SavedSetupsListItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SavedSetupsTableReferences
+                              ._savedSetupsListItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SavedSetupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savedSetupsListItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.savedSetupId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$SavedSetupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedSetupsTable,
+      SavedSetup,
+      $$SavedSetupsTableFilterComposer,
+      $$SavedSetupsTableOrderingComposer,
+      $$SavedSetupsTableAnnotationComposer,
+      $$SavedSetupsTableCreateCompanionBuilder,
+      $$SavedSetupsTableUpdateCompanionBuilder,
+      (SavedSetup, $$SavedSetupsTableReferences),
+      SavedSetup,
+      PrefetchHooks Function({
+        bool randomSetupId,
+        bool savedSetupsListItemsRefs,
+      })
+    >;
+typedef $$SavedSetupsListItemsTableCreateCompanionBuilder =
+    SavedSetupsListItemsCompanion Function({
+      Value<int> id,
+      required int savedSetupId,
+      required int randomSetupListId,
+      required int listItemsId,
+      required int position,
+    });
+typedef $$SavedSetupsListItemsTableUpdateCompanionBuilder =
+    SavedSetupsListItemsCompanion Function({
+      Value<int> id,
+      Value<int> savedSetupId,
+      Value<int> randomSetupListId,
+      Value<int> listItemsId,
+      Value<int> position,
+    });
+
+final class $$SavedSetupsListItemsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $SavedSetupsListItemsTable,
+          SavedSetupsListItem
+        > {
+  $$SavedSetupsListItemsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $SavedSetupsTable _savedSetupIdTable(_$AppDatabase db) =>
+      db.savedSetups.createAlias(
+        $_aliasNameGenerator(
+          db.savedSetupsListItems.savedSetupId,
+          db.savedSetups.id,
+        ),
+      );
+
+  $$SavedSetupsTableProcessedTableManager get savedSetupId {
+    final $_column = $_itemColumn<int>('saved_setup_id')!;
+
+    final manager = $$SavedSetupsTableTableManager(
+      $_db,
+      $_db.savedSetups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_savedSetupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $RandomSetupsListsTable _randomSetupListIdTable(_$AppDatabase db) =>
+      db.randomSetupsLists.createAlias(
+        $_aliasNameGenerator(
+          db.savedSetupsListItems.randomSetupListId,
+          db.randomSetupsLists.id,
+        ),
+      );
+
+  $$RandomSetupsListsTableProcessedTableManager get randomSetupListId {
+    final $_column = $_itemColumn<int>('random_setup_list_id')!;
+
+    final manager = $$RandomSetupsListsTableTableManager(
+      $_db,
+      $_db.randomSetupsLists,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_randomSetupListIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $ListItemsTable _listItemsIdTable(_$AppDatabase db) =>
+      db.listItems.createAlias(
+        $_aliasNameGenerator(
+          db.savedSetupsListItems.listItemsId,
+          db.listItems.id,
+        ),
+      );
+
+  $$ListItemsTableProcessedTableManager get listItemsId {
+    final $_column = $_itemColumn<int>('list_items_id')!;
+
+    final manager = $$ListItemsTableTableManager(
+      $_db,
+      $_db.listItems,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_listItemsIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SavedSetupsListItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedSetupsListItemsTable> {
+  $$SavedSetupsListItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$SavedSetupsTableFilterComposer get savedSetupId {
+    final $$SavedSetupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.savedSetupId,
+      referencedTable: $db.savedSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsTableFilterComposer(
+            $db: $db,
+            $table: $db.savedSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RandomSetupsListsTableFilterComposer get randomSetupListId {
+    final $$RandomSetupsListsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupListId,
+      referencedTable: $db.randomSetupsLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsListsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomSetupsLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ListItemsTableFilterComposer get listItemsId {
+    final $$ListItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.listItemsId,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavedSetupsListItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedSetupsListItemsTable> {
+  $$SavedSetupsListItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$SavedSetupsTableOrderingComposer get savedSetupId {
+    final $$SavedSetupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.savedSetupId,
+      referencedTable: $db.savedSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.savedSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RandomSetupsListsTableOrderingComposer get randomSetupListId {
+    final $$RandomSetupsListsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupListId,
+      referencedTable: $db.randomSetupsLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsListsTableOrderingComposer(
+            $db: $db,
+            $table: $db.randomSetupsLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ListItemsTableOrderingComposer get listItemsId {
+    final $$ListItemsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.listItemsId,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableOrderingComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavedSetupsListItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedSetupsListItemsTable> {
+  $$SavedSetupsListItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  $$SavedSetupsTableAnnotationComposer get savedSetupId {
+    final $$SavedSetupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.savedSetupId,
+      referencedTable: $db.savedSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavedSetupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savedSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RandomSetupsListsTableAnnotationComposer get randomSetupListId {
+    final $$RandomSetupsListsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.randomSetupListId,
+          referencedTable: $db.randomSetupsLists,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RandomSetupsListsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.randomSetupsLists,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  $$ListItemsTableAnnotationComposer get listItemsId {
+    final $$ListItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.listItemsId,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavedSetupsListItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedSetupsListItemsTable,
+          SavedSetupsListItem,
+          $$SavedSetupsListItemsTableFilterComposer,
+          $$SavedSetupsListItemsTableOrderingComposer,
+          $$SavedSetupsListItemsTableAnnotationComposer,
+          $$SavedSetupsListItemsTableCreateCompanionBuilder,
+          $$SavedSetupsListItemsTableUpdateCompanionBuilder,
+          (SavedSetupsListItem, $$SavedSetupsListItemsTableReferences),
+          SavedSetupsListItem,
+          PrefetchHooks Function({
+            bool savedSetupId,
+            bool randomSetupListId,
+            bool listItemsId,
+          })
+        > {
+  $$SavedSetupsListItemsTableTableManager(
+    _$AppDatabase db,
+    $SavedSetupsListItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedSetupsListItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedSetupsListItemsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SavedSetupsListItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> savedSetupId = const Value.absent(),
+                Value<int> randomSetupListId = const Value.absent(),
+                Value<int> listItemsId = const Value.absent(),
+                Value<int> position = const Value.absent(),
+              }) => SavedSetupsListItemsCompanion(
+                id: id,
+                savedSetupId: savedSetupId,
+                randomSetupListId: randomSetupListId,
+                listItemsId: listItemsId,
+                position: position,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int savedSetupId,
+                required int randomSetupListId,
+                required int listItemsId,
+                required int position,
+              }) => SavedSetupsListItemsCompanion.insert(
+                id: id,
+                savedSetupId: savedSetupId,
+                randomSetupListId: randomSetupListId,
+                listItemsId: listItemsId,
+                position: position,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SavedSetupsListItemsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                savedSetupId = false,
+                randomSetupListId = false,
+                listItemsId = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (savedSetupId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.savedSetupId,
+                                    referencedTable:
+                                        $$SavedSetupsListItemsTableReferences
+                                            ._savedSetupIdTable(db),
+                                    referencedColumn:
+                                        $$SavedSetupsListItemsTableReferences
+                                            ._savedSetupIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (randomSetupListId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.randomSetupListId,
+                                    referencedTable:
+                                        $$SavedSetupsListItemsTableReferences
+                                            ._randomSetupListIdTable(db),
+                                    referencedColumn:
+                                        $$SavedSetupsListItemsTableReferences
+                                            ._randomSetupListIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (listItemsId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.listItemsId,
+                                    referencedTable:
+                                        $$SavedSetupsListItemsTableReferences
+                                            ._listItemsIdTable(db),
+                                    referencedColumn:
+                                        $$SavedSetupsListItemsTableReferences
+                                            ._listItemsIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$SavedSetupsListItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedSetupsListItemsTable,
+      SavedSetupsListItem,
+      $$SavedSetupsListItemsTableFilterComposer,
+      $$SavedSetupsListItemsTableOrderingComposer,
+      $$SavedSetupsListItemsTableAnnotationComposer,
+      $$SavedSetupsListItemsTableCreateCompanionBuilder,
+      $$SavedSetupsListItemsTableUpdateCompanionBuilder,
+      (SavedSetupsListItem, $$SavedSetupsListItemsTableReferences),
+      SavedSetupsListItem,
+      PrefetchHooks Function({
+        bool savedSetupId,
+        bool randomSetupListId,
+        bool listItemsId,
+      })
+    >;
 typedef $$ArtistsTableCreateCompanionBuilder =
     ArtistsCompanion Function({Value<int> id, required String name});
 typedef $$ArtistsTableUpdateCompanionBuilder =
@@ -7186,1396 +13621,6 @@ typedef $$DesignersTableProcessedTableManager =
       (Designer, $$DesignersTableReferences),
       Designer,
       PrefetchHooks Function({bool gamesDesignersRefs, bool ratingsRefs})
-    >;
-typedef $$GamesTableCreateCompanionBuilder =
-    GamesCompanion Function({
-      Value<int> id,
-      required String name,
-      Value<String?> description,
-      Value<String?> year,
-      Value<int?> minPlayers,
-      Value<int?> maxPlayers,
-      Value<bool> isInCollection,
-      Value<bool> isFavorite,
-      Value<double?> rating,
-      Value<bool> isStandalone,
-      Value<String?> imagePath,
-    });
-typedef $$GamesTableUpdateCompanionBuilder =
-    GamesCompanion Function({
-      Value<int> id,
-      Value<String> name,
-      Value<String?> description,
-      Value<String?> year,
-      Value<int?> minPlayers,
-      Value<int?> maxPlayers,
-      Value<bool> isInCollection,
-      Value<bool> isFavorite,
-      Value<double?> rating,
-      Value<bool> isStandalone,
-      Value<String?> imagePath,
-    });
-
-final class $$GamesTableReferences
-    extends BaseReferences<_$AppDatabase, $GamesTable, Game> {
-  $$GamesTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$ExpansionsGamesTable, List<ExpansionsGame>>
-  _expansionsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.expansionsGames,
-    aliasName: $_aliasNameGenerator(
-      db.games.id,
-      db.expansionsGames.expansionId,
-    ),
-  );
-
-  $$ExpansionsGamesTableProcessedTableManager get expansions {
-    final manager = $$ExpansionsGamesTableTableManager(
-      $_db,
-      $_db.expansionsGames,
-    ).filter((f) => f.expansionId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_expansionsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$ExpansionsGamesTable, List<ExpansionsGame>>
-  _basesTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.expansionsGames,
-    aliasName: $_aliasNameGenerator(db.games.id, db.expansionsGames.gameId),
-  );
-
-  $$ExpansionsGamesTableProcessedTableManager get bases {
-    final manager = $$ExpansionsGamesTableTableManager(
-      $_db,
-      $_db.expansionsGames,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_basesTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$GamesArtistsTable, List<GamesArtist>>
-  _gamesArtistsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.gamesArtists,
-    aliasName: $_aliasNameGenerator(db.games.id, db.gamesArtists.gameId),
-  );
-
-  $$GamesArtistsTableProcessedTableManager get gamesArtistsRefs {
-    final manager = $$GamesArtistsTableTableManager(
-      $_db,
-      $_db.gamesArtists,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_gamesArtistsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $GamesCountingTemplatesTable,
-    List<GamesCountingTemplate>
-  >
-  _gamesCountingTemplatesRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.gamesCountingTemplates,
-        aliasName: $_aliasNameGenerator(
-          db.games.id,
-          db.gamesCountingTemplates.gameId,
-        ),
-      );
-
-  $$GamesCountingTemplatesTableProcessedTableManager
-  get gamesCountingTemplatesRefs {
-    final manager = $$GamesCountingTemplatesTableTableManager(
-      $_db,
-      $_db.gamesCountingTemplates,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _gamesCountingTemplatesRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $GamesCountingTemplatesExpansionsTable,
-    List<GamesCountingTemplatesExpansion>
-  >
-  _gamesCountingTemplatesExpansionsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.gamesCountingTemplatesExpansions,
-        aliasName: $_aliasNameGenerator(
-          db.games.id,
-          db.gamesCountingTemplatesExpansions.gameId,
-        ),
-      );
-
-  $$GamesCountingTemplatesExpansionsTableProcessedTableManager
-  get gamesCountingTemplatesExpansionsRefs {
-    final manager = $$GamesCountingTemplatesExpansionsTableTableManager(
-      $_db,
-      $_db.gamesCountingTemplatesExpansions,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _gamesCountingTemplatesExpansionsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$GamesDesignersTable, List<GamesDesigner>>
-  _gamesDesignersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.gamesDesigners,
-    aliasName: $_aliasNameGenerator(db.games.id, db.gamesDesigners.gameId),
-  );
-
-  $$GamesDesignersTableProcessedTableManager get gamesDesignersRefs {
-    final manager = $$GamesDesignersTableTableManager(
-      $_db,
-      $_db.gamesDesigners,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_gamesDesignersRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$GamesTagsTable, List<GamesTag>>
-  _gamesTagsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.gamesTags,
-    aliasName: $_aliasNameGenerator(db.games.id, db.gamesTags.gameId),
-  );
-
-  $$GamesTagsTableProcessedTableManager get gamesTagsRefs {
-    final manager = $$GamesTagsTableTableManager(
-      $_db,
-      $_db.gamesTags,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_gamesTagsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$GamingSessionsTable, List<GamingSession>>
-  _gamingSessionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.gamingSessions,
-    aliasName: $_aliasNameGenerator(db.games.id, db.gamingSessions.gameId),
-  );
-
-  $$GamingSessionsTableProcessedTableManager get gamingSessionsRefs {
-    final manager = $$GamingSessionsTableTableManager(
-      $_db,
-      $_db.gamingSessions,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_gamingSessionsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $GamingSessionsExpansionsTable,
-    List<GamingSessionsExpansion>
-  >
-  _gamingSessionsExpansionsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.gamingSessionsExpansions,
-        aliasName: $_aliasNameGenerator(
-          db.games.id,
-          db.gamingSessionsExpansions.gameId,
-        ),
-      );
-
-  $$GamingSessionsExpansionsTableProcessedTableManager
-  get gamingSessionsExpansionsRefs {
-    final manager = $$GamingSessionsExpansionsTableTableManager(
-      $_db,
-      $_db.gamingSessionsExpansions,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _gamingSessionsExpansionsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$NotesTable, List<Note>> _notesRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.notes,
-    aliasName: $_aliasNameGenerator(db.games.id, db.notes.gameId),
-  );
-
-  $$NotesTableProcessedTableManager get notesRefs {
-    final manager = $$NotesTableTableManager(
-      $_db,
-      $_db.notes,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_notesRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$RatingsGamesTable, List<RatingsGame>>
-  _ratingsGamesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.ratingsGames,
-    aliasName: $_aliasNameGenerator(db.games.id, db.ratingsGames.gameId),
-  );
-
-  $$RatingsGamesTableProcessedTableManager get ratingsGamesRefs {
-    final manager = $$RatingsGamesTableTableManager(
-      $_db,
-      $_db.ratingsGames,
-    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_ratingsGamesRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
-  $$GamesTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get year => $composableBuilder(
-    column: $table.year,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get minPlayers => $composableBuilder(
-    column: $table.minPlayers,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get maxPlayers => $composableBuilder(
-    column: $table.maxPlayers,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isInCollection => $composableBuilder(
-    column: $table.isInCollection,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isFavorite => $composableBuilder(
-    column: $table.isFavorite,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get rating => $composableBuilder(
-    column: $table.rating,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isStandalone => $composableBuilder(
-    column: $table.isStandalone,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get imagePath => $composableBuilder(
-    column: $table.imagePath,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> expansions(
-    Expression<bool> Function($$ExpansionsGamesTableFilterComposer f) f,
-  ) {
-    final $$ExpansionsGamesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expansionsGames,
-      getReferencedColumn: (t) => t.expansionId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpansionsGamesTableFilterComposer(
-            $db: $db,
-            $table: $db.expansionsGames,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> bases(
-    Expression<bool> Function($$ExpansionsGamesTableFilterComposer f) f,
-  ) {
-    final $$ExpansionsGamesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expansionsGames,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpansionsGamesTableFilterComposer(
-            $db: $db,
-            $table: $db.expansionsGames,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> gamesArtistsRefs(
-    Expression<bool> Function($$GamesArtistsTableFilterComposer f) f,
-  ) {
-    final $$GamesArtistsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamesArtists,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamesArtistsTableFilterComposer(
-            $db: $db,
-            $table: $db.gamesArtists,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> gamesCountingTemplatesRefs(
-    Expression<bool> Function($$GamesCountingTemplatesTableFilterComposer f) f,
-  ) {
-    final $$GamesCountingTemplatesTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.gamesCountingTemplates,
-          getReferencedColumn: (t) => t.gameId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GamesCountingTemplatesTableFilterComposer(
-                $db: $db,
-                $table: $db.gamesCountingTemplates,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<bool> gamesCountingTemplatesExpansionsRefs(
-    Expression<bool> Function(
-      $$GamesCountingTemplatesExpansionsTableFilterComposer f,
-    )
-    f,
-  ) {
-    final $$GamesCountingTemplatesExpansionsTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.gamesCountingTemplatesExpansions,
-          getReferencedColumn: (t) => t.gameId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GamesCountingTemplatesExpansionsTableFilterComposer(
-                $db: $db,
-                $table: $db.gamesCountingTemplatesExpansions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<bool> gamesDesignersRefs(
-    Expression<bool> Function($$GamesDesignersTableFilterComposer f) f,
-  ) {
-    final $$GamesDesignersTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamesDesigners,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamesDesignersTableFilterComposer(
-            $db: $db,
-            $table: $db.gamesDesigners,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> gamesTagsRefs(
-    Expression<bool> Function($$GamesTagsTableFilterComposer f) f,
-  ) {
-    final $$GamesTagsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamesTags,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamesTagsTableFilterComposer(
-            $db: $db,
-            $table: $db.gamesTags,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> gamingSessionsRefs(
-    Expression<bool> Function($$GamingSessionsTableFilterComposer f) f,
-  ) {
-    final $$GamingSessionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamingSessions,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamingSessionsTableFilterComposer(
-            $db: $db,
-            $table: $db.gamingSessions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> gamingSessionsExpansionsRefs(
-    Expression<bool> Function($$GamingSessionsExpansionsTableFilterComposer f)
-    f,
-  ) {
-    final $$GamingSessionsExpansionsTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.gamingSessionsExpansions,
-          getReferencedColumn: (t) => t.gameId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GamingSessionsExpansionsTableFilterComposer(
-                $db: $db,
-                $table: $db.gamingSessionsExpansions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<bool> notesRefs(
-    Expression<bool> Function($$NotesTableFilterComposer f) f,
-  ) {
-    final $$NotesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.notes,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$NotesTableFilterComposer(
-            $db: $db,
-            $table: $db.notes,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> ratingsGamesRefs(
-    Expression<bool> Function($$RatingsGamesTableFilterComposer f) f,
-  ) {
-    final $$RatingsGamesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.ratingsGames,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RatingsGamesTableFilterComposer(
-            $db: $db,
-            $table: $db.ratingsGames,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$GamesTableOrderingComposer
-    extends Composer<_$AppDatabase, $GamesTable> {
-  $$GamesTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get year => $composableBuilder(
-    column: $table.year,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get minPlayers => $composableBuilder(
-    column: $table.minPlayers,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get maxPlayers => $composableBuilder(
-    column: $table.maxPlayers,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isInCollection => $composableBuilder(
-    column: $table.isInCollection,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isFavorite => $composableBuilder(
-    column: $table.isFavorite,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get rating => $composableBuilder(
-    column: $table.rating,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isStandalone => $composableBuilder(
-    column: $table.isStandalone,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get imagePath => $composableBuilder(
-    column: $table.imagePath,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$GamesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $GamesTable> {
-  $$GamesTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get year =>
-      $composableBuilder(column: $table.year, builder: (column) => column);
-
-  GeneratedColumn<int> get minPlayers => $composableBuilder(
-    column: $table.minPlayers,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get maxPlayers => $composableBuilder(
-    column: $table.maxPlayers,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isInCollection => $composableBuilder(
-    column: $table.isInCollection,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isFavorite => $composableBuilder(
-    column: $table.isFavorite,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get rating =>
-      $composableBuilder(column: $table.rating, builder: (column) => column);
-
-  GeneratedColumn<bool> get isStandalone => $composableBuilder(
-    column: $table.isStandalone,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get imagePath =>
-      $composableBuilder(column: $table.imagePath, builder: (column) => column);
-
-  Expression<T> expansions<T extends Object>(
-    Expression<T> Function($$ExpansionsGamesTableAnnotationComposer a) f,
-  ) {
-    final $$ExpansionsGamesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expansionsGames,
-      getReferencedColumn: (t) => t.expansionId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpansionsGamesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.expansionsGames,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> bases<T extends Object>(
-    Expression<T> Function($$ExpansionsGamesTableAnnotationComposer a) f,
-  ) {
-    final $$ExpansionsGamesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expansionsGames,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpansionsGamesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.expansionsGames,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> gamesArtistsRefs<T extends Object>(
-    Expression<T> Function($$GamesArtistsTableAnnotationComposer a) f,
-  ) {
-    final $$GamesArtistsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamesArtists,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamesArtistsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.gamesArtists,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> gamesCountingTemplatesRefs<T extends Object>(
-    Expression<T> Function($$GamesCountingTemplatesTableAnnotationComposer a) f,
-  ) {
-    final $$GamesCountingTemplatesTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.gamesCountingTemplates,
-          getReferencedColumn: (t) => t.gameId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GamesCountingTemplatesTableAnnotationComposer(
-                $db: $db,
-                $table: $db.gamesCountingTemplates,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> gamesCountingTemplatesExpansionsRefs<T extends Object>(
-    Expression<T> Function(
-      $$GamesCountingTemplatesExpansionsTableAnnotationComposer a,
-    )
-    f,
-  ) {
-    final $$GamesCountingTemplatesExpansionsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.gamesCountingTemplatesExpansions,
-          getReferencedColumn: (t) => t.gameId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GamesCountingTemplatesExpansionsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.gamesCountingTemplatesExpansions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> gamesDesignersRefs<T extends Object>(
-    Expression<T> Function($$GamesDesignersTableAnnotationComposer a) f,
-  ) {
-    final $$GamesDesignersTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamesDesigners,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamesDesignersTableAnnotationComposer(
-            $db: $db,
-            $table: $db.gamesDesigners,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> gamesTagsRefs<T extends Object>(
-    Expression<T> Function($$GamesTagsTableAnnotationComposer a) f,
-  ) {
-    final $$GamesTagsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamesTags,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamesTagsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.gamesTags,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> gamingSessionsRefs<T extends Object>(
-    Expression<T> Function($$GamingSessionsTableAnnotationComposer a) f,
-  ) {
-    final $$GamingSessionsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.gamingSessions,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GamingSessionsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.gamingSessions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> gamingSessionsExpansionsRefs<T extends Object>(
-    Expression<T> Function($$GamingSessionsExpansionsTableAnnotationComposer a)
-    f,
-  ) {
-    final $$GamingSessionsExpansionsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.gamingSessionsExpansions,
-          getReferencedColumn: (t) => t.gameId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GamingSessionsExpansionsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.gamingSessionsExpansions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> notesRefs<T extends Object>(
-    Expression<T> Function($$NotesTableAnnotationComposer a) f,
-  ) {
-    final $$NotesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.notes,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$NotesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.notes,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> ratingsGamesRefs<T extends Object>(
-    Expression<T> Function($$RatingsGamesTableAnnotationComposer a) f,
-  ) {
-    final $$RatingsGamesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.ratingsGames,
-      getReferencedColumn: (t) => t.gameId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RatingsGamesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.ratingsGames,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$GamesTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $GamesTable,
-          Game,
-          $$GamesTableFilterComposer,
-          $$GamesTableOrderingComposer,
-          $$GamesTableAnnotationComposer,
-          $$GamesTableCreateCompanionBuilder,
-          $$GamesTableUpdateCompanionBuilder,
-          (Game, $$GamesTableReferences),
-          Game,
-          PrefetchHooks Function({
-            bool expansions,
-            bool bases,
-            bool gamesArtistsRefs,
-            bool gamesCountingTemplatesRefs,
-            bool gamesCountingTemplatesExpansionsRefs,
-            bool gamesDesignersRefs,
-            bool gamesTagsRefs,
-            bool gamingSessionsRefs,
-            bool gamingSessionsExpansionsRefs,
-            bool notesRefs,
-            bool ratingsGamesRefs,
-          })
-        > {
-  $$GamesTableTableManager(_$AppDatabase db, $GamesTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$GamesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$GamesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$GamesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<String?> year = const Value.absent(),
-                Value<int?> minPlayers = const Value.absent(),
-                Value<int?> maxPlayers = const Value.absent(),
-                Value<bool> isInCollection = const Value.absent(),
-                Value<bool> isFavorite = const Value.absent(),
-                Value<double?> rating = const Value.absent(),
-                Value<bool> isStandalone = const Value.absent(),
-                Value<String?> imagePath = const Value.absent(),
-              }) => GamesCompanion(
-                id: id,
-                name: name,
-                description: description,
-                year: year,
-                minPlayers: minPlayers,
-                maxPlayers: maxPlayers,
-                isInCollection: isInCollection,
-                isFavorite: isFavorite,
-                rating: rating,
-                isStandalone: isStandalone,
-                imagePath: imagePath,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String name,
-                Value<String?> description = const Value.absent(),
-                Value<String?> year = const Value.absent(),
-                Value<int?> minPlayers = const Value.absent(),
-                Value<int?> maxPlayers = const Value.absent(),
-                Value<bool> isInCollection = const Value.absent(),
-                Value<bool> isFavorite = const Value.absent(),
-                Value<double?> rating = const Value.absent(),
-                Value<bool> isStandalone = const Value.absent(),
-                Value<String?> imagePath = const Value.absent(),
-              }) => GamesCompanion.insert(
-                id: id,
-                name: name,
-                description: description,
-                year: year,
-                minPlayers: minPlayers,
-                maxPlayers: maxPlayers,
-                isInCollection: isInCollection,
-                isFavorite: isFavorite,
-                rating: rating,
-                isStandalone: isStandalone,
-                imagePath: imagePath,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) =>
-                    (e.readTable(table), $$GamesTableReferences(db, table, e)),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                expansions = false,
-                bases = false,
-                gamesArtistsRefs = false,
-                gamesCountingTemplatesRefs = false,
-                gamesCountingTemplatesExpansionsRefs = false,
-                gamesDesignersRefs = false,
-                gamesTagsRefs = false,
-                gamingSessionsRefs = false,
-                gamingSessionsExpansionsRefs = false,
-                notesRefs = false,
-                ratingsGamesRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (expansions) db.expansionsGames,
-                    if (bases) db.expansionsGames,
-                    if (gamesArtistsRefs) db.gamesArtists,
-                    if (gamesCountingTemplatesRefs) db.gamesCountingTemplates,
-                    if (gamesCountingTemplatesExpansionsRefs)
-                      db.gamesCountingTemplatesExpansions,
-                    if (gamesDesignersRefs) db.gamesDesigners,
-                    if (gamesTagsRefs) db.gamesTags,
-                    if (gamingSessionsRefs) db.gamingSessions,
-                    if (gamingSessionsExpansionsRefs)
-                      db.gamingSessionsExpansions,
-                    if (notesRefs) db.notes,
-                    if (ratingsGamesRefs) db.ratingsGames,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (expansions)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          ExpansionsGame
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._expansionsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(db, table, p0).expansions,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.expansionId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (bases)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          ExpansionsGame
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences._basesTable(
-                            db,
-                          ),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(db, table, p0).bases,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (gamesArtistsRefs)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          GamesArtist
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._gamesArtistsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).gamesArtistsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (gamesCountingTemplatesRefs)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          GamesCountingTemplate
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._gamesCountingTemplatesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).gamesCountingTemplatesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (gamesCountingTemplatesExpansionsRefs)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          GamesCountingTemplatesExpansion
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._gamesCountingTemplatesExpansionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).gamesCountingTemplatesExpansionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (gamesDesignersRefs)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          GamesDesigner
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._gamesDesignersRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).gamesDesignersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (gamesTagsRefs)
-                        await $_getPrefetchedData<Game, $GamesTable, GamesTag>(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._gamesTagsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).gamesTagsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (gamingSessionsRefs)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          GamingSession
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._gamingSessionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).gamingSessionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (gamingSessionsExpansionsRefs)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          GamingSessionsExpansion
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._gamingSessionsExpansionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).gamingSessionsExpansionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (notesRefs)
-                        await $_getPrefetchedData<Game, $GamesTable, Note>(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._notesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(db, table, p0).notesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (ratingsGamesRefs)
-                        await $_getPrefetchedData<
-                          Game,
-                          $GamesTable,
-                          RatingsGame
-                        >(
-                          currentTable: table,
-                          referencedTable: $$GamesTableReferences
-                              ._ratingsGamesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$GamesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).ratingsGamesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.gameId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$GamesTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $GamesTable,
-      Game,
-      $$GamesTableFilterComposer,
-      $$GamesTableOrderingComposer,
-      $$GamesTableAnnotationComposer,
-      $$GamesTableCreateCompanionBuilder,
-      $$GamesTableUpdateCompanionBuilder,
-      (Game, $$GamesTableReferences),
-      Game,
-      PrefetchHooks Function({
-        bool expansions,
-        bool bases,
-        bool gamesArtistsRefs,
-        bool gamesCountingTemplatesRefs,
-        bool gamesCountingTemplatesExpansionsRefs,
-        bool gamesDesignersRefs,
-        bool gamesTagsRefs,
-        bool gamingSessionsRefs,
-        bool gamingSessionsExpansionsRefs,
-        bool notesRefs,
-        bool ratingsGamesRefs,
-      })
     >;
 typedef $$ExpansionsGamesTableCreateCompanionBuilder =
     ExpansionsGamesCompanion Function({
@@ -14503,14 +19548,26 @@ typedef $$RatingsGamesTableProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $$RandomListsTableTableManager get randomLists =>
+      $$RandomListsTableTableManager(_db, _db.randomLists);
+  $$ListItemsTableTableManager get listItems =>
+      $$ListItemsTableTableManager(_db, _db.listItems);
+  $$GamesTableTableManager get games =>
+      $$GamesTableTableManager(_db, _db.games);
+  $$RandomSetupsTableTableManager get randomSetups =>
+      $$RandomSetupsTableTableManager(_db, _db.randomSetups);
+  $$RandomSetupsListsTableTableManager get randomSetupsLists =>
+      $$RandomSetupsListsTableTableManager(_db, _db.randomSetupsLists);
+  $$SavedSetupsTableTableManager get savedSetups =>
+      $$SavedSetupsTableTableManager(_db, _db.savedSetups);
+  $$SavedSetupsListItemsTableTableManager get savedSetupsListItems =>
+      $$SavedSetupsListItemsTableTableManager(_db, _db.savedSetupsListItems);
   $$ArtistsTableTableManager get artists =>
       $$ArtistsTableTableManager(_db, _db.artists);
   $$CountingTemplatesTableTableManager get countingTemplates =>
       $$CountingTemplatesTableTableManager(_db, _db.countingTemplates);
   $$DesignersTableTableManager get designers =>
       $$DesignersTableTableManager(_db, _db.designers);
-  $$GamesTableTableManager get games =>
-      $$GamesTableTableManager(_db, _db.games);
   $$ExpansionsGamesTableTableManager get expansionsGames =>
       $$ExpansionsGamesTableTableManager(_db, _db.expansionsGames);
   $$GamesArtistsTableTableManager get gamesArtists =>

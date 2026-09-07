@@ -8,6 +8,7 @@ export 'one_winner_select_screen.dart';
 export 'player_roles_viewer.dart';
 export 'result_screen.dart';
 export 'role_assignment_screen.dart';
+export 'roles_management_screen.dart';
 export 'score_input_screen.dart';
 export 'score_round_screen.dart';
 export 'secret_roles_management_screen.dart';

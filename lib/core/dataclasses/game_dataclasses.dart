@@ -1,6 +1,6 @@
-// Класс для хранения игры со всеми связанными сущностями
 import 'package:bg_tools/core/database/app_database.dart';
 
+// Класс для хранения игры со всеми связанными сущностями
 class GameFullData {
   final Game game;
   final List<Game> bases;

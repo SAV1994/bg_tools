@@ -356,6 +356,12 @@ class _GamingSessionDetailScreenState
                       ],
                     ),
 
+                    if (playerData.data!['role']['roleName'] != null)
+                      InfoRow(
+                        label: 'Роль',
+                        value: playerData.data!['role']['roleName'],
+                      ),
+
                     if (playerData.turnOrder != null)
                       InfoRow(
                         label: 'Порядок хода',

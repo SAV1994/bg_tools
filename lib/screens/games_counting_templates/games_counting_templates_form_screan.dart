@@ -51,12 +51,12 @@ class _GamesCountingTemplatesModalFormState
   bool _showRoundsScoreLimitInput = false;
 
   List<dynamic> _secretRolesConfig = [];
+  List<dynamic> _roles = [];
 
   // Контроллеры
   final TextEditingController _controllerForModal = TextEditingController();
   final TextEditingController _controllerForModal2 = TextEditingController();
   late final TextEditingController _nameController;
-  final ScrollController _scrollController = ScrollController();
   late TextEditingController _roundsScoreLimitController;
   // Загрузка
   bool _isLoading = false;
@@ -88,6 +88,15 @@ class _GamesCountingTemplatesModalFormState
       final Map<String, dynamic> templatesData = jsonDecode(
         _selectedCountingTemplate!.data,
       );
+
+      final Map<String, dynamic> gameData = jsonDecode(
+        gamesCountingTemplatesData!.gamesCountingTemplate.data!,
+      );
+      _secretRolesConfig = gameData['secretRolesConfig'];
+      if (gameData['roles'] != null) {
+        _roles = gameData['roles'];
+      }
+
       if ([
         GameTypeEnum.secretRoles.id,
         GameTypeEnum.secretTeams.id,
@@ -97,17 +106,9 @@ class _GamesCountingTemplatesModalFormState
         } else {
           _mode = _SelectMode.secretTeams;
         }
-        GamesCountingTemplate gamesCountingTemplate =
-            gamesCountingTemplatesData!.gamesCountingTemplate;
-        _secretRolesConfig = json.decode(
-          gamesCountingTemplate.data!,
-        )['secretRolesConfig'];
       }
 
       if (templatesData['roundsType'] == RoundsTypeEnum.condition.id) {
-        final Map<String, dynamic> gameData = jsonDecode(
-          gamesCountingTemplatesData!.gamesCountingTemplate.data!,
-        );
         roundsScoreLimit = gameData['roundsScoreLimit'];
         _showRoundsScoreLimitInput = true;
       }
@@ -131,6 +132,10 @@ class _GamesCountingTemplatesModalFormState
     );
 
     setState(() => _isLoading = false);
+  }
+
+  int get _totalRolesCount {
+    return _roles.fold(0, (sum, role) => sum + role['count'] as int);
   }
 
   Future<List<CountingTemplate>> getItemsForCountingTemplateSelect() async {
@@ -165,6 +170,7 @@ class _GamesCountingTemplatesModalFormState
       final Map<String, dynamic> data = {
         'roundsScoreLimit': int.tryParse(_roundsScoreLimitController.text),
         'secretRolesConfig': _secretRolesConfig,
+        'roles': _roles,
       };
 
       if (_selectedCountingTemplate == null) {
@@ -244,6 +250,120 @@ class _GamesCountingTemplatesModalFormState
         }
       }
     }
+  }
+
+  // Открыть диалог добавления/редактирования
+  void _showRoleDialog(int? index) {
+    late final Map<String, dynamic>? role;
+    if (index != null) {
+      role = _roles[index];
+      _controllerForModal.text = role!['name'];
+      _controllerForModal2.text = role['count'].toString();
+    } else {
+      role = null;
+      _controllerForModal.clear();
+      _controllerForModal2.text = '1';
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(role == null ? 'Добавить роль' : 'Редактировать роль'),
+        content: SingleChildScrollView(
+          child: Column(
+            spacing: 16,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Название
+              TextField(
+                controller: _controllerForModal,
+                decoration: const InputDecoration(
+                  labelText: 'Название',
+                  hintText: 'Введите название роли',
+                  border: OutlineInputBorder(),
+                ),
+                autofocus: true,
+              ),
+
+              // Количество
+              TextField(
+                controller: _controllerForModal2,
+                decoration: const InputDecoration(
+                  labelText: 'Количество в игре',
+                  hintText: '1',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Отмена'),
+          ),
+          ElevatedButton(
+            onPressed: () => _saveRole(index),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: secondColor,
+              foregroundColor: textColor,
+            ),
+            child: Text(role == null ? 'Добавить' : 'Сохранить'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Сохранить роль
+  void _saveRole(int? index) {
+    final name = _controllerForModal.text.trim();
+    final count = int.tryParse(_controllerForModal2.text) ?? 1;
+
+    // Валидация
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Введите название роли'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_roles.any((role) => role['name'] == name)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Роли должны быть уникальными'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (count < 1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Количество должно быть не менее 1'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      if (index == null) {
+        // Добавление новой роли
+        _roles.add({'name': name, 'count': count});
+      } else {
+        // Редактирование существующей
+        _roles[index]['name'] = name;
+        _roles[index]['count'] = count;
+      }
+    });
+
+    Navigator.pop(context);
   }
 
   Widget _buildTeamCard(Map<String, dynamic> teamData, int index) {
@@ -753,10 +873,115 @@ class _GamesCountingTemplatesModalFormState
     );
   }
 
+  Widget _buildRoles() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+      itemCount: _roles.length,
+      itemBuilder: (context, index) {
+        final role = _roles[index];
+        return _buildRoleCard(role, index);
+      },
+    );
+  }
+
+  Widget _buildRoleCard(Map<String, dynamic> role, int index) {
+    return Dismissible(
+      key: Key(role['name']),
+      direction: DismissDirection.startToEnd, // ← Свайп вправо
+      onDismissed: (direction) {
+        setState(() {
+          _roles.removeAt(index);
+        });
+      },
+      background: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 20),
+        child: const Row(
+          children: [
+            Icon(Icons.delete, color: Colors.white, size: 28),
+            SizedBox(width: 8),
+            Text(
+              'Удалить',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        elevation: 2,
+        child: InkWell(
+          onTap: () => _showRoleDialog(index),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                // Информация о роли
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              role['name'],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          // Счётчик количества
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              '×${role['count']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Иконка редактирования
+                Icon(
+                  Icons.edit_outlined,
+                  color: Colors.grey.shade400,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
-    _scrollController.dispose();
     _controllerForModal.dispose();
     _controllerForModal2.dispose();
     super.dispose();
@@ -773,15 +998,20 @@ class _GamesCountingTemplatesModalFormState
               : blueColor,
         ),
         actions: [
-          if ([
-                _SelectMode.secretTeams,
-                _SelectMode.secretRoles,
-              ].contains(_mode) &&
-              _secretRolesConfig.length < 4)
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () => _showTeamModalForm(),
-            ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              if ([
+                    _SelectMode.secretTeams,
+                    _SelectMode.secretRoles,
+                  ].contains(_mode) &&
+                  _secretRolesConfig.length < 4) {
+                _showTeamModalForm();
+              } else {
+                _showRoleDialog(null);
+              }
+            },
+          ),
 
           if (widget.gamesCountingTemplatesId == null)
             IconButton(
@@ -848,44 +1078,45 @@ class _GamesCountingTemplatesModalFormState
           padding: EdgeInsets.all(16),
           child: Form(
             key: _formKey,
-            child: Column(
-              spacing: 16,
-              mainAxisSize: MainAxisSize.min,
-              children: _isLoading
-                  ? [LoadingScreen()]
-                  : [
-                      if (_generalError != null)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(8),
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red.shade200),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.error,
-                                color: Colors.red.shade700,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _generalError!,
-                                  style: TextStyle(color: Colors.red.shade700),
+            child: Scrollbar(
+              thumbVisibility: false,
+              interactive: false,
+              child: Column(
+                spacing: 16,
+                mainAxisSize: MainAxisSize.min,
+                children: _isLoading
+                    ? [LoadingScreen()]
+                    : [
+                        if (_generalError != null)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red.shade200),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.error,
+                                  color: Colors.red.shade700,
+                                  size: 20,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _generalError!,
+                                    style: TextStyle(
+                                      color: Colors.red.shade700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      Scrollbar(
-                        controller: _scrollController,
-                        thumbVisibility: false,
-                        interactive: false,
-                        child: TextFormField(
+                        TextFormField(
                           controller: _nameController,
                           decoration: InputDecoration(
                             labelText: 'Название *',
@@ -895,139 +1126,156 @@ class _GamesCountingTemplatesModalFormState
                           validator: (v) =>
                               v?.isEmpty == true ? 'Введите название' : null,
                         ),
-                      ),
 
-                      if (_showExpansionSelect)
-                        MultiSelectWithSearch<Game>(
-                          label: 'Дополнения',
-                          getItems: () => getItemsForExpansionsSelect(),
-                          selectedIds: _selectedExpansionIds,
-                          onSelectionChanged: (newSelected) {
-                            setState(() => _selectedExpansionIds = newSelected);
+                        if (_showExpansionSelect)
+                          MultiSelectWithSearch<Game>(
+                            label: 'Дополнения',
+                            getItems: () => getItemsForExpansionsSelect(),
+                            selectedIds: _selectedExpansionIds,
+                            onSelectionChanged: (newSelected) {
+                              setState(
+                                () => _selectedExpansionIds = newSelected,
+                              );
+                            },
+                            displayName: (expansion) => expansion.name,
+                            getId: (expansion) => expansion.id,
+                            searchHint: 'Поиск дополнений...',
+                          ),
+
+                        SelectWithSearch<CountingTemplate>(
+                          label: 'Шаблон',
+                          getItems: () => getItemsForCountingTemplateSelect(),
+                          selectedItem: _selectedCountingTemplate,
+                          onSelectionChanged: (template) {
+                            bool showRoundsScoreLimitInput = false;
+                            _SelectMode mode = _SelectMode.classic;
+
+                            if (template != null) {
+                              final Map<String, dynamic> templateData =
+                                  jsonDecode(template.data);
+
+                              if (templateData['roundsType'] ==
+                                  RoundsTypeEnum.condition.id) {
+                                showRoundsScoreLimitInput = true;
+                              } else {
+                                showRoundsScoreLimitInput = false;
+                                _roundsScoreLimitController.clear();
+                              }
+                              if (templateData['gameType'] ==
+                                  GameTypeEnum.secretRoles.id) {
+                                mode = _SelectMode.secretRoles;
+                              } else if (templateData['gameType'] ==
+                                  GameTypeEnum.secretTeams.id) {
+                                mode = _SelectMode.secretTeams;
+                              } else {
+                                _secretRolesConfig.clear();
+                              }
+                            }
+
+                            setState(() {
+                              _selectedCountingTemplate = template;
+                              _showRoundsScoreLimitInput =
+                                  showRoundsScoreLimitInput;
+                              _mode = mode;
+                            });
                           },
-                          displayName: (expansion) => expansion.name,
-                          getId: (expansion) => expansion.id,
-                          searchHint: 'Поиск дополнений...',
+                          displayName: (template) =>
+                              '${template.name} (${template.description})',
+                          getId: (template) => template.id,
+                          searchHint: 'Поиск шаблона...',
+                          isRequired: true,
+                          placeholder: 'Не выбран',
                         ),
 
-                      SelectWithSearch<CountingTemplate>(
-                        label: 'Шаблон',
-                        getItems: () => getItemsForCountingTemplateSelect(),
-                        selectedItem: _selectedCountingTemplate,
-                        onSelectionChanged: (template) {
-                          bool showRoundsScoreLimitInput = false;
-                          _SelectMode mode = _SelectMode.classic;
-
-                          if (template != null) {
-                            final Map<String, dynamic> templateData =
-                                jsonDecode(template.data);
-
-                            if (templateData['roundsType'] ==
-                                RoundsTypeEnum.condition.id) {
-                              showRoundsScoreLimitInput = true;
-                            } else {
-                              showRoundsScoreLimitInput = false;
-                              _roundsScoreLimitController.clear();
-                            }
-                            if (templateData['gameType'] ==
-                                GameTypeEnum.secretRoles.id) {
-                              mode = _SelectMode.secretRoles;
-                            } else if (templateData['gameType'] ==
-                                GameTypeEnum.secretTeams.id) {
-                              mode = _SelectMode.secretTeams;
-                            } else {
-                              _secretRolesConfig.clear();
-                            }
-                          }
-
-                          setState(() {
-                            _selectedCountingTemplate = template;
-                            _showRoundsScoreLimitInput =
-                                showRoundsScoreLimitInput;
-                            _mode = mode;
-                          });
-                        },
-                        displayName: (template) =>
-                            '${template.name} (${template.description})',
-                        getId: (template) => template.id,
-                        searchHint: 'Поиск шаблона...',
-                        isRequired: true,
-                        placeholder: 'Не выбран',
-                      ),
-
-                      if (_showRoundsScoreLimitInput)
-                        TextFormField(
-                          controller: _roundsScoreLimitController,
-                          decoration: InputDecoration(
-                            labelText: 'Граничное значение очков для раундов *',
-                            border: OutlineInputBorder(),
+                        if (_showRoundsScoreLimitInput)
+                          TextFormField(
+                            controller: _roundsScoreLimitController,
+                            decoration: InputDecoration(
+                              labelText:
+                                  'Граничное значение очков для раундов *',
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType:
+                                TextInputType.number, // Цифровая клавиатура
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^-?\d*'),
+                              ),
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Пожалуйста, введите ограничитель';
+                              }
+                              return null;
+                            },
                           ),
-                          keyboardType:
-                              TextInputType.number, // Цифровая клавиатура
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d*'),
+
+                        if ([
+                          _SelectMode.secretTeams,
+                          _SelectMode.secretRoles,
+                        ].contains(_mode))
+                          _secretRolesConfig.isEmpty
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.people_outline,
+                                        size: 64,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Нет команд',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      TextButton.icon(
+                                        onPressed: () => _showTeamModalForm(),
+                                        icon: const Icon(Icons.add),
+                                        label: const Text('Добавить команду'),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: _secretRolesConfig.length,
+                                  itemBuilder: (context, index) {
+                                    final team = _secretRolesConfig[index];
+                                    return _buildTeamCard(team, index);
+                                  },
+                                ),
+
+                        if (_roles.isNotEmpty) ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Роли и персонажи',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              Text(_totalRolesCount.toString()),
+                            ],
+                          ),
+                          _buildRoles(),
+                        ],
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: _submitForm,
+                                child: Text('Сохранить'),
+                              ),
                             ),
                           ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Пожалуйста, введите ограничитель';
-                            }
-                            return null;
-                          },
                         ),
-
-                      if ([
-                        _SelectMode.secretTeams,
-                        _SelectMode.secretRoles,
-                      ].contains(_mode))
-                        _secretRolesConfig.isEmpty
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.people_outline,
-                                      size: 64,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Нет команд',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    TextButton.icon(
-                                      onPressed: () => _showTeamModalForm(),
-                                      icon: const Icon(Icons.add),
-                                      label: const Text('Добавить команду'),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: _secretRolesConfig.length,
-                                itemBuilder: (context, index) {
-                                  final team = _secretRolesConfig[index];
-                                  return _buildTeamCard(team, index);
-                                },
-                              ),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: _submitForm,
-                              child: Text('Сохранить'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+              ),
             ),
           ),
         ),

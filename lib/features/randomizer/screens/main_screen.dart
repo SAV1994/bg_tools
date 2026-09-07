@@ -44,6 +44,11 @@ class _SelectionRandomizerScreenState
                     icon: gamesIcon,
                   ),
                   MenuButton(
+                    onPressed: () => context.pushNamed('randomizer-list'),
+                    label: 'Список',
+                    icon: randomListIcon,
+                  ),
+                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-players'),
                     label: 'Случайный игрок',
                     icon: gamersIcon,

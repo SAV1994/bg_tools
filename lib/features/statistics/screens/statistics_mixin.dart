@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:bg_tools/core/consts/export.dart';
+
 mixin StatisticsMixin<T extends StatefulWidget> on State<T> {
   late DateTime periodStart;
   late DateTime periodEnd;
@@ -62,6 +64,16 @@ mixin StatisticsMixin<T extends StatefulWidget> on State<T> {
       initialDate: initialDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: secondColor),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (date == null) return;

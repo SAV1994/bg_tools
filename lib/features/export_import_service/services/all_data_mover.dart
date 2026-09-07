@@ -47,6 +47,17 @@ class AllDataMover extends BaseMover {
         .get();
     final ratings = await database.select(database.ratings).get();
     final ratingsGames = await database.select(database.ratingsGames).get();
+    // таблицы рандомайзера
+    final listItems = await database.select(database.listItems).get();
+    final randomLists = await database.select(database.randomLists).get();
+    final randomSetups = await database.select(database.randomSetups).get();
+    final randomSetupsLists = await database
+        .select(database.randomSetupsLists)
+        .get();
+    final savedSetups = await database.select(database.savedSetups).get();
+    final savedSetupsListItems = await database
+        .select(database.savedSetupsListItems)
+        .get();
 
     // Формируем JSON
     final Map<String, dynamic> exportData = {
@@ -171,6 +182,64 @@ class AllDataMover extends BaseMover {
             },
           )
           .toList(),
+      'listItems': listItems
+          .map(
+            (li) => {
+              'id': li.id,
+              'name': li.name,
+              'randomListId': li.randomListId,
+              'copiesNum': li.copiesNum,
+              'imagePath': li.imagePath,
+            },
+          )
+          .toList(),
+      'randomLists': randomLists
+          .map(
+            (rl) => {
+              'id': rl.id,
+              'name': rl.name,
+              'type': rl.type,
+              'isUnique': rl.isUnique,
+              'itemsNum': rl.itemsNum,
+            },
+          )
+          .toList(),
+      'randomSetups': randomSetups
+          .map((rs) => {'id': rs.id, 'name': rs.name, 'gameId': rs.gameId})
+          .toList(),
+      'randomSetupsLists': randomSetupsLists
+          .map(
+            (rsl) => {
+              'id': rsl.id,
+              'name': rsl.name,
+              'randomSetupId': rsl.randomSetupId,
+              'randomListId': rsl.randomListId,
+              'isUnique': rsl.isUnique,
+              'itemsNum': rsl.itemsNum,
+            },
+          )
+          .toList(),
+      'savedSetups': savedSetups
+          .map(
+            (ss) => {
+              'id': ss.id,
+              'name': ss.name,
+              'description': ss.description,
+              'randomSetupId': ss.randomSetupId,
+            },
+          )
+          .toList(),
+      'savedSetupsListItems': savedSetupsListItems
+          .map(
+            (ssli) => {
+              'id': ssli.id,
+              'savedSetupId': ssli.savedSetupId,
+              'randomSetupListId': ssli.randomSetupListId,
+              'listItemsId': ssli.listItemsId,
+              'position': ssli.position,
+            },
+          )
+          .toList(),
     };
 
     return exportData;
@@ -213,6 +282,13 @@ class AllDataMover extends BaseMover {
       await database.delete(database.tags).go();
       await database.delete(database.gamers).go();
       await database.delete(database.games).go();
+      // таблицы рандомайзера
+      await database.delete(database.savedSetupsListItems).go();
+      await database.delete(database.savedSetups).go();
+      await database.delete(database.listItems).go();
+      await database.delete(database.randomLists).go();
+      await database.delete(database.randomSetupsLists).go();
+      await database.delete(database.randomSetups).go();
 
       // в AppDataManager тоже
       await AppDataManager.clearLastSessionGamers();
@@ -428,6 +504,21 @@ class AllDataMover extends BaseMover {
         ratingsIds[ratingsJson['id']] = id;
       }
 
+      final randomListsIds = <int, int>{};
+      for (final randomListJson in data['randomLists'] ?? []) {
+        final id = await database
+            .into(database.randomLists)
+            .insert(
+              RandomListsCompanion(
+                name: Value(randomListJson['name']),
+                type: Value(randomListJson['type']),
+                isUnique: Value(randomListJson['isUnique']),
+                itemsNum: Value(randomListJson['itemsNum']),
+              ),
+            );
+        randomListsIds[randomListJson['id']] = id;
+      }
+
       // Импортируем связи
       for (final egJson in data['expansionsGames']) {
         await database
@@ -512,6 +603,96 @@ class AllDataMover extends BaseMover {
                 gameId: Value(gamesIds[rgJson['gameId']]!),
                 score: Value(rgJson['score']),
                 place: Value(rgJson['place']),
+              ),
+            );
+      }
+
+      final randomSetupsIds = <int, int>{};
+      for (final randomSetupJson in data['randomSetups'] ?? []) {
+        final id = await database
+            .into(database.randomSetups)
+            .insert(
+              RandomSetupsCompanion(
+                name: Value(randomSetupJson['name']),
+                gameId: Value(gamesIds[randomSetupJson['gameId']]!),
+              ),
+            );
+        randomSetupsIds[randomSetupJson['id']] = id;
+      }
+
+      final randomSetupsListsIds = <int, int>{};
+      for (final randomSetupsListJson in data['randomSetupsLists'] ?? []) {
+        final id = await database
+            .into(database.randomSetupsLists)
+            .insert(
+              RandomSetupsListsCompanion(
+                name: Value(randomSetupsListJson['name']),
+                randomSetupId: Value(
+                  randomSetupsIds[randomSetupsListJson['randomSetupId']]!,
+                ),
+                randomListId: Value(
+                  randomListsIds[randomSetupsListJson['randomListId']]!,
+                ),
+                isUnique: Value(randomSetupsListJson['isUnique']),
+                itemsNum: Value(randomSetupsListJson['itemsNum']),
+              ),
+            );
+        randomSetupsListsIds[randomSetupsListJson['id']] = id;
+      }
+
+      final listItemsIds = <int, int>{};
+      for (final listItemJson in data['listItems'] ?? []) {
+        // final String? imagePath = listItemJson['imagePath'] != null
+        //     ? newImagePaths[path.basename(listItemJson['imagePath'])]
+        //     : null;
+
+        final id = await database
+            .into(database.listItems)
+            .insert(
+              ListItemsCompanion(
+                name: Value(listItemJson['name']),
+                randomListId: Value(
+                  randomListsIds[listItemJson['randomListId']]!,
+                ),
+                copiesNum: Value(listItemJson['copiesNum']),
+                // imagePath: Value(imagePath),
+              ),
+            );
+        listItemsIds[listItemJson['id']] = id;
+      }
+
+      final savedSetupsIds = <int, int>{};
+      for (final savedSetupJson in data['savedSetups'] ?? []) {
+        final id = await database
+            .into(database.savedSetups)
+            .insert(
+              SavedSetupsCompanion(
+                name: Value(savedSetupJson['name']),
+                description: Value(savedSetupJson['description']),
+                randomSetupId: Value(
+                  randomSetupsIds[savedSetupJson['randomSetupId']]!,
+                ),
+              ),
+            );
+        savedSetupsIds[savedSetupJson['id']] = id;
+      }
+
+      for (final savedSetupsListItemJson
+          in data['savedSetupsListItems'] ?? []) {
+        await database
+            .into(database.savedSetupsListItems)
+            .insert(
+              SavedSetupsListItemsCompanion(
+                savedSetupId: Value(
+                  savedSetupsIds[savedSetupsListItemJson['savedSetupId']]!,
+                ),
+                randomSetupListId: Value(
+                  randomSetupsListsIds[savedSetupsListItemJson['randomSetupListId']]!,
+                ),
+                listItemsId: Value(
+                  listItemsIds[savedSetupsListItemJson['listItemsId']]!,
+                ),
+                position: Value(savedSetupsListItemJson['position']),
               ),
             );
       }
