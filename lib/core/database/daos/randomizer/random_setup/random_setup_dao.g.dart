@@ -1,21 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'random_list_dao.dart';
+part of 'random_setup_dao.dart';
 
 // ignore_for_file: type=lint
-mixin _$RandomListDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$RandomSetupDaoMixin on DatabaseAccessor<AppDatabase> {
   $GamesTable get games => attachedDatabase.games;
   $RandomSetupsTable get randomSetups => attachedDatabase.randomSetups;
   $RandomListsTable get randomLists => attachedDatabase.randomLists;
   $ComponentTypesTable get componentTypes => attachedDatabase.componentTypes;
   $GameComponentsTable get gameComponents => attachedDatabase.gameComponents;
   $ListItemsTable get listItems => attachedDatabase.listItems;
-  RandomListDaoManager get managers => RandomListDaoManager(this);
+  RandomSetupDaoManager get managers => RandomSetupDaoManager(this);
 }
 
-class RandomListDaoManager {
-  final _$RandomListDaoMixin _db;
-  RandomListDaoManager(this._db);
+class RandomSetupDaoManager {
+  final _$RandomSetupDaoMixin _db;
+  RandomSetupDaoManager(this._db);
   $$GamesTableTableManager get games =>
       $$GamesTableTableManager(_db.attachedDatabase, _db.games);
   $$RandomSetupsTableTableManager get randomSetups =>

@@ -51,10 +51,10 @@ class _MonthsInputState extends State<MonthsInput> {
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
-            itemCount: MonthsEnum.values.length,
+            itemCount: MonthEnum.values.length,
             itemBuilder: (context, index) {
               final int monthId = index + 1;
-              final MonthsEnum monthEnum = MonthsEnum.fromId(monthId);
+              final MonthEnum monthEnum = MonthEnum.fromId(monthId);
               final isSelected = _selectedMonth == monthId;
               return GestureDetector(
                 onTap: () => setState(() {

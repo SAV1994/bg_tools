@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class SelectionRandomizerScreen extends ConsumerStatefulWidget {
@@ -17,8 +16,6 @@ class SelectionRandomizerScreen extends ConsumerStatefulWidget {
 
 class _SelectionRandomizerScreenState
     extends ConsumerState<SelectionRandomizerScreen> {
-  late final Gamer? owner;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -10,7 +10,7 @@ class UniversalAttrGetter {
     } else if (instance is GamingSession) {
       return 'Игровая сессия от ${DateFormats.formatDate(instance.startedAt)}';
     } else if (instance is Rating) {
-      return 'Топ от ${MonthsEnum.fromId(instance.month).label} ${instance.year} г.';
+      return 'Топ от ${MonthEnum.fromId(instance.month).label} ${instance.year} г.';
     } else if (instance is Note) {
       return instance.title;
     }

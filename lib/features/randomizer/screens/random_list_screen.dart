@@ -1,3 +1,4 @@
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
@@ -97,9 +98,9 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
       for (ListItemData item in randomListData!.items) {
         items.add(
           RandomizerItem(
-            id: item.id!,
-            name: item.name,
-            copiesNum: item.copiesNum,
+            id: item.listItem.id,
+            name: item.listItem.name,
+            copiesNum: item.listItem.copiesNum,
           ),
         );
       }
@@ -174,9 +175,10 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
       isUnique: Value(_isUnique),
       itemsNum: Value(int.tryParse(_countController.text) ?? 1),
     );
-    List<ListItemData> items = [];
+
+    List<ListItemInputData> items = [];
     for (final RandomizerItem item in _items) {
-      items.add(ListItemData(name: item.name, copiesNum: item.copiesNum));
+      items.add(ListItemInputData(name: item.name, copiesNum: item.copiesNum));
     }
 
     late RandomListData? randomListData;
@@ -196,15 +198,6 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
     }
 
     setState(() => _selectedRandomList = randomListData!.randomList);
-  }
-
-  // Удалить список
-  Future<void> _deleteList() async {
-    final randomListDao = ref.read(randomListDaoProvider);
-
-    await randomListDao.delInstance(_selectedRandomList!.id);
-
-    setState(() => _selectedRandomList = null);
   }
 
   // Редактировать элемент
@@ -382,7 +375,19 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
         ),
         actions: [
           if (_selectedRandomList != null)
-            IconButton(icon: Icon(delIcon), onPressed: () => _deleteList()),
+            IconButton(
+              icon: Icon(delIcon),
+              onPressed: () => buildDelModal(
+                context,
+                ref,
+                randomListDaoProvider,
+                mounted,
+                _selectedRandomList,
+                () {
+                  setState(() => _selectedRandomList = null);
+                },
+              ),
+            ),
 
           if (_items.isNotEmpty) ...[
             IconButton(

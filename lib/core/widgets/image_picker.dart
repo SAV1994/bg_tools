@@ -15,6 +15,7 @@ class ImagePickerWidget extends StatefulWidget {
   final double width;
   final double height;
   final String fieldName;
+  final ImageEnum imageType;
 
   const ImagePickerWidget({
     super.key,
@@ -23,6 +24,7 @@ class ImagePickerWidget extends StatefulWidget {
     this.width = double.infinity,
     this.height = 200,
     required this.fieldName,
+    required this.imageType,
   });
 
   @override
@@ -55,9 +57,13 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
       File? imageFile;
 
       if (source == ImageSource.gallery) {
-        imageFile = await ImageService.pickImageFromGallery();
+        imageFile = await ImageService.pickImageFromGallery(
+          imageType: widget.imageType,
+        );
       } else {
-        imageFile = await ImageService.pickImageFromCamera();
+        imageFile = await ImageService.pickImageFromCamera(
+          imageType: widget.imageType,
+        );
       }
 
       if (imageFile != null) {

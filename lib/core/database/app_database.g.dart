@@ -3,716 +3,6 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $RandomListsTable extends RandomLists
-    with TableInfo<$RandomListsTable, RandomList> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $RandomListsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 255,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
-  @override
-  late final GeneratedColumn<int> type = GeneratedColumn<int>(
-    'type',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _isUniqueMeta = const VerificationMeta(
-    'isUnique',
-  );
-  @override
-  late final GeneratedColumn<bool> isUnique = GeneratedColumn<bool>(
-    'is_unique',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_unique" IN (0, 1))',
-    ),
-    defaultValue: const Constant(true),
-  );
-  static const VerificationMeta _itemsNumMeta = const VerificationMeta(
-    'itemsNum',
-  );
-  @override
-  late final GeneratedColumn<int> itemsNum = GeneratedColumn<int>(
-    'items_num',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, name, type, isUnique, itemsNum];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'random_lists';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<RandomList> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('type')) {
-      context.handle(
-        _typeMeta,
-        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_typeMeta);
-    }
-    if (data.containsKey('is_unique')) {
-      context.handle(
-        _isUniqueMeta,
-        isUnique.isAcceptableOrUnknown(data['is_unique']!, _isUniqueMeta),
-      );
-    }
-    if (data.containsKey('items_num')) {
-      context.handle(
-        _itemsNumMeta,
-        itemsNum.isAcceptableOrUnknown(data['items_num']!, _itemsNumMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_itemsNumMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  RandomList map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RandomList(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      type: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}type'],
-      )!,
-      isUnique: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_unique'],
-      )!,
-      itemsNum: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}items_num'],
-      )!,
-    );
-  }
-
-  @override
-  $RandomListsTable createAlias(String alias) {
-    return $RandomListsTable(attachedDatabase, alias);
-  }
-}
-
-class RandomList extends DataClass implements Insertable<RandomList> {
-  final int id;
-  final String name;
-  final int type;
-  final bool isUnique;
-  final int itemsNum;
-  const RandomList({
-    required this.id,
-    required this.name,
-    required this.type,
-    required this.isUnique,
-    required this.itemsNum,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['type'] = Variable<int>(type);
-    map['is_unique'] = Variable<bool>(isUnique);
-    map['items_num'] = Variable<int>(itemsNum);
-    return map;
-  }
-
-  RandomListsCompanion toCompanion(bool nullToAbsent) {
-    return RandomListsCompanion(
-      id: Value(id),
-      name: Value(name),
-      type: Value(type),
-      isUnique: Value(isUnique),
-      itemsNum: Value(itemsNum),
-    );
-  }
-
-  factory RandomList.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RandomList(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      type: serializer.fromJson<int>(json['type']),
-      isUnique: serializer.fromJson<bool>(json['isUnique']),
-      itemsNum: serializer.fromJson<int>(json['itemsNum']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'type': serializer.toJson<int>(type),
-      'isUnique': serializer.toJson<bool>(isUnique),
-      'itemsNum': serializer.toJson<int>(itemsNum),
-    };
-  }
-
-  RandomList copyWith({
-    int? id,
-    String? name,
-    int? type,
-    bool? isUnique,
-    int? itemsNum,
-  }) => RandomList(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    type: type ?? this.type,
-    isUnique: isUnique ?? this.isUnique,
-    itemsNum: itemsNum ?? this.itemsNum,
-  );
-  RandomList copyWithCompanion(RandomListsCompanion data) {
-    return RandomList(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      type: data.type.present ? data.type.value : this.type,
-      isUnique: data.isUnique.present ? data.isUnique.value : this.isUnique,
-      itemsNum: data.itemsNum.present ? data.itemsNum.value : this.itemsNum,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RandomList(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('type: $type, ')
-          ..write('isUnique: $isUnique, ')
-          ..write('itemsNum: $itemsNum')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, type, isUnique, itemsNum);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RandomList &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.type == this.type &&
-          other.isUnique == this.isUnique &&
-          other.itemsNum == this.itemsNum);
-}
-
-class RandomListsCompanion extends UpdateCompanion<RandomList> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<int> type;
-  final Value<bool> isUnique;
-  final Value<int> itemsNum;
-  const RandomListsCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.type = const Value.absent(),
-    this.isUnique = const Value.absent(),
-    this.itemsNum = const Value.absent(),
-  });
-  RandomListsCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    required int type,
-    this.isUnique = const Value.absent(),
-    required int itemsNum,
-  }) : name = Value(name),
-       type = Value(type),
-       itemsNum = Value(itemsNum);
-  static Insertable<RandomList> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<int>? type,
-    Expression<bool>? isUnique,
-    Expression<int>? itemsNum,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (type != null) 'type': type,
-      if (isUnique != null) 'is_unique': isUnique,
-      if (itemsNum != null) 'items_num': itemsNum,
-    });
-  }
-
-  RandomListsCompanion copyWith({
-    Value<int>? id,
-    Value<String>? name,
-    Value<int>? type,
-    Value<bool>? isUnique,
-    Value<int>? itemsNum,
-  }) {
-    return RandomListsCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      type: type ?? this.type,
-      isUnique: isUnique ?? this.isUnique,
-      itemsNum: itemsNum ?? this.itemsNum,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (type.present) {
-      map['type'] = Variable<int>(type.value);
-    }
-    if (isUnique.present) {
-      map['is_unique'] = Variable<bool>(isUnique.value);
-    }
-    if (itemsNum.present) {
-      map['items_num'] = Variable<int>(itemsNum.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RandomListsCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('type: $type, ')
-          ..write('isUnique: $isUnique, ')
-          ..write('itemsNum: $itemsNum')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $ListItemsTable extends ListItems
-    with TableInfo<$ListItemsTable, ListItem> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $ListItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 255,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _randomListIdMeta = const VerificationMeta(
-    'randomListId',
-  );
-  @override
-  late final GeneratedColumn<int> randomListId = GeneratedColumn<int>(
-    'random_list_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES random_lists (id) ON DELETE CASCADE',
-    ),
-  );
-  static const VerificationMeta _copiesNumMeta = const VerificationMeta(
-    'copiesNum',
-  );
-  @override
-  late final GeneratedColumn<int> copiesNum = GeneratedColumn<int>(
-    'copies_num',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _imagePathMeta = const VerificationMeta(
-    'imagePath',
-  );
-  @override
-  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
-    'image_path',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    name,
-    randomListId,
-    copiesNum,
-    imagePath,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'list_items';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<ListItem> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('random_list_id')) {
-      context.handle(
-        _randomListIdMeta,
-        randomListId.isAcceptableOrUnknown(
-          data['random_list_id']!,
-          _randomListIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_randomListIdMeta);
-    }
-    if (data.containsKey('copies_num')) {
-      context.handle(
-        _copiesNumMeta,
-        copiesNum.isAcceptableOrUnknown(data['copies_num']!, _copiesNumMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_copiesNumMeta);
-    }
-    if (data.containsKey('image_path')) {
-      context.handle(
-        _imagePathMeta,
-        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  ListItem map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ListItem(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      randomListId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}random_list_id'],
-      )!,
-      copiesNum: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}copies_num'],
-      )!,
-      imagePath: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}image_path'],
-      ),
-    );
-  }
-
-  @override
-  $ListItemsTable createAlias(String alias) {
-    return $ListItemsTable(attachedDatabase, alias);
-  }
-}
-
-class ListItem extends DataClass implements Insertable<ListItem> {
-  final int id;
-  final String name;
-  final int randomListId;
-  final int copiesNum;
-  final String? imagePath;
-  const ListItem({
-    required this.id,
-    required this.name,
-    required this.randomListId,
-    required this.copiesNum,
-    this.imagePath,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['random_list_id'] = Variable<int>(randomListId);
-    map['copies_num'] = Variable<int>(copiesNum);
-    if (!nullToAbsent || imagePath != null) {
-      map['image_path'] = Variable<String>(imagePath);
-    }
-    return map;
-  }
-
-  ListItemsCompanion toCompanion(bool nullToAbsent) {
-    return ListItemsCompanion(
-      id: Value(id),
-      name: Value(name),
-      randomListId: Value(randomListId),
-      copiesNum: Value(copiesNum),
-      imagePath: imagePath == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imagePath),
-    );
-  }
-
-  factory ListItem.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ListItem(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      randomListId: serializer.fromJson<int>(json['randomListId']),
-      copiesNum: serializer.fromJson<int>(json['copiesNum']),
-      imagePath: serializer.fromJson<String?>(json['imagePath']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'randomListId': serializer.toJson<int>(randomListId),
-      'copiesNum': serializer.toJson<int>(copiesNum),
-      'imagePath': serializer.toJson<String?>(imagePath),
-    };
-  }
-
-  ListItem copyWith({
-    int? id,
-    String? name,
-    int? randomListId,
-    int? copiesNum,
-    Value<String?> imagePath = const Value.absent(),
-  }) => ListItem(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    randomListId: randomListId ?? this.randomListId,
-    copiesNum: copiesNum ?? this.copiesNum,
-    imagePath: imagePath.present ? imagePath.value : this.imagePath,
-  );
-  ListItem copyWithCompanion(ListItemsCompanion data) {
-    return ListItem(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      randomListId: data.randomListId.present
-          ? data.randomListId.value
-          : this.randomListId,
-      copiesNum: data.copiesNum.present ? data.copiesNum.value : this.copiesNum,
-      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ListItem(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('randomListId: $randomListId, ')
-          ..write('copiesNum: $copiesNum, ')
-          ..write('imagePath: $imagePath')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, randomListId, copiesNum, imagePath);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ListItem &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.randomListId == this.randomListId &&
-          other.copiesNum == this.copiesNum &&
-          other.imagePath == this.imagePath);
-}
-
-class ListItemsCompanion extends UpdateCompanion<ListItem> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<int> randomListId;
-  final Value<int> copiesNum;
-  final Value<String?> imagePath;
-  const ListItemsCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.randomListId = const Value.absent(),
-    this.copiesNum = const Value.absent(),
-    this.imagePath = const Value.absent(),
-  });
-  ListItemsCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    required int randomListId,
-    required int copiesNum,
-    this.imagePath = const Value.absent(),
-  }) : name = Value(name),
-       randomListId = Value(randomListId),
-       copiesNum = Value(copiesNum);
-  static Insertable<ListItem> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<int>? randomListId,
-    Expression<int>? copiesNum,
-    Expression<String>? imagePath,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (randomListId != null) 'random_list_id': randomListId,
-      if (copiesNum != null) 'copies_num': copiesNum,
-      if (imagePath != null) 'image_path': imagePath,
-    });
-  }
-
-  ListItemsCompanion copyWith({
-    Value<int>? id,
-    Value<String>? name,
-    Value<int>? randomListId,
-    Value<int>? copiesNum,
-    Value<String?>? imagePath,
-  }) {
-    return ListItemsCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      randomListId: randomListId ?? this.randomListId,
-      copiesNum: copiesNum ?? this.copiesNum,
-      imagePath: imagePath ?? this.imagePath,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (randomListId.present) {
-      map['random_list_id'] = Variable<int>(randomListId.value);
-    }
-    if (copiesNum.present) {
-      map['copies_num'] = Variable<int>(copiesNum.value);
-    }
-    if (imagePath.present) {
-      map['image_path'] = Variable<String>(imagePath.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ListItemsCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('randomListId: $randomListId, ')
-          ..write('copiesNum: $copiesNum, ')
-          ..write('imagePath: $imagePath')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $GamesTable extends Games with TableInfo<$GamesTable, Game> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -1389,6 +679,578 @@ class GamesCompanion extends UpdateCompanion<Game> {
   }
 }
 
+class $ComponentTypesTable extends ComponentTypes
+    with TableInfo<$ComponentTypesTable, ComponentType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ComponentTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES games (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, gameId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'component_types';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ComponentType> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {name, gameId},
+  ];
+  @override
+  ComponentType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ComponentType(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_id'],
+      )!,
+    );
+  }
+
+  @override
+  $ComponentTypesTable createAlias(String alias) {
+    return $ComponentTypesTable(attachedDatabase, alias);
+  }
+}
+
+class ComponentType extends DataClass implements Insertable<ComponentType> {
+  final int id;
+  final String name;
+  final int gameId;
+  const ComponentType({
+    required this.id,
+    required this.name,
+    required this.gameId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['game_id'] = Variable<int>(gameId);
+    return map;
+  }
+
+  ComponentTypesCompanion toCompanion(bool nullToAbsent) {
+    return ComponentTypesCompanion(
+      id: Value(id),
+      name: Value(name),
+      gameId: Value(gameId),
+    );
+  }
+
+  factory ComponentType.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ComponentType(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      gameId: serializer.fromJson<int>(json['gameId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'gameId': serializer.toJson<int>(gameId),
+    };
+  }
+
+  ComponentType copyWith({int? id, String? name, int? gameId}) => ComponentType(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    gameId: gameId ?? this.gameId,
+  );
+  ComponentType copyWithCompanion(ComponentTypesCompanion data) {
+    return ComponentType(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComponentType(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('gameId: $gameId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, gameId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ComponentType &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.gameId == this.gameId);
+}
+
+class ComponentTypesCompanion extends UpdateCompanion<ComponentType> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> gameId;
+  const ComponentTypesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.gameId = const Value.absent(),
+  });
+  ComponentTypesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int gameId,
+  }) : name = Value(name),
+       gameId = Value(gameId);
+  static Insertable<ComponentType> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? gameId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (gameId != null) 'game_id': gameId,
+    });
+  }
+
+  ComponentTypesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? gameId,
+  }) {
+    return ComponentTypesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      gameId: gameId ?? this.gameId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComponentTypesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('gameId: $gameId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GameComponentsTable extends GameComponents
+    with TableInfo<$GameComponentsTable, GameComponent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GameComponentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _componentTypeIdMeta = const VerificationMeta(
+    'componentTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> componentTypeId = GeneratedColumn<int>(
+    'component_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES component_types (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, componentTypeId, imagePath];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_components';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GameComponent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('component_type_id')) {
+      context.handle(
+        _componentTypeIdMeta,
+        componentTypeId.isAcceptableOrUnknown(
+          data['component_type_id']!,
+          _componentTypeIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_componentTypeIdMeta);
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {name, componentTypeId},
+  ];
+  @override
+  GameComponent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GameComponent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      componentTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}component_type_id'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+    );
+  }
+
+  @override
+  $GameComponentsTable createAlias(String alias) {
+    return $GameComponentsTable(attachedDatabase, alias);
+  }
+}
+
+class GameComponent extends DataClass implements Insertable<GameComponent> {
+  final int id;
+  final String name;
+  final int componentTypeId;
+  final String? imagePath;
+  const GameComponent({
+    required this.id,
+    required this.name,
+    required this.componentTypeId,
+    this.imagePath,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['component_type_id'] = Variable<int>(componentTypeId);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    return map;
+  }
+
+  GameComponentsCompanion toCompanion(bool nullToAbsent) {
+    return GameComponentsCompanion(
+      id: Value(id),
+      name: Value(name),
+      componentTypeId: Value(componentTypeId),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+    );
+  }
+
+  factory GameComponent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GameComponent(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      componentTypeId: serializer.fromJson<int>(json['componentTypeId']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'componentTypeId': serializer.toJson<int>(componentTypeId),
+      'imagePath': serializer.toJson<String?>(imagePath),
+    };
+  }
+
+  GameComponent copyWith({
+    int? id,
+    String? name,
+    int? componentTypeId,
+    Value<String?> imagePath = const Value.absent(),
+  }) => GameComponent(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    componentTypeId: componentTypeId ?? this.componentTypeId,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+  );
+  GameComponent copyWithCompanion(GameComponentsCompanion data) {
+    return GameComponent(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      componentTypeId: data.componentTypeId.present
+          ? data.componentTypeId.value
+          : this.componentTypeId,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GameComponent(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('componentTypeId: $componentTypeId, ')
+          ..write('imagePath: $imagePath')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, componentTypeId, imagePath);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GameComponent &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.componentTypeId == this.componentTypeId &&
+          other.imagePath == this.imagePath);
+}
+
+class GameComponentsCompanion extends UpdateCompanion<GameComponent> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> componentTypeId;
+  final Value<String?> imagePath;
+  const GameComponentsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.componentTypeId = const Value.absent(),
+    this.imagePath = const Value.absent(),
+  });
+  GameComponentsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int componentTypeId,
+    this.imagePath = const Value.absent(),
+  }) : name = Value(name),
+       componentTypeId = Value(componentTypeId);
+  static Insertable<GameComponent> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? componentTypeId,
+    Expression<String>? imagePath,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (componentTypeId != null) 'component_type_id': componentTypeId,
+      if (imagePath != null) 'image_path': imagePath,
+    });
+  }
+
+  GameComponentsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? componentTypeId,
+    Value<String?>? imagePath,
+  }) {
+    return GameComponentsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      componentTypeId: componentTypeId ?? this.componentTypeId,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (componentTypeId.present) {
+      map['component_type_id'] = Variable<int>(componentTypeId.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GameComponentsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('componentTypeId: $componentTypeId, ')
+          ..write('imagePath: $imagePath')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $RandomSetupsTable extends RandomSetups
     with TableInfo<$RandomSetupsTable, RandomSetup> {
   @override
@@ -1471,6 +1333,10 @@ class $RandomSetupsTable extends RandomSetups
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {name, gameId},
+  ];
   @override
   RandomSetup map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -1642,12 +1508,12 @@ class RandomSetupsCompanion extends UpdateCompanion<RandomSetup> {
   }
 }
 
-class $RandomSetupsListsTable extends RandomSetupsLists
-    with TableInfo<$RandomSetupsListsTable, RandomSetupsList> {
+class $RandomListsTable extends RandomLists
+    with TableInfo<$RandomListsTable, RandomList> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $RandomSetupsListsTable(this.attachedDatabase, [this._alias]);
+  $RandomListsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -1681,26 +1547,33 @@ class $RandomSetupsListsTable extends RandomSetupsLists
   late final GeneratedColumn<int> randomSetupId = GeneratedColumn<int>(
     'random_setup_id',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES random_setups (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _randomListIdMeta = const VerificationMeta(
-    'randomListId',
-  );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
   @override
-  late final GeneratedColumn<int> randomListId = GeneratedColumn<int>(
-    'random_list_id',
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES games (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<int> type = GeneratedColumn<int>(
+    'type',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES random_lists (id) ON DELETE CASCADE',
-    ),
   );
   static const VerificationMeta _isUniqueMeta = const VerificationMeta(
     'isUnique',
@@ -1733,7 +1606,8 @@ class $RandomSetupsListsTable extends RandomSetupsLists
     id,
     name,
     randomSetupId,
-    randomListId,
+    gameId,
+    type,
     isUnique,
     itemsNum,
   ];
@@ -1741,10 +1615,10 @@ class $RandomSetupsListsTable extends RandomSetupsLists
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'random_setups_lists';
+  static const String $name = 'random_lists';
   @override
   VerificationContext validateIntegrity(
-    Insertable<RandomSetupsList> instance, {
+    Insertable<RandomList> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1768,19 +1642,20 @@ class $RandomSetupsListsTable extends RandomSetupsLists
           _randomSetupIdMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_randomSetupIdMeta);
     }
-    if (data.containsKey('random_list_id')) {
+    if (data.containsKey('game_id')) {
       context.handle(
-        _randomListIdMeta,
-        randomListId.isAcceptableOrUnknown(
-          data['random_list_id']!,
-          _randomListIdMeta,
-        ),
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
       );
     } else if (isInserting) {
-      context.missing(_randomListIdMeta);
+      context.missing(_typeMeta);
     }
     if (data.containsKey('is_unique')) {
       context.handle(
@@ -1802,9 +1677,9 @@ class $RandomSetupsListsTable extends RandomSetupsLists
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  RandomSetupsList map(Map<String, dynamic> data, {String? tablePrefix}) {
+  RandomList map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RandomSetupsList(
+    return RandomList(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -1816,10 +1691,14 @@ class $RandomSetupsListsTable extends RandomSetupsLists
       randomSetupId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}random_setup_id'],
-      )!,
-      randomListId: attachedDatabase.typeMapping.read(
+      ),
+      gameId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}random_list_id'],
+        data['${effectivePrefix}game_id'],
+      ),
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}type'],
       )!,
       isUnique: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
@@ -1833,24 +1712,25 @@ class $RandomSetupsListsTable extends RandomSetupsLists
   }
 
   @override
-  $RandomSetupsListsTable createAlias(String alias) {
-    return $RandomSetupsListsTable(attachedDatabase, alias);
+  $RandomListsTable createAlias(String alias) {
+    return $RandomListsTable(attachedDatabase, alias);
   }
 }
 
-class RandomSetupsList extends DataClass
-    implements Insertable<RandomSetupsList> {
+class RandomList extends DataClass implements Insertable<RandomList> {
   final int id;
   final String name;
-  final int randomSetupId;
-  final int randomListId;
+  final int? randomSetupId;
+  final int? gameId;
+  final int type;
   final bool isUnique;
   final int itemsNum;
-  const RandomSetupsList({
+  const RandomList({
     required this.id,
     required this.name,
-    required this.randomSetupId,
-    required this.randomListId,
+    this.randomSetupId,
+    this.gameId,
+    required this.type,
     required this.isUnique,
     required this.itemsNum,
   });
@@ -1859,34 +1739,45 @@ class RandomSetupsList extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['random_setup_id'] = Variable<int>(randomSetupId);
-    map['random_list_id'] = Variable<int>(randomListId);
+    if (!nullToAbsent || randomSetupId != null) {
+      map['random_setup_id'] = Variable<int>(randomSetupId);
+    }
+    if (!nullToAbsent || gameId != null) {
+      map['game_id'] = Variable<int>(gameId);
+    }
+    map['type'] = Variable<int>(type);
     map['is_unique'] = Variable<bool>(isUnique);
     map['items_num'] = Variable<int>(itemsNum);
     return map;
   }
 
-  RandomSetupsListsCompanion toCompanion(bool nullToAbsent) {
-    return RandomSetupsListsCompanion(
+  RandomListsCompanion toCompanion(bool nullToAbsent) {
+    return RandomListsCompanion(
       id: Value(id),
       name: Value(name),
-      randomSetupId: Value(randomSetupId),
-      randomListId: Value(randomListId),
+      randomSetupId: randomSetupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(randomSetupId),
+      gameId: gameId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gameId),
+      type: Value(type),
       isUnique: Value(isUnique),
       itemsNum: Value(itemsNum),
     );
   }
 
-  factory RandomSetupsList.fromJson(
+  factory RandomList.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RandomSetupsList(
+    return RandomList(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      randomSetupId: serializer.fromJson<int>(json['randomSetupId']),
-      randomListId: serializer.fromJson<int>(json['randomListId']),
+      randomSetupId: serializer.fromJson<int?>(json['randomSetupId']),
+      gameId: serializer.fromJson<int?>(json['gameId']),
+      type: serializer.fromJson<int>(json['type']),
       isUnique: serializer.fromJson<bool>(json['isUnique']),
       itemsNum: serializer.fromJson<int>(json['itemsNum']),
     );
@@ -1897,38 +1788,42 @@ class RandomSetupsList extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'randomSetupId': serializer.toJson<int>(randomSetupId),
-      'randomListId': serializer.toJson<int>(randomListId),
+      'randomSetupId': serializer.toJson<int?>(randomSetupId),
+      'gameId': serializer.toJson<int?>(gameId),
+      'type': serializer.toJson<int>(type),
       'isUnique': serializer.toJson<bool>(isUnique),
       'itemsNum': serializer.toJson<int>(itemsNum),
     };
   }
 
-  RandomSetupsList copyWith({
+  RandomList copyWith({
     int? id,
     String? name,
-    int? randomSetupId,
-    int? randomListId,
+    Value<int?> randomSetupId = const Value.absent(),
+    Value<int?> gameId = const Value.absent(),
+    int? type,
     bool? isUnique,
     int? itemsNum,
-  }) => RandomSetupsList(
+  }) => RandomList(
     id: id ?? this.id,
     name: name ?? this.name,
-    randomSetupId: randomSetupId ?? this.randomSetupId,
-    randomListId: randomListId ?? this.randomListId,
+    randomSetupId: randomSetupId.present
+        ? randomSetupId.value
+        : this.randomSetupId,
+    gameId: gameId.present ? gameId.value : this.gameId,
+    type: type ?? this.type,
     isUnique: isUnique ?? this.isUnique,
     itemsNum: itemsNum ?? this.itemsNum,
   );
-  RandomSetupsList copyWithCompanion(RandomSetupsListsCompanion data) {
-    return RandomSetupsList(
+  RandomList copyWithCompanion(RandomListsCompanion data) {
+    return RandomList(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       randomSetupId: data.randomSetupId.present
           ? data.randomSetupId.value
           : this.randomSetupId,
-      randomListId: data.randomListId.present
-          ? data.randomListId.value
-          : this.randomListId,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      type: data.type.present ? data.type.value : this.type,
       isUnique: data.isUnique.present ? data.isUnique.value : this.isUnique,
       itemsNum: data.itemsNum.present ? data.itemsNum.value : this.itemsNum,
     );
@@ -1936,11 +1831,12 @@ class RandomSetupsList extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('RandomSetupsList(')
+    return (StringBuffer('RandomList(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('randomSetupId: $randomSetupId, ')
-          ..write('randomListId: $randomListId, ')
+          ..write('gameId: $gameId, ')
+          ..write('type: $type, ')
           ..write('isUnique: $isUnique, ')
           ..write('itemsNum: $itemsNum')
           ..write(')'))
@@ -1949,50 +1845,54 @@ class RandomSetupsList extends DataClass
 
   @override
   int get hashCode =>
-      Object.hash(id, name, randomSetupId, randomListId, isUnique, itemsNum);
+      Object.hash(id, name, randomSetupId, gameId, type, isUnique, itemsNum);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is RandomSetupsList &&
+      (other is RandomList &&
           other.id == this.id &&
           other.name == this.name &&
           other.randomSetupId == this.randomSetupId &&
-          other.randomListId == this.randomListId &&
+          other.gameId == this.gameId &&
+          other.type == this.type &&
           other.isUnique == this.isUnique &&
           other.itemsNum == this.itemsNum);
 }
 
-class RandomSetupsListsCompanion extends UpdateCompanion<RandomSetupsList> {
+class RandomListsCompanion extends UpdateCompanion<RandomList> {
   final Value<int> id;
   final Value<String> name;
-  final Value<int> randomSetupId;
-  final Value<int> randomListId;
+  final Value<int?> randomSetupId;
+  final Value<int?> gameId;
+  final Value<int> type;
   final Value<bool> isUnique;
   final Value<int> itemsNum;
-  const RandomSetupsListsCompanion({
+  const RandomListsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.randomSetupId = const Value.absent(),
-    this.randomListId = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.type = const Value.absent(),
     this.isUnique = const Value.absent(),
     this.itemsNum = const Value.absent(),
   });
-  RandomSetupsListsCompanion.insert({
+  RandomListsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required int randomSetupId,
-    required int randomListId,
+    this.randomSetupId = const Value.absent(),
+    this.gameId = const Value.absent(),
+    required int type,
     this.isUnique = const Value.absent(),
     required int itemsNum,
   }) : name = Value(name),
-       randomSetupId = Value(randomSetupId),
-       randomListId = Value(randomListId),
+       type = Value(type),
        itemsNum = Value(itemsNum);
-  static Insertable<RandomSetupsList> custom({
+  static Insertable<RandomList> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<int>? randomSetupId,
-    Expression<int>? randomListId,
+    Expression<int>? gameId,
+    Expression<int>? type,
     Expression<bool>? isUnique,
     Expression<int>? itemsNum,
   }) {
@@ -2000,25 +1900,28 @@ class RandomSetupsListsCompanion extends UpdateCompanion<RandomSetupsList> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (randomSetupId != null) 'random_setup_id': randomSetupId,
-      if (randomListId != null) 'random_list_id': randomListId,
+      if (gameId != null) 'game_id': gameId,
+      if (type != null) 'type': type,
       if (isUnique != null) 'is_unique': isUnique,
       if (itemsNum != null) 'items_num': itemsNum,
     });
   }
 
-  RandomSetupsListsCompanion copyWith({
+  RandomListsCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
-    Value<int>? randomSetupId,
-    Value<int>? randomListId,
+    Value<int?>? randomSetupId,
+    Value<int?>? gameId,
+    Value<int>? type,
     Value<bool>? isUnique,
     Value<int>? itemsNum,
   }) {
-    return RandomSetupsListsCompanion(
+    return RandomListsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       randomSetupId: randomSetupId ?? this.randomSetupId,
-      randomListId: randomListId ?? this.randomListId,
+      gameId: gameId ?? this.gameId,
+      type: type ?? this.type,
       isUnique: isUnique ?? this.isUnique,
       itemsNum: itemsNum ?? this.itemsNum,
     );
@@ -2036,8 +1939,11 @@ class RandomSetupsListsCompanion extends UpdateCompanion<RandomSetupsList> {
     if (randomSetupId.present) {
       map['random_setup_id'] = Variable<int>(randomSetupId.value);
     }
-    if (randomListId.present) {
-      map['random_list_id'] = Variable<int>(randomListId.value);
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<int>(type.value);
     }
     if (isUnique.present) {
       map['is_unique'] = Variable<bool>(isUnique.value);
@@ -2050,13 +1956,390 @@ class RandomSetupsListsCompanion extends UpdateCompanion<RandomSetupsList> {
 
   @override
   String toString() {
-    return (StringBuffer('RandomSetupsListsCompanion(')
+    return (StringBuffer('RandomListsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('randomSetupId: $randomSetupId, ')
-          ..write('randomListId: $randomListId, ')
+          ..write('gameId: $gameId, ')
+          ..write('type: $type, ')
           ..write('isUnique: $isUnique, ')
           ..write('itemsNum: $itemsNum')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ListItemsTable extends ListItems
+    with TableInfo<$ListItemsTable, ListItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ListItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _componentIdMeta = const VerificationMeta(
+    'componentId',
+  );
+  @override
+  late final GeneratedColumn<int> componentId = GeneratedColumn<int>(
+    'component_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES game_components (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _randomListIdMeta = const VerificationMeta(
+    'randomListId',
+  );
+  @override
+  late final GeneratedColumn<int> randomListId = GeneratedColumn<int>(
+    'random_list_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES random_lists (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _copiesNumMeta = const VerificationMeta(
+    'copiesNum',
+  );
+  @override
+  late final GeneratedColumn<int> copiesNum = GeneratedColumn<int>(
+    'copies_num',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    componentId,
+    randomListId,
+    copiesNum,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'list_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ListItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('component_id')) {
+      context.handle(
+        _componentIdMeta,
+        componentId.isAcceptableOrUnknown(
+          data['component_id']!,
+          _componentIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('random_list_id')) {
+      context.handle(
+        _randomListIdMeta,
+        randomListId.isAcceptableOrUnknown(
+          data['random_list_id']!,
+          _randomListIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_randomListIdMeta);
+    }
+    if (data.containsKey('copies_num')) {
+      context.handle(
+        _copiesNumMeta,
+        copiesNum.isAcceptableOrUnknown(data['copies_num']!, _copiesNumMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_copiesNumMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {name, randomListId},
+  ];
+  @override
+  ListItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ListItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      componentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}component_id'],
+      ),
+      randomListId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}random_list_id'],
+      )!,
+      copiesNum: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}copies_num'],
+      )!,
+    );
+  }
+
+  @override
+  $ListItemsTable createAlias(String alias) {
+    return $ListItemsTable(attachedDatabase, alias);
+  }
+}
+
+class ListItem extends DataClass implements Insertable<ListItem> {
+  final int id;
+  final String name;
+  final int? componentId;
+  final int randomListId;
+  final int copiesNum;
+  const ListItem({
+    required this.id,
+    required this.name,
+    this.componentId,
+    required this.randomListId,
+    required this.copiesNum,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || componentId != null) {
+      map['component_id'] = Variable<int>(componentId);
+    }
+    map['random_list_id'] = Variable<int>(randomListId);
+    map['copies_num'] = Variable<int>(copiesNum);
+    return map;
+  }
+
+  ListItemsCompanion toCompanion(bool nullToAbsent) {
+    return ListItemsCompanion(
+      id: Value(id),
+      name: Value(name),
+      componentId: componentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(componentId),
+      randomListId: Value(randomListId),
+      copiesNum: Value(copiesNum),
+    );
+  }
+
+  factory ListItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ListItem(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      componentId: serializer.fromJson<int?>(json['componentId']),
+      randomListId: serializer.fromJson<int>(json['randomListId']),
+      copiesNum: serializer.fromJson<int>(json['copiesNum']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'componentId': serializer.toJson<int?>(componentId),
+      'randomListId': serializer.toJson<int>(randomListId),
+      'copiesNum': serializer.toJson<int>(copiesNum),
+    };
+  }
+
+  ListItem copyWith({
+    int? id,
+    String? name,
+    Value<int?> componentId = const Value.absent(),
+    int? randomListId,
+    int? copiesNum,
+  }) => ListItem(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    componentId: componentId.present ? componentId.value : this.componentId,
+    randomListId: randomListId ?? this.randomListId,
+    copiesNum: copiesNum ?? this.copiesNum,
+  );
+  ListItem copyWithCompanion(ListItemsCompanion data) {
+    return ListItem(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      componentId: data.componentId.present
+          ? data.componentId.value
+          : this.componentId,
+      randomListId: data.randomListId.present
+          ? data.randomListId.value
+          : this.randomListId,
+      copiesNum: data.copiesNum.present ? data.copiesNum.value : this.copiesNum,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ListItem(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('componentId: $componentId, ')
+          ..write('randomListId: $randomListId, ')
+          ..write('copiesNum: $copiesNum')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, componentId, randomListId, copiesNum);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ListItem &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.componentId == this.componentId &&
+          other.randomListId == this.randomListId &&
+          other.copiesNum == this.copiesNum);
+}
+
+class ListItemsCompanion extends UpdateCompanion<ListItem> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int?> componentId;
+  final Value<int> randomListId;
+  final Value<int> copiesNum;
+  const ListItemsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.componentId = const Value.absent(),
+    this.randomListId = const Value.absent(),
+    this.copiesNum = const Value.absent(),
+  });
+  ListItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.componentId = const Value.absent(),
+    required int randomListId,
+    required int copiesNum,
+  }) : name = Value(name),
+       randomListId = Value(randomListId),
+       copiesNum = Value(copiesNum);
+  static Insertable<ListItem> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? componentId,
+    Expression<int>? randomListId,
+    Expression<int>? copiesNum,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (componentId != null) 'component_id': componentId,
+      if (randomListId != null) 'random_list_id': randomListId,
+      if (copiesNum != null) 'copies_num': copiesNum,
+    });
+  }
+
+  ListItemsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int?>? componentId,
+    Value<int>? randomListId,
+    Value<int>? copiesNum,
+  }) {
+    return ListItemsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      componentId: componentId ?? this.componentId,
+      randomListId: randomListId ?? this.randomListId,
+      copiesNum: copiesNum ?? this.copiesNum,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (componentId.present) {
+      map['component_id'] = Variable<int>(componentId.value);
+    }
+    if (randomListId.present) {
+      map['random_list_id'] = Variable<int>(randomListId.value);
+    }
+    if (copiesNum.present) {
+      map['copies_num'] = Variable<int>(copiesNum.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ListItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('componentId: $componentId, ')
+          ..write('randomListId: $randomListId, ')
+          ..write('copiesNum: $copiesNum')
           ..write(')'))
         .toString();
   }
@@ -2378,12 +2661,12 @@ class SavedSetupsCompanion extends UpdateCompanion<SavedSetup> {
   }
 }
 
-class $SavedSetupsListItemsTable extends SavedSetupsListItems
-    with TableInfo<$SavedSetupsListItemsTable, SavedSetupsListItem> {
+class $SavedSetupsListsItemsTable extends SavedSetupsListsItems
+    with TableInfo<$SavedSetupsListsItemsTable, SavedSetupsListsItem> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $SavedSetupsListItemsTable(this.attachedDatabase, [this._alias]);
+  $SavedSetupsListsItemsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -2404,25 +2687,25 @@ class $SavedSetupsListItemsTable extends SavedSetupsListItems
   late final GeneratedColumn<int> savedSetupId = GeneratedColumn<int>(
     'saved_setup_id',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES saved_setups (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _randomSetupListIdMeta = const VerificationMeta(
-    'randomSetupListId',
+  static const VerificationMeta _randomListIdMeta = const VerificationMeta(
+    'randomListId',
   );
   @override
-  late final GeneratedColumn<int> randomSetupListId = GeneratedColumn<int>(
-    'random_setup_list_id',
+  late final GeneratedColumn<int> randomListId = GeneratedColumn<int>(
+    'random_list_id',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES random_setups_lists (id) ON DELETE CASCADE',
+      'REFERENCES random_lists (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _listItemsIdMeta = const VerificationMeta(
@@ -2454,7 +2737,7 @@ class $SavedSetupsListItemsTable extends SavedSetupsListItems
   List<GeneratedColumn> get $columns => [
     id,
     savedSetupId,
-    randomSetupListId,
+    randomListId,
     listItemsId,
     position,
   ];
@@ -2462,10 +2745,10 @@ class $SavedSetupsListItemsTable extends SavedSetupsListItems
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'saved_setups_list_items';
+  static const String $name = 'saved_setups_lists_items';
   @override
   VerificationContext validateIntegrity(
-    Insertable<SavedSetupsListItem> instance, {
+    Insertable<SavedSetupsListsItem> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -2481,19 +2764,17 @@ class $SavedSetupsListItemsTable extends SavedSetupsListItems
           _savedSetupIdMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_savedSetupIdMeta);
     }
-    if (data.containsKey('random_setup_list_id')) {
+    if (data.containsKey('random_list_id')) {
       context.handle(
-        _randomSetupListIdMeta,
-        randomSetupListId.isAcceptableOrUnknown(
-          data['random_setup_list_id']!,
-          _randomSetupListIdMeta,
+        _randomListIdMeta,
+        randomListId.isAcceptableOrUnknown(
+          data['random_list_id']!,
+          _randomListIdMeta,
         ),
       );
     } else if (isInserting) {
-      context.missing(_randomSetupListIdMeta);
+      context.missing(_randomListIdMeta);
     }
     if (data.containsKey('list_items_id')) {
       context.handle(
@@ -2520,9 +2801,9 @@ class $SavedSetupsListItemsTable extends SavedSetupsListItems
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  SavedSetupsListItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+  SavedSetupsListsItem map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return SavedSetupsListItem(
+    return SavedSetupsListsItem(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -2530,10 +2811,10 @@ class $SavedSetupsListItemsTable extends SavedSetupsListItems
       savedSetupId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}saved_setup_id'],
-      )!,
-      randomSetupListId: attachedDatabase.typeMapping.read(
+      ),
+      randomListId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}random_setup_list_id'],
+        data['${effectivePrefix}random_list_id'],
       )!,
       listItemsId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -2547,22 +2828,22 @@ class $SavedSetupsListItemsTable extends SavedSetupsListItems
   }
 
   @override
-  $SavedSetupsListItemsTable createAlias(String alias) {
-    return $SavedSetupsListItemsTable(attachedDatabase, alias);
+  $SavedSetupsListsItemsTable createAlias(String alias) {
+    return $SavedSetupsListsItemsTable(attachedDatabase, alias);
   }
 }
 
-class SavedSetupsListItem extends DataClass
-    implements Insertable<SavedSetupsListItem> {
+class SavedSetupsListsItem extends DataClass
+    implements Insertable<SavedSetupsListsItem> {
   final int id;
-  final int savedSetupId;
-  final int randomSetupListId;
+  final int? savedSetupId;
+  final int randomListId;
   final int listItemsId;
   final int position;
-  const SavedSetupsListItem({
+  const SavedSetupsListsItem({
     required this.id,
-    required this.savedSetupId,
-    required this.randomSetupListId,
+    this.savedSetupId,
+    required this.randomListId,
     required this.listItemsId,
     required this.position,
   });
@@ -2570,32 +2851,36 @@ class SavedSetupsListItem extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['saved_setup_id'] = Variable<int>(savedSetupId);
-    map['random_setup_list_id'] = Variable<int>(randomSetupListId);
+    if (!nullToAbsent || savedSetupId != null) {
+      map['saved_setup_id'] = Variable<int>(savedSetupId);
+    }
+    map['random_list_id'] = Variable<int>(randomListId);
     map['list_items_id'] = Variable<int>(listItemsId);
     map['position'] = Variable<int>(position);
     return map;
   }
 
-  SavedSetupsListItemsCompanion toCompanion(bool nullToAbsent) {
-    return SavedSetupsListItemsCompanion(
+  SavedSetupsListsItemsCompanion toCompanion(bool nullToAbsent) {
+    return SavedSetupsListsItemsCompanion(
       id: Value(id),
-      savedSetupId: Value(savedSetupId),
-      randomSetupListId: Value(randomSetupListId),
+      savedSetupId: savedSetupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(savedSetupId),
+      randomListId: Value(randomListId),
       listItemsId: Value(listItemsId),
       position: Value(position),
     );
   }
 
-  factory SavedSetupsListItem.fromJson(
+  factory SavedSetupsListsItem.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SavedSetupsListItem(
+    return SavedSetupsListsItem(
       id: serializer.fromJson<int>(json['id']),
-      savedSetupId: serializer.fromJson<int>(json['savedSetupId']),
-      randomSetupListId: serializer.fromJson<int>(json['randomSetupListId']),
+      savedSetupId: serializer.fromJson<int?>(json['savedSetupId']),
+      randomListId: serializer.fromJson<int>(json['randomListId']),
       listItemsId: serializer.fromJson<int>(json['listItemsId']),
       position: serializer.fromJson<int>(json['position']),
     );
@@ -2605,35 +2890,35 @@ class SavedSetupsListItem extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'savedSetupId': serializer.toJson<int>(savedSetupId),
-      'randomSetupListId': serializer.toJson<int>(randomSetupListId),
+      'savedSetupId': serializer.toJson<int?>(savedSetupId),
+      'randomListId': serializer.toJson<int>(randomListId),
       'listItemsId': serializer.toJson<int>(listItemsId),
       'position': serializer.toJson<int>(position),
     };
   }
 
-  SavedSetupsListItem copyWith({
+  SavedSetupsListsItem copyWith({
     int? id,
-    int? savedSetupId,
-    int? randomSetupListId,
+    Value<int?> savedSetupId = const Value.absent(),
+    int? randomListId,
     int? listItemsId,
     int? position,
-  }) => SavedSetupsListItem(
+  }) => SavedSetupsListsItem(
     id: id ?? this.id,
-    savedSetupId: savedSetupId ?? this.savedSetupId,
-    randomSetupListId: randomSetupListId ?? this.randomSetupListId,
+    savedSetupId: savedSetupId.present ? savedSetupId.value : this.savedSetupId,
+    randomListId: randomListId ?? this.randomListId,
     listItemsId: listItemsId ?? this.listItemsId,
     position: position ?? this.position,
   );
-  SavedSetupsListItem copyWithCompanion(SavedSetupsListItemsCompanion data) {
-    return SavedSetupsListItem(
+  SavedSetupsListsItem copyWithCompanion(SavedSetupsListsItemsCompanion data) {
+    return SavedSetupsListsItem(
       id: data.id.present ? data.id.value : this.id,
       savedSetupId: data.savedSetupId.present
           ? data.savedSetupId.value
           : this.savedSetupId,
-      randomSetupListId: data.randomSetupListId.present
-          ? data.randomSetupListId.value
-          : this.randomSetupListId,
+      randomListId: data.randomListId.present
+          ? data.randomListId.value
+          : this.randomListId,
       listItemsId: data.listItemsId.present
           ? data.listItemsId.value
           : this.listItemsId,
@@ -2643,10 +2928,10 @@ class SavedSetupsListItem extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('SavedSetupsListItem(')
+    return (StringBuffer('SavedSetupsListsItem(')
           ..write('id: $id, ')
           ..write('savedSetupId: $savedSetupId, ')
-          ..write('randomSetupListId: $randomSetupListId, ')
+          ..write('randomListId: $randomListId, ')
           ..write('listItemsId: $listItemsId, ')
           ..write('position: $position')
           ..write(')'))
@@ -2655,69 +2940,68 @@ class SavedSetupsListItem extends DataClass
 
   @override
   int get hashCode =>
-      Object.hash(id, savedSetupId, randomSetupListId, listItemsId, position);
+      Object.hash(id, savedSetupId, randomListId, listItemsId, position);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is SavedSetupsListItem &&
+      (other is SavedSetupsListsItem &&
           other.id == this.id &&
           other.savedSetupId == this.savedSetupId &&
-          other.randomSetupListId == this.randomSetupListId &&
+          other.randomListId == this.randomListId &&
           other.listItemsId == this.listItemsId &&
           other.position == this.position);
 }
 
-class SavedSetupsListItemsCompanion
-    extends UpdateCompanion<SavedSetupsListItem> {
+class SavedSetupsListsItemsCompanion
+    extends UpdateCompanion<SavedSetupsListsItem> {
   final Value<int> id;
-  final Value<int> savedSetupId;
-  final Value<int> randomSetupListId;
+  final Value<int?> savedSetupId;
+  final Value<int> randomListId;
   final Value<int> listItemsId;
   final Value<int> position;
-  const SavedSetupsListItemsCompanion({
+  const SavedSetupsListsItemsCompanion({
     this.id = const Value.absent(),
     this.savedSetupId = const Value.absent(),
-    this.randomSetupListId = const Value.absent(),
+    this.randomListId = const Value.absent(),
     this.listItemsId = const Value.absent(),
     this.position = const Value.absent(),
   });
-  SavedSetupsListItemsCompanion.insert({
+  SavedSetupsListsItemsCompanion.insert({
     this.id = const Value.absent(),
-    required int savedSetupId,
-    required int randomSetupListId,
+    this.savedSetupId = const Value.absent(),
+    required int randomListId,
     required int listItemsId,
     required int position,
-  }) : savedSetupId = Value(savedSetupId),
-       randomSetupListId = Value(randomSetupListId),
+  }) : randomListId = Value(randomListId),
        listItemsId = Value(listItemsId),
        position = Value(position);
-  static Insertable<SavedSetupsListItem> custom({
+  static Insertable<SavedSetupsListsItem> custom({
     Expression<int>? id,
     Expression<int>? savedSetupId,
-    Expression<int>? randomSetupListId,
+    Expression<int>? randomListId,
     Expression<int>? listItemsId,
     Expression<int>? position,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (savedSetupId != null) 'saved_setup_id': savedSetupId,
-      if (randomSetupListId != null) 'random_setup_list_id': randomSetupListId,
+      if (randomListId != null) 'random_list_id': randomListId,
       if (listItemsId != null) 'list_items_id': listItemsId,
       if (position != null) 'position': position,
     });
   }
 
-  SavedSetupsListItemsCompanion copyWith({
+  SavedSetupsListsItemsCompanion copyWith({
     Value<int>? id,
-    Value<int>? savedSetupId,
-    Value<int>? randomSetupListId,
+    Value<int?>? savedSetupId,
+    Value<int>? randomListId,
     Value<int>? listItemsId,
     Value<int>? position,
   }) {
-    return SavedSetupsListItemsCompanion(
+    return SavedSetupsListsItemsCompanion(
       id: id ?? this.id,
       savedSetupId: savedSetupId ?? this.savedSetupId,
-      randomSetupListId: randomSetupListId ?? this.randomSetupListId,
+      randomListId: randomListId ?? this.randomListId,
       listItemsId: listItemsId ?? this.listItemsId,
       position: position ?? this.position,
     );
@@ -2732,8 +3016,8 @@ class SavedSetupsListItemsCompanion
     if (savedSetupId.present) {
       map['saved_setup_id'] = Variable<int>(savedSetupId.value);
     }
-    if (randomSetupListId.present) {
-      map['random_setup_list_id'] = Variable<int>(randomSetupListId.value);
+    if (randomListId.present) {
+      map['random_list_id'] = Variable<int>(randomListId.value);
     }
     if (listItemsId.present) {
       map['list_items_id'] = Variable<int>(listItemsId.value);
@@ -2746,10 +3030,10 @@ class SavedSetupsListItemsCompanion
 
   @override
   String toString() {
-    return (StringBuffer('SavedSetupsListItemsCompanion(')
+    return (StringBuffer('SavedSetupsListsItemsCompanion(')
           ..write('id: $id, ')
           ..write('savedSetupId: $savedSetupId, ')
-          ..write('randomSetupListId: $randomSetupListId, ')
+          ..write('randomListId: $randomListId, ')
           ..write('listItemsId: $listItemsId, ')
           ..write('position: $position')
           ..write(')'))
@@ -8051,15 +8335,15 @@ class RatingsGamesCompanion extends UpdateCompanion<RatingsGame> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $GamesTable games = $GamesTable(this);
+  late final $ComponentTypesTable componentTypes = $ComponentTypesTable(this);
+  late final $GameComponentsTable gameComponents = $GameComponentsTable(this);
+  late final $RandomSetupsTable randomSetups = $RandomSetupsTable(this);
   late final $RandomListsTable randomLists = $RandomListsTable(this);
   late final $ListItemsTable listItems = $ListItemsTable(this);
-  late final $GamesTable games = $GamesTable(this);
-  late final $RandomSetupsTable randomSetups = $RandomSetupsTable(this);
-  late final $RandomSetupsListsTable randomSetupsLists =
-      $RandomSetupsListsTable(this);
   late final $SavedSetupsTable savedSetups = $SavedSetupsTable(this);
-  late final $SavedSetupsListItemsTable savedSetupsListItems =
-      $SavedSetupsListItemsTable(this);
+  late final $SavedSetupsListsItemsTable savedSetupsListsItems =
+      $SavedSetupsListsItemsTable(this);
   late final $ArtistsTable artists = $ArtistsTable(this);
   late final $CountingTemplatesTable countingTemplates =
       $CountingTemplatesTable(this);
@@ -8099,7 +8383,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final NoteDao noteDao = NoteDao(this as AppDatabase);
+  late final ComponentTypeDao componentTypeDao = ComponentTypeDao(
+    this as AppDatabase,
+  );
+  late final ComponentDao componentDao = ComponentDao(this as AppDatabase);
   late final RandomListDao randomListDao = RandomListDao(this as AppDatabase);
+  late final RandomSetupDao randomSetupDao = RandomSetupDao(
+    this as AppDatabase,
+  );
   late final RatingDao ratingDao = RatingDao(this as AppDatabase);
   late final TagDao tagDao = TagDao(this as AppDatabase);
   @override
@@ -8107,13 +8398,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    games,
+    componentTypes,
+    gameComponents,
+    randomSetups,
     randomLists,
     listItems,
-    games,
-    randomSetups,
-    randomSetupsLists,
     savedSetups,
-    savedSetupsListItems,
+    savedSetupsListsItems,
     artists,
     countingTemplates,
     designers,
@@ -8136,10 +8428,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'random_lists',
+        'games',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('list_items', kind: UpdateKind.delete)],
+      result: [TableUpdate('component_types', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'component_types',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('game_components', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -8153,14 +8452,28 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         'random_setups',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('random_setups_lists', kind: UpdateKind.delete)],
+      result: [TableUpdate('random_lists', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'games',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('random_lists', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'game_components',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('list_items', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'random_lists',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('random_setups_lists', kind: UpdateKind.delete)],
+      result: [TableUpdate('list_items', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -8174,21 +8487,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         'saved_setups',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('saved_setups_list_items', kind: UpdateKind.delete)],
+      result: [
+        TableUpdate('saved_setups_lists_items', kind: UpdateKind.delete),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'random_setups_lists',
+        'random_lists',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('saved_setups_list_items', kind: UpdateKind.delete)],
+      result: [
+        TableUpdate('saved_setups_lists_items', kind: UpdateKind.delete),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'list_items',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('saved_setups_list_items', kind: UpdateKind.delete)],
+      result: [
+        TableUpdate('saved_setups_lists_items', kind: UpdateKind.delete),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -8382,829 +8701,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
-typedef $$RandomListsTableCreateCompanionBuilder =
-    RandomListsCompanion Function({
-      Value<int> id,
-      required String name,
-      required int type,
-      Value<bool> isUnique,
-      required int itemsNum,
-    });
-typedef $$RandomListsTableUpdateCompanionBuilder =
-    RandomListsCompanion Function({
-      Value<int> id,
-      Value<String> name,
-      Value<int> type,
-      Value<bool> isUnique,
-      Value<int> itemsNum,
-    });
-
-final class $$RandomListsTableReferences
-    extends BaseReferences<_$AppDatabase, $RandomListsTable, RandomList> {
-  $$RandomListsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$ListItemsTable, List<ListItem>>
-  _listItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.listItems,
-    aliasName: $_aliasNameGenerator(
-      db.randomLists.id,
-      db.listItems.randomListId,
-    ),
-  );
-
-  $$ListItemsTableProcessedTableManager get listItemsRefs {
-    final manager = $$ListItemsTableTableManager(
-      $_db,
-      $_db.listItems,
-    ).filter((f) => f.randomListId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_listItemsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$RandomSetupsListsTable, List<RandomSetupsList>>
-  _randomSetupsListsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.randomSetupsLists,
-        aliasName: $_aliasNameGenerator(
-          db.randomLists.id,
-          db.randomSetupsLists.randomListId,
-        ),
-      );
-
-  $$RandomSetupsListsTableProcessedTableManager get randomSetupsListsRefs {
-    final manager = $$RandomSetupsListsTableTableManager(
-      $_db,
-      $_db.randomSetupsLists,
-    ).filter((f) => f.randomListId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _randomSetupsListsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$RandomListsTableFilterComposer
-    extends Composer<_$AppDatabase, $RandomListsTable> {
-  $$RandomListsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isUnique => $composableBuilder(
-    column: $table.isUnique,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get itemsNum => $composableBuilder(
-    column: $table.itemsNum,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> listItemsRefs(
-    Expression<bool> Function($$ListItemsTableFilterComposer f) f,
-  ) {
-    final $$ListItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.listItems,
-      getReferencedColumn: (t) => t.randomListId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ListItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.listItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> randomSetupsListsRefs(
-    Expression<bool> Function($$RandomSetupsListsTableFilterComposer f) f,
-  ) {
-    final $$RandomSetupsListsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.randomSetupsLists,
-      getReferencedColumn: (t) => t.randomListId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RandomSetupsListsTableFilterComposer(
-            $db: $db,
-            $table: $db.randomSetupsLists,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$RandomListsTableOrderingComposer
-    extends Composer<_$AppDatabase, $RandomListsTable> {
-  $$RandomListsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isUnique => $composableBuilder(
-    column: $table.isUnique,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get itemsNum => $composableBuilder(
-    column: $table.itemsNum,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$RandomListsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $RandomListsTable> {
-  $$RandomListsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<int> get type =>
-      $composableBuilder(column: $table.type, builder: (column) => column);
-
-  GeneratedColumn<bool> get isUnique =>
-      $composableBuilder(column: $table.isUnique, builder: (column) => column);
-
-  GeneratedColumn<int> get itemsNum =>
-      $composableBuilder(column: $table.itemsNum, builder: (column) => column);
-
-  Expression<T> listItemsRefs<T extends Object>(
-    Expression<T> Function($$ListItemsTableAnnotationComposer a) f,
-  ) {
-    final $$ListItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.listItems,
-      getReferencedColumn: (t) => t.randomListId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ListItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.listItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> randomSetupsListsRefs<T extends Object>(
-    Expression<T> Function($$RandomSetupsListsTableAnnotationComposer a) f,
-  ) {
-    final $$RandomSetupsListsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.randomSetupsLists,
-          getReferencedColumn: (t) => t.randomListId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$RandomSetupsListsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.randomSetupsLists,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$RandomListsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $RandomListsTable,
-          RandomList,
-          $$RandomListsTableFilterComposer,
-          $$RandomListsTableOrderingComposer,
-          $$RandomListsTableAnnotationComposer,
-          $$RandomListsTableCreateCompanionBuilder,
-          $$RandomListsTableUpdateCompanionBuilder,
-          (RandomList, $$RandomListsTableReferences),
-          RandomList,
-          PrefetchHooks Function({
-            bool listItemsRefs,
-            bool randomSetupsListsRefs,
-          })
-        > {
-  $$RandomListsTableTableManager(_$AppDatabase db, $RandomListsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$RandomListsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$RandomListsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$RandomListsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<int> type = const Value.absent(),
-                Value<bool> isUnique = const Value.absent(),
-                Value<int> itemsNum = const Value.absent(),
-              }) => RandomListsCompanion(
-                id: id,
-                name: name,
-                type: type,
-                isUnique: isUnique,
-                itemsNum: itemsNum,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String name,
-                required int type,
-                Value<bool> isUnique = const Value.absent(),
-                required int itemsNum,
-              }) => RandomListsCompanion.insert(
-                id: id,
-                name: name,
-                type: type,
-                isUnique: isUnique,
-                itemsNum: itemsNum,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$RandomListsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({listItemsRefs = false, randomSetupsListsRefs = false}) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (listItemsRefs) db.listItems,
-                    if (randomSetupsListsRefs) db.randomSetupsLists,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (listItemsRefs)
-                        await $_getPrefetchedData<
-                          RandomList,
-                          $RandomListsTable,
-                          ListItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$RandomListsTableReferences
-                              ._listItemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$RandomListsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).listItemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.randomListId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (randomSetupsListsRefs)
-                        await $_getPrefetchedData<
-                          RandomList,
-                          $RandomListsTable,
-                          RandomSetupsList
-                        >(
-                          currentTable: table,
-                          referencedTable: $$RandomListsTableReferences
-                              ._randomSetupsListsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$RandomListsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).randomSetupsListsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.randomListId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$RandomListsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $RandomListsTable,
-      RandomList,
-      $$RandomListsTableFilterComposer,
-      $$RandomListsTableOrderingComposer,
-      $$RandomListsTableAnnotationComposer,
-      $$RandomListsTableCreateCompanionBuilder,
-      $$RandomListsTableUpdateCompanionBuilder,
-      (RandomList, $$RandomListsTableReferences),
-      RandomList,
-      PrefetchHooks Function({bool listItemsRefs, bool randomSetupsListsRefs})
-    >;
-typedef $$ListItemsTableCreateCompanionBuilder =
-    ListItemsCompanion Function({
-      Value<int> id,
-      required String name,
-      required int randomListId,
-      required int copiesNum,
-      Value<String?> imagePath,
-    });
-typedef $$ListItemsTableUpdateCompanionBuilder =
-    ListItemsCompanion Function({
-      Value<int> id,
-      Value<String> name,
-      Value<int> randomListId,
-      Value<int> copiesNum,
-      Value<String?> imagePath,
-    });
-
-final class $$ListItemsTableReferences
-    extends BaseReferences<_$AppDatabase, $ListItemsTable, ListItem> {
-  $$ListItemsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $RandomListsTable _randomListIdTable(_$AppDatabase db) =>
-      db.randomLists.createAlias(
-        $_aliasNameGenerator(db.listItems.randomListId, db.randomLists.id),
-      );
-
-  $$RandomListsTableProcessedTableManager get randomListId {
-    final $_column = $_itemColumn<int>('random_list_id')!;
-
-    final manager = $$RandomListsTableTableManager(
-      $_db,
-      $_db.randomLists,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_randomListIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $SavedSetupsListItemsTable,
-    List<SavedSetupsListItem>
-  >
-  _savedSetupsListItemsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.savedSetupsListItems,
-        aliasName: $_aliasNameGenerator(
-          db.listItems.id,
-          db.savedSetupsListItems.listItemsId,
-        ),
-      );
-
-  $$SavedSetupsListItemsTableProcessedTableManager
-  get savedSetupsListItemsRefs {
-    final manager = $$SavedSetupsListItemsTableTableManager(
-      $_db,
-      $_db.savedSetupsListItems,
-    ).filter((f) => f.listItemsId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _savedSetupsListItemsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$ListItemsTableFilterComposer
-    extends Composer<_$AppDatabase, $ListItemsTable> {
-  $$ListItemsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get copiesNum => $composableBuilder(
-    column: $table.copiesNum,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get imagePath => $composableBuilder(
-    column: $table.imagePath,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$RandomListsTableFilterComposer get randomListId {
-    final $$RandomListsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.randomListId,
-      referencedTable: $db.randomLists,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RandomListsTableFilterComposer(
-            $db: $db,
-            $table: $db.randomLists,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> savedSetupsListItemsRefs(
-    Expression<bool> Function($$SavedSetupsListItemsTableFilterComposer f) f,
-  ) {
-    final $$SavedSetupsListItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.savedSetupsListItems,
-      getReferencedColumn: (t) => t.listItemsId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SavedSetupsListItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.savedSetupsListItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$ListItemsTableOrderingComposer
-    extends Composer<_$AppDatabase, $ListItemsTable> {
-  $$ListItemsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get copiesNum => $composableBuilder(
-    column: $table.copiesNum,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get imagePath => $composableBuilder(
-    column: $table.imagePath,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$RandomListsTableOrderingComposer get randomListId {
-    final $$RandomListsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.randomListId,
-      referencedTable: $db.randomLists,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RandomListsTableOrderingComposer(
-            $db: $db,
-            $table: $db.randomLists,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$ListItemsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ListItemsTable> {
-  $$ListItemsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<int> get copiesNum =>
-      $composableBuilder(column: $table.copiesNum, builder: (column) => column);
-
-  GeneratedColumn<String> get imagePath =>
-      $composableBuilder(column: $table.imagePath, builder: (column) => column);
-
-  $$RandomListsTableAnnotationComposer get randomListId {
-    final $$RandomListsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.randomListId,
-      referencedTable: $db.randomLists,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RandomListsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.randomLists,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<T> savedSetupsListItemsRefs<T extends Object>(
-    Expression<T> Function($$SavedSetupsListItemsTableAnnotationComposer a) f,
-  ) {
-    final $$SavedSetupsListItemsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.savedSetupsListItems,
-          getReferencedColumn: (t) => t.listItemsId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$SavedSetupsListItemsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.savedSetupsListItems,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$ListItemsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $ListItemsTable,
-          ListItem,
-          $$ListItemsTableFilterComposer,
-          $$ListItemsTableOrderingComposer,
-          $$ListItemsTableAnnotationComposer,
-          $$ListItemsTableCreateCompanionBuilder,
-          $$ListItemsTableUpdateCompanionBuilder,
-          (ListItem, $$ListItemsTableReferences),
-          ListItem,
-          PrefetchHooks Function({
-            bool randomListId,
-            bool savedSetupsListItemsRefs,
-          })
-        > {
-  $$ListItemsTableTableManager(_$AppDatabase db, $ListItemsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$ListItemsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ListItemsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ListItemsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<int> randomListId = const Value.absent(),
-                Value<int> copiesNum = const Value.absent(),
-                Value<String?> imagePath = const Value.absent(),
-              }) => ListItemsCompanion(
-                id: id,
-                name: name,
-                randomListId: randomListId,
-                copiesNum: copiesNum,
-                imagePath: imagePath,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String name,
-                required int randomListId,
-                required int copiesNum,
-                Value<String?> imagePath = const Value.absent(),
-              }) => ListItemsCompanion.insert(
-                id: id,
-                name: name,
-                randomListId: randomListId,
-                copiesNum: copiesNum,
-                imagePath: imagePath,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ListItemsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({randomListId = false, savedSetupsListItemsRefs = false}) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (savedSetupsListItemsRefs) db.savedSetupsListItems,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (randomListId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.randomListId,
-                                    referencedTable: $$ListItemsTableReferences
-                                        ._randomListIdTable(db),
-                                    referencedColumn: $$ListItemsTableReferences
-                                        ._randomListIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (savedSetupsListItemsRefs)
-                        await $_getPrefetchedData<
-                          ListItem,
-                          $ListItemsTable,
-                          SavedSetupsListItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$ListItemsTableReferences
-                              ._savedSetupsListItemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$ListItemsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).savedSetupsListItemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.listItemsId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$ListItemsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $ListItemsTable,
-      ListItem,
-      $$ListItemsTableFilterComposer,
-      $$ListItemsTableOrderingComposer,
-      $$ListItemsTableAnnotationComposer,
-      $$ListItemsTableCreateCompanionBuilder,
-      $$ListItemsTableUpdateCompanionBuilder,
-      (ListItem, $$ListItemsTableReferences),
-      ListItem,
-      PrefetchHooks Function({bool randomListId, bool savedSetupsListItemsRefs})
-    >;
 typedef $$GamesTableCreateCompanionBuilder =
     GamesCompanion Function({
       Value<int> id,
@@ -9238,6 +8734,24 @@ final class $$GamesTableReferences
     extends BaseReferences<_$AppDatabase, $GamesTable, Game> {
   $$GamesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
+  static MultiTypedResultKey<$ComponentTypesTable, List<ComponentType>>
+  _componentTypesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.componentTypes,
+    aliasName: $_aliasNameGenerator(db.games.id, db.componentTypes.gameId),
+  );
+
+  $$ComponentTypesTableProcessedTableManager get componentTypesRefs {
+    final manager = $$ComponentTypesTableTableManager(
+      $_db,
+      $_db.componentTypes,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_componentTypesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$RandomSetupsTable, List<RandomSetup>>
   _randomSetupsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.randomSetups,
@@ -9251,6 +8765,24 @@ final class $$GamesTableReferences
     ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_randomSetupsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RandomListsTable, List<RandomList>>
+  _randomListsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.randomLists,
+    aliasName: $_aliasNameGenerator(db.games.id, db.randomLists.gameId),
+  );
+
+  $$RandomListsTableProcessedTableManager get randomListsRefs {
+    final manager = $$RandomListsTableTableManager(
+      $_db,
+      $_db.randomLists,
+    ).filter((f) => f.gameId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_randomListsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -9552,6 +9084,31 @@ class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  Expression<bool> componentTypesRefs(
+    Expression<bool> Function($$ComponentTypesTableFilterComposer f) f,
+  ) {
+    final $$ComponentTypesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.componentTypes,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComponentTypesTableFilterComposer(
+            $db: $db,
+            $table: $db.componentTypes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> randomSetupsRefs(
     Expression<bool> Function($$RandomSetupsTableFilterComposer f) f,
   ) {
@@ -9568,6 +9125,31 @@ class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
           }) => $$RandomSetupsTableFilterComposer(
             $db: $db,
             $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> randomListsRefs(
+    Expression<bool> Function($$RandomListsTableFilterComposer f) f,
+  ) {
+    final $$RandomListsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomLists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -9979,6 +9561,31 @@ class $$GamesTableAnnotationComposer
   GeneratedColumn<String> get imagePath =>
       $composableBuilder(column: $table.imagePath, builder: (column) => column);
 
+  Expression<T> componentTypesRefs<T extends Object>(
+    Expression<T> Function($$ComponentTypesTableAnnotationComposer a) f,
+  ) {
+    final $$ComponentTypesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.componentTypes,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComponentTypesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.componentTypes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> randomSetupsRefs<T extends Object>(
     Expression<T> Function($$RandomSetupsTableAnnotationComposer a) f,
   ) {
@@ -9995,6 +9602,31 @@ class $$GamesTableAnnotationComposer
           }) => $$RandomSetupsTableAnnotationComposer(
             $db: $db,
             $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> randomListsRefs<T extends Object>(
+    Expression<T> Function($$RandomListsTableAnnotationComposer a) f,
+  ) {
+    final $$RandomListsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.gameId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomLists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -10301,7 +9933,9 @@ class $$GamesTableTableManager
           (Game, $$GamesTableReferences),
           Game,
           PrefetchHooks Function({
+            bool componentTypesRefs,
             bool randomSetupsRefs,
+            bool randomListsRefs,
             bool expansions,
             bool bases,
             bool gamesArtistsRefs,
@@ -10386,7 +10020,9 @@ class $$GamesTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
+                componentTypesRefs = false,
                 randomSetupsRefs = false,
+                randomListsRefs = false,
                 expansions = false,
                 bases = false,
                 gamesArtistsRefs = false,
@@ -10402,7 +10038,9 @@ class $$GamesTableTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (componentTypesRefs) db.componentTypes,
                     if (randomSetupsRefs) db.randomSetups,
+                    if (randomListsRefs) db.randomLists,
                     if (expansions) db.expansionsGames,
                     if (bases) db.expansionsGames,
                     if (gamesArtistsRefs) db.gamesArtists,
@@ -10420,6 +10058,27 @@ class $$GamesTableTableManager
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (componentTypesRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          ComponentType
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._componentTypesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).componentTypesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (randomSetupsRefs)
                         await $_getPrefetchedData<
                           Game,
@@ -10435,6 +10094,27 @@ class $$GamesTableTableManager
                                 table,
                                 p0,
                               ).randomSetupsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.gameId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (randomListsRefs)
+                        await $_getPrefetchedData<
+                          Game,
+                          $GamesTable,
+                          RandomList
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GamesTableReferences
+                              ._randomListsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GamesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).randomListsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.gameId == item.id,
@@ -10674,7 +10354,9 @@ typedef $$GamesTableProcessedTableManager =
       (Game, $$GamesTableReferences),
       Game,
       PrefetchHooks Function({
+        bool componentTypesRefs,
         bool randomSetupsRefs,
+        bool randomListsRefs,
         bool expansions,
         bool bases,
         bool gamesArtistsRefs,
@@ -10687,6 +10369,779 @@ typedef $$GamesTableProcessedTableManager =
         bool notesRefs,
         bool ratingsGamesRefs,
       })
+    >;
+typedef $$ComponentTypesTableCreateCompanionBuilder =
+    ComponentTypesCompanion Function({
+      Value<int> id,
+      required String name,
+      required int gameId,
+    });
+typedef $$ComponentTypesTableUpdateCompanionBuilder =
+    ComponentTypesCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> gameId,
+    });
+
+final class $$ComponentTypesTableReferences
+    extends BaseReferences<_$AppDatabase, $ComponentTypesTable, ComponentType> {
+  $$ComponentTypesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GamesTable _gameIdTable(_$AppDatabase db) => db.games.createAlias(
+    $_aliasNameGenerator(db.componentTypes.gameId, db.games.id),
+  );
+
+  $$GamesTableProcessedTableManager get gameId {
+    final $_column = $_itemColumn<int>('game_id')!;
+
+    final manager = $$GamesTableTableManager(
+      $_db,
+      $_db.games,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$GameComponentsTable, List<GameComponent>>
+  _gameComponentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.gameComponents,
+    aliasName: $_aliasNameGenerator(
+      db.componentTypes.id,
+      db.gameComponents.componentTypeId,
+    ),
+  );
+
+  $$GameComponentsTableProcessedTableManager get gameComponentsRefs {
+    final manager = $$GameComponentsTableTableManager(
+      $_db,
+      $_db.gameComponents,
+    ).filter((f) => f.componentTypeId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_gameComponentsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ComponentTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $ComponentTypesTable> {
+  $$ComponentTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GamesTableFilterComposer get gameId {
+    final $$GamesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableFilterComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> gameComponentsRefs(
+    Expression<bool> Function($$GameComponentsTableFilterComposer f) f,
+  ) {
+    final $$GameComponentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gameComponents,
+      getReferencedColumn: (t) => t.componentTypeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameComponentsTableFilterComposer(
+            $db: $db,
+            $table: $db.gameComponents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ComponentTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ComponentTypesTable> {
+  $$ComponentTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GamesTableOrderingComposer get gameId {
+    final $$GamesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableOrderingComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ComponentTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ComponentTypesTable> {
+  $$ComponentTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  $$GamesTableAnnotationComposer get gameId {
+    final $$GamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> gameComponentsRefs<T extends Object>(
+    Expression<T> Function($$GameComponentsTableAnnotationComposer a) f,
+  ) {
+    final $$GameComponentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gameComponents,
+      getReferencedColumn: (t) => t.componentTypeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameComponentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gameComponents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ComponentTypesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ComponentTypesTable,
+          ComponentType,
+          $$ComponentTypesTableFilterComposer,
+          $$ComponentTypesTableOrderingComposer,
+          $$ComponentTypesTableAnnotationComposer,
+          $$ComponentTypesTableCreateCompanionBuilder,
+          $$ComponentTypesTableUpdateCompanionBuilder,
+          (ComponentType, $$ComponentTypesTableReferences),
+          ComponentType,
+          PrefetchHooks Function({bool gameId, bool gameComponentsRefs})
+        > {
+  $$ComponentTypesTableTableManager(
+    _$AppDatabase db,
+    $ComponentTypesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ComponentTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ComponentTypesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ComponentTypesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> gameId = const Value.absent(),
+              }) => ComponentTypesCompanion(id: id, name: name, gameId: gameId),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int gameId,
+              }) => ComponentTypesCompanion.insert(
+                id: id,
+                name: name,
+                gameId: gameId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ComponentTypesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({gameId = false, gameComponentsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (gameComponentsRefs) db.gameComponents,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (gameId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.gameId,
+                                    referencedTable:
+                                        $$ComponentTypesTableReferences
+                                            ._gameIdTable(db),
+                                    referencedColumn:
+                                        $$ComponentTypesTableReferences
+                                            ._gameIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (gameComponentsRefs)
+                        await $_getPrefetchedData<
+                          ComponentType,
+                          $ComponentTypesTable,
+                          GameComponent
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ComponentTypesTableReferences
+                              ._gameComponentsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ComponentTypesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gameComponentsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.componentTypeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ComponentTypesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ComponentTypesTable,
+      ComponentType,
+      $$ComponentTypesTableFilterComposer,
+      $$ComponentTypesTableOrderingComposer,
+      $$ComponentTypesTableAnnotationComposer,
+      $$ComponentTypesTableCreateCompanionBuilder,
+      $$ComponentTypesTableUpdateCompanionBuilder,
+      (ComponentType, $$ComponentTypesTableReferences),
+      ComponentType,
+      PrefetchHooks Function({bool gameId, bool gameComponentsRefs})
+    >;
+typedef $$GameComponentsTableCreateCompanionBuilder =
+    GameComponentsCompanion Function({
+      Value<int> id,
+      required String name,
+      required int componentTypeId,
+      Value<String?> imagePath,
+    });
+typedef $$GameComponentsTableUpdateCompanionBuilder =
+    GameComponentsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> componentTypeId,
+      Value<String?> imagePath,
+    });
+
+final class $$GameComponentsTableReferences
+    extends BaseReferences<_$AppDatabase, $GameComponentsTable, GameComponent> {
+  $$GameComponentsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ComponentTypesTable _componentTypeIdTable(_$AppDatabase db) =>
+      db.componentTypes.createAlias(
+        $_aliasNameGenerator(
+          db.gameComponents.componentTypeId,
+          db.componentTypes.id,
+        ),
+      );
+
+  $$ComponentTypesTableProcessedTableManager get componentTypeId {
+    final $_column = $_itemColumn<int>('component_type_id')!;
+
+    final manager = $$ComponentTypesTableTableManager(
+      $_db,
+      $_db.componentTypes,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_componentTypeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$ListItemsTable, List<ListItem>>
+  _listItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.listItems,
+    aliasName: $_aliasNameGenerator(
+      db.gameComponents.id,
+      db.listItems.componentId,
+    ),
+  );
+
+  $$ListItemsTableProcessedTableManager get listItemsRefs {
+    final manager = $$ListItemsTableTableManager(
+      $_db,
+      $_db.listItems,
+    ).filter((f) => f.componentId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_listItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$GameComponentsTableFilterComposer
+    extends Composer<_$AppDatabase, $GameComponentsTable> {
+  $$GameComponentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ComponentTypesTableFilterComposer get componentTypeId {
+    final $$ComponentTypesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentTypeId,
+      referencedTable: $db.componentTypes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComponentTypesTableFilterComposer(
+            $db: $db,
+            $table: $db.componentTypes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> listItemsRefs(
+    Expression<bool> Function($$ListItemsTableFilterComposer f) f,
+  ) {
+    final $$ListItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.componentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$GameComponentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GameComponentsTable> {
+  $$GameComponentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ComponentTypesTableOrderingComposer get componentTypeId {
+    final $$ComponentTypesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentTypeId,
+      referencedTable: $db.componentTypes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComponentTypesTableOrderingComposer(
+            $db: $db,
+            $table: $db.componentTypes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GameComponentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GameComponentsTable> {
+  $$GameComponentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  $$ComponentTypesTableAnnotationComposer get componentTypeId {
+    final $$ComponentTypesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentTypeId,
+      referencedTable: $db.componentTypes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComponentTypesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.componentTypes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> listItemsRefs<T extends Object>(
+    Expression<T> Function($$ListItemsTableAnnotationComposer a) f,
+  ) {
+    final $$ListItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.componentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$GameComponentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GameComponentsTable,
+          GameComponent,
+          $$GameComponentsTableFilterComposer,
+          $$GameComponentsTableOrderingComposer,
+          $$GameComponentsTableAnnotationComposer,
+          $$GameComponentsTableCreateCompanionBuilder,
+          $$GameComponentsTableUpdateCompanionBuilder,
+          (GameComponent, $$GameComponentsTableReferences),
+          GameComponent,
+          PrefetchHooks Function({bool componentTypeId, bool listItemsRefs})
+        > {
+  $$GameComponentsTableTableManager(
+    _$AppDatabase db,
+    $GameComponentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GameComponentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GameComponentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GameComponentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> componentTypeId = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+              }) => GameComponentsCompanion(
+                id: id,
+                name: name,
+                componentTypeId: componentTypeId,
+                imagePath: imagePath,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int componentTypeId,
+                Value<String?> imagePath = const Value.absent(),
+              }) => GameComponentsCompanion.insert(
+                id: id,
+                name: name,
+                componentTypeId: componentTypeId,
+                imagePath: imagePath,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GameComponentsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({componentTypeId = false, listItemsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [if (listItemsRefs) db.listItems],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (componentTypeId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.componentTypeId,
+                                    referencedTable:
+                                        $$GameComponentsTableReferences
+                                            ._componentTypeIdTable(db),
+                                    referencedColumn:
+                                        $$GameComponentsTableReferences
+                                            ._componentTypeIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (listItemsRefs)
+                        await $_getPrefetchedData<
+                          GameComponent,
+                          $GameComponentsTable,
+                          ListItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GameComponentsTableReferences
+                              ._listItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GameComponentsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).listItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.componentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$GameComponentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GameComponentsTable,
+      GameComponent,
+      $$GameComponentsTableFilterComposer,
+      $$GameComponentsTableOrderingComposer,
+      $$GameComponentsTableAnnotationComposer,
+      $$GameComponentsTableCreateCompanionBuilder,
+      $$GameComponentsTableUpdateCompanionBuilder,
+      (GameComponent, $$GameComponentsTableReferences),
+      GameComponent,
+      PrefetchHooks Function({bool componentTypeId, bool listItemsRefs})
     >;
 typedef $$RandomSetupsTableCreateCompanionBuilder =
     RandomSetupsCompanion Function({
@@ -10723,25 +11178,22 @@ final class $$RandomSetupsTableReferences
     );
   }
 
-  static MultiTypedResultKey<$RandomSetupsListsTable, List<RandomSetupsList>>
-  _randomSetupsListsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.randomSetupsLists,
-        aliasName: $_aliasNameGenerator(
-          db.randomSetups.id,
-          db.randomSetupsLists.randomSetupId,
-        ),
-      );
+  static MultiTypedResultKey<$RandomListsTable, List<RandomList>>
+  _randomListsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.randomLists,
+    aliasName: $_aliasNameGenerator(
+      db.randomSetups.id,
+      db.randomLists.randomSetupId,
+    ),
+  );
 
-  $$RandomSetupsListsTableProcessedTableManager get randomSetupsListsRefs {
-    final manager = $$RandomSetupsListsTableTableManager(
+  $$RandomListsTableProcessedTableManager get randomListsRefs {
+    final manager = $$RandomListsTableTableManager(
       $_db,
-      $_db.randomSetupsLists,
+      $_db.randomLists,
     ).filter((f) => f.randomSetupId.id.sqlEquals($_itemColumn<int>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(
-      _randomSetupsListsRefsTable($_db),
-    );
+    final cache = $_typedResult.readTableOrNull(_randomListsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -10811,22 +11263,22 @@ class $$RandomSetupsTableFilterComposer
     return composer;
   }
 
-  Expression<bool> randomSetupsListsRefs(
-    Expression<bool> Function($$RandomSetupsListsTableFilterComposer f) f,
+  Expression<bool> randomListsRefs(
+    Expression<bool> Function($$RandomListsTableFilterComposer f) f,
   ) {
-    final $$RandomSetupsListsTableFilterComposer composer = $composerBuilder(
+    final $$RandomListsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.randomSetupsLists,
+      referencedTable: $db.randomLists,
       getReferencedColumn: (t) => t.randomSetupId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$RandomSetupsListsTableFilterComposer(
+          }) => $$RandomListsTableFilterComposer(
             $db: $db,
-            $table: $db.randomSetupsLists,
+            $table: $db.randomLists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -10943,29 +11395,28 @@ class $$RandomSetupsTableAnnotationComposer
     return composer;
   }
 
-  Expression<T> randomSetupsListsRefs<T extends Object>(
-    Expression<T> Function($$RandomSetupsListsTableAnnotationComposer a) f,
+  Expression<T> randomListsRefs<T extends Object>(
+    Expression<T> Function($$RandomListsTableAnnotationComposer a) f,
   ) {
-    final $$RandomSetupsListsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.randomSetupsLists,
-          getReferencedColumn: (t) => t.randomSetupId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
+    final $$RandomListsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.randomSetupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
                 $removeJoinBuilderFromRootComposer,
-              }) => $$RandomSetupsListsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.randomSetupsLists,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
+          ),
+    );
     return f(composer);
   }
 
@@ -11010,7 +11461,7 @@ class $$RandomSetupsTableTableManager
           RandomSetup,
           PrefetchHooks Function({
             bool gameId,
-            bool randomSetupsListsRefs,
+            bool randomListsRefs,
             bool savedSetupsRefs,
           })
         > {
@@ -11052,13 +11503,13 @@ class $$RandomSetupsTableTableManager
           prefetchHooksCallback:
               ({
                 gameId = false,
-                randomSetupsListsRefs = false,
+                randomListsRefs = false,
                 savedSetupsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
-                    if (randomSetupsListsRefs) db.randomSetupsLists,
+                    if (randomListsRefs) db.randomLists,
                     if (savedSetupsRefs) db.savedSetups,
                   ],
                   addJoins:
@@ -11097,21 +11548,21 @@ class $$RandomSetupsTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (randomSetupsListsRefs)
+                      if (randomListsRefs)
                         await $_getPrefetchedData<
                           RandomSetup,
                           $RandomSetupsTable,
-                          RandomSetupsList
+                          RandomList
                         >(
                           currentTable: table,
                           referencedTable: $$RandomSetupsTableReferences
-                              ._randomSetupsListsRefsTable(db),
+                              ._randomListsRefsTable(db),
                           managerFromTypedResult: (p0) =>
                               $$RandomSetupsTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).randomSetupsListsRefs,
+                              ).randomListsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.randomSetupId == item.id,
@@ -11161,53 +11612,43 @@ typedef $$RandomSetupsTableProcessedTableManager =
       RandomSetup,
       PrefetchHooks Function({
         bool gameId,
-        bool randomSetupsListsRefs,
+        bool randomListsRefs,
         bool savedSetupsRefs,
       })
     >;
-typedef $$RandomSetupsListsTableCreateCompanionBuilder =
-    RandomSetupsListsCompanion Function({
+typedef $$RandomListsTableCreateCompanionBuilder =
+    RandomListsCompanion Function({
       Value<int> id,
       required String name,
-      required int randomSetupId,
-      required int randomListId,
+      Value<int?> randomSetupId,
+      Value<int?> gameId,
+      required int type,
       Value<bool> isUnique,
       required int itemsNum,
     });
-typedef $$RandomSetupsListsTableUpdateCompanionBuilder =
-    RandomSetupsListsCompanion Function({
+typedef $$RandomListsTableUpdateCompanionBuilder =
+    RandomListsCompanion Function({
       Value<int> id,
       Value<String> name,
-      Value<int> randomSetupId,
-      Value<int> randomListId,
+      Value<int?> randomSetupId,
+      Value<int?> gameId,
+      Value<int> type,
       Value<bool> isUnique,
       Value<int> itemsNum,
     });
 
-final class $$RandomSetupsListsTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $RandomSetupsListsTable,
-          RandomSetupsList
-        > {
-  $$RandomSetupsListsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
+final class $$RandomListsTableReferences
+    extends BaseReferences<_$AppDatabase, $RandomListsTable, RandomList> {
+  $$RandomListsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $RandomSetupsTable _randomSetupIdTable(_$AppDatabase db) =>
       db.randomSetups.createAlias(
-        $_aliasNameGenerator(
-          db.randomSetupsLists.randomSetupId,
-          db.randomSetups.id,
-        ),
+        $_aliasNameGenerator(db.randomLists.randomSetupId, db.randomSetups.id),
       );
 
-  $$RandomSetupsTableProcessedTableManager get randomSetupId {
-    final $_column = $_itemColumn<int>('random_setup_id')!;
-
+  $$RandomSetupsTableProcessedTableManager? get randomSetupId {
+    final $_column = $_itemColumn<int>('random_setup_id');
+    if ($_column == null) return null;
     final manager = $$RandomSetupsTableTableManager(
       $_db,
       $_db.randomSetups,
@@ -11219,50 +11660,67 @@ final class $$RandomSetupsListsTableReferences
     );
   }
 
-  static $RandomListsTable _randomListIdTable(_$AppDatabase db) =>
-      db.randomLists.createAlias(
-        $_aliasNameGenerator(
-          db.randomSetupsLists.randomListId,
-          db.randomLists.id,
-        ),
-      );
+  static $GamesTable _gameIdTable(_$AppDatabase db) => db.games.createAlias(
+    $_aliasNameGenerator(db.randomLists.gameId, db.games.id),
+  );
 
-  $$RandomListsTableProcessedTableManager get randomListId {
-    final $_column = $_itemColumn<int>('random_list_id')!;
-
-    final manager = $$RandomListsTableTableManager(
+  $$GamesTableProcessedTableManager? get gameId {
+    final $_column = $_itemColumn<int>('game_id');
+    if ($_column == null) return null;
+    final manager = $$GamesTableTableManager(
       $_db,
-      $_db.randomLists,
+      $_db.games,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_randomListIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_gameIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
 
+  static MultiTypedResultKey<$ListItemsTable, List<ListItem>>
+  _listItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.listItems,
+    aliasName: $_aliasNameGenerator(
+      db.randomLists.id,
+      db.listItems.randomListId,
+    ),
+  );
+
+  $$ListItemsTableProcessedTableManager get listItemsRefs {
+    final manager = $$ListItemsTableTableManager(
+      $_db,
+      $_db.listItems,
+    ).filter((f) => f.randomListId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_listItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<
-    $SavedSetupsListItemsTable,
-    List<SavedSetupsListItem>
+    $SavedSetupsListsItemsTable,
+    List<SavedSetupsListsItem>
   >
-  _savedSetupsListItemsRefsTable(_$AppDatabase db) =>
+  _savedSetupsListsItemsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
-        db.savedSetupsListItems,
+        db.savedSetupsListsItems,
         aliasName: $_aliasNameGenerator(
-          db.randomSetupsLists.id,
-          db.savedSetupsListItems.randomSetupListId,
+          db.randomLists.id,
+          db.savedSetupsListsItems.randomListId,
         ),
       );
 
-  $$SavedSetupsListItemsTableProcessedTableManager
-  get savedSetupsListItemsRefs {
-    final manager = $$SavedSetupsListItemsTableTableManager(
+  $$SavedSetupsListsItemsTableProcessedTableManager
+  get savedSetupsListsItemsRefs {
+    final manager = $$SavedSetupsListsItemsTableTableManager(
       $_db,
-      $_db.savedSetupsListItems,
-    ).filter((f) => f.randomSetupListId.id.sqlEquals($_itemColumn<int>('id')!));
+      $_db.savedSetupsListsItems,
+    ).filter((f) => f.randomListId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(
-      _savedSetupsListItemsRefsTable($_db),
+      _savedSetupsListsItemsRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -11270,9 +11728,9 @@ final class $$RandomSetupsListsTableReferences
   }
 }
 
-class $$RandomSetupsListsTableFilterComposer
-    extends Composer<_$AppDatabase, $RandomSetupsListsTable> {
-  $$RandomSetupsListsTableFilterComposer({
+class $$RandomListsTableFilterComposer
+    extends Composer<_$AppDatabase, $RandomListsTable> {
+  $$RandomListsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -11286,6 +11744,11 @@ class $$RandomSetupsListsTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get type => $composableBuilder(
+    column: $table.type,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11322,20 +11785,20 @@ class $$RandomSetupsListsTableFilterComposer
     return composer;
   }
 
-  $$RandomListsTableFilterComposer get randomListId {
-    final $$RandomListsTableFilterComposer composer = $composerBuilder(
+  $$GamesTableFilterComposer get gameId {
+    final $$GamesTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.randomListId,
-      referencedTable: $db.randomLists,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$RandomListsTableFilterComposer(
+          }) => $$GamesTableFilterComposer(
             $db: $db,
-            $table: $db.randomLists,
+            $table: $db.games,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -11345,22 +11808,22 @@ class $$RandomSetupsListsTableFilterComposer
     return composer;
   }
 
-  Expression<bool> savedSetupsListItemsRefs(
-    Expression<bool> Function($$SavedSetupsListItemsTableFilterComposer f) f,
+  Expression<bool> listItemsRefs(
+    Expression<bool> Function($$ListItemsTableFilterComposer f) f,
   ) {
-    final $$SavedSetupsListItemsTableFilterComposer composer = $composerBuilder(
+    final $$ListItemsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.savedSetupsListItems,
-      getReferencedColumn: (t) => t.randomSetupListId,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.randomListId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$SavedSetupsListItemsTableFilterComposer(
+          }) => $$ListItemsTableFilterComposer(
             $db: $db,
-            $table: $db.savedSetupsListItems,
+            $table: $db.listItems,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -11369,11 +11832,37 @@ class $$RandomSetupsListsTableFilterComposer
     );
     return f(composer);
   }
+
+  Expression<bool> savedSetupsListsItemsRefs(
+    Expression<bool> Function($$SavedSetupsListsItemsTableFilterComposer f) f,
+  ) {
+    final $$SavedSetupsListsItemsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savedSetupsListsItems,
+          getReferencedColumn: (t) => t.randomListId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavedSetupsListsItemsTableFilterComposer(
+                $db: $db,
+                $table: $db.savedSetupsListsItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
-class $$RandomSetupsListsTableOrderingComposer
-    extends Composer<_$AppDatabase, $RandomSetupsListsTable> {
-  $$RandomSetupsListsTableOrderingComposer({
+class $$RandomListsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RandomListsTable> {
+  $$RandomListsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -11387,6 +11876,11 @@ class $$RandomSetupsListsTableOrderingComposer
 
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get type => $composableBuilder(
+    column: $table.type,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -11423,6 +11917,592 @@ class $$RandomSetupsListsTableOrderingComposer
     return composer;
   }
 
+  $$GamesTableOrderingComposer get gameId {
+    final $$GamesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableOrderingComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RandomListsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RandomListsTable> {
+  $$RandomListsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<bool> get isUnique =>
+      $composableBuilder(column: $table.isUnique, builder: (column) => column);
+
+  GeneratedColumn<int> get itemsNum =>
+      $composableBuilder(column: $table.itemsNum, builder: (column) => column);
+
+  $$RandomSetupsTableAnnotationComposer get randomSetupId {
+    final $$RandomSetupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomSetupId,
+      referencedTable: $db.randomSetups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomSetupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomSetups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GamesTableAnnotationComposer get gameId {
+    final $$GamesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.gameId,
+      referencedTable: $db.games,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GamesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.games,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> listItemsRefs<T extends Object>(
+    Expression<T> Function($$ListItemsTableAnnotationComposer a) f,
+  ) {
+    final $$ListItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.listItems,
+      getReferencedColumn: (t) => t.randomListId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ListItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.listItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> savedSetupsListsItemsRefs<T extends Object>(
+    Expression<T> Function($$SavedSetupsListsItemsTableAnnotationComposer a) f,
+  ) {
+    final $$SavedSetupsListsItemsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savedSetupsListsItems,
+          getReferencedColumn: (t) => t.randomListId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavedSetupsListsItemsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savedSetupsListsItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$RandomListsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RandomListsTable,
+          RandomList,
+          $$RandomListsTableFilterComposer,
+          $$RandomListsTableOrderingComposer,
+          $$RandomListsTableAnnotationComposer,
+          $$RandomListsTableCreateCompanionBuilder,
+          $$RandomListsTableUpdateCompanionBuilder,
+          (RandomList, $$RandomListsTableReferences),
+          RandomList,
+          PrefetchHooks Function({
+            bool randomSetupId,
+            bool gameId,
+            bool listItemsRefs,
+            bool savedSetupsListsItemsRefs,
+          })
+        > {
+  $$RandomListsTableTableManager(_$AppDatabase db, $RandomListsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RandomListsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RandomListsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RandomListsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int?> randomSetupId = const Value.absent(),
+                Value<int?> gameId = const Value.absent(),
+                Value<int> type = const Value.absent(),
+                Value<bool> isUnique = const Value.absent(),
+                Value<int> itemsNum = const Value.absent(),
+              }) => RandomListsCompanion(
+                id: id,
+                name: name,
+                randomSetupId: randomSetupId,
+                gameId: gameId,
+                type: type,
+                isUnique: isUnique,
+                itemsNum: itemsNum,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<int?> randomSetupId = const Value.absent(),
+                Value<int?> gameId = const Value.absent(),
+                required int type,
+                Value<bool> isUnique = const Value.absent(),
+                required int itemsNum,
+              }) => RandomListsCompanion.insert(
+                id: id,
+                name: name,
+                randomSetupId: randomSetupId,
+                gameId: gameId,
+                type: type,
+                isUnique: isUnique,
+                itemsNum: itemsNum,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RandomListsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                randomSetupId = false,
+                gameId = false,
+                listItemsRefs = false,
+                savedSetupsListsItemsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (listItemsRefs) db.listItems,
+                    if (savedSetupsListsItemsRefs) db.savedSetupsListsItems,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (randomSetupId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.randomSetupId,
+                                    referencedTable:
+                                        $$RandomListsTableReferences
+                                            ._randomSetupIdTable(db),
+                                    referencedColumn:
+                                        $$RandomListsTableReferences
+                                            ._randomSetupIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (gameId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.gameId,
+                                    referencedTable:
+                                        $$RandomListsTableReferences
+                                            ._gameIdTable(db),
+                                    referencedColumn:
+                                        $$RandomListsTableReferences
+                                            ._gameIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (listItemsRefs)
+                        await $_getPrefetchedData<
+                          RandomList,
+                          $RandomListsTable,
+                          ListItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RandomListsTableReferences
+                              ._listItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RandomListsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).listItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.randomListId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (savedSetupsListsItemsRefs)
+                        await $_getPrefetchedData<
+                          RandomList,
+                          $RandomListsTable,
+                          SavedSetupsListsItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RandomListsTableReferences
+                              ._savedSetupsListsItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RandomListsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savedSetupsListsItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.randomListId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RandomListsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RandomListsTable,
+      RandomList,
+      $$RandomListsTableFilterComposer,
+      $$RandomListsTableOrderingComposer,
+      $$RandomListsTableAnnotationComposer,
+      $$RandomListsTableCreateCompanionBuilder,
+      $$RandomListsTableUpdateCompanionBuilder,
+      (RandomList, $$RandomListsTableReferences),
+      RandomList,
+      PrefetchHooks Function({
+        bool randomSetupId,
+        bool gameId,
+        bool listItemsRefs,
+        bool savedSetupsListsItemsRefs,
+      })
+    >;
+typedef $$ListItemsTableCreateCompanionBuilder =
+    ListItemsCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<int?> componentId,
+      required int randomListId,
+      required int copiesNum,
+    });
+typedef $$ListItemsTableUpdateCompanionBuilder =
+    ListItemsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int?> componentId,
+      Value<int> randomListId,
+      Value<int> copiesNum,
+    });
+
+final class $$ListItemsTableReferences
+    extends BaseReferences<_$AppDatabase, $ListItemsTable, ListItem> {
+  $$ListItemsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $GameComponentsTable _componentIdTable(_$AppDatabase db) =>
+      db.gameComponents.createAlias(
+        $_aliasNameGenerator(db.listItems.componentId, db.gameComponents.id),
+      );
+
+  $$GameComponentsTableProcessedTableManager? get componentId {
+    final $_column = $_itemColumn<int>('component_id');
+    if ($_column == null) return null;
+    final manager = $$GameComponentsTableTableManager(
+      $_db,
+      $_db.gameComponents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_componentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $RandomListsTable _randomListIdTable(_$AppDatabase db) =>
+      db.randomLists.createAlias(
+        $_aliasNameGenerator(db.listItems.randomListId, db.randomLists.id),
+      );
+
+  $$RandomListsTableProcessedTableManager get randomListId {
+    final $_column = $_itemColumn<int>('random_list_id')!;
+
+    final manager = $$RandomListsTableTableManager(
+      $_db,
+      $_db.randomLists,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_randomListIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SavedSetupsListsItemsTable,
+    List<SavedSetupsListsItem>
+  >
+  _savedSetupsListsItemsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savedSetupsListsItems,
+        aliasName: $_aliasNameGenerator(
+          db.listItems.id,
+          db.savedSetupsListsItems.listItemsId,
+        ),
+      );
+
+  $$SavedSetupsListsItemsTableProcessedTableManager
+  get savedSetupsListsItemsRefs {
+    final manager = $$SavedSetupsListsItemsTableTableManager(
+      $_db,
+      $_db.savedSetupsListsItems,
+    ).filter((f) => f.listItemsId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savedSetupsListsItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ListItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $ListItemsTable> {
+  $$ListItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get copiesNum => $composableBuilder(
+    column: $table.copiesNum,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GameComponentsTableFilterComposer get componentId {
+    final $$GameComponentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentId,
+      referencedTable: $db.gameComponents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameComponentsTableFilterComposer(
+            $db: $db,
+            $table: $db.gameComponents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RandomListsTableFilterComposer get randomListId {
+    final $$RandomListsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableFilterComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> savedSetupsListsItemsRefs(
+    Expression<bool> Function($$SavedSetupsListsItemsTableFilterComposer f) f,
+  ) {
+    final $$SavedSetupsListsItemsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savedSetupsListsItems,
+          getReferencedColumn: (t) => t.listItemsId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavedSetupsListsItemsTableFilterComposer(
+                $db: $db,
+                $table: $db.savedSetupsListsItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$ListItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ListItemsTable> {
+  $$ListItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get copiesNum => $composableBuilder(
+    column: $table.copiesNum,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GameComponentsTableOrderingComposer get componentId {
+    final $$GameComponentsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentId,
+      referencedTable: $db.gameComponents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameComponentsTableOrderingComposer(
+            $db: $db,
+            $table: $db.gameComponents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$RandomListsTableOrderingComposer get randomListId {
     final $$RandomListsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -11447,9 +12527,9 @@ class $$RandomSetupsListsTableOrderingComposer
   }
 }
 
-class $$RandomSetupsListsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $RandomSetupsListsTable> {
-  $$RandomSetupsListsTableAnnotationComposer({
+class $$ListItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ListItemsTable> {
+  $$ListItemsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -11462,26 +12542,23 @@ class $$RandomSetupsListsTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<bool> get isUnique =>
-      $composableBuilder(column: $table.isUnique, builder: (column) => column);
+  GeneratedColumn<int> get copiesNum =>
+      $composableBuilder(column: $table.copiesNum, builder: (column) => column);
 
-  GeneratedColumn<int> get itemsNum =>
-      $composableBuilder(column: $table.itemsNum, builder: (column) => column);
-
-  $$RandomSetupsTableAnnotationComposer get randomSetupId {
-    final $$RandomSetupsTableAnnotationComposer composer = $composerBuilder(
+  $$GameComponentsTableAnnotationComposer get componentId {
+    final $$GameComponentsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.randomSetupId,
-      referencedTable: $db.randomSetups,
+      getCurrentColumn: (t) => t.componentId,
+      referencedTable: $db.gameComponents,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$RandomSetupsTableAnnotationComposer(
+          }) => $$GameComponentsTableAnnotationComposer(
             $db: $db,
-            $table: $db.randomSetups,
+            $table: $db.gameComponents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -11514,23 +12591,23 @@ class $$RandomSetupsListsTableAnnotationComposer
     return composer;
   }
 
-  Expression<T> savedSetupsListItemsRefs<T extends Object>(
-    Expression<T> Function($$SavedSetupsListItemsTableAnnotationComposer a) f,
+  Expression<T> savedSetupsListsItemsRefs<T extends Object>(
+    Expression<T> Function($$SavedSetupsListsItemsTableAnnotationComposer a) f,
   ) {
-    final $$SavedSetupsListItemsTableAnnotationComposer composer =
+    final $$SavedSetupsListsItemsTableAnnotationComposer composer =
         $composerBuilder(
           composer: this,
           getCurrentColumn: (t) => t.id,
-          referencedTable: $db.savedSetupsListItems,
-          getReferencedColumn: (t) => t.randomSetupListId,
+          referencedTable: $db.savedSetupsListsItems,
+          getReferencedColumn: (t) => t.listItemsId,
           builder:
               (
                 joinBuilder, {
                 $addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer,
-              }) => $$SavedSetupsListItemsTableAnnotationComposer(
+              }) => $$SavedSetupsListsItemsTableAnnotationComposer(
                 $db: $db,
-                $table: $db.savedSetupsListItems,
+                $table: $db.savedSetupsListsItems,
                 $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
                 joinBuilder: joinBuilder,
                 $removeJoinBuilderFromRootComposer:
@@ -11541,91 +12618,82 @@ class $$RandomSetupsListsTableAnnotationComposer
   }
 }
 
-class $$RandomSetupsListsTableTableManager
+class $$ListItemsTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $RandomSetupsListsTable,
-          RandomSetupsList,
-          $$RandomSetupsListsTableFilterComposer,
-          $$RandomSetupsListsTableOrderingComposer,
-          $$RandomSetupsListsTableAnnotationComposer,
-          $$RandomSetupsListsTableCreateCompanionBuilder,
-          $$RandomSetupsListsTableUpdateCompanionBuilder,
-          (RandomSetupsList, $$RandomSetupsListsTableReferences),
-          RandomSetupsList,
+          $ListItemsTable,
+          ListItem,
+          $$ListItemsTableFilterComposer,
+          $$ListItemsTableOrderingComposer,
+          $$ListItemsTableAnnotationComposer,
+          $$ListItemsTableCreateCompanionBuilder,
+          $$ListItemsTableUpdateCompanionBuilder,
+          (ListItem, $$ListItemsTableReferences),
+          ListItem,
           PrefetchHooks Function({
-            bool randomSetupId,
+            bool componentId,
             bool randomListId,
-            bool savedSetupsListItemsRefs,
+            bool savedSetupsListsItemsRefs,
           })
         > {
-  $$RandomSetupsListsTableTableManager(
-    _$AppDatabase db,
-    $RandomSetupsListsTable table,
-  ) : super(
+  $$ListItemsTableTableManager(_$AppDatabase db, $ListItemsTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$RandomSetupsListsTableFilterComposer($db: db, $table: table),
+              $$ListItemsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$RandomSetupsListsTableOrderingComposer($db: db, $table: table),
+              $$ListItemsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$RandomSetupsListsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
+              $$ListItemsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<int> randomSetupId = const Value.absent(),
+                Value<int?> componentId = const Value.absent(),
                 Value<int> randomListId = const Value.absent(),
-                Value<bool> isUnique = const Value.absent(),
-                Value<int> itemsNum = const Value.absent(),
-              }) => RandomSetupsListsCompanion(
+                Value<int> copiesNum = const Value.absent(),
+              }) => ListItemsCompanion(
                 id: id,
                 name: name,
-                randomSetupId: randomSetupId,
+                componentId: componentId,
                 randomListId: randomListId,
-                isUnique: isUnique,
-                itemsNum: itemsNum,
+                copiesNum: copiesNum,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
-                required int randomSetupId,
+                Value<int?> componentId = const Value.absent(),
                 required int randomListId,
-                Value<bool> isUnique = const Value.absent(),
-                required int itemsNum,
-              }) => RandomSetupsListsCompanion.insert(
+                required int copiesNum,
+              }) => ListItemsCompanion.insert(
                 id: id,
                 name: name,
-                randomSetupId: randomSetupId,
+                componentId: componentId,
                 randomListId: randomListId,
-                isUnique: isUnique,
-                itemsNum: itemsNum,
+                copiesNum: copiesNum,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
                   e.readTable(table),
-                  $$RandomSetupsListsTableReferences(db, table, e),
+                  $$ListItemsTableReferences(db, table, e),
                 ),
               )
               .toList(),
           prefetchHooksCallback:
               ({
-                randomSetupId = false,
+                componentId = false,
                 randomListId = false,
-                savedSetupsListItemsRefs = false,
+                savedSetupsListsItemsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
-                    if (savedSetupsListItemsRefs) db.savedSetupsListItems,
+                    if (savedSetupsListsItemsRefs) db.savedSetupsListsItems,
                   ],
                   addJoins:
                       <
@@ -11643,18 +12711,16 @@ class $$RandomSetupsListsTableTableManager
                           dynamic
                         >
                       >(state) {
-                        if (randomSetupId) {
+                        if (componentId) {
                           state =
                               state.withJoin(
                                     currentTable: table,
-                                    currentColumn: table.randomSetupId,
-                                    referencedTable:
-                                        $$RandomSetupsListsTableReferences
-                                            ._randomSetupIdTable(db),
-                                    referencedColumn:
-                                        $$RandomSetupsListsTableReferences
-                                            ._randomSetupIdTable(db)
-                                            .id,
+                                    currentColumn: table.componentId,
+                                    referencedTable: $$ListItemsTableReferences
+                                        ._componentIdTable(db),
+                                    referencedColumn: $$ListItemsTableReferences
+                                        ._componentIdTable(db)
+                                        .id,
                                   )
                                   as T;
                         }
@@ -11663,13 +12729,11 @@ class $$RandomSetupsListsTableTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.randomListId,
-                                    referencedTable:
-                                        $$RandomSetupsListsTableReferences
-                                            ._randomListIdTable(db),
-                                    referencedColumn:
-                                        $$RandomSetupsListsTableReferences
-                                            ._randomListIdTable(db)
-                                            .id,
+                                    referencedTable: $$ListItemsTableReferences
+                                        ._randomListIdTable(db),
+                                    referencedColumn: $$ListItemsTableReferences
+                                        ._randomListIdTable(db)
+                                        .id,
                                   )
                                   as T;
                         }
@@ -11678,24 +12742,24 @@ class $$RandomSetupsListsTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (savedSetupsListItemsRefs)
+                      if (savedSetupsListsItemsRefs)
                         await $_getPrefetchedData<
-                          RandomSetupsList,
-                          $RandomSetupsListsTable,
-                          SavedSetupsListItem
+                          ListItem,
+                          $ListItemsTable,
+                          SavedSetupsListsItem
                         >(
                           currentTable: table,
-                          referencedTable: $$RandomSetupsListsTableReferences
-                              ._savedSetupsListItemsRefsTable(db),
+                          referencedTable: $$ListItemsTableReferences
+                              ._savedSetupsListsItemsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$RandomSetupsListsTableReferences(
+                              $$ListItemsTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).savedSetupsListItemsRefs,
+                              ).savedSetupsListsItemsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
-                                (e) => e.randomSetupListId == item.id,
+                                (e) => e.listItemsId == item.id,
                               ),
                           typedResults: items,
                         ),
@@ -11707,22 +12771,22 @@ class $$RandomSetupsListsTableTableManager
       );
 }
 
-typedef $$RandomSetupsListsTableProcessedTableManager =
+typedef $$ListItemsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $RandomSetupsListsTable,
-      RandomSetupsList,
-      $$RandomSetupsListsTableFilterComposer,
-      $$RandomSetupsListsTableOrderingComposer,
-      $$RandomSetupsListsTableAnnotationComposer,
-      $$RandomSetupsListsTableCreateCompanionBuilder,
-      $$RandomSetupsListsTableUpdateCompanionBuilder,
-      (RandomSetupsList, $$RandomSetupsListsTableReferences),
-      RandomSetupsList,
+      $ListItemsTable,
+      ListItem,
+      $$ListItemsTableFilterComposer,
+      $$ListItemsTableOrderingComposer,
+      $$ListItemsTableAnnotationComposer,
+      $$ListItemsTableCreateCompanionBuilder,
+      $$ListItemsTableUpdateCompanionBuilder,
+      (ListItem, $$ListItemsTableReferences),
+      ListItem,
       PrefetchHooks Function({
-        bool randomSetupId,
+        bool componentId,
         bool randomListId,
-        bool savedSetupsListItemsRefs,
+        bool savedSetupsListsItemsRefs,
       })
     >;
 typedef $$SavedSetupsTableCreateCompanionBuilder =
@@ -11764,27 +12828,27 @@ final class $$SavedSetupsTableReferences
   }
 
   static MultiTypedResultKey<
-    $SavedSetupsListItemsTable,
-    List<SavedSetupsListItem>
+    $SavedSetupsListsItemsTable,
+    List<SavedSetupsListsItem>
   >
-  _savedSetupsListItemsRefsTable(_$AppDatabase db) =>
+  _savedSetupsListsItemsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
-        db.savedSetupsListItems,
+        db.savedSetupsListsItems,
         aliasName: $_aliasNameGenerator(
           db.savedSetups.id,
-          db.savedSetupsListItems.savedSetupId,
+          db.savedSetupsListsItems.savedSetupId,
         ),
       );
 
-  $$SavedSetupsListItemsTableProcessedTableManager
-  get savedSetupsListItemsRefs {
-    final manager = $$SavedSetupsListItemsTableTableManager(
+  $$SavedSetupsListsItemsTableProcessedTableManager
+  get savedSetupsListsItemsRefs {
+    final manager = $$SavedSetupsListsItemsTableTableManager(
       $_db,
-      $_db.savedSetupsListItems,
+      $_db.savedSetupsListsItems,
     ).filter((f) => f.savedSetupId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(
-      _savedSetupsListItemsRefsTable($_db),
+      _savedSetupsListsItemsRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -11839,28 +12903,29 @@ class $$SavedSetupsTableFilterComposer
     return composer;
   }
 
-  Expression<bool> savedSetupsListItemsRefs(
-    Expression<bool> Function($$SavedSetupsListItemsTableFilterComposer f) f,
+  Expression<bool> savedSetupsListsItemsRefs(
+    Expression<bool> Function($$SavedSetupsListsItemsTableFilterComposer f) f,
   ) {
-    final $$SavedSetupsListItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.savedSetupsListItems,
-      getReferencedColumn: (t) => t.savedSetupId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SavedSetupsListItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.savedSetupsListItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
+    final $$SavedSetupsListsItemsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savedSetupsListsItems,
+          getReferencedColumn: (t) => t.savedSetupId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer,
-          ),
-    );
+              }) => $$SavedSetupsListsItemsTableFilterComposer(
+                $db: $db,
+                $table: $db.savedSetupsListsItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -11956,23 +13021,23 @@ class $$SavedSetupsTableAnnotationComposer
     return composer;
   }
 
-  Expression<T> savedSetupsListItemsRefs<T extends Object>(
-    Expression<T> Function($$SavedSetupsListItemsTableAnnotationComposer a) f,
+  Expression<T> savedSetupsListsItemsRefs<T extends Object>(
+    Expression<T> Function($$SavedSetupsListsItemsTableAnnotationComposer a) f,
   ) {
-    final $$SavedSetupsListItemsTableAnnotationComposer composer =
+    final $$SavedSetupsListsItemsTableAnnotationComposer composer =
         $composerBuilder(
           composer: this,
           getCurrentColumn: (t) => t.id,
-          referencedTable: $db.savedSetupsListItems,
+          referencedTable: $db.savedSetupsListsItems,
           getReferencedColumn: (t) => t.savedSetupId,
           builder:
               (
                 joinBuilder, {
                 $addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer,
-              }) => $$SavedSetupsListItemsTableAnnotationComposer(
+              }) => $$SavedSetupsListsItemsTableAnnotationComposer(
                 $db: $db,
-                $table: $db.savedSetupsListItems,
+                $table: $db.savedSetupsListsItems,
                 $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
                 joinBuilder: joinBuilder,
                 $removeJoinBuilderFromRootComposer:
@@ -11998,7 +13063,7 @@ class $$SavedSetupsTableTableManager
           SavedSetup,
           PrefetchHooks Function({
             bool randomSetupId,
-            bool savedSetupsListItemsRefs,
+            bool savedSetupsListsItemsRefs,
           })
         > {
   $$SavedSetupsTableTableManager(_$AppDatabase db, $SavedSetupsTable table)
@@ -12045,11 +13110,11 @@ class $$SavedSetupsTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({randomSetupId = false, savedSetupsListItemsRefs = false}) {
+              ({randomSetupId = false, savedSetupsListsItemsRefs = false}) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
-                    if (savedSetupsListItemsRefs) db.savedSetupsListItems,
+                    if (savedSetupsListsItemsRefs) db.savedSetupsListsItems,
                   ],
                   addJoins:
                       <
@@ -12087,21 +13152,21 @@ class $$SavedSetupsTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (savedSetupsListItemsRefs)
+                      if (savedSetupsListsItemsRefs)
                         await $_getPrefetchedData<
                           SavedSetup,
                           $SavedSetupsTable,
-                          SavedSetupsListItem
+                          SavedSetupsListsItem
                         >(
                           currentTable: table,
                           referencedTable: $$SavedSetupsTableReferences
-                              ._savedSetupsListItemsRefsTable(db),
+                              ._savedSetupsListsItemsRefsTable(db),
                           managerFromTypedResult: (p0) =>
                               $$SavedSetupsTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).savedSetupsListItemsRefs,
+                              ).savedSetupsListsItemsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.savedSetupId == item.id,
@@ -12130,34 +13195,34 @@ typedef $$SavedSetupsTableProcessedTableManager =
       SavedSetup,
       PrefetchHooks Function({
         bool randomSetupId,
-        bool savedSetupsListItemsRefs,
+        bool savedSetupsListsItemsRefs,
       })
     >;
-typedef $$SavedSetupsListItemsTableCreateCompanionBuilder =
-    SavedSetupsListItemsCompanion Function({
+typedef $$SavedSetupsListsItemsTableCreateCompanionBuilder =
+    SavedSetupsListsItemsCompanion Function({
       Value<int> id,
-      required int savedSetupId,
-      required int randomSetupListId,
+      Value<int?> savedSetupId,
+      required int randomListId,
       required int listItemsId,
       required int position,
     });
-typedef $$SavedSetupsListItemsTableUpdateCompanionBuilder =
-    SavedSetupsListItemsCompanion Function({
+typedef $$SavedSetupsListsItemsTableUpdateCompanionBuilder =
+    SavedSetupsListsItemsCompanion Function({
       Value<int> id,
-      Value<int> savedSetupId,
-      Value<int> randomSetupListId,
+      Value<int?> savedSetupId,
+      Value<int> randomListId,
       Value<int> listItemsId,
       Value<int> position,
     });
 
-final class $$SavedSetupsListItemsTableReferences
+final class $$SavedSetupsListsItemsTableReferences
     extends
         BaseReferences<
           _$AppDatabase,
-          $SavedSetupsListItemsTable,
-          SavedSetupsListItem
+          $SavedSetupsListsItemsTable,
+          SavedSetupsListsItem
         > {
-  $$SavedSetupsListItemsTableReferences(
+  $$SavedSetupsListsItemsTableReferences(
     super.$_db,
     super.$_table,
     super.$_typedResult,
@@ -12166,14 +13231,14 @@ final class $$SavedSetupsListItemsTableReferences
   static $SavedSetupsTable _savedSetupIdTable(_$AppDatabase db) =>
       db.savedSetups.createAlias(
         $_aliasNameGenerator(
-          db.savedSetupsListItems.savedSetupId,
+          db.savedSetupsListsItems.savedSetupId,
           db.savedSetups.id,
         ),
       );
 
-  $$SavedSetupsTableProcessedTableManager get savedSetupId {
-    final $_column = $_itemColumn<int>('saved_setup_id')!;
-
+  $$SavedSetupsTableProcessedTableManager? get savedSetupId {
+    final $_column = $_itemColumn<int>('saved_setup_id');
+    if ($_column == null) return null;
     final manager = $$SavedSetupsTableTableManager(
       $_db,
       $_db.savedSetups,
@@ -12185,22 +13250,22 @@ final class $$SavedSetupsListItemsTableReferences
     );
   }
 
-  static $RandomSetupsListsTable _randomSetupListIdTable(_$AppDatabase db) =>
-      db.randomSetupsLists.createAlias(
+  static $RandomListsTable _randomListIdTable(_$AppDatabase db) =>
+      db.randomLists.createAlias(
         $_aliasNameGenerator(
-          db.savedSetupsListItems.randomSetupListId,
-          db.randomSetupsLists.id,
+          db.savedSetupsListsItems.randomListId,
+          db.randomLists.id,
         ),
       );
 
-  $$RandomSetupsListsTableProcessedTableManager get randomSetupListId {
-    final $_column = $_itemColumn<int>('random_setup_list_id')!;
+  $$RandomListsTableProcessedTableManager get randomListId {
+    final $_column = $_itemColumn<int>('random_list_id')!;
 
-    final manager = $$RandomSetupsListsTableTableManager(
+    final manager = $$RandomListsTableTableManager(
       $_db,
-      $_db.randomSetupsLists,
+      $_db.randomLists,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_randomSetupListIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_randomListIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -12210,7 +13275,7 @@ final class $$SavedSetupsListItemsTableReferences
   static $ListItemsTable _listItemsIdTable(_$AppDatabase db) =>
       db.listItems.createAlias(
         $_aliasNameGenerator(
-          db.savedSetupsListItems.listItemsId,
+          db.savedSetupsListsItems.listItemsId,
           db.listItems.id,
         ),
       );
@@ -12230,9 +13295,9 @@ final class $$SavedSetupsListItemsTableReferences
   }
 }
 
-class $$SavedSetupsListItemsTableFilterComposer
-    extends Composer<_$AppDatabase, $SavedSetupsListItemsTable> {
-  $$SavedSetupsListItemsTableFilterComposer({
+class $$SavedSetupsListsItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedSetupsListsItemsTable> {
+  $$SavedSetupsListsItemsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -12272,20 +13337,20 @@ class $$SavedSetupsListItemsTableFilterComposer
     return composer;
   }
 
-  $$RandomSetupsListsTableFilterComposer get randomSetupListId {
-    final $$RandomSetupsListsTableFilterComposer composer = $composerBuilder(
+  $$RandomListsTableFilterComposer get randomListId {
+    final $$RandomListsTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.randomSetupListId,
-      referencedTable: $db.randomSetupsLists,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$RandomSetupsListsTableFilterComposer(
+          }) => $$RandomListsTableFilterComposer(
             $db: $db,
-            $table: $db.randomSetupsLists,
+            $table: $db.randomLists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -12319,9 +13384,9 @@ class $$SavedSetupsListItemsTableFilterComposer
   }
 }
 
-class $$SavedSetupsListItemsTableOrderingComposer
-    extends Composer<_$AppDatabase, $SavedSetupsListItemsTable> {
-  $$SavedSetupsListItemsTableOrderingComposer({
+class $$SavedSetupsListsItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedSetupsListsItemsTable> {
+  $$SavedSetupsListsItemsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -12361,20 +13426,20 @@ class $$SavedSetupsListItemsTableOrderingComposer
     return composer;
   }
 
-  $$RandomSetupsListsTableOrderingComposer get randomSetupListId {
-    final $$RandomSetupsListsTableOrderingComposer composer = $composerBuilder(
+  $$RandomListsTableOrderingComposer get randomListId {
+    final $$RandomListsTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.randomSetupListId,
-      referencedTable: $db.randomSetupsLists,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$RandomSetupsListsTableOrderingComposer(
+          }) => $$RandomListsTableOrderingComposer(
             $db: $db,
-            $table: $db.randomSetupsLists,
+            $table: $db.randomLists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -12408,9 +13473,9 @@ class $$SavedSetupsListItemsTableOrderingComposer
   }
 }
 
-class $$SavedSetupsListItemsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $SavedSetupsListItemsTable> {
-  $$SavedSetupsListItemsTableAnnotationComposer({
+class $$SavedSetupsListsItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedSetupsListsItemsTable> {
+  $$SavedSetupsListsItemsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -12446,27 +13511,26 @@ class $$SavedSetupsListItemsTableAnnotationComposer
     return composer;
   }
 
-  $$RandomSetupsListsTableAnnotationComposer get randomSetupListId {
-    final $$RandomSetupsListsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.randomSetupListId,
-          referencedTable: $db.randomSetupsLists,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
+  $$RandomListsTableAnnotationComposer get randomListId {
+    final $$RandomListsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.randomListId,
+      referencedTable: $db.randomLists,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RandomListsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.randomLists,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
                 $removeJoinBuilderFromRootComposer,
-              }) => $$RandomSetupsListsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.randomSetupsLists,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
+          ),
+    );
     return composer;
   }
 
@@ -12494,69 +13558,72 @@ class $$SavedSetupsListItemsTableAnnotationComposer
   }
 }
 
-class $$SavedSetupsListItemsTableTableManager
+class $$SavedSetupsListsItemsTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $SavedSetupsListItemsTable,
-          SavedSetupsListItem,
-          $$SavedSetupsListItemsTableFilterComposer,
-          $$SavedSetupsListItemsTableOrderingComposer,
-          $$SavedSetupsListItemsTableAnnotationComposer,
-          $$SavedSetupsListItemsTableCreateCompanionBuilder,
-          $$SavedSetupsListItemsTableUpdateCompanionBuilder,
-          (SavedSetupsListItem, $$SavedSetupsListItemsTableReferences),
-          SavedSetupsListItem,
+          $SavedSetupsListsItemsTable,
+          SavedSetupsListsItem,
+          $$SavedSetupsListsItemsTableFilterComposer,
+          $$SavedSetupsListsItemsTableOrderingComposer,
+          $$SavedSetupsListsItemsTableAnnotationComposer,
+          $$SavedSetupsListsItemsTableCreateCompanionBuilder,
+          $$SavedSetupsListsItemsTableUpdateCompanionBuilder,
+          (SavedSetupsListsItem, $$SavedSetupsListsItemsTableReferences),
+          SavedSetupsListsItem,
           PrefetchHooks Function({
             bool savedSetupId,
-            bool randomSetupListId,
+            bool randomListId,
             bool listItemsId,
           })
         > {
-  $$SavedSetupsListItemsTableTableManager(
+  $$SavedSetupsListsItemsTableTableManager(
     _$AppDatabase db,
-    $SavedSetupsListItemsTable table,
+    $SavedSetupsListsItemsTable table,
   ) : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$SavedSetupsListItemsTableFilterComposer($db: db, $table: table),
+              $$SavedSetupsListsItemsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
           createOrderingComposer: () =>
-              $$SavedSetupsListItemsTableOrderingComposer(
+              $$SavedSetupsListsItemsTableOrderingComposer(
                 $db: db,
                 $table: table,
               ),
           createComputedFieldComposer: () =>
-              $$SavedSetupsListItemsTableAnnotationComposer(
+              $$SavedSetupsListsItemsTableAnnotationComposer(
                 $db: db,
                 $table: table,
               ),
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<int> savedSetupId = const Value.absent(),
-                Value<int> randomSetupListId = const Value.absent(),
+                Value<int?> savedSetupId = const Value.absent(),
+                Value<int> randomListId = const Value.absent(),
                 Value<int> listItemsId = const Value.absent(),
                 Value<int> position = const Value.absent(),
-              }) => SavedSetupsListItemsCompanion(
+              }) => SavedSetupsListsItemsCompanion(
                 id: id,
                 savedSetupId: savedSetupId,
-                randomSetupListId: randomSetupListId,
+                randomListId: randomListId,
                 listItemsId: listItemsId,
                 position: position,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                required int savedSetupId,
-                required int randomSetupListId,
+                Value<int?> savedSetupId = const Value.absent(),
+                required int randomListId,
                 required int listItemsId,
                 required int position,
-              }) => SavedSetupsListItemsCompanion.insert(
+              }) => SavedSetupsListsItemsCompanion.insert(
                 id: id,
                 savedSetupId: savedSetupId,
-                randomSetupListId: randomSetupListId,
+                randomListId: randomListId,
                 listItemsId: listItemsId,
                 position: position,
               ),
@@ -12564,14 +13631,14 @@ class $$SavedSetupsListItemsTableTableManager
               .map(
                 (e) => (
                   e.readTable(table),
-                  $$SavedSetupsListItemsTableReferences(db, table, e),
+                  $$SavedSetupsListsItemsTableReferences(db, table, e),
                 ),
               )
               .toList(),
           prefetchHooksCallback:
               ({
                 savedSetupId = false,
-                randomSetupListId = false,
+                randomListId = false,
                 listItemsId = false,
               }) {
                 return PrefetchHooks(
@@ -12599,26 +13666,26 @@ class $$SavedSetupsListItemsTableTableManager
                                     currentTable: table,
                                     currentColumn: table.savedSetupId,
                                     referencedTable:
-                                        $$SavedSetupsListItemsTableReferences
+                                        $$SavedSetupsListsItemsTableReferences
                                             ._savedSetupIdTable(db),
                                     referencedColumn:
-                                        $$SavedSetupsListItemsTableReferences
+                                        $$SavedSetupsListsItemsTableReferences
                                             ._savedSetupIdTable(db)
                                             .id,
                                   )
                                   as T;
                         }
-                        if (randomSetupListId) {
+                        if (randomListId) {
                           state =
                               state.withJoin(
                                     currentTable: table,
-                                    currentColumn: table.randomSetupListId,
+                                    currentColumn: table.randomListId,
                                     referencedTable:
-                                        $$SavedSetupsListItemsTableReferences
-                                            ._randomSetupListIdTable(db),
+                                        $$SavedSetupsListsItemsTableReferences
+                                            ._randomListIdTable(db),
                                     referencedColumn:
-                                        $$SavedSetupsListItemsTableReferences
-                                            ._randomSetupListIdTable(db)
+                                        $$SavedSetupsListsItemsTableReferences
+                                            ._randomListIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -12629,10 +13696,10 @@ class $$SavedSetupsListItemsTableTableManager
                                     currentTable: table,
                                     currentColumn: table.listItemsId,
                                     referencedTable:
-                                        $$SavedSetupsListItemsTableReferences
+                                        $$SavedSetupsListsItemsTableReferences
                                             ._listItemsIdTable(db),
                                     referencedColumn:
-                                        $$SavedSetupsListItemsTableReferences
+                                        $$SavedSetupsListsItemsTableReferences
                                             ._listItemsIdTable(db)
                                             .id,
                                   )
@@ -12650,21 +13717,21 @@ class $$SavedSetupsListItemsTableTableManager
       );
 }
 
-typedef $$SavedSetupsListItemsTableProcessedTableManager =
+typedef $$SavedSetupsListsItemsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $SavedSetupsListItemsTable,
-      SavedSetupsListItem,
-      $$SavedSetupsListItemsTableFilterComposer,
-      $$SavedSetupsListItemsTableOrderingComposer,
-      $$SavedSetupsListItemsTableAnnotationComposer,
-      $$SavedSetupsListItemsTableCreateCompanionBuilder,
-      $$SavedSetupsListItemsTableUpdateCompanionBuilder,
-      (SavedSetupsListItem, $$SavedSetupsListItemsTableReferences),
-      SavedSetupsListItem,
+      $SavedSetupsListsItemsTable,
+      SavedSetupsListsItem,
+      $$SavedSetupsListsItemsTableFilterComposer,
+      $$SavedSetupsListsItemsTableOrderingComposer,
+      $$SavedSetupsListsItemsTableAnnotationComposer,
+      $$SavedSetupsListsItemsTableCreateCompanionBuilder,
+      $$SavedSetupsListsItemsTableUpdateCompanionBuilder,
+      (SavedSetupsListsItem, $$SavedSetupsListsItemsTableReferences),
+      SavedSetupsListsItem,
       PrefetchHooks Function({
         bool savedSetupId,
-        bool randomSetupListId,
+        bool randomListId,
         bool listItemsId,
       })
     >;
@@ -19548,20 +20615,22 @@ typedef $$RatingsGamesTableProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $$GamesTableTableManager get games =>
+      $$GamesTableTableManager(_db, _db.games);
+  $$ComponentTypesTableTableManager get componentTypes =>
+      $$ComponentTypesTableTableManager(_db, _db.componentTypes);
+  $$GameComponentsTableTableManager get gameComponents =>
+      $$GameComponentsTableTableManager(_db, _db.gameComponents);
+  $$RandomSetupsTableTableManager get randomSetups =>
+      $$RandomSetupsTableTableManager(_db, _db.randomSetups);
   $$RandomListsTableTableManager get randomLists =>
       $$RandomListsTableTableManager(_db, _db.randomLists);
   $$ListItemsTableTableManager get listItems =>
       $$ListItemsTableTableManager(_db, _db.listItems);
-  $$GamesTableTableManager get games =>
-      $$GamesTableTableManager(_db, _db.games);
-  $$RandomSetupsTableTableManager get randomSetups =>
-      $$RandomSetupsTableTableManager(_db, _db.randomSetups);
-  $$RandomSetupsListsTableTableManager get randomSetupsLists =>
-      $$RandomSetupsListsTableTableManager(_db, _db.randomSetupsLists);
   $$SavedSetupsTableTableManager get savedSetups =>
       $$SavedSetupsTableTableManager(_db, _db.savedSetups);
-  $$SavedSetupsListItemsTableTableManager get savedSetupsListItems =>
-      $$SavedSetupsListItemsTableTableManager(_db, _db.savedSetupsListItems);
+  $$SavedSetupsListsItemsTableTableManager get savedSetupsListsItems =>
+      $$SavedSetupsListsItemsTableTableManager(_db, _db.savedSetupsListsItems);
   $$ArtistsTableTableManager get artists =>
       $$ArtistsTableTableManager(_db, _db.artists);
   $$CountingTemplatesTableTableManager get countingTemplates =>

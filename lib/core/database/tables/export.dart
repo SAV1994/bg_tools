@@ -1,9 +1,10 @@
+export 'randomizer/component_type.dart';
+export 'randomizer/game_component.dart';
 export 'randomizer/list_item.dart';
 export 'randomizer/random_list.dart';
 export 'randomizer/random_setup.dart';
-export 'randomizer/random_setups_lists.dart';
 export 'randomizer/saved_setup.dart';
-export 'randomizer/saved_setups_list_items.dart';
+export 'randomizer/saved_setups_lists_items.dart';
 export 'artist.dart';
 export 'counting_template.dart';
 export 'designer.dart';

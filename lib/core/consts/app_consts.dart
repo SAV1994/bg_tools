@@ -21,7 +21,7 @@ String getLoadingMsg() {
 }
 
 // Месяцы
-enum MonthsEnum {
+enum MonthEnum {
   january(1, 'Январь'),
   february(2, 'Февраль'),
   march(3, 'Март'),
@@ -38,13 +38,32 @@ enum MonthsEnum {
   final int id;
   final String label;
 
-  const MonthsEnum(this.id, this.label);
+  const MonthEnum(this.id, this.label);
 
   // Получить enum по id
-  static MonthsEnum fromId(int id) {
-    return MonthsEnum.values.firstWhere(
+  static MonthEnum fromId(int id) {
+    return MonthEnum.values.firstWhere(
       (e) => e.id == id,
-      orElse: () => MonthsEnum.january,
+      orElse: () => MonthEnum.january,
+    );
+  }
+}
+
+// Типы изображений
+enum ImageEnum {
+  game(1, 'Игра'),
+  component(2, 'Компонент');
+
+  final int id;
+  final String label;
+
+  const ImageEnum(this.id, this.label);
+
+  // Получить enum по id
+  static ImageEnum fromId(int id) {
+    return ImageEnum.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => ImageEnum.game,
     );
   }
 }

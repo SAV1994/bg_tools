@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/features/counters/screens/export.dart';
+import 'package:bg_tools/features/random_setup/screens/export.dart';
 import 'package:bg_tools/features/randomizer/screens/export.dart';
 import 'package:bg_tools/features/session_runner/screens/roles_management_screen.dart';
 import 'package:bg_tools/features/session_runner/step_wizard.dart';
@@ -158,6 +159,47 @@ final GoRouter goRouter = GoRouter(
             gamesCountingTemplatesId: int.parse(
               state.pathParameters['gamesCountingTemplatesId']!,
             ),
+          ),
+    ),
+
+    // Рандомный сетап
+    GoRoute(
+      path: '/games/:gameId/random-setups',
+      name: 'random-setups-menu',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomSetupMenuScreen(
+            gameId: int.parse(state.pathParameters['gameId']!),
+          ),
+    ),
+    GoRoute(
+      path: '/games/:gameId/random-setups/components',
+      name: 'random-setups-components',
+      builder: (BuildContext context, GoRouterState state) =>
+          ComponentsScreen(gameId: int.parse(state.pathParameters['gameId']!)),
+    ),
+    GoRoute(
+      path: '/games/:gameId/random-setups/setup-configs',
+      name: 'random-setups-setup-configs',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomSetupConfigScreen(
+            gameId: int.parse(state.pathParameters['gameId']!),
+          ),
+    ),
+    GoRoute(
+      path: '/games/:gameId/random-setups/setup-configs/add',
+      name: 'random-setups-setup-add',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomSetupConfigFormScreen(
+            gameId: int.parse(state.pathParameters['gameId']!),
+          ),
+    ),
+    GoRoute(
+      path: '/games/:gameId/random-setups/setup-configs/:setupId/update',
+      name: 'random-setups-setup-update',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomSetupConfigFormScreen(
+            gameId: int.parse(state.pathParameters['gameId']!),
+            randomSetupId: int.parse(state.pathParameters['setupId']!),
           ),
     ),
 

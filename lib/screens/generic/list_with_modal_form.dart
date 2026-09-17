@@ -324,9 +324,12 @@ class _ModalFormState extends ConsumerState<ModalForm> {
                           widget.config.daoProvier,
                           mounted,
                           instance,
-                          () => ref
-                              .read(widget.config.dataProvider.notifier)
-                              .refresh(),
+                          () {
+                            Navigator.pop(context, true);
+                            ref
+                                .read(widget.config.dataProvider.notifier)
+                                .refresh();
+                          },
                         );
                       },
                     ),

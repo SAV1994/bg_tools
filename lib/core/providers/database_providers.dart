@@ -64,3 +64,18 @@ final tagDaoProvider = Provider<TagDao>((ref) {
 final randomListDaoProvider = Provider<RandomListDao>((ref) {
   return ref.read(databaseProvider).randomListDao;
 });
+
+// Тип компонентов (ДАО)
+final componentTypeDaoProvider = Provider<ComponentTypeDao>((ref) {
+  return ref.read(databaseProvider).componentTypeDao;
+});
+
+// Компонент (ДАО)
+final componentDaoProvider = Provider<ComponentDao>((ref) {
+  return ref.read(databaseProvider).componentDao;
+});
+
+// Сетап (ДАО)
+final randomSetupDaoProvider = Provider<RandomSetupDao>((ref) {
+  return ref.read(databaseProvider).randomSetupDao;
+});

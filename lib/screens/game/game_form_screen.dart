@@ -309,6 +309,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                             setState(() => _imagePath = path);
                           },
                           fieldName: 'Изображение с игрой',
+                          imageType: ImageEnum.game,
                         ),
                         TextFormField(
                           controller: _yearController,

@@ -83,7 +83,10 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                     noteDaoProvider,
                     mounted,
                     note,
-                    () => ref.read(notesPaginatedProvider.notifier).refresh(),
+                    () {
+                      Navigator.pop(context, true);
+                      ref.read(notesPaginatedProvider.notifier).refresh();
+                    },
                   );
                 },
                 tooltip: 'Удалить',

@@ -101,12 +101,27 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (game.isStandalone)
-              ElevatedButton(
-                onPressed: () => context.pushNamed(
-                  'games-add',
-                  queryParameters: {'baseGameId': game.id.toString()},
-                ),
-                child: Text('Добавить дополнение'),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => context.pushNamed(
+                      'games-add',
+                      queryParameters: {'baseGameId': game.id.toString()},
+                    ),
+                    icon: Icon(addBtnIcon),
+                    label: Text('Допонение'),
+                  ),
+
+                  Spacer(),
+
+                  ElevatedButton(
+                    onPressed: () => context.pushNamed(
+                      'random-setups-menu',
+                      pathParameters: {'gameId': game.id.toString()},
+                    ),
+                    child: Text('Сетапы'),
+                  ),
+                ],
               ),
 
             // Заголовок с именем
@@ -406,6 +421,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                     mounted,
                     game,
                     () {
+                      Navigator.pop(context, true);
                       ref.invalidate(gamingSessionFullDataProvider);
                       ref.read(gamesPaginatedProvider.notifier).refresh();
                     },

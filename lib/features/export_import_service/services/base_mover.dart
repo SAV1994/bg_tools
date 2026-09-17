@@ -29,14 +29,38 @@ abstract class BaseMover {
   Future<void> exportImages(Directory exportDir) async {
     final List<Game> games = await getExportGames();
 
-    final imagesDir = Directory(path.join(exportDir.path, 'images'));
-    await imagesDir.create();
+    final gamesImagesDir = Directory(path.join(exportDir.path, 'games_images'));
+    await gamesImagesDir.create();
 
     for (final game in games) {
       if (game.imagePath != null && game.imagePath!.isNotEmpty) {
         final sourceFile = await ImageService.getImageFile(game.imagePath!);
         await sourceFile!.copy(
-          path.join(imagesDir.path, path.basename(game.imagePath!)),
+          path.join(gamesImagesDir.path, path.basename(game.imagePath!)),
+        );
+      }
+    }
+
+    final database = container.read(databaseProvider);
+    final List<GameComponent> components = await database
+        .select(database.gameComponents)
+        .get();
+
+    final componentsImagesDir = Directory(
+      path.join(exportDir.path, 'components_images'),
+    );
+    await componentsImagesDir.create();
+
+    for (final component in components) {
+      if (component.imagePath != null && component.imagePath!.isNotEmpty) {
+        final sourceFile = await ImageService.getImageFile(
+          component.imagePath!,
+        );
+        await sourceFile!.copy(
+          path.join(
+            componentsImagesDir.path,
+            path.basename(component.imagePath!),
+          ),
         );
       }
     }
@@ -59,14 +83,30 @@ abstract class BaseMover {
     }
 
     // 2. Копируем изображения
-    final imagesDir = Directory(path.join(importDir.path, 'images'));
+    final gamesImagesDir = Directory(path.join(importDir.path, 'games_images'));
     final Map<String, String> newImagePaths = {};
 
-    if (await imagesDir.exists()) {
-      final imageFiles = await imagesDir.list().toList();
+    if (await gamesImagesDir.exists()) {
+      final imageFiles = await gamesImagesDir.list().toList();
       for (final imageFile in imageFiles) {
         if (imageFile is File) {
-          final newPath = await saveImportedImage(imageFile);
+          final newPath = await saveImportedImage(imageFile, 'games_images');
+          newImagePaths[path.basename(imageFile.path)] = newPath;
+        }
+      }
+    }
+
+    final componentsImagesDir = Directory(
+      path.join(importDir.path, 'components_images'),
+    );
+    if (await componentsImagesDir.exists()) {
+      final imageFiles = await componentsImagesDir.list().toList();
+      for (final imageFile in imageFiles) {
+        if (imageFile is File) {
+          final newPath = await saveImportedImage(
+            imageFile,
+            'components_images',
+          );
           newImagePaths[path.basename(imageFile.path)] = newPath;
         }
       }
@@ -84,9 +124,9 @@ abstract class BaseMover {
   );
 
   // Сохранение импортированного изображения
-  Future<String> saveImportedImage(File imageFile) async {
+  Future<String> saveImportedImage(File imageFile, String folderName) async {
     final appDir = await getExternalStorageDirectory();
-    final imagesDir = Directory(path.join(appDir!.path, 'game_images'));
+    final imagesDir = Directory(path.join(appDir!.path, folderName));
     if (!await imagesDir.exists()) {
       await imagesDir.create(recursive: true);
     }

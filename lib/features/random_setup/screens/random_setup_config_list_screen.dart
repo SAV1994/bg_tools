@@ -4,28 +4,46 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:bg_tools/core/dataclasses/rating_dataclasses.dart';
+import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
-import 'package:bg_tools/screens/game/mixins/export.dart';
 
-class RatingGamesListScreen extends ConsumerStatefulWidget {
-  const RatingGamesListScreen({super.key});
+class RandomSetupConfigScreen extends ConsumerStatefulWidget {
+  final int gameId;
+
+  const RandomSetupConfigScreen({required this.gameId, super.key});
 
   @override
-  ConsumerState<RatingGamesListScreen> createState() =>
-      _RatingGamesListScreenState();
+  ConsumerState<RandomSetupConfigScreen> createState() =>
+      _RandomSetupConfigScreenState();
 }
 
-class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
-    with UpdateIsFaforiteMixin {
+class _RandomSetupConfigScreenState
+    extends ConsumerState<RandomSetupConfigScreen> {
+  Game? _game;
   bool _isSearchOpen = false;
-
   // Контроллеры
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  // Загрузка
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() => _isLoading = true);
+
+    final GameDao gameDao = ref.read(gameDaoProvider);
+    _game = await gameDao.getSingle(widget.gameId);
+
+    setState(() => _isLoading = false);
+  }
 
   @override
   void dispose() {
@@ -36,8 +54,12 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ratingGamesAsync = ref.watch(ratingsGamesPaginatedProvider);
-    final notifier = ref.read(ratingsGamesPaginatedProvider.notifier);
+    if (_isLoading) {
+      return LoadingScreen();
+    }
+
+    final randomSetupsAsync = ref.watch(randomSetupPaginatedProvider);
+    final notifier = ref.read(randomSetupPaginatedProvider.notifier);
 
     return PopScope(
       canPop: true,
@@ -53,7 +75,7 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                     controller: _searchController,
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: 'Поиск игр...',
+                      hintText: 'Поиск сетапа...',
                       border: InputBorder.none,
                       hintStyle: TextStyle(color: textColor),
                       contentPadding: const EdgeInsets.symmetric(),
@@ -61,8 +83,12 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : Icon(topsIcon, color: goldColor),
+                : Tooltip(
+                    message: _game!.name,
+                    child: const Icon(setupsConfigIcon, size: 25),
+                  ),
           ),
+
           actions: [
             IconButton(
               icon: Icon(
@@ -81,7 +107,6 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
             ),
             if (!_isSearchOpen) ...[
               IconButton(
-                visualDensity: VisualDensity(horizontal: -4.0),
                 icon: Icon(
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
@@ -90,82 +115,44 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                 ),
                 onPressed: () => notifier.toggleOrdering(),
               ),
-
               IconButton(
-                icon: const Icon(delIcon, color: redColor),
-                onPressed: () {
-                  final rating = ratingGamesAsync.value?[0].rating;
-                  buildDelModal(
-                    context,
-                    ref,
-                    ratingDaoProvider,
-                    mounted,
-                    rating,
-                    () {
-                      Navigator.pop(context, true);
-                      ref.read(ratingsPaginatedProvider.notifier).refresh();
-                      ref
-                          .read(ratingsGamesPaginatedProvider.notifier)
-                          .refresh();
-                    },
-                  );
-                },
-              ),
-
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: const Text('Выйти', style: TextStyle(color: redColor)),
+                icon: Icon(addBtnIcon),
+                onPressed: () => context.pushNamed(
+                  'random-setups-setup-add',
+                  pathParameters: {'gameId': widget.gameId.toString()},
+                ),
               ),
             ],
           ],
         ),
         body: Column(
           children: [
-            // Список
             Expanded(
-              child: ratingGamesAsync.when(
-                data: (ratingGamesData) {
-                  List<RatingGameData> ratingGames = ratingGamesData[0].games;
+              child: randomSetupsAsync.when(
+                data: (randomSetups) {
                   // Если данных нет
-                  if (ratingGames.isEmpty) {
+                  if (randomSetups.isEmpty) {
                     return EmptyListScreen();
                   }
+
                   return Scrollbar(
                     controller: _scrollController,
                     thumbVisibility: true,
                     child: ListView.builder(
                       controller: _scrollController,
-                      itemCount: ratingGames.length,
+                      itemCount: randomSetups.length,
                       itemBuilder: (context, index) {
-                        final RatingGameData ratingGame = ratingGames[index];
-
-                        String gameInfo = ratingGame.game.isInCollection
-                            ? '🟢 '
-                            : '🔴 ';
-
-                        gameInfo +=
-                            '${getPlayersCountStr(ratingGame.game.minPlayers, ratingGame.game.maxPlayers)} [${ratingGame.score}]';
-
+                        final randomSetup = randomSetups[index];
                         return Card(
                           child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: firstColor,
-                              child: Text(
-                                ratingGame.place.toString(),
-                                style: TextStyle(color: secondColor),
-                              ),
-                            ),
-                            title: Text(ratingGame.game.name),
-                            subtitle: Text(gameInfo),
-                            trailing: Icon(Icons.arrow_forward_ios),
+                            leading: Icon(setupsConfigIcon),
+                            title: Text(randomSetup.name),
+                            trailing: Icon(Icons.edit),
                             onTap: () => context.pushNamed(
-                              'games-detail',
+                              'random-setups-setup-update',
                               pathParameters: {
-                                'gameId': ratingGame.game.id.toString(),
+                                'gameId': widget.gameId.toString(),
+                                'setupId': randomSetup.id.toString(),
                               },
                             ),
                           ),
@@ -175,13 +162,11 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                   );
                 },
                 loading: () => LoadingScreen(),
-                error: (err, _) {
-                  return ErrorNotification();
-                },
+                error: (err, _) => ErrorNotification(),
               ),
             ),
-            // Панель пагинации (всегда внизу)
-            if (ratingGamesAsync.hasValue && ratingGamesAsync.value!.isNotEmpty)
+            if (randomSetupsAsync.hasValue &&
+                randomSetupsAsync.value!.isNotEmpty)
               PaginationPanel(notifier: notifier),
           ],
         ),

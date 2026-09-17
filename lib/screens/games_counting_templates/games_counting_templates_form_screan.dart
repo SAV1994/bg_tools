@@ -1061,6 +1061,7 @@ class _GamesCountingTemplatesModalFormState
                   mounted,
                   gamesCountingTemplatesData!.gamesCountingTemplate,
                   () {
+                    Navigator.pop(context, true);
                     final notifier = ref.read(
                       gamesCountingTemplatesPaginatedProvider.notifier,
                     );

@@ -1,20 +1,29 @@
 // services/image_service.dart
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
+
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+
+import 'package:bg_tools/core/consts/export.dart';
 
 // Сервис работы с изображениями
 class ImageService {
   static final ImagePicker _picker = ImagePicker();
-  static const String _imageFolder = 'game_images';
+  static const Map<ImageEnum, String> _imageFolderMap = {
+    ImageEnum.game: 'games_images',
+    ImageEnum.component: 'components_images',
+  };
 
   // Выбор изображения из галереи
-  static Future<File?> pickImageFromGallery() async {
+  static Future<File?> pickImageFromGallery({
+    required ImageEnum imageType,
+  }) async {
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -28,7 +37,10 @@ class ImageService {
       if (croppedFile == null) return null;
 
       // Сжимаем и сохраняем
-      return await compressAndSaveImage(croppedFile);
+      return await compressAndSaveImage(
+        imageType: imageType,
+        imageFile: croppedFile,
+      );
     } catch (e) {
       print('Ошибка выбора изображения: $e');
       return null;
@@ -36,7 +48,9 @@ class ImageService {
   }
 
   // Выбор изображения из камеры
-  static Future<File?> pickImageFromCamera() async {
+  static Future<File?> pickImageFromCamera({
+    required ImageEnum imageType,
+  }) async {
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.camera,
@@ -48,7 +62,10 @@ class ImageService {
       final croppedFile = await cropImage(File(image.path));
       if (croppedFile == null) return null;
 
-      return await compressAndSaveImage(croppedFile);
+      return await compressAndSaveImage(
+        imageType: imageType,
+        imageFile: croppedFile,
+      );
     } catch (e) {
       print('Ошибка выбора изображения: $e');
       return null;
@@ -81,11 +98,16 @@ class ImageService {
   }
 
   // Сжатие и сохранение изображения
-  static Future<File?> compressAndSaveImage(File imageFile) async {
+  static Future<File?> compressAndSaveImage({
+    required ImageEnum imageType,
+    required File imageFile,
+  }) async {
     try {
       // Получаем директорию для приложения
       final appDir = await getExternalStorageDirectory();
-      final gameImagesDir = Directory(path.join(appDir!.path, _imageFolder));
+      final gameImagesDir = Directory(
+        path.join(appDir!.path, _imageFolderMap[imageType]),
+      );
 
       // Создаем папку если не существует
       if (!await gameImagesDir.exists()) {

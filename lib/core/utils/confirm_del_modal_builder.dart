@@ -37,8 +37,7 @@ void buildDelModal(
               if (afterDel != null) {
                 afterDel();
               }
-              Navigator.pop(context); // Закрыть диалог
-              Navigator.pop(context, true); // Вернуться назад
+              Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Запись "$instName" удалена')),
               );

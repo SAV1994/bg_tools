@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:flutter_exit_app/flutter_exit_app.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -166,7 +165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('Настройки'),
                       dense: true,
                     ),
-                    onTap: () => FlutterExitApp.exitApp(),
+                    onTap: () => context.pushNamed('settings'),
                   ),
 
                   PopupMenuItem(
@@ -179,7 +178,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('Выйти'),
                       dense: true,
                     ),
-                    onTap: () => SystemNavigator.pop(),
+                    onTap: () => FlutterExitApp.exitApp(),
                   ),
                 ],
               );

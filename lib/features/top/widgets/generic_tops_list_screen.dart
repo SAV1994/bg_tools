@@ -187,7 +187,7 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
                                     onPressed: () {},
                                   ),
                                   title: Text(
-                                    '${ratingData.rating.year}г. ${MonthsEnum.fromId(ratingData.rating.month).label}',
+                                    '${ratingData.rating.year}г. ${MonthEnum.fromId(ratingData.rating.month).label}',
                                     style: TextStyle(
                                       color: ratingData.rating.isActual
                                           ? goldColor

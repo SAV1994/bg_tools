@@ -142,6 +142,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
                   mounted,
                   gamer,
                   () {
+                    Navigator.pop(context, true);
                     ref.invalidate(gamingSessionFullDataProvider);
                     ref.read(gamersPaginatedProvider.notifier).refresh();
                   },

@@ -670,6 +670,7 @@ class _GamingSessionDetailScreenState
                   mounted,
                   gamingSession,
                   () {
+                    Navigator.pop(context, true);
                     ref
                         .read(gamingSessionsPaginatedProvider.notifier)
                         .refresh();

@@ -96,9 +96,12 @@ class _CountingTemplateDetailScreenState
                   countingTemplateDaoProvider,
                   mounted,
                   template,
-                  () => ref
-                      .read(countingTemplatesPaginatedProvider.notifier)
-                      .refresh(),
+                  () {
+                    Navigator.pop(context, true);
+                    ref
+                        .read(countingTemplatesPaginatedProvider.notifier)
+                        .refresh();
+                  },
                 );
               }
             },
