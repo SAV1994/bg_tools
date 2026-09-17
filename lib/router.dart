@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/features/counters/screens/export.dart';
+import 'package:bg_tools/features/random_setup/screens/export.dart';
 import 'package:bg_tools/features/randomizer/screens/export.dart';
 import 'package:bg_tools/features/session_runner/screens/roles_management_screen.dart';
 import 'package:bg_tools/features/session_runner/step_wizard.dart';
@@ -159,6 +160,14 @@ final GoRouter goRouter = GoRouter(
               state.pathParameters['gamesCountingTemplatesId']!,
             ),
           ),
+    ),
+
+    // Рандомный сетап
+    GoRoute(
+      path: '/games/:gameId/random-setups',
+      name: 'random-setups-list',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomSetupScreen(gameId: int.parse(state.pathParameters['gameId']!)),
     ),
 
     // Игровые сессии

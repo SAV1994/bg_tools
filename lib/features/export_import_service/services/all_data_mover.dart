@@ -371,7 +371,7 @@ class AllDataMover extends BaseMover {
                 isInCollection: Value(gameJson['isInCollection']),
                 isFavorite: Value(gameJson['isFavorite']),
                 rating: Value(gameJson['rating']),
-                isStandalone: Value(gameJson['isStandalone'] ?? true),
+                isStandalone: Value(gameJson['isStandalone']),
                 imagePath: Value(imagePath),
               ),
             );
@@ -505,7 +505,7 @@ class AllDataMover extends BaseMover {
       }
 
       final randomListsIds = <int, int>{};
-      for (final randomListJson in data['randomLists'] ?? []) {
+      for (final randomListJson in data['randomLists']) {
         final id = await database
             .into(database.randomLists)
             .insert(
@@ -608,7 +608,7 @@ class AllDataMover extends BaseMover {
       }
 
       final randomSetupsIds = <int, int>{};
-      for (final randomSetupJson in data['randomSetups'] ?? []) {
+      for (final randomSetupJson in data['randomSetups']) {
         final id = await database
             .into(database.randomSetups)
             .insert(
@@ -621,7 +621,7 @@ class AllDataMover extends BaseMover {
       }
 
       final randomSetupsListsIds = <int, int>{};
-      for (final randomSetupsListJson in data['randomSetupsLists'] ?? []) {
+      for (final randomSetupsListJson in data['randomSetupsLists']) {
         final id = await database
             .into(database.randomSetupsLists)
             .insert(
@@ -641,7 +641,7 @@ class AllDataMover extends BaseMover {
       }
 
       final listItemsIds = <int, int>{};
-      for (final listItemJson in data['listItems'] ?? []) {
+      for (final listItemJson in data['listItems']) {
         // final String? imagePath = listItemJson['imagePath'] != null
         //     ? newImagePaths[path.basename(listItemJson['imagePath'])]
         //     : null;
@@ -662,7 +662,7 @@ class AllDataMover extends BaseMover {
       }
 
       final savedSetupsIds = <int, int>{};
-      for (final savedSetupJson in data['savedSetups'] ?? []) {
+      for (final savedSetupJson in data['savedSetups']) {
         final id = await database
             .into(database.savedSetups)
             .insert(
@@ -677,8 +677,7 @@ class AllDataMover extends BaseMover {
         savedSetupsIds[savedSetupJson['id']] = id;
       }
 
-      for (final savedSetupsListItemJson
-          in data['savedSetupsListItems'] ?? []) {
+      for (final savedSetupsListItemJson in data['savedSetupsListItems']) {
         await database
             .into(database.savedSetupsListItems)
             .insert(

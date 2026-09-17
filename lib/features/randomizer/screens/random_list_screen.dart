@@ -94,7 +94,7 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
     if (randomList != null) {
       final randomListDao = ref.read(randomListDaoProvider);
       RandomListData? randomListData = await randomListDao.get(randomList.id);
-      for (ListItemData item in randomListData!.items) {
+      for (ListItemMutableData item in randomListData!.items) {
         items.add(
           RandomizerItem(
             id: item.id!,
@@ -174,9 +174,11 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
       isUnique: Value(_isUnique),
       itemsNum: Value(int.tryParse(_countController.text) ?? 1),
     );
-    List<ListItemData> items = [];
+    List<ListItemMutableData> items = [];
     for (final RandomizerItem item in _items) {
-      items.add(ListItemData(name: item.name, copiesNum: item.copiesNum));
+      items.add(
+        ListItemMutableData(name: item.name, copiesNum: item.copiesNum),
+      );
     }
 
     late RandomListData? randomListData;

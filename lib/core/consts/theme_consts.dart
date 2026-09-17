@@ -53,6 +53,8 @@ const IconData randTouchIcon = Icons.touch_app;
 
 const IconData rolesManagementIcon = Icons.folder_shared;
 
+const IconData randomSetupIcon = Icons.category;
+
 // Эмодзи
 const String winEmoji = '🏆';
 const String firstPlaceMedalEmoji = '🥇';

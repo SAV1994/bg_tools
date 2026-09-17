@@ -166,7 +166,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('Настройки'),
                       dense: true,
                     ),
-                    onTap: () => FlutterExitApp.exitApp(),
+                    onTap: () => context.pushNamed('settings'),
                   ),
 
                   PopupMenuItem(

@@ -1,10 +1,10 @@
-class ListItemData {
-  final int? id;
-  final String name;
-  final int copiesNum;
-  final String? imagePath;
+class ListItemMutableData {
+  int? id;
+  String name;
+  int copiesNum;
+  String? imagePath;
 
-  ListItemData({
+  ListItemMutableData({
     this.id,
     required this.name,
     required this.copiesNum,

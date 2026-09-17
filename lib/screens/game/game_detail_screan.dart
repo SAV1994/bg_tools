@@ -109,6 +109,14 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 child: Text('Добавить дополнение'),
               ),
 
+            ElevatedButton(
+              onPressed: () => context.pushNamed(
+                'random-setups-list',
+                pathParameters: {'gameId': game.id.toString()},
+              ),
+              child: Text('Сетапы'),
+            ),
+
             // Заголовок с именем
             Card(
               child: Padding(
