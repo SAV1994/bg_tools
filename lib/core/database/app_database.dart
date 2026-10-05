@@ -52,6 +52,7 @@ part 'app_database.g.dart';
     ComponentDao,
     RandomListDao,
     RandomSetupDao,
+    SavedSetupDao,
     RatingDao,
     TagDao,
   ],

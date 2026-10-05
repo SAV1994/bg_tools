@@ -202,6 +202,12 @@ final GoRouter goRouter = GoRouter(
             randomSetupId: int.parse(state.pathParameters['setupId']!),
           ),
     ),
+    GoRoute(
+      path: '/games/:gameId/random-setups/setups',
+      name: 'random-setups-setups',
+      builder: (BuildContext context, GoRouterState state) =>
+          RandomSetupScreen(gameId: int.parse(state.pathParameters['gameId']!)),
+    ),
 
     // Игровые сессии
     GoRoute(

@@ -32,7 +32,10 @@ class _RandomSetupMenuScreenState extends ConsumerState<RandomSetupMenuScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   MenuButton(
-                    onPressed: () => context.pushNamed('randomizer-number'),
+                    onPressed: () => context.pushNamed(
+                      'random-setups-setups',
+                      pathParameters: {'gameId': widget.gameId.toString()},
+                    ),
                     label: 'Случайный сетап',
                     icon: setupsIcon,
                   ),

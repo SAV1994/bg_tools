@@ -74,7 +74,10 @@ class _RandomSetupScreenState
 
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      _showError('Введите название сетапа');
+      setState(() {
+        _generalError = 'Введите название сетапа';
+        _isLoading = false;
+      });
       return;
     }
 

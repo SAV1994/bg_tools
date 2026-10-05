@@ -10,5 +10,6 @@ export 'randomizer/component/component_dao.dart';
 export 'randomizer/component_type/component_type_dao.dart';
 export 'randomizer/random_list/random_list_dao.dart';
 export 'randomizer/random_setup/random_setup_dao.dart';
+export 'randomizer/saved_setup/saved_setup_dao.dart';
 export 'rating/rating_dao.dart';
 export 'tag/tag_dao.dart';

@@ -31,6 +31,7 @@ const IconData notesIcon = Icons.receipt;
 const IconData topsIcon = Icons.star;
 const IconData countersIcon = Icons.add_to_queue;
 const IconData delIcon = Icons.delete_outline;
+const IconData editIcon = Icons.edit;
 const IconData saveIcon = Icons.save;
 const IconData importIcon = Icons.system_update_alt;
 const IconData exportIcon = Icons.save_alt;

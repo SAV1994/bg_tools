@@ -531,7 +531,7 @@ class AllDataMover extends BaseMover {
         int? gameId;
         if (randomListJson['gameId'] != null &&
             gamesIds[randomListJson['gameId']] != null) {
-          gameId = gamesIds[randomListJson['randomSetupId']];
+          gameId = gamesIds[randomListJson['gameId']];
         }
 
         final id = await database

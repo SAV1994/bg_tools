@@ -8391,6 +8391,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final RandomSetupDao randomSetupDao = RandomSetupDao(
     this as AppDatabase,
   );
+  late final SavedSetupDao savedSetupDao = SavedSetupDao(this as AppDatabase);
   late final RatingDao ratingDao = RatingDao(this as AppDatabase);
   late final TagDao tagDao = TagDao(this as AppDatabase);
   @override

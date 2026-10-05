@@ -79,3 +79,8 @@ final componentDaoProvider = Provider<ComponentDao>((ref) {
 final randomSetupDaoProvider = Provider<RandomSetupDao>((ref) {
   return ref.read(databaseProvider).randomSetupDao;
 });
+
+// Сохранённый Сетап (ДАО)
+final savedSetupDaoProvider = Provider<SavedSetupDao>((ref) {
+  return ref.read(databaseProvider).savedSetupDao;
+});
