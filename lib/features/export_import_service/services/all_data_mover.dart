@@ -587,7 +587,7 @@ class AllDataMover extends BaseMover {
         int? componentId;
         if (listItemJson['componentId'] != null &&
             gameComponentsIds[listItemJson['componentId']] != null) {
-          componentId = gamingSessionsIds[listItemJson['rootSessionId']];
+          componentId = gameComponentsIds[listItemJson['componentId']];
         }
 
         final id = await database

@@ -107,11 +107,13 @@ class RandomListDao extends DatabaseAccessor<AppDatabase>
   SimpleSelectStatement<$RandomListsTable, RandomList> _getBaseQuery({
     bool reverse = false,
   }) {
-    return select(randomLists)..orderBy([
-      (t) => OrderingTerm(
-        expression: t.name.collate(const Collate('UNICODE_CI')),
-        mode: reverse ? OrderingMode.desc : OrderingMode.asc,
-      ),
-    ]);
+    return select(randomLists)
+      ..where((rl) => rl.gameId.isNull())
+      ..orderBy([
+        (t) => OrderingTerm(
+          expression: t.name.collate(const Collate('UNICODE_CI')),
+          mode: reverse ? OrderingMode.desc : OrderingMode.asc,
+        ),
+      ]);
   }
 }
