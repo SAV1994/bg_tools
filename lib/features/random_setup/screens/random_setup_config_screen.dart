@@ -12,6 +12,7 @@ import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:bg_tools/core/dataclasses/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class RandomSetupConfigFormScreen extends ConsumerStatefulWidget {
@@ -388,10 +389,17 @@ class _RandomSetupScreenState
                       children: [
                         if (list != null)
                           TextButton(
-                            onPressed: () {
-                              setState(() {});
-                              Navigator.pop(context);
-                            },
+                            onPressed: () => buildDelModal(
+                              context,
+                              ref,
+                              randomListDaoProvider,
+                              mounted,
+                              list.randomList,
+                              () {
+                                Navigator.pop(context);
+                                _loadData();
+                              },
+                            ),
                             style: TextButton.styleFrom(
                               foregroundColor: Colors.red,
                             ),
@@ -1428,15 +1436,25 @@ class _RandomSetupScreenState
         ),
         actions: [
           if (widget.randomSetupId != null) ...[
-            if (_randomSetup!.randomLists.isNotEmpty)
-              IconButton(
-                icon: const Icon(Icons.play_arrow),
-                tooltip: 'Запустить генерацию',
-                onPressed: () {
-                  // Переход на экран генерации
-                  // Navigator.push(...);
+            IconButton(
+              icon: const Icon(delIcon, color: redColor),
+              tooltip: 'Удалить',
+              onPressed: () => buildDelModal(
+                context,
+                ref,
+                randomSetupDaoProvider,
+                mounted,
+                _randomSetup!.randomSetup,
+                () {
+                  final notifier = ref.read(
+                    randomSetupPaginatedProvider.notifier,
+                  );
+                  notifier.refresh();
+
+                  Navigator.pop(context);
                 },
               ),
+            ),
 
             IconButton(onPressed: _saveSetup, icon: Icon(saveIcon)),
           ],

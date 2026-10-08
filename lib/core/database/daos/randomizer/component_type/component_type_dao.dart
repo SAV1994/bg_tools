@@ -33,7 +33,7 @@ class ComponentTypeDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Удаление
-  Future<int> delInstance({required int componentTypeId}) async {
+  Future<int> delInstance(int componentTypeId) async {
     final List<GameComponent> components = await (select(
       gameComponents,
     )..where((gc) => gc.componentTypeId.equals(componentTypeId))).get();

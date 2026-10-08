@@ -11,6 +11,7 @@ import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:bg_tools/core/dataclasses/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/services/image_service.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class ComponentsScreen extends ConsumerStatefulWidget {
@@ -132,9 +133,7 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
     final ComponentTypeDao componentTypeDao = ref.read(
       componentTypeDaoProvider,
     );
-    await componentTypeDao.delInstance(
-      componentTypeId: _selectedType!.componentType.id,
-    );
+    await componentTypeDao.delInstance(_selectedType!.componentType.id);
     _selectedType = null;
 
     _updatedata();
@@ -167,15 +166,6 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
     );
 
     _modalController.clear();
-
-    _updatedata();
-  }
-
-  Future<void> _delComponent(GameComponent component) async {
-    setState(() => _isLoading = true);
-
-    final ComponentDao componentDao = ref.read(componentDaoProvider);
-    await componentDao.delInstance(component.id);
 
     _updatedata();
   }
@@ -347,10 +337,18 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
                   children: [
                     if (component != null)
                       IconButton(
-                        onPressed: () {
-                          _delComponent(component);
-                          Navigator.pop(context);
-                        },
+                        onPressed: () => buildDelModal(
+                          context,
+                          ref,
+                          componentDaoProvider,
+                          mounted,
+                          component,
+                          () {
+                            _updatedata();
+
+                            Navigator.pop(context);
+                          },
+                        ),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.red,
                         ),

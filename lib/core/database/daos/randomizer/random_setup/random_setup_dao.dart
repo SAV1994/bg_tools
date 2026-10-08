@@ -34,7 +34,7 @@ class RandomSetupDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Удаление
-  Future<int> delInstance({required int randomSetupId}) async {
+  Future<int> delInstance(int randomSetupId) async {
     return await (delete(
       randomSetups,
     )..where((rs) => rs.id.equals(randomSetupId))).go();
