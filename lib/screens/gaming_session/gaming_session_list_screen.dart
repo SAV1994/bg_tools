@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -162,7 +164,23 @@ class _GamingSessionListScreenState
 
                         return Card(
                           child: ListTile(
-                            leading: Icon(Icons.assignment),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: game.imagePath != null
+                                  ? Image.file(
+                                      File(game.imagePath!),
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, _, _) =>
+                                          ImagePlaceholder(),
+                                    )
+                                  : SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                      child: ImagePlaceholder(),
+                                    ),
+                            ),
                             title: Text(
                               game.name,
                               style: TextStyle(

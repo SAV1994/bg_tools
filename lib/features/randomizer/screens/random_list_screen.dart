@@ -200,6 +200,32 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
     setState(() => _selectedRandomList = randomListData!.randomList);
   }
 
+  // Копировать список
+  Future<void> _copyList() async {
+    final randomListDao = ref.read(randomListDaoProvider);
+
+    RandomListsCompanion randomListsCompanion = RandomListsCompanion(
+      name: Value('Копия "${_selectedRandomList!.name}"'),
+      type: Value(RandomListTypeEnum.list.id),
+      isUnique: Value(_selectedRandomList!.isUnique),
+      itemsNum: Value(_selectedRandomList!.itemsNum),
+    );
+
+    List<ListItemInputData> items = [];
+    for (final RandomizerItem item in _items) {
+      items.add(ListItemInputData(name: item.name, copiesNum: item.copiesNum));
+    }
+
+    late RandomListData? randomListData;
+    int randomListId = await randomListDao.create(
+      randomList: randomListsCompanion,
+      items: items,
+    );
+    randomListData = await randomListDao.get(randomListId);
+
+    setState(() => _selectedRandomList = randomListData!.randomList);
+  }
+
   // Редактировать элемент
   void _editItem(RandomizerItem item) {
     _editingId = item.id;
@@ -374,21 +400,6 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
           ],
         ),
         actions: [
-          if (_selectedRandomList != null)
-            IconButton(
-              icon: Icon(delIcon),
-              onPressed: () => buildDelModal(
-                context,
-                ref,
-                randomListDaoProvider,
-                mounted,
-                _selectedRandomList,
-                () {
-                  setState(() => _selectedRandomList = null);
-                },
-              ),
-            ),
-
           if (_items.isNotEmpty) ...[
             IconButton(
               icon: Icon(Icons.clear),
@@ -410,6 +421,24 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
                 _showModalDialog(saveForm: true);
               },
             ),
+
+            if (_selectedRandomList != null) ...[
+              IconButton(icon: Icon(copyIcon), onPressed: () => _copyList()),
+
+              IconButton(
+                icon: Icon(delIcon, color: redColor),
+                onPressed: () => buildDelModal(
+                  context,
+                  ref,
+                  randomListDaoProvider,
+                  mounted,
+                  _selectedRandomList,
+                  () {
+                    setState(() => _selectedRandomList = null);
+                  },
+                ),
+              ),
+            ],
           ],
 
           IconButton(icon: Icon(addBtnIcon), onPressed: () => _addItem()),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -211,14 +213,22 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                         return Card(
                           child: ListTile(
-                            leading: IconButton(
-                              icon: Icon(
-                                game.isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: game.isFavorite ? goldColor : textColor,
-                              ),
-                              onPressed: () => updateIsFavorite(game),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: game.imagePath != null
+                                  ? Image.file(
+                                      File(game.imagePath!),
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, _, _) =>
+                                          ImagePlaceholder(),
+                                    )
+                                  : SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                      child: ImagePlaceholder(),
+                                    ),
                             ),
                             title: Text(
                               game.name,
@@ -229,7 +239,15 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                               ),
                             ),
                             subtitle: Text(gameInfo),
-                            trailing: Icon(Icons.arrow_forward_ios),
+                            trailing: IconButton(
+                              icon: Icon(
+                                game.isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: game.isFavorite ? goldColor : textColor,
+                              ),
+                              onPressed: () => updateIsFavorite(game),
+                            ),
                             onTap: () => context.pushNamed(
                               'games-detail',
                               pathParameters: {'gameId': game.id.toString()},

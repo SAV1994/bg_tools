@@ -31,19 +31,24 @@ class _SelectionRandomizerScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   MenuButton(
-                    onPressed: () => context.pushNamed('randomizer-number'),
-                    label: 'Случайное число',
-                    icon: randNumIcon,
+                    onPressed: () => context.pushNamed('randomizer-touch'),
+                    label: 'Касания',
+                    icon: randTouchIcon,
                   ),
                   MenuButton(
-                    onPressed: () => context.pushNamed('randomizer-games'),
-                    label: 'Случайная игра',
-                    icon: gamesIcon,
+                    onPressed: () => context.pushNamed('randomizer-fate'),
+                    label: 'Жребий',
+                    icon: fateIcon,
                   ),
                   MenuButton(
                     onPressed: () => context.pushNamed('randomizer-list'),
                     label: 'Список',
                     icon: randomListIcon,
+                  ),
+                  MenuButton(
+                    onPressed: () => context.pushNamed('randomizer-games'),
+                    label: 'Случайная игра',
+                    icon: gamesIcon,
                   ),
                   MenuButton(
                     onPressed: () => context.pushNamed('randomizer-players'),
@@ -56,19 +61,14 @@ class _SelectionRandomizerScreenState
                     icon: randomIcon,
                   ),
                   MenuButton(
-                    onPressed: () => context.pushNamed('randomizer-fate'),
-                    label: 'Жребий',
-                    icon: fateIcon,
-                  ),
-                  MenuButton(
                     onPressed: () => context.pushNamed('randomizer-coin'),
                     label: 'Монетка',
                     icon: randCoinIcon,
                   ),
                   MenuButton(
-                    onPressed: () => context.pushNamed('randomizer-touch'),
-                    label: 'Касания',
-                    icon: randTouchIcon,
+                    onPressed: () => context.pushNamed('randomizer-number'),
+                    label: 'Случайное число',
+                    icon: randNumIcon,
                   ),
                 ],
               ),

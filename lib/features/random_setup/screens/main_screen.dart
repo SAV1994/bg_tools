@@ -39,6 +39,7 @@ class _RandomSetupMenuScreenState extends ConsumerState<RandomSetupMenuScreen> {
                     label: 'Случайный сетап',
                     icon: setupsIcon,
                   ),
+
                   MenuButton(
                     onPressed: () {
                       final notifier = ref.read(
@@ -54,11 +55,7 @@ class _RandomSetupMenuScreenState extends ConsumerState<RandomSetupMenuScreen> {
                     label: 'Настройка сетапов',
                     icon: setupsConfigIcon,
                   ),
-                  MenuButton(
-                    onPressed: () => context.pushNamed('randomizer-games'),
-                    label: 'Случайные списки',
-                    icon: listsIcon,
-                  ),
+
                   MenuButton(
                     onPressed: () => context.pushNamed(
                       'random-setups-components',

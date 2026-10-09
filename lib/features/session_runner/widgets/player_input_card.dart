@@ -59,133 +59,150 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
-          spacing: 12,
+        child: Column(
           children: [
-            // Имя игрока
-            Expanded(
-              child: Column(
-                children: [
-                  Row(
+            Row(
+              spacing: 12,
+              children: [
+                // Имя игрока
+                Expanded(
+                  child: Column(
                     children: [
-                      Text(
-                        widget.controllerData['username'],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                      Row(
+                        children: [
+                          Text(
+                            widget.controllerData['username'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      if (counter != null)
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Icon(countersIcon),
+                            Text(
+                              counter.toString(),
+                              style: TextStyle(color: firstColor),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+                // Дополнительная информация
+                if (widget.controllerData['extraData'] != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      widget.controllerData['extraData'].toString(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: secondColor,
+                      ),
+                    ),
+                  ),
+                SizedBox(
+                  width: 135,
+                  child: Row(
+                    spacing: 2,
+                    children: [
+                      // Кнопка вызова калькулятора
+                      if (widget.addCalcBtn)
+                        IconButton(
+                          onPressed: () {
+                            final TextEditingController controller =
+                                widget.controllerData['controller'];
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ScoreCalcModal(
+                                  title: widget.controllerData['username'],
+                                  value: int.tryParse(controller.text) ?? 0,
+                                  onScoreChanged: (value) {
+                                    final String score = value.toString();
+                                    controller.text = score;
+                                    widget.updateScore(widget.gamerId, score);
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.iso),
+                          color: goldColor,
+                        ),
+                      // Поле ввода
+                      Expanded(
+                        child: TextField(
+                          focusNode: widget.controllerData['focusNode'],
+                          textInputAction: (widget.nextFocusNode == null)
+                              ? null
+                              : TextInputAction.next,
+                          onSubmitted: (_) {
+                            if (widget.nextFocusNode == null) {
+                              FocusScope.of(context).unfocus();
+                            } else {
+                              FocusScope.of(
+                                context,
+                              ).requestFocus(widget.nextFocusNode);
+                            }
+                          },
+                          controller: widget.controllerData['controller'],
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          inputFormatters: [
+                            (widget.digitsOnly)
+                                ? FilteringTextInputFormatter.digitsOnly
+                                : FilteringTextInputFormatter.allow(
+                                    RegExp(r'^-?\d*'),
+                                  ),
+                          ],
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: widget.label,
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(vertical: 8),
+                          ),
+                          onChanged: (value) =>
+                              widget.updateScore(widget.gamerId, value),
                         ),
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
 
-                  if (counter != null)
-                    Row(
-                      spacing: 5,
-                      children: [
-                        Icon(countersIcon),
-                        Text(
-                          counter.toString(),
-                          style: TextStyle(color: firstColor),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-            // Дополнительная информация
-            if (widget.controllerData['extraData'] != null)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  widget.controllerData['extraData'].toString(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: secondColor,
-                  ),
-                ),
-              ),
-            SizedBox(
-              width: 135,
-              child: Row(
-                spacing: 2,
+            if (widget.controllerData['footerData'] != null)
+              Row(
+                spacing: 5,
                 children: [
-                  // Кнопка вызова калькулятора
-                  if (widget.addCalcBtn)
-                    IconButton(
-                      onPressed: () {
-                        final TextEditingController controller =
-                            widget.controllerData['controller'];
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ScoreCalcModal(
-                              title: widget.controllerData['username'],
-                              value: int.tryParse(controller.text) ?? 0,
-                              onScoreChanged: (value) {
-                                final String score = value.toString();
-                                controller.text = score;
-                                widget.updateScore(widget.gamerId, score);
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.iso),
-                      color: goldColor,
-                    ),
-                  // Поле ввода
-                  Expanded(
-                    child: TextField(
-                      focusNode: widget.controllerData['focusNode'],
-                      textInputAction: (widget.nextFocusNode == null)
-                          ? null
-                          : TextInputAction.next,
-                      onSubmitted: (_) {
-                        if (widget.nextFocusNode == null) {
-                          FocusScope.of(context).unfocus();
-                        } else {
-                          FocusScope.of(
-                            context,
-                          ).requestFocus(widget.nextFocusNode);
-                        }
-                      },
-                      controller: widget.controllerData['controller'],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      inputFormatters: [
-                        (widget.digitsOnly)
-                            ? FilteringTextInputFormatter.digitsOnly
-                            : FilteringTextInputFormatter.allow(
-                                RegExp(r'^-?\d*'),
-                              ),
-                      ],
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: widget.label,
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(vertical: 8),
-                      ),
-                      onChanged: (value) =>
-                          widget.updateScore(widget.gamerId, value),
-                    ),
+                  Text(
+                    widget.controllerData['footerData'],
+                    style: TextStyle(color: firstColor),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
-            ),
           ],
         ),
       ),

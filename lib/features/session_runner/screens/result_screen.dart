@@ -56,6 +56,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         'extraData': (widget.data['resultType'] != ResultTypeEnum.condition.id)
             ? playerData['score']
             : null,
+        'footerData': playerData['scoreByrounds'].join(' | '),
       };
     }
     _setInitialDrawMode();
@@ -169,7 +170,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     if (_mode == _SelectMode.draw) {
       return SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(5.0),
           child: Column(
             children: [
               ListView.builder(
@@ -201,6 +202,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         ),
       );
     }
+
     return ReorderableListView(
       padding: const EdgeInsets.all(16),
       onReorder: _reorder,
@@ -233,7 +235,6 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   }
 
   Widget _buildPlayerCard(int index, Map<String, dynamic> gamerData) {
-    final isTop3 = index < 3;
     late final Color color;
     switch (index) {
       case 0:
@@ -248,78 +249,90 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: color, width: isTop3 ? 2 : 1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          spacing: 8,
-          children: [
-            if (_mode == _SelectMode.single)
-            // Drag handle
-            ...[
-              if ((widget.data['altVictoryType'] == AltVictoryTypeEnum.yes.id ||
-                  widget.data['resultType'] == ResultTypeEnum.condition.id))
-                ReorderableDragStartListener(
-                  index: index,
-                  child: Icon(Icons.drag_handle, color: Colors.grey),
-                ),
 
-              // Позиция
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Row(
+              spacing: 8,
+              children: [
+                if (_mode == _SelectMode.single)
+                // Drag handle
+                ...[
+                  if ((widget.data['altVictoryType'] ==
+                          AltVictoryTypeEnum.yes.id ||
+                      widget.data['resultType'] == ResultTypeEnum.condition.id))
+                    ReorderableDragStartListener(
+                      index: index,
+                      child: Icon(Icons.drag_handle, color: Colors.grey),
+                    ),
+
+                  // Позиция
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: secondColor,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+                ],
+
+                // Имя игрока
+                Expanded(
                   child: Text(
-                    '${index + 1}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: secondColor,
+                    gamerData['username'],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-              ),
 
-              const SizedBox(width: 12),
-            ],
-
-            // Имя игрока
-            Expanded(
-              child: Text(
-                gamerData['username'],
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-
-            // Очки
-            if (widget.data['resultType'] != ResultTypeEnum.condition.id)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: textColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${gamerData['score']}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: secondColor,
+                // Очки
+                if (widget.data['resultType'] != ResultTypeEnum.condition.id)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: textColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${gamerData['score']}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: secondColor,
+                      ),
+                    ),
                   ),
-                ),
+              ],
+            ),
+            if (gamerData['scoreByrounds'].isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    gamerData['scoreByrounds'].join(' | '),
+                    style: TextStyle(color: firstColor),
+                  ),
+                ],
               ),
           ],
         ),

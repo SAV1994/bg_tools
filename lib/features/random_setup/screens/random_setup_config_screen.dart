@@ -128,6 +128,69 @@ class _RandomSetupScreenState
     _loadData();
   }
 
+  Future<void> _copySetup() async {
+    setState(() => _isLoading = true);
+
+    late final int setupId;
+    try {
+      final RandomSetupDao randomSetupDao = ref.read(randomSetupDaoProvider);
+
+      setupId = await randomSetupDao.create(
+        randomSetup: RandomSetupsCompanion(
+          name: Value('Копия "${_randomSetup!.randomSetup.name}"'),
+          gameId: Value(widget.gameId),
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _generalError = 'Копия уже существует (измените её название)';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final RandomListDao randomListDao = ref.read(randomListDaoProvider);
+    for (final RandomListData listData in _randomSetup!.randomLists) {
+      final List<ListItemInputData> items = [];
+      for (final ListItemData itemData in listData.items) {
+        items.add(
+          ListItemInputData(
+            name: itemData.listItem.name,
+            component: itemData.component,
+            copiesNum: itemData.listItem.copiesNum,
+          ),
+        );
+      }
+
+      await randomListDao.create(
+        randomList: RandomListsCompanion(
+          name: Value(listData.randomList.name),
+          randomSetupId: Value(setupId),
+          gameId: Value(widget.gameId),
+          type: Value(RandomListTypeEnum.setup.id),
+          isUnique: Value(listData.randomList.isUnique),
+          itemsNum: Value(listData.randomList.itemsNum),
+        ),
+        items: items,
+      );
+    }
+
+    final notifier = ref.read(randomSetupPaginatedProvider.notifier);
+    notifier.refresh();
+
+    if (mounted) {
+      Navigator.pop(context);
+
+      context.pushNamed(
+        'random-setups-setup-update',
+        pathParameters: {
+          'gameId': widget.gameId.toString(),
+          'setupId': setupId.toString(),
+        },
+      );
+    }
+  }
+
   Future<void> _saveRandomList(
     int? randomListId,
     RandomListsCompanion listCompanion,
@@ -1431,11 +1494,16 @@ class _RandomSetupScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.randomSetupId == null ? 'Новый сетап' : 'Настройка сетапа',
+        title: Icon(
+          setupsConfigIcon,
+          color: widget.randomSetupId == null ? bronzeColor : blueColor,
         ),
         actions: [
           if (widget.randomSetupId != null) ...[
+            IconButton(onPressed: _copySetup, icon: Icon(copyIcon)),
+
+            IconButton(onPressed: _saveSetup, icon: Icon(saveIcon)),
+
             IconButton(
               icon: const Icon(delIcon, color: redColor),
               tooltip: 'Удалить',
@@ -1455,8 +1523,6 @@ class _RandomSetupScreenState
                 },
               ),
             ),
-
-            IconButton(onPressed: _saveSetup, icon: Icon(saveIcon)),
           ],
         ],
       ),

@@ -11,7 +11,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/export.dart';
 import 'package:bg_tools/core/dataclasses/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
-import 'package:bg_tools/core/widgets/loading_screen.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 // МОДЕЛИ ДАННЫХ
 class Setup {
@@ -902,9 +902,9 @@ class _RandomSetupScreenState extends ConsumerState<RandomSetupScreen> {
                                                             fit: BoxFit.cover,
                                                             errorBuilder:
                                                                 (_, _, _) =>
-                                                                    _buildMiniPlaceholder(),
+                                                                    ImagePlaceholder(),
                                                           )
-                                                        : _buildMiniPlaceholder(),
+                                                        : ImagePlaceholder(),
                                                   ),
                                                 ),
                                                 if (isSelected)
@@ -1106,19 +1106,6 @@ class _RandomSetupScreenState extends ConsumerState<RandomSetupScreen> {
     Future.delayed(const Duration(seconds: 2), () => entry.remove());
   }
 
-  Widget _buildMiniPlaceholder() {
-    return Container(
-      color: Colors.grey.shade100,
-      child: Center(
-        child: Icon(
-          Icons.image_outlined,
-          size: 20,
-          color: Colors.grey.shade400,
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -1273,13 +1260,9 @@ class _RandomSetupScreenState extends ConsumerState<RandomSetupScreen> {
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _buildMiniPlaceholder(),
+                      errorBuilder: (_, _, _) => ImagePlaceholder(),
                     )
-                  : SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: _buildMiniPlaceholder(),
-                    ),
+                  : SizedBox(width: 40, height: 40, child: ImagePlaceholder()),
             ),
             const SizedBox(width: 10),
 
@@ -1319,7 +1302,7 @@ class _RandomSetupScreenState extends ConsumerState<RandomSetupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Генерация сетапа'),
+        title: Icon(setupsIcon, color: silverColor),
         actions: [
           if (_result != null)
             IconButton(

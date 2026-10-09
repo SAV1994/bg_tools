@@ -7,6 +7,7 @@ export 'enum_select_widget.dart';
 export 'error_screen.dart';
 export 'fleather_editor.dart';
 export 'image_picker.dart';
+export 'image_placeholder.dart';
 export 'info_row.dart';
 export 'list_chips.dart';
 export 'loading_screen.dart';
