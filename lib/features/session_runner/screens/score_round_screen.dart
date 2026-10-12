@@ -116,9 +116,18 @@ class _ScoreRoundScreenState extends ConsumerState<ScoreRoundScreen> {
     } else {
       roundResults.sort((a, b) => a.$2.compareTo(b.$2));
     }
-    // Засчитываем победу в раунде только если не было ничьей
-    if (roundResults.length > 1 && roundResults[0].$2 != roundResults[1].$2) {
-      widget.data['gamers'][roundResults[0].$1]['numWinRounds'] += 1;
+
+    if (roundResults.length > 1) {
+      if (roundResults[0].$2 != roundResults[1].$2) {
+        // Засчитываем победу в раунде только если не было ничьей
+        widget.data['gamers'][roundResults[0].$1]['numWinRounds'] += 1;
+      } else {
+        for ((int, int) roundResult in roundResults) {
+          if (roundResults[0].$2 == roundResult.$2) {
+            widget.data['gamers'][roundResult.$1]['numBestDrawRounds'] += 1;
+          }
+        }
+      }
     }
 
     if (!_isFinished) {

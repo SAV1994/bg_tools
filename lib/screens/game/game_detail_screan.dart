@@ -137,6 +137,11 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                               width: 100,
                               height: 100,
                               fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: BrokenImagePlaceholder(),
+                              ),
                             )
                           : Container(
                               width: 100,

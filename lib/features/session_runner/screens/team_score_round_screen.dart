@@ -50,7 +50,7 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
         final Map<String, dynamic> teamData =
             widget.data['teamsData'][i.toString()];
         final int? score = teamData['score'];
-        final List<int> scoreByrounds = teamData['scoreByrounds'] ?? [];
+        final scoreByrounds = teamData['scoreByrounds'] ?? [];
         _teamScoreControllers.add({
           'team': teamEnum,
           'controller': TextEditingController(),
@@ -144,9 +144,18 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     } else {
       roundResults.sort((a, b) => a.$2.compareTo(b.$2));
     }
-    // Засчитываем победу в раунде только если не было ничьей
-    if (roundResults[0].$2 != roundResults[1].$2) {
-      widget.data['gamers'][roundResults[0].$1]['numWinRounds'] += 1;
+
+    if (roundResults.length > 1) {
+      if (roundResults[0].$2 != roundResults[1].$2) {
+        // Засчитываем победу в раунде только если не было ничьей
+        widget.data['gamers'][roundResults[0].$1]['numWinRounds'] += 1;
+      } else {
+        for ((int, int) roundResult in roundResults) {
+          if (roundResults[0].$2 == roundResult.$2) {
+            widget.data['gamers'][roundResult.$1]['numBestDrawRounds'] += 1;
+          }
+        }
+      }
     }
 
     if (!_isFinished) {
@@ -200,13 +209,27 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
     } else {
       roundResults.sort((a, b) => a.$2.compareTo(b.$2));
     }
-    // Засчитываем победу в раунде только если не было ничьей
-    if (roundResults[0].$2 != roundResults[1].$2) {
-      if (widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] !=
-          null) {
-        widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] += 1;
+    if (roundResults.length > 1) {
+      if (roundResults[0].$2 != roundResults[1].$2) {
+        // Засчитываем победу в раунде только если не было ничьей
+        if (widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] !=
+            null) {
+          widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] += 1;
+        } else {
+          widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] = 1;
+        }
       } else {
-        widget.data['teamsData'][roundResults[0].$1]['numWinRounds'] = 1;
+        for (final roundResult in roundResults) {
+          if (roundResults[0].$2 == roundResult.$2) {
+            if (widget.data['teamsData'][roundResult.$1]['numBestDrawRounds'] !=
+                null) {
+              widget.data['teamsData'][roundResult.$1]['numBestDrawRounds'] +=
+                  1;
+            } else {
+              widget.data['teamsData'][roundResult.$1]['numBestDrawRounds'] = 1;
+            }
+          }
+        }
       }
     }
 
@@ -554,10 +577,8 @@ class _TeamScoreRoundScreenState extends ConsumerState<TeamScoreRoundScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        widget
-                            .data['teamsData'][teamData['team'].id
-                                .toString()]['numWinRounds']
-                            .toString(),
+                        '${widget.data['teamsData'][teamData['team'].id.toString()]['numWinRounds'].toString()}'
+                        '/${widget.data['teamsData'][teamData['team'].id.toString()]['numBestDrawRounds'].toString()}',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

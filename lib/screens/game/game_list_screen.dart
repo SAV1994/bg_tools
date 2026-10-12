@@ -221,8 +221,11 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                                       width: 40,
                                       height: 40,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, _, _) =>
-                                          ImagePlaceholder(),
+                                      errorBuilder: (_, _, _) => SizedBox(
+                                        width: 40,
+                                        height: 40,
+                                        child: BrokenImagePlaceholder(),
+                                      ),
                                     )
                                   : SizedBox(
                                       width: 40,

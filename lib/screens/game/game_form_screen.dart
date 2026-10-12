@@ -16,7 +16,7 @@ import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/features/export_import_service/services/game_mover.dart';
 import 'package:bg_tools/features/export_import_service/utils/export.dart';
 import 'package:bg_tools/screens/game/widgets/export.dart';
-import 'package:bg_tools/screens/generic/list_with_modal_form.dart';
+import 'package:bg_tools/screens/tags/generic/list_with_modal_form.dart';
 
 class GamesFormScreen extends ConsumerStatefulWidget {
   final int? gameId;
@@ -32,6 +32,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late final GameFullData? gameData;
+  bool _isImageSaved = false;
   // Локальное состояние формы
   bool _isInCollection = false;
   bool _isStandalone = true;
@@ -70,6 +71,8 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
         _selectedBaseIds.add(widget.baseGameId!);
       }
     } else {
+      _isImageSaved = true;
+
       gameData = await gameDao.getFullInfo(widget.gameId!);
 
       _imagePath = gameData!.game.imagePath;
@@ -170,6 +173,8 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
         ref.read(gamesPaginatedProvider.notifier).refresh();
         ref.read(ratingsGamesPaginatedProvider.notifier).refresh();
 
+        _isImageSaved = true;
+
         if (mounted) {
           Navigator.pop(context, true);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -206,7 +211,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
     return PopScope(
       canPop: true,
       onPopInvokedWithResult: (bool didPop, Object? result) {
-        if (widget.gameId == null && _imagePath != null) {
+        if (_imagePath != null && _isImageSaved == false) {
           ImageService.deleteImage(_imagePath);
         }
       },
@@ -306,7 +311,10 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                         ImagePickerWidget(
                           initialImagePath: _imagePath,
                           onImageSelected: (path) {
-                            setState(() => _imagePath = path);
+                            setState(() {
+                              _imagePath = path;
+                              _isImageSaved = false;
+                            });
                           },
                           fieldName: 'Изображение с игрой',
                           imageType: ImageEnum.game,

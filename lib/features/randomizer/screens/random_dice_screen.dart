@@ -78,12 +78,6 @@ class _RandomDiceScreenState extends State<RandomDiceScreen>
     }
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
   // Изменить количество кубиков
   void _updateDiceCount(String label, int count) {
     setState(() {
@@ -323,13 +317,25 @@ class _RandomDiceScreenState extends State<RandomDiceScreen>
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(randomIcon, color: silverColor),
-            Icon(randomIcon),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              icon: Icon(homeIcon, color: greenColor),
+            ),
+            Icon(diceIcon),
           ],
         ),
         backgroundColor: secondColor,
@@ -364,13 +370,6 @@ class _RandomDiceScreenState extends State<RandomDiceScreen>
                 ),
               ),
             ],
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
           ),
         ],
       ),

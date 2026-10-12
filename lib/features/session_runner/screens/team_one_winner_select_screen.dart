@@ -300,11 +300,8 @@ class _TeamOneWinnerSelectScreenState
                       child: Center(
                         child: Text(
                           (widget.data['resultType'] == ResultTypeEnum.round.id)
-                              ? widget
-                                        .data['teamsData'][teamData['team'].id
-                                            .toString()]['numWinRounds']
-                                        ?.toString() ??
-                                    '0'
+                              ? '${widget.data['teamsData'][teamData['team'].id.toString()]['numWinRounds']?.toString() ?? '0'}'
+                                    '/${widget.data['teamsData'][teamData['team'].id.toString()]['numBestDrawRounds']?.toString() ?? '0'}'
                               : teamData['name'][0],
                           style: const TextStyle(
                             fontSize: 20,

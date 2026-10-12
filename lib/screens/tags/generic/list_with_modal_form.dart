@@ -105,7 +105,18 @@ class _ListWithModalFormScreenState
                   style: const TextStyle(color: textColor),
                   onChanged: (value) => notifier.search(value),
                 )
-              : Icon(widget.config.icon),
+              : Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(homeIcon, color: greenColor),
+                    ),
+                    Icon(widget.config.icon),
+                  ],
+                ),
         ),
         actions: [
           IconButton(

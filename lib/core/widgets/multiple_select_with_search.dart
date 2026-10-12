@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/loading_screen.dart';
-import 'package:bg_tools/screens/generic/list_with_modal_form.dart';
+import 'package:bg_tools/screens/tags/generic/list_with_modal_form.dart';
 
 // Мультиселект с возможностью поиска
 class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {

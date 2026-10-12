@@ -315,8 +315,9 @@ class _GamingSessionFormScreenState
             'score': playerData.score,
             'scoreByrounds': [],
             'numWinRounds': null,
-            "place": playerData.place,
-            "name": null,
+            'numBestDrawRounds': null,
+            'place': playerData.place,
+            'name': null,
           };
         } else if (playerData.score != null) {
           increaseEnsureCounter(

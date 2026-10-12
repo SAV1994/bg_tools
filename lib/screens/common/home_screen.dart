@@ -28,23 +28,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: Text(appName),
         actions: [
-          IconButton(
-            visualDensity: VisualDensity(horizontal: -4.0),
-            icon: Icon(randomIcon),
-            onPressed: () => context.pushNamed('randomizer'),
-            tooltip: 'Рандомайзер',
-          ),
-
-          IconButton(
-            visualDensity: VisualDensity(horizontal: -4.0),
-            icon: Icon(countersIcon),
-            onPressed: () => context.pushNamed('counters'),
-            tooltip: 'Каунтеры',
-          ),
-
           if (sessionDataAsync.value != null)
             IconButton(
-              visualDensity: VisualDensity(horizontal: -4.0),
               icon: Icon(Icons.play_arrow),
               onPressed: () => {context.pushNamed('session-runner')},
               tooltip: 'Продолжить сессию',
@@ -220,18 +205,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   MenuButton(
                     onPressed: () => context.pushNamed('tags'),
-                    label: 'Тэги категорий',
+                    label: 'Тэги',
                     icon: tagsIcon,
-                  ),
-                  MenuButton(
-                    onPressed: () => context.pushNamed('designers'),
-                    label: 'Геймдизайнеры',
-                    icon: designersIcon,
-                  ),
-                  MenuButton(
-                    onPressed: () => context.pushNamed('artists'),
-                    label: 'Художники',
-                    icon: artistsIcon,
                   ),
                   MenuButton(
                     onPressed: () => context.pushNamed('statistics'),
@@ -242,6 +217,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     onPressed: () => context.pushNamed('top'),
                     label: 'Мой рейтинг игр',
                     icon: topsIcon,
+                  ),
+                  MenuButton(
+                    onPressed: () => context.pushNamed('randomizer'),
+                    label: 'Рандомайзер',
+                    icon: randomIcon,
+                  ),
+                  MenuButton(
+                    onPressed: () => context.pushNamed('counters'),
+                    label: 'Каунтеры',
+                    icon: countersIcon,
                   ),
                 ],
               ),

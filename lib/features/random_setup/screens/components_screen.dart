@@ -229,8 +229,8 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  foregroundColor: Colors.white,
+                  backgroundColor: goldColor,
+                  foregroundColor: firstColor,
                 ),
                 child: Text(
                   componentTypeData == null ? 'Создать' : 'Сохранить',
@@ -280,7 +280,7 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
       _modalController.text = component.name;
     }
 
-    bool isSaved = false;
+    bool isImageSaved = component == null ? false : true;
     String? imagePath = component?.imagePath;
 
     showDialog(
@@ -290,9 +290,10 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
           return PopScope(
             canPop: true,
             onPopInvokedWithResult: (bool didPop, Object? result) {
-              if (imagePath != null && component == null && !isSaved) {
+              if (imagePath != null && !isImageSaved) {
                 ImageService.deleteImage(imagePath);
               }
+              _updatedata();
             },
             child: AlertDialog(
               title: Row(
@@ -313,7 +314,10 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
                     ImagePickerWidget(
                       initialImagePath: imagePath,
                       onImageSelected: (path) {
-                        setState(() => imagePath = path);
+                        setState(() {
+                          imagePath = path;
+                          isImageSaved = false;
+                        });
                       },
                       fieldName: 'Изображение компонента',
                       imageType: ImageEnum.component,
@@ -373,7 +377,7 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
                           return;
                         }
 
-                        isSaved = true;
+                        isImageSaved = true;
 
                         setState(() {
                           if (component == null) {
@@ -452,26 +456,13 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
                         File(component.imagePath!),
                         fit: BoxFit.cover,
                         width: double.infinity,
-                        errorBuilder: (_, _, _) => _buildPlaceholder(),
+                        errorBuilder: (_, _, _) => BrokenImagePlaceholder(),
                       )
-                    : _buildPlaceholder(),
+                    : ImagePlaceholder(),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: secondColor, width: 3),
-        borderRadius: BorderRadius.circular(8),
-        color: firstColor,
-      ),
-      child: Center(
-        child: Icon(Icons.image_outlined, size: 40, color: secondColor),
       ),
     );
   }

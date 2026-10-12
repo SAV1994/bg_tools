@@ -106,6 +106,9 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                     borderRadius: BorderRadius.circular(8),
                     color: secondColor,
                   ),
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.9,
+                  ),
                   child: Column(
                     children: [
                       // Поле поиска
@@ -146,14 +149,7 @@ class SelectWithSearchState<T> extends State<SelectWithSearch<T>> {
                       const Divider(height: 1),
 
                       // Список элементов
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: filteredItems.isEmpty
-                              ? MediaQuery.of(context).size.height * 0.40
-                              : widget.isRequired
-                              ? MediaQuery.of(context).size.height * 0.80
-                              : MediaQuery.of(context).size.height * 0.74,
-                        ),
+                      Flexible(
                         child: _isLoading
                             ? LoadingScreen()
                             : filteredItems.isEmpty

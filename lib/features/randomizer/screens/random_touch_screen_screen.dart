@@ -77,13 +77,6 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
     _availableColors = _allColors.toList();
   }
 
-  @override
-  void dispose() {
-    _selectionTimer?.cancel();
-    _animationController.dispose();
-    super.dispose();
-  }
-
   void _addTouch(PointerEvent event) {
     if (_touches.length >= 10 || _isSelecting) return;
 
@@ -161,12 +154,25 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
   }
 
   @override
+  void dispose() {
+    _selectionTimer?.cancel();
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(randomIcon, color: silverColor),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              icon: Icon(homeIcon, color: greenColor),
+            ),
             Icon(randTouchIcon),
           ],
         ),
@@ -185,13 +191,6 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
               '${_touches.length}/10',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
           ),
         ],
       ),

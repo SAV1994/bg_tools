@@ -276,26 +276,27 @@ final GoRouter goRouter = GoRouter(
           ),
     ),
 
-    // Геймдизайнеры
-    GoRoute(
-      path: '/designers',
-      name: 'designers',
-      builder: (BuildContext context, GoRouterState state) =>
-          DesignersListScreen(),
-    ),
-
-    // Художники
-    GoRoute(
-      path: '/artists',
-      name: 'artists',
-      builder: (BuildContext context, GoRouterState state) =>
-          ArtistsListScreen(),
-    ),
-
     // Метки
     GoRoute(
       path: '/tags',
       name: 'tags',
+      builder: (BuildContext context, GoRouterState state) => TagsMenuScreen(),
+    ),
+    GoRoute(
+      path: '/tags/designers',
+      name: 'tags-designers',
+      builder: (BuildContext context, GoRouterState state) =>
+          DesignersListScreen(),
+    ),
+    GoRoute(
+      path: '/tags/artists',
+      name: 'tags-artists',
+      builder: (BuildContext context, GoRouterState state) =>
+          ArtistsListScreen(),
+    ),
+    GoRoute(
+      path: '/tags/tags',
+      name: 'tags-categories',
       builder: (BuildContext context, GoRouterState state) => TagsListScreen(),
     ),
 

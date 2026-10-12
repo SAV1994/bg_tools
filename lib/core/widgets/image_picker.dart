@@ -175,6 +175,11 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                       child: Image.file(
                         File(_currentImagePath!),
                         fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: BrokenImagePlaceholder(),
+                        ),
                       ),
                     ),
                     Positioned(

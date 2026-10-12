@@ -443,7 +443,13 @@ class _RandomFateScreenState extends State<RandomFateScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(randomIcon, color: silverColor),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              icon: Icon(homeIcon, color: greenColor),
+            ),
             Icon(fateIcon),
           ],
         ),
@@ -482,13 +488,6 @@ class _RandomFateScreenState extends State<RandomFateScreen> {
                 );
               },
             ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
-          ),
         ],
       ),
       body: Column(

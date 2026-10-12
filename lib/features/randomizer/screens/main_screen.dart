@@ -58,7 +58,7 @@ class _SelectionRandomizerScreenState
                   MenuButton(
                     onPressed: () => context.pushNamed('randomizer-dice'),
                     label: 'Игральные кости',
-                    icon: randomIcon,
+                    icon: diceIcon,
                   ),
                   MenuButton(
                     onPressed: () => context.pushNamed('randomizer-coin'),

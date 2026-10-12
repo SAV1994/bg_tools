@@ -7,7 +7,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/daos/artist/artist_dao.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
-import 'package:bg_tools/screens/generic/list_with_modal_form.dart';
+import 'package:bg_tools/screens/tags/generic/list_with_modal_form.dart';
 
 class ArtistsListScreen extends ConsumerWidget {
   const ArtistsListScreen({super.key});

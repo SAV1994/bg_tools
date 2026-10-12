@@ -120,7 +120,8 @@ class _PlayerRoundInputCardState extends State<PlayerRoundInputCard> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                gamerData['numWinRounds'].toString(),
+                '${gamerData['numWinRounds'].toString()}'
+                '/${gamerData['numBestDrawRounds'].toString()}',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,

@@ -11,6 +11,7 @@ List<dynamic> cleanGamersData(
       'score': null,
       'scoreByrounds': [],
       'numWinRounds': 0,
+      'numBestDrawRounds': 0,
       'place': null,
       'turnOrder': null,
       'team': saveTeam ? gamerData['team'] : null,

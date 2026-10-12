@@ -97,19 +97,16 @@ class _RandomCoinScreenState extends State<RandomCoinScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(randomIcon, color: silverColor),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              icon: Icon(homeIcon, color: greenColor),
+            ),
             Icon(randCoinIcon),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
-          ),
-        ],
         backgroundColor: secondColor,
         foregroundColor: textColor,
       ),

@@ -395,7 +395,13 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(randomIcon, color: silverColor),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              icon: Icon(homeIcon, color: greenColor),
+            ),
             Icon(randomListIcon),
           ],
         ),

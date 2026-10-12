@@ -3,6 +3,7 @@ void setIniialTeamData(Map teamsData, int teamId, {String? name}) {
     'score': null,
     'scoreByrounds': [],
     'numWinRounds': 0,
+    'numBestDrawRounds': 0,
     'place': null,
     'name': name,
   };

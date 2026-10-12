@@ -385,6 +385,10 @@ class _GamingSessionDetailScreenState
                         label: 'Побед в раундах',
                         value: playerData.data!['numWinRounds'].toString(),
                       ),
+                      InfoRow(
+                        label: 'Побед в раундах (ничья)',
+                        value: playerData.data!['numBestDrawRounds'].toString(),
+                      ),
                     ],
                   ],
                 ),
@@ -531,12 +535,16 @@ class _GamingSessionDetailScreenState
                       ),
                     if (teamData['scoreByrounds'].isNotEmpty) ...[
                       InfoRow(
+                        label: 'Количество очков по раундам',
+                        value: convertScoreListToStr(teamData['scoreByrounds']),
+                      ),
+                      InfoRow(
                         label: 'Побед в раундах',
                         value: teamData['numWinRounds'].toString(),
                       ),
                       InfoRow(
-                        label: 'Количество очков по раундам',
-                        value: convertScoreListToStr(teamData['scoreByrounds']),
+                        label: 'Побед в раундах (ничья)',
+                        value: teamData['numBestDrawRounds'].toString(),
                       ),
                     ],
                     ListView.builder(
@@ -623,6 +631,11 @@ class _GamingSessionDetailScreenState
                                   value: playerData.data!['numWinRounds']
                                       .toString(),
                                   addDivider: false,
+                                ),
+                                InfoRow(
+                                  label: 'Побед в раундах (ничья)',
+                                  value: playerData.data!['numBestDrawRounds']
+                                      .toString(),
                                 ),
                               ],
                             ],

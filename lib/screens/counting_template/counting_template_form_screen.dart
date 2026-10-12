@@ -651,7 +651,7 @@ class _CountingTemplateFormFormState
 
                       if (_showFirstPlayerRoundPointType)
                         EnumSelector(
-                          label: FirstPlayerRoundTypeEnum.title,
+                          label: FirstPlayerRoundPointTypeEnum.title,
                           required: true,
                           choices:
                               FirstPlayerRoundPointTypeEnum.getDropdownMenuItems(),

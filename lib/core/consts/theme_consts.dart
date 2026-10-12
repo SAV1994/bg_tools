@@ -19,12 +19,14 @@ const Color blackColor = Colors.black;
 const double iconSize = 20;
 
 // Иконки
+const IconData homeIcon = Icons.home;
 const IconData gamesIcon = Icons.layers;
 const IconData gamersIcon = Icons.group;
 const IconData sessionsIcon = Icons.assignment;
 const IconData templatesIcon = Icons.extension;
 const IconData gamesTemplatesIcon = Icons.build;
 const IconData tagsIcon = Icons.insert_link;
+const IconData categoriesIcon = Icons.storage;
 const IconData designersIcon = Icons.account_balance;
 const IconData artistsIcon = Icons.color_lens;
 const IconData notesIcon = Icons.receipt;
@@ -46,10 +48,11 @@ const IconData sessionsStatIcon = Icons.pie_chart;
 const IconData winRateIcon = Icons.poll;
 const IconData gameStatIcon = Icons.score;
 
-const IconData randomIcon = Icons.casino;
+const IconData randomIcon = Icons.swap_calls;
+const IconData diceIcon = Icons.casino;
+const IconData fateIcon = Icons.view_week;
 const IconData randomListIcon = Icons.clear_all;
 const IconData randNumIcon = Icons.filter_7;
-const IconData fateIcon = Icons.view_week;
 const IconData randCoinIcon = Icons.stars;
 const IconData randTouchIcon = Icons.touch_app;
 

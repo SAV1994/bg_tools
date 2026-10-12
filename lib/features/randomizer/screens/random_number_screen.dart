@@ -75,12 +75,6 @@ class _RandomNumberScreenState extends State<RandomNumberScreen>
     });
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
   // Показать диалог истории
   void _showHistoryDialog() {
     showDialog(
@@ -148,12 +142,24 @@ class _RandomNumberScreenState extends State<RandomNumberScreen>
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(randomIcon, color: silverColor),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              icon: Icon(homeIcon, color: greenColor),
+            ),
             Icon(randNumIcon),
           ],
         ),
@@ -169,13 +175,6 @@ class _RandomNumberScreenState extends State<RandomNumberScreen>
             icon: Icon(Icons.delete_outline),
             onPressed: _history.isEmpty ? null : _clearHistory,
             tooltip: 'Очистить историю',
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
           ),
         ],
       ),

@@ -9,6 +9,7 @@ Map<String, dynamic> getGamerData(Gamer gamer) {
     'score': null,
     'scoreByrounds': [],
     'numWinRounds': 0,
+    'numBestDrawRounds': 0,
     'place': null,
     'turnOrder': null,
     'team': null,
