@@ -8,6 +8,7 @@ export 'dateformats.dart';
 export 'ensure_map_attr.dart';
 export 'format_minutes.dart';
 export 'gamer_fio_builder.dart';
+export 'get_filter_icon.dart';
 export 'get_duration.dart';
 export 'get_place_text.dart';
 export 'initial_player_data.dart';

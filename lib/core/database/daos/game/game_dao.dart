@@ -152,19 +152,19 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
   // Все игры
   Future<List<Game>> getAll({
-    bool onlyStandalone = false,
-    int? artistId,
-    int? designerId,
-    int? tagId,
+    bool? isStandalone,
+    Set<int>? artistIds,
+    Set<int>? designerIds,
+    Set<int>? tagIds,
     Set<int>? ids,
   }) async {
     var query = _getBaseQuery();
     query = await _getFilteredQuery(
       query: query,
-      onlyStandalone: onlyStandalone,
-      artistId: artistId,
-      designerId: designerId,
-      tagId: tagId,
+      isStandalone: isStandalone,
+      artistIds: artistIds,
+      designerIds: designerIds,
+      tagIds: tagIds,
       ids: ids,
     );
 
@@ -196,13 +196,19 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     required int page,
     required int pageSize,
     required bool reverseOrdering,
-    required bool onlyFavorite,
-    required bool onlyStandalone,
-    required bool isInCollection,
-    required bool opportunitiesShelf,
-    int? artistId,
-    int? designerId,
-    int? tagId,
+    int? startYear,
+    int? endYear,
+    double? startRating,
+    double? endRating,
+    int? numPlayers,
+    Set<int>? baseIds,
+    Set<int>? artistIds,
+    Set<int>? designerIds,
+    Set<int>? tagIds,
+    bool? isPlayed,
+    bool? isInCollection,
+    bool? isFavorite,
+    bool? isStandalone,
     String? searchQuery,
   }) async {
     final offset = page * pageSize;
@@ -212,13 +218,19 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     )..limit(pageSize, offset: offset);
     query = await _getFilteredQuery(
       query: query,
-      onlyFavorite: onlyFavorite,
-      onlyStandalone: onlyStandalone,
+      startYear: startYear,
+      endYear: endYear,
+      startRating: startRating,
+      endRating: endRating,
+      numPlayers: numPlayers,
+      isPlayed: isPlayed,
       isInCollection: isInCollection,
-      opportunitiesShelf: opportunitiesShelf,
-      artistId: artistId,
-      designerId: designerId,
-      tagId: tagId,
+      isFavorite: isFavorite,
+      isStandalone: isStandalone,
+      baseIds: baseIds,
+      artistIds: artistIds,
+      designerIds: designerIds,
+      tagIds: tagIds,
       searchQuery: searchQuery,
     );
 
@@ -227,25 +239,38 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
   // Общее количество игр, соответствующих условию
   Future<int> getTotalCount({
-    bool onlyFavorite = false,
-    bool onlyStandalone = false,
-    bool isInCollection = false,
-    bool opportunitiesShelf = false,
-    int? artistId,
-    int? designerId,
-    int? tagId,
+    int? startYear,
+    int? endYear,
+    double? startRating,
+    double? endRating,
+    int? numPlayers,
+    Set<int>? baseIds,
+    Set<int>? artistIds,
+    Set<int>? designerIds,
+    Set<int>? tagIds,
+    bool? isPlayed,
+    bool? isInCollection,
+    bool? isFavorite,
+    bool? isStandalone,
     String? searchQuery,
   }) async {
     SimpleSelectStatement<$GamesTable, Game> query = select(games);
     query = await _getFilteredQuery(
       query: query,
-      onlyFavorite: onlyFavorite,
-      artistId: artistId,
-      designerId: designerId,
-      tagId: tagId,
-      onlyStandalone: onlyStandalone,
+      startYear: startYear,
+      endYear: endYear,
+      startRating: startRating,
+      endRating: endRating,
+      numPlayers: numPlayers,
+      isPlayed: isPlayed,
       isInCollection: isInCollection,
-      opportunitiesShelf: opportunitiesShelf,
+      isFavorite: isFavorite,
+      isStandalone: isStandalone,
+      baseIds: baseIds,
+      artistIds: artistIds,
+      designerIds: designerIds,
+      tagIds: tagIds,
+      searchQuery: searchQuery,
     );
 
     return await query.get().then((list) => list.length);
@@ -376,55 +401,103 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
   Future<SimpleSelectStatement<$GamesTable, Game>> _getFilteredQuery({
     required SimpleSelectStatement<$GamesTable, Game> query,
-    bool onlyFavorite = false,
-    bool onlyStandalone = false,
-    bool isInCollection = false,
-    bool opportunitiesShelf = false,
-    int? artistId,
-    int? designerId,
-    int? tagId,
-    String? searchQuery,
+    int? startYear,
+    int? endYear,
+    double? startRating,
+    double? endRating,
+    int? numPlayers,
+    bool? isPlayed,
+    bool? isInCollection,
+    bool? isFavorite,
+    bool? isStandalone,
+    Set<int>? baseIds,
+    Set<int>? artistIds,
+    Set<int>? designerIds,
+    Set<int>? tagIds,
     Set<int>? ids,
+    String? searchQuery,
   }) async {
-    if (onlyFavorite) {
-      query = query..where((g) => g.isFavorite.isValue(true));
+    if (startYear != null) {
+      query = query
+        ..where((g) => g.year.isBiggerOrEqualValue(startYear.toString()));
     }
 
-    if (onlyStandalone) {
-      query = query..where((g) => g.isStandalone.isValue(true));
+    if (endYear != null) {
+      query = query
+        ..where((g) => g.year.isSmallerOrEqualValue(endYear.toString()));
     }
 
-    if (isInCollection) {
-      query = query..where((g) => g.isInCollection.isValue(true));
+    if (startRating != null) {
+      query = query..where((g) => g.rating.isBiggerOrEqualValue(startRating));
     }
 
-    if (opportunitiesShelf) {
+    if (endRating != null) {
+      query = query..where((g) => g.rating.isSmallerOrEqualValue(endRating));
+    }
+
+    if (numPlayers != null) {
+      query = query
+        ..where(
+          (g) =>
+              g.minPlayers.isSmallerOrEqualValue(numPlayers) &
+              g.maxPlayers.isBiggerOrEqualValue(numPlayers),
+        );
+    }
+
+    if (isPlayed != null) {
       final gamingSessionsQuery = selectOnly(gamingSessions, distinct: true)
         ..addColumns([gamingSessions.gameId]);
       final List<int> gamesPlayedIds = await gamingSessionsQuery
           .map((row) => row.read(gamingSessions.gameId)!)
           .get();
-
-      query = query..where((g) => g.id.isNotIn(gamesPlayedIds));
+      if (isPlayed) {
+        query = query..where((g) => g.id.isIn(gamesPlayedIds));
+      } else {
+        query = query..where((g) => g.id.isNotIn(gamesPlayedIds));
+      }
     }
 
-    if (artistId != null) {
+    if (isInCollection != null) {
+      query = query..where((g) => g.isInCollection.isValue(isInCollection));
+    }
+
+    if (isFavorite != null) {
+      query = query..where((g) => g.isFavorite.isValue(isFavorite));
+    }
+
+    if (isStandalone != null) {
+      query = query..where((g) => g.isStandalone.isValue(isStandalone));
+    }
+
+    if (baseIds != null && baseIds.isNotEmpty) {
+      final expansionsQuery = select(expansionsGames)
+        ..where((eg) => eg.gameId.isIn(baseIds));
+      final List<int> gamesIds = await expansionsQuery
+          .map((expansionGame) => expansionGame.expansionId)
+          .get();
+      query = query..where((g) => g.id.isIn(gamesIds));
+    }
+
+    if (artistIds != null && artistIds.isNotEmpty) {
       final artistsQuery = select(gamesArtists)
-        ..where((ga) => ga.artistId.equals(artistId));
+        ..where((ga) => ga.artistId.isIn(artistIds));
       final List<int> gamesIds = await artistsQuery
           .map((gamesArtist) => gamesArtist.gameId)
           .get();
       query = query..where((g) => g.id.isIn(gamesIds));
-    } else if (designerId != null) {
+    }
+
+    if (designerIds != null && designerIds.isNotEmpty) {
       final designersQuery = select(gamesDesigners)
-        ..where((gd) => gd.designerId.equals(designerId));
+        ..where((gd) => gd.designerId.isIn(designerIds));
       final List<int> gamesIds = await designersQuery
           .map((gamesDesigner) => gamesDesigner.gameId)
           .get();
       query = query..where((g) => g.id.isIn(gamesIds));
-    } else if (tagId != null) {
-      final tagsQuery = select(gamesTags)
-        ..where((gt) => gt.tagId.equals(tagId));
+    }
+
+    if (tagIds != null && tagIds.isNotEmpty) {
+      final tagsQuery = select(gamesTags)..where((gt) => gt.tagId.isIn(tagIds));
       final List<int> gamesIds = await tagsQuery
           .map((gamesTag) => gamesTag.gameId)
           .get();

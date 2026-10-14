@@ -495,7 +495,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                           ),
                         ),
                         MultiSelectWithSearch<Tag>(
-                          label: 'Метки категорий',
+                          label: 'Категории',
                           getItems: () => getItemsForForTagsSelect(),
                           selectedIds: _selectedTagIds,
                           onSelectionChanged: (newSelected) {
@@ -503,7 +503,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                           },
                           displayName: (tag) => tag.name,
                           getId: (tag) => tag.id,
-                          searchHint: 'Поиск тэгов...',
+                          searchHint: 'Поиск категорий...',
                           customItemBuilder: (tag) => Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -520,7 +520,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                             daoProvier: tagDaoProvider,
                             companionFactory: (name) =>
                                 TagsCompanion(name: Value(name)),
-                            imputName: 'Метка категории *',
+                            imputName: 'Категория *',
                           ),
                         ),
 

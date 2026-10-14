@@ -9,6 +9,9 @@ const int pseudoInfNum = 999999;
 // Затычка на случай, если поле пустое
 const String emptyVal = '—';
 
+// Неактивный фильтр
+const String emptyFilterVal = '...';
+
 // Варианты строк для виджета загрузки
 String getLoadingMsg() {
   const List<String> loadingMsgs = [

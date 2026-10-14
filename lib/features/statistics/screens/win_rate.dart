@@ -123,7 +123,7 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
 
   Future<List<Game>> getItemsForGameSelect() async {
     final gameDao = ref.read(gameDaoProvider);
-    return await gameDao.getAll(onlyStandalone: true, ids: gamesIds);
+    return await gameDao.getAll(isStandalone: true, ids: gamesIds);
   }
 
   Future<void> _onGameSelected(Game? game) async {

@@ -38,6 +38,5 @@ class CountingTemplatesNotifier extends BaseNotifier {
   @override
   void resetAdditionalParams() async {
     gameTypeId = null;
-    state = await AsyncValue.guard(() => load());
   }
 }

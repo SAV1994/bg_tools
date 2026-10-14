@@ -27,10 +27,10 @@ class TopDataInitializer {
 
   Future<void> init() async {
     List<Game> games = await gameDao.getAll(
-      onlyStandalone: true,
-      tagId: tagId,
-      designerId: designerId,
-      artistId: artistId,
+      isStandalone: true,
+      tagIds: (tagId != null) ? {tagId!} : null,
+      designerIds: (designerId != null) ? {designerId!} : null,
+      artistIds: (artistId != null) ? {artistId!} : null,
     );
 
     _setTopType();

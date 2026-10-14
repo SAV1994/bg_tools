@@ -10,6 +10,7 @@ import 'package:bg_tools/screens/tags/generic/list_with_modal_form.dart';
 // Мультиселект с возможностью поиска
 class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {
   final String label;
+  final IconData? labelIcon;
   final Future<List<T>> Function() getItems;
   final Set<int> selectedIds;
   final Function(Set<int>) onSelectionChanged;
@@ -23,6 +24,7 @@ class MultiSelectWithSearch<T> extends ConsumerStatefulWidget {
   const MultiSelectWithSearch({
     super.key,
     required this.label,
+    this.labelIcon,
     required this.getItems,
     required this.selectedIds,
     required this.onSelectionChanged,
@@ -138,6 +140,11 @@ class MultiSelectWithSearchState<T>
         // Метка
         Row(
           children: [
+            if (widget.labelIcon != null) ...[
+              Icon(widget.labelIcon, size: 20, color: textColor),
+              const SizedBox(width: 6),
+            ],
+
             Text(
               widget.label,
               key: _dropdownKey,

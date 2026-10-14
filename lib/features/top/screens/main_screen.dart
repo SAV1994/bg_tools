@@ -81,7 +81,7 @@ class _TopMainScreenState extends ConsumerState<TopMainScreen> {
                           .setTopType(TopTypeEnum.byTag);
                       context.pushNamed('top-tags');
                     },
-                    label: 'По тэгу категорий',
+                    label: 'По категории',
                     icon: tagsIcon,
                   ),
                 ],

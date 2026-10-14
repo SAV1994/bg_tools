@@ -40,10 +40,10 @@ class _TopInitScreenState extends ConsumerState<TopInitScreen> {
 
     final gameDao = ref.read(gameDaoProvider);
     final int totalGames = await gameDao.getTotalCount(
-      onlyStandalone: true,
-      tagId: _selectedTag?.id,
-      artistId: _selectedArtist?.id,
-      designerId: _selectedDesigner?.id,
+      isStandalone: true,
+      tagIds: (_selectedTag != null) ? {_selectedTag!.id} : null,
+      artistIds: (_selectedArtist != null) ? {_selectedArtist!.id} : null,
+      designerIds: (_selectedDesigner != null) ? {_selectedDesigner!.id} : null,
     );
 
     setState(() {

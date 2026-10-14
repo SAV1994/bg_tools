@@ -49,6 +49,5 @@ class RatingsNotifier extends BaseNotifier {
   void resetAdditionalParams() async {
     ratingType = TopTypeEnum.common;
     instanceId = null;
-    state = await AsyncValue.guard(() => load());
   }
 }

@@ -50,6 +50,5 @@ class GamingSessionsNotifier extends BaseNotifier {
     onlyIsFinished = true;
     gameId = null;
     reverseOrdering = true;
-    state = await AsyncValue.guard(() => load());
   }
 }

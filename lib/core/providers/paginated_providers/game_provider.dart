@@ -9,26 +9,38 @@ final gamesPaginatedProvider =
     });
 
 class GamesNotifier extends BaseNotifier {
-  bool onlyFavorite = false;
-  bool onlyStandalone = true;
-  bool isInCollection = true;
-  bool opportunitiesShelf = false;
-  int? artistId;
-  int? designerId;
-  int? tagId;
+  int? startYear;
+  int? endYear;
+  double? startRating;
+  double? endRating;
+  int? numPlayers;
+  bool? isPlayed;
+  bool? isInCollection = true;
+  bool? isFavorite;
+  bool? isStandalone = true;
+  Set<int> baseIds = {};
+  Set<int> artistIds = {};
+  Set<int> designerIds = {};
+  Set<int> tagIds = {};
 
   @override
   Future<List<dynamic>> load() async {
     final dao = ref.read(gameDaoProvider);
 
     totalItems = await dao.getTotalCount(
-      onlyFavorite: onlyFavorite,
-      onlyStandalone: onlyStandalone,
+      startYear: startYear,
+      endYear: endYear,
+      startRating: startRating,
+      endRating: endRating,
+      numPlayers: numPlayers,
+      isPlayed: isPlayed,
       isInCollection: isInCollection,
-      opportunitiesShelf: opportunitiesShelf,
-      artistId: artistId,
-      designerId: designerId,
-      tagId: tagId,
+      isFavorite: isFavorite,
+      isStandalone: isStandalone,
+      baseIds: baseIds,
+      artistIds: artistIds,
+      designerIds: designerIds,
+      tagIds: tagIds,
       searchQuery: searchQuery,
     );
 
@@ -36,64 +48,94 @@ class GamesNotifier extends BaseNotifier {
       page: page,
       pageSize: pageSize,
       reverseOrdering: reverseOrdering,
-      onlyFavorite: onlyFavorite,
-      onlyStandalone: onlyStandalone,
+      startYear: startYear,
+      endYear: endYear,
+      startRating: startRating,
+      endRating: endRating,
+      numPlayers: numPlayers,
+      isPlayed: isPlayed,
       isInCollection: isInCollection,
-      opportunitiesShelf: opportunitiesShelf,
-      artistId: artistId,
-      designerId: designerId,
-      tagId: tagId,
+      isFavorite: isFavorite,
+      isStandalone: isStandalone,
+      baseIds: baseIds,
+      artistIds: artistIds,
+      designerIds: designerIds,
+      tagIds: tagIds,
       searchQuery: searchQuery,
     );
   }
 
-  Future<void> toggleOnlyFavorite() async {
-    onlyFavorite = !onlyFavorite;
-    state = await AsyncValue.guard(() => load());
-  }
-
-  Future<void> toggleOnlyStandalone() async {
-    onlyStandalone = !onlyStandalone;
-    state = await AsyncValue.guard(() => load());
-  }
-
-  Future<void> toggleIsInCollection() async {
-    isInCollection = !isInCollection;
-    state = await AsyncValue.guard(() => load());
-  }
-
-  Future<void> toggleOpportunitiesShelf() async {
-    opportunitiesShelf = !opportunitiesShelf;
-    state = await AsyncValue.guard(() => load());
-  }
-
-  Future<void> filterByArtist(int? id) async {
-    artistId = id;
+  Future<void> filterByArtist(int id) async {
+    artistIds = {id};
     page = 0;
     state = await AsyncValue.guard(() => load());
   }
 
-  Future<void> filterByDesigner(int? id) async {
-    designerId = id;
+  Future<void> filterByDesigner(int id) async {
+    designerIds = {id};
     page = 0;
     state = await AsyncValue.guard(() => load());
   }
 
-  Future<void> filterByTag(int? id) async {
-    tagId = id;
+  Future<void> filterByTag(int id) async {
+    tagIds = {id};
     page = 0;
     state = await AsyncValue.guard(() => load());
   }
 
   @override
   void resetAdditionalParams() async {
-    onlyFavorite = false;
-    onlyStandalone = true;
+    startYear = null;
+    endYear = null;
+    startRating = null;
+    endRating = null;
+    numPlayers = null;
+    isPlayed = null;
     isInCollection = true;
-    opportunitiesShelf = false;
-    artistId = null;
-    designerId = null;
-    tagId = null;
-    state = await AsyncValue.guard(() => load());
+    isFavorite = null;
+    isStandalone = true;
+    baseIds = {};
+    artistIds = {};
+    designerIds = {};
+    tagIds = {};
+  }
+
+  int countActiveFilters() {
+    int counter = 0;
+    if (startYear != null || endYear != null) {
+      counter += 1;
+    }
+    if (startRating != null || endRating != null) {
+      counter += 1;
+    }
+    if (numPlayers != null) {
+      counter += 1;
+    }
+    if (isPlayed != null) {
+      counter += 1;
+    }
+    if (isInCollection != null) {
+      counter += 1;
+    }
+    if (isFavorite != null) {
+      counter += 1;
+    }
+    if (isStandalone != null) {
+      counter += 1;
+    }
+    if (baseIds.isNotEmpty) {
+      counter += 1;
+    }
+    if (artistIds.isNotEmpty) {
+      counter += 1;
+    }
+    if (designerIds.isNotEmpty) {
+      counter += 1;
+    }
+    if (tagIds.isNotEmpty) {
+      counter += 1;
+    }
+
+    return counter;
   }
 }
