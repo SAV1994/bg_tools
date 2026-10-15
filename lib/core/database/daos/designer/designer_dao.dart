@@ -2,11 +2,12 @@ import 'package:drift/drift.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/designer.dart';
+import 'package:bg_tools/core/database/tables/games_designers.dart';
 import 'package:bg_tools/core/database/tables/rating.dart';
 
 part 'designer_dao.g.dart';
 
-@DriftAccessor(tables: [Designers, Ratings])
+@DriftAccessor(tables: [Designers, Ratings, GamesDesigners])
 class DesignerDao extends DatabaseAccessor<AppDatabase>
     with _$DesignerDaoMixin {
   DesignerDao(super.db);
@@ -48,6 +49,19 @@ class DesignerDao extends DatabaseAccessor<AppDatabase>
 
     var query = _getBaseQuery();
     query = query..where((a) => a.id.isIn(designersHasTop));
+    return await query.get();
+  }
+
+  // Геймдизайнеры игры которых есть
+  Future<List<Designer>> getHasGames() async {
+    final gamesDesignersQuery = selectOnly(gamesDesigners, distinct: true)
+      ..addColumns([gamesDesigners.designerId]);
+    final List<int> designersHasGamesIds = await gamesDesignersQuery
+        .map((row) => row.read(gamesDesigners.designerId)!)
+        .get();
+
+    var query = _getBaseQuery();
+    query = query..where((a) => a.id.isIn(designersHasGamesIds));
     return await query.get();
   }
 

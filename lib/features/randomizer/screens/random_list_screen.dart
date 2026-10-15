@@ -1,14 +1,15 @@
-import 'package:bg_tools/core/utils/export.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/dataclasses/randomizer/list_item_dataclasses.dart';
 import 'package:bg_tools/core/dataclasses/randomizer/random_list_dataclasses.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class RandomizerItem {
@@ -396,10 +397,7 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
         title: Row(
           children: [
             IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
+              onPressed: () => context.goNamed('home'),
               icon: Icon(homeIcon, color: greenColor),
             ),
             Icon(randomListIcon),

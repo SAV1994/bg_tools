@@ -43,8 +43,6 @@ Future<void> importData({
   final backupService = BackupService(mover);
   final success = await backupService.importData();
 
-  mover.container.dispose();
-
   if (context.mounted) {
     // Закрываем диалог
     Navigator.pop(context);

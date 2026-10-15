@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'package:go_router/go_router.dart';
+
 import 'package:bg_tools/core/consts/export.dart';
 
 class DiceType {
@@ -329,10 +331,7 @@ class _RandomDiceScreenState extends State<RandomDiceScreen>
         title: Row(
           children: [
             IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
+              onPressed: () => context.goNamed('home'),
               icon: Icon(homeIcon, color: greenColor),
             ),
             Icon(diceIcon),

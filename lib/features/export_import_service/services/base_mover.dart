@@ -13,7 +13,9 @@ import 'package:bg_tools/core/services/image_service.dart';
 
 abstract class BaseMover {
   final int type = 0;
-  final ProviderContainer container = ProviderContainer();
+  final WidgetRef ref;
+
+  BaseMover({required this.ref});
 
   // Экспорт данных из БД в JSON
   Future<void> exportDatabase(Directory exportDir) async {
@@ -35,33 +37,11 @@ abstract class BaseMover {
     for (final game in games) {
       if (game.imagePath != null && game.imagePath!.isNotEmpty) {
         final sourceFile = await ImageService.getImageFile(game.imagePath!);
-        await sourceFile!.copy(
-          path.join(gamesImagesDir.path, path.basename(game.imagePath!)),
-        );
-      }
-    }
-
-    final database = container.read(databaseProvider);
-    final List<GameComponent> components = await database
-        .select(database.gameComponents)
-        .get();
-
-    final componentsImagesDir = Directory(
-      path.join(exportDir.path, 'components_images'),
-    );
-    await componentsImagesDir.create();
-
-    for (final component in components) {
-      if (component.imagePath != null && component.imagePath!.isNotEmpty) {
-        final sourceFile = await ImageService.getImageFile(
-          component.imagePath!,
-        );
-        await sourceFile!.copy(
-          path.join(
-            componentsImagesDir.path,
-            path.basename(component.imagePath!),
-          ),
-        );
+        if (sourceFile != null) {
+          await sourceFile.copy(
+            path.join(gamesImagesDir.path, path.basename(game.imagePath!)),
+          );
+        }
       }
     }
   }
@@ -113,7 +93,7 @@ abstract class BaseMover {
     }
 
     // 3. Импортируем в БД в транзакции
-    final database = container.read(databaseProvider);
+    final database = ref.read(databaseProvider);
     await insertDataToDb(database, newImagePaths, data);
   }
 

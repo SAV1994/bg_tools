@@ -8,6 +8,8 @@ mixin _$ArtistDaoMixin on DatabaseAccessor<AppDatabase> {
   $DesignersTable get designers => attachedDatabase.designers;
   $TagsTable get tags => attachedDatabase.tags;
   $RatingsTable get ratings => attachedDatabase.ratings;
+  $GamesTable get games => attachedDatabase.games;
+  $GamesArtistsTable get gamesArtists => attachedDatabase.gamesArtists;
   ArtistDaoManager get managers => ArtistDaoManager(this);
 }
 
@@ -22,4 +24,8 @@ class ArtistDaoManager {
       $$TagsTableTableManager(_db.attachedDatabase, _db.tags);
   $$RatingsTableTableManager get ratings =>
       $$RatingsTableTableManager(_db.attachedDatabase, _db.ratings);
+  $$GamesTableTableManager get games =>
+      $$GamesTableTableManager(_db.attachedDatabase, _db.games);
+  $$GamesArtistsTableTableManager get gamesArtists =>
+      $$GamesArtistsTableTableManager(_db.attachedDatabase, _db.gamesArtists);
 }

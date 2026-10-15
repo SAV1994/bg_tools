@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as path;
 
@@ -5,6 +7,7 @@ import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/import_const.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
+import 'package:bg_tools/core/services/image_service.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/features/export_import_service/services/base_mover.dart';
 import 'package:bg_tools/features/export_import_service/services/obj_to_map/export.dart';
@@ -12,9 +15,11 @@ import 'package:bg_tools/features/export_import_service/services/obj_to_map/expo
 class AllDataMover extends BaseMover {
   final int type = ImportTypeEnum.all.id;
 
+  AllDataMover({required super.ref});
+
   @override
   Future<Map<String, dynamic>> extractToJson() async {
-    final database = container.read(databaseProvider);
+    final database = ref.read(databaseProvider);
 
     // Получаем все данные из таблиц
     final artists = await database.select(database.artists).get();
@@ -248,8 +253,39 @@ class AllDataMover extends BaseMover {
   }
 
   @override
+  Future<void> exportImages(Directory exportDir) async {
+    await super.exportImages(exportDir);
+
+    final database = ref.read(databaseProvider);
+    final List<GameComponent> components = await database
+        .select(database.gameComponents)
+        .get();
+
+    final componentsImagesDir = Directory(
+      path.join(exportDir.path, 'components_images'),
+    );
+    await componentsImagesDir.create();
+
+    for (final component in components) {
+      if (component.imagePath != null && component.imagePath!.isNotEmpty) {
+        final sourceFile = await ImageService.getImageFile(
+          component.imagePath!,
+        );
+        if (sourceFile != null) {
+          await sourceFile.copy(
+            path.join(
+              componentsImagesDir.path,
+              path.basename(component.imagePath!),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  @override
   Future<List<Game>> getExportGames() async {
-    final database = container.read(databaseProvider);
+    final database = ref.read(databaseProvider);
 
     return await database.select(database.games).get();
   }

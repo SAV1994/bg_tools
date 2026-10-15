@@ -108,10 +108,7 @@ class _ListWithModalFormScreenState
               : Row(
                   children: [
                     IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
+                      onPressed: () => context.goNamed('home'),
                       icon: Icon(homeIcon, color: greenColor),
                     ),
                     Icon(widget.config.icon),

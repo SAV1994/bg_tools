@@ -1,3 +1,5 @@
+import 'dart:math';
+
 double average(List<int> numbers) {
   if (numbers.isEmpty) return 0.0;
   return numbers.fold(0, (sum, item) => sum + item) / numbers.length;
@@ -9,4 +11,9 @@ int sumInt(List<int> numbers) {
 
 double sumDouble(List<double> numbers) {
   return numbers.fold(0.0, (sum, item) => sum + item);
+}
+
+double roundDouble(double value, int places) {
+  num mod = pow(10.0, places);
+  return ((value * mod).round().toDouble() / mod);
 }

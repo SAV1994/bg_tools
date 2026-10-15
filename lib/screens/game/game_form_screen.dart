@@ -228,7 +228,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                 icon: Icon(importIcon),
                 onPressed: () => importData(
                   context: context,
-                  mover: GameMover(),
+                  mover: GameMover(ref: ref),
                   onSuccess: () {
                     // Обновляем провайдеры
                     ref.invalidate(countingTemplateDataProvider);

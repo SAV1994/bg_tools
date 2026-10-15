@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 
 import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/database/tables/games_tags.dart';
 import 'package:bg_tools/core/database/tables/rating.dart';
 import 'package:bg_tools/core/database/tables/tag.dart';
 
 part 'tag_dao.g.dart';
 
-@DriftAccessor(tables: [Tags, Ratings])
+@DriftAccessor(tables: [Tags, Ratings, GamesTags])
 class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
   TagDao(super.db);
 
@@ -31,6 +32,19 @@ class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
   // Все метки
   Future<List<Tag>> getAll() async {
     SimpleSelectStatement<$TagsTable, Tag> query = _getBaseQuery();
+    return await query.get();
+  }
+
+  // Метки по которым есть игры
+  Future<List<Tag>> getHasGames() async {
+    final gamesTagsQuery = selectOnly(gamesTags, distinct: true)
+      ..addColumns([gamesTags.tagId]);
+    final List<int> tagsHasGamesIds = await gamesTagsQuery
+        .map((row) => row.read(gamesTags.tagId)!)
+        .get();
+
+    var query = _getBaseQuery();
+    query = query..where((a) => a.id.isIn(tagsHasGamesIds));
     return await query.get();
   }
 

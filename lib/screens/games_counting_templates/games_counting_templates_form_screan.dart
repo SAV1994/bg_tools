@@ -992,7 +992,7 @@ class _GamesCountingTemplatesModalFormState
     return Scaffold(
       appBar: AppBar(
         title: Icon(
-          gamesTemplatesIcon,
+          templatesIcon,
           color: widget.gamesCountingTemplatesId == null
               ? bronzeColor
               : blueColor,
@@ -1019,7 +1019,7 @@ class _GamesCountingTemplatesModalFormState
               icon: const Icon(importIcon),
               onPressed: () => importData(
                 context: context,
-                mover: GameTemplateMover(gameId: widget.gameId),
+                mover: GameTemplateMover(ref: ref, gameId: widget.gameId),
                 onSuccess: () {
                   // Обновляем провайдеры
                   ref.invalidate(countingTemplateDataProvider);
@@ -1046,6 +1046,7 @@ class _GamesCountingTemplatesModalFormState
               onPressed: () => exportData(
                 context: context,
                 mover: GameTemplateMover(
+                  ref: ref,
                   gameId: widget.gameId,
                   gameTemplateId: widget.gamesCountingTemplatesId,
                 ),

@@ -316,54 +316,47 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
             appBar: AppBar(
               title: counterAsync.when(
                 data: (sessionsCount) {
-                  return GestureDetector(
-                    onTap: () {
-                      final notifier = ref.read(
-                        gamingSessionsPaginatedProvider.notifier,
-                      );
-                      notifier.filterByGame(game.id);
-                      context.pushNamed(
-                        'gaming-sessions-list',
-                        queryParameters: {'gameId': game.id.toString()},
-                      );
-                    },
-                    child: Text(
-                      sessionsCount.toString(),
-                      style: TextStyle(
-                        color: goldColor,
-                        fontWeight: FontWeight.w900,
+                  return Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => context.goNamed('home'),
+                        icon: Icon(homeIcon, color: greenColor),
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () {
+                          final notifier = ref.read(
+                            gamingSessionsPaginatedProvider.notifier,
+                          );
+                          notifier.filterByGame(game.id);
+                          context.pushNamed(
+                            'gaming-sessions-list',
+                            queryParameters: {'gameId': game.id.toString()},
+                          );
+                        },
+                        child: Text(
+                          sessionsCount.toString(),
+                          style: TextStyle(
+                            color: goldColor,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                 },
-                loading: () => Icon(gamesIcon, color: silverColor),
+                loading: () => Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => context.goNamed('home'),
+                      icon: Icon(homeIcon, color: greenColor),
+                    ),
+                    Icon(gamesIcon, color: silverColor),
+                  ],
+                ),
                 error: (error, _) => Icon(errorIcon, color: redColor),
               ),
               actions: [
-                // Кнопка редактирования
-                IconButton(
-                  visualDensity: VisualDensity(horizontal: -4.0),
-                  icon: const Icon(Icons.edit),
-                  onPressed: () async {
-                    _openNewScreen('games-update');
-                  },
-                ),
-
-                // Кнопка настройки шаблонов
                 if (game.isStandalone) ...[
-                  IconButton(
-                    visualDensity: VisualDensity(horizontal: -4.0),
-                    icon: const Icon(Icons.build),
-                    onPressed: () async {
-                      final notifier = ref.read(
-                        gamesCountingTemplatesPaginatedProvider.notifier,
-                      );
-                      notifier.filterByGame(game.id);
-
-                      _openNewScreen('counting-templates-list');
-                    },
-                  ),
-
                   // Кнопка запуска партии
                   if (templatesCount > 0)
                     IconButton(
@@ -403,34 +396,83 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                       );
                     },
                   ),
-
-                  // Экспорт
-                  IconButton(
-                    visualDensity: VisualDensity(horizontal: -4.0),
-                    icon: const Icon(exportIcon),
-                    onPressed: () => exportData(
-                      context: context,
-                      mover: GameMover(gameId: widget.gameId),
-                    ),
-                  ),
                 ],
 
-                // Кнопка удаления
-                IconButton(
-                  visualDensity: VisualDensity(horizontal: -4.0),
-                  icon: const Icon(delIcon, color: redColor),
-                  onPressed: () => buildDelModal(
-                    context,
-                    ref,
-                    gameDaoProvider,
-                    mounted,
-                    game,
-                    () {
-                      Navigator.pop(context, true);
-                      ref.invalidate(gamingSessionFullDataProvider);
-                      ref.read(gamesPaginatedProvider.notifier).refresh();
-                    },
-                  ),
+                PopupMenuButton(
+                  icon: Icon(Icons.more_vert),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(
+                          editIcon,
+                          size: 18,
+                          color: blueColor,
+                        ),
+                        title: const Text('Редактировать'),
+                        dense: true,
+                      ),
+                      onTap: () async {
+                        _openNewScreen('games-update');
+                      },
+                    ),
+
+                    if (game.isStandalone)
+                      PopupMenuItem(
+                        child: ListTile(
+                          leading: const Icon(
+                            templatesIcon,
+                            size: 18,
+                            color: textColor,
+                          ),
+                          title: const Text('Настройка шаблонов'),
+                          dense: true,
+                        ),
+                        onTap: () async {
+                          final notifier = ref.read(
+                            gamesCountingTemplatesPaginatedProvider.notifier,
+                          );
+                          notifier.filterByGame(game.id);
+
+                          _openNewScreen('counting-templates-list');
+                        },
+                      ),
+
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(
+                          exportIcon,
+                          size: 18,
+                          color: greenColor,
+                        ),
+                        title: const Text('Экспорт'),
+                        dense: true,
+                      ),
+                      onTap: () => exportData(
+                        context: context,
+                        mover: GameMover(gameId: widget.gameId, ref: ref),
+                      ),
+                    ),
+
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(delIcon, size: 18, color: redColor),
+                        title: const Text('Удалить'),
+                        dense: true,
+                      ),
+                      onTap: () => buildDelModal(
+                        context,
+                        ref,
+                        gameDaoProvider,
+                        mounted,
+                        game,
+                        () {
+                          Navigator.pop(context, true);
+                          ref.invalidate(gamingSessionFullDataProvider);
+                          ref.read(gamesPaginatedProvider.notifier).refresh();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

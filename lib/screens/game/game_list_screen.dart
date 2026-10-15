@@ -72,22 +72,22 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
   Future<List<Game>> getItemsForForBaseGamesSelect() async {
     final GameDao gameDao = ref.read(gameDaoProvider);
-    return await gameDao.getStandalones();
+    return await gameDao.getHasExpansions();
   }
 
   Future<List<Designer>> getItemsForForDesignersSelect() async {
     final designerDao = ref.read(designerDaoProvider);
-    return await designerDao.getAll();
+    return await designerDao.getHasGames();
   }
 
   Future<List<Artist>> getItemsForForArtistsSelect() async {
     final artistDao = ref.read(artistDaoProvider);
-    return await artistDao.getAll();
+    return await artistDao.getHasGames();
   }
 
   Future<List<Tag>> getItemsForForTagsSelect() async {
     final tagDao = ref.read(tagDaoProvider);
-    return await tagDao.getAll();
+    return await tagDao.getHasGames();
   }
 
   Future<void> _showFilterModal(GamesNotifier notifier) async {
@@ -123,12 +123,13 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
               clipBehavior: Clip.antiAlias,
               child: Container(
                 width: double.maxFinite,
-                constraints: BoxConstraints(maxHeight: 750),
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.9,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: secondColor, // ← Фон заголовка
@@ -158,6 +159,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                     Flexible(
                       child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         color: firstColor,
                         child: Scrollbar(
                           controller: _modalScrollController,
@@ -466,12 +468,12 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                             onPressed: () {
                               notifier.startYear = startYear;
                               notifier.endYear = endYear;
-                              if (ratingRange.start > 0.0) {
-                                notifier.startRating = ratingRange.start;
-                              }
-                              if (ratingRange.end > 0.0) {
-                                notifier.endRating = ratingRange.end;
-                              }
+                              notifier.startRating = (ratingRange.start > 0.0)
+                                  ? ratingRange.start
+                                  : null;
+                              notifier.endRating = (ratingRange.end > 0.0)
+                                  ? ratingRange.end
+                                  : null;
                               if (numPlayers > 0) {
                                 notifier.numPlayers = numPlayers;
                               }
@@ -525,7 +527,6 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
     );
   }
 
-  // ===== ТРЁХСОСТОЯНИЙ ВЫБОР (null / true / false) =====
   Widget _buildTriState({
     required bool? value,
     required Function(bool?) onChanged,

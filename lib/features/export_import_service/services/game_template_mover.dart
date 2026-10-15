@@ -14,7 +14,11 @@ class GameTemplateMover extends BaseMover {
   final int gameId;
   final int? gameTemplateId;
 
-  GameTemplateMover({required this.gameId, this.gameTemplateId});
+  GameTemplateMover({
+    required this.gameId,
+    this.gameTemplateId,
+    required super.ref,
+  });
 
   @override
   Future<Map<String, dynamic>> extractToJson() async {
@@ -25,8 +29,9 @@ class GameTemplateMover extends BaseMover {
     };
 
     if (gameTemplateId != null) {
-      final GamesCountingTemplatesDao gamesCountingTemplatesDao = container
-          .read(gamesCountingTemplatesDaoProvider);
+      final GamesCountingTemplatesDao gamesCountingTemplatesDao = ref.read(
+        gamesCountingTemplatesDaoProvider,
+      );
       final GamesCountingTemplatesData? templateData =
           await gamesCountingTemplatesDao.getSingle(gameTemplateId!);
 

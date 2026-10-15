@@ -14,7 +14,7 @@ class GameMover extends BaseMover {
   final int type = ImportTypeEnum.game.id;
   final int? gameId;
 
-  GameMover({this.gameId});
+  GameMover({this.gameId, required super.ref});
 
   @override
   Future<Map<String, dynamic>> extractToJson() async {
@@ -28,9 +28,10 @@ class GameMover extends BaseMover {
     };
 
     if (gameId != null) {
-      final GameDao gameDao = container.read(gameDaoProvider);
-      final GamesCountingTemplatesDao gamesCountingTemplatesDao = container
-          .read(gamesCountingTemplatesDaoProvider);
+      final GameDao gameDao = ref.read(gameDaoProvider);
+      final GamesCountingTemplatesDao gamesCountingTemplatesDao = ref.read(
+        gamesCountingTemplatesDaoProvider,
+      );
       final GameFullData? gameData = await gameDao.getFullInfo(gameId!);
       final List<GamesCountingTemplatesData> templatesData =
           await gamesCountingTemplatesDao.getAll(gameId!);
@@ -68,9 +69,9 @@ class GameMover extends BaseMover {
     List<Game> games = [];
 
     if (gameId != null) {
-      final GameDao gameDao = container.read(gameDaoProvider);
+      final GameDao gameDao = ref.read(gameDaoProvider);
       final GameFullData? gameData = await gameDao.getFullInfo(gameId!);
-      List<Game> games = gameData!.expansions;
+      games = gameData!.expansions;
       games.add(gameData.game);
     }
 

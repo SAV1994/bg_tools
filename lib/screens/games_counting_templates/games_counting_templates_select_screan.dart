@@ -78,7 +78,15 @@ class _GamesCountingTemplatesSelectScreenState
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : Icon(gamesTemplatesIcon, color: goldColor),
+                : Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => context.goNamed('home'),
+                        icon: Icon(homeIcon, color: greenColor),
+                      ),
+                      Icon(templatesIcon, color: goldColor),
+                    ],
+                  ),
           ),
           actions: [
             IconButton(
@@ -137,7 +145,7 @@ class _GamesCountingTemplatesSelectScreenState
 
                         return Card(
                           child: ListTile(
-                            leading: Icon(Icons.build),
+                            leading: Icon(templatesIcon),
                             title: Text(gamesCountingTemplate.name),
                             subtitle: Text(subtitle),
                             trailing: Icon(Icons.play_arrow),

@@ -63,8 +63,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('Экспорт'),
                       dense: true,
                     ),
-                    onTap: () =>
-                        exportData(context: context, mover: AllDataMover()),
+                    onTap: () => exportData(
+                      context: context,
+                      mover: AllDataMover(ref: ref),
+                    ),
                   ),
 
                   PopupMenuItem(
@@ -79,7 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     onTap: () => importData(
                       context: context,
-                      mover: AllDataMover(),
+                      mover: AllDataMover(ref: ref),
                       onSuccess: () {
                         // Обновляем провайдеры
                         ref.invalidate(countingTemplateDataProvider);

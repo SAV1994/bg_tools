@@ -4,6 +4,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/export.dart';
 import 'package:bg_tools/core/dataclasses/game_dataclasses.dart';
 import 'package:bg_tools/core/services/image_service.dart';
+import 'package:bg_tools/core/utils/export.dart';
 part 'game_dao.g.dart';
 
 @DriftAccessor(
@@ -188,6 +189,19 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
 
     var query = _getBaseQuery();
     query = query..where((g) => g.id.isIn(gamesPlayedIds));
+    return await query.get();
+  }
+
+  // Только с дополнениями
+  Future<List<Game>> getHasExpansions() async {
+    final expansionsGamesQuery = selectOnly(expansionsGames, distinct: true)
+      ..addColumns([expansionsGames.gameId]);
+    final List<int> gamesHasExpansionsIds = await expansionsGamesQuery
+        .map((row) => row.read(expansionsGames.gameId)!)
+        .get();
+
+    var query = _getBaseQuery();
+    query = query..where((g) => g.id.isIn(gamesHasExpansionsIds));
     return await query.get();
   }
 
@@ -428,11 +442,17 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
     }
 
     if (startRating != null) {
-      query = query..where((g) => g.rating.isBiggerOrEqualValue(startRating));
+      query = query
+        ..where(
+          (g) => g.rating.isBiggerOrEqualValue(roundDouble(startRating, 1)),
+        );
     }
 
     if (endRating != null) {
-      query = query..where((g) => g.rating.isSmallerOrEqualValue(endRating));
+      query = query
+        ..where(
+          (g) => g.rating.isSmallerOrEqualValue(roundDouble(endRating, 1)),
+        );
     }
 
     if (numPlayers != null) {

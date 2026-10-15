@@ -19,8 +19,6 @@ Future<void> exportData({
 
   final savedPath = await backupService.exportData();
 
-  mover.container.dispose();
-
   if (context.mounted) {
     // Закрываем диалог
     Navigator.pop(context);

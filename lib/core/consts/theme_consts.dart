@@ -24,7 +24,6 @@ const IconData gamesIcon = Icons.layers;
 const IconData gamersIcon = Icons.group;
 const IconData sessionsIcon = Icons.assignment;
 const IconData templatesIcon = Icons.extension;
-const IconData gamesTemplatesIcon = Icons.build;
 const IconData tagsIcon = Icons.insert_link;
 const IconData categoriesIcon = Icons.storage;
 const IconData designersIcon = Icons.account_balance;

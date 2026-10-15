@@ -1,8 +1,9 @@
-import 'package:bg_tools/core/app_data.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
@@ -144,10 +145,7 @@ abstract class RandomInstancesScreenStateState
         title: Row(
           children: [
             IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
+              onPressed: () => context.goNamed('home'),
               icon: Icon(homeIcon, color: greenColor),
             ),
             Icon(instIcon),

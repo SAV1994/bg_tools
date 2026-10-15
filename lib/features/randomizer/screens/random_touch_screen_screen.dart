@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+
+import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
-import 'package:flutter/material.dart';
-import 'dart:math';
 
 class TouchPoint {
   final int id;
@@ -167,10 +170,7 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
         title: Row(
           children: [
             IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
+              onPressed: () => context.goNamed('home'),
               icon: Icon(homeIcon, color: greenColor),
             ),
             Icon(randTouchIcon),
