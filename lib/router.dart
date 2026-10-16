@@ -35,19 +35,7 @@ final GoRouter goRouter = GoRouter(
       path: '/games',
       name: 'games-list',
       builder: (BuildContext context, GoRouterState state) {
-        final artistId = int.tryParse(
-          state.uri.queryParameters['artistId'] ?? '',
-        );
-        final designerId = int.tryParse(
-          state.uri.queryParameters['designerId'] ?? '',
-        );
-        final tagId = int.tryParse(state.uri.queryParameters['tagId'] ?? '');
-
-        return GamesListScreen(
-          artistId: artistId,
-          designerId: designerId,
-          tagId: tagId,
-        );
+        return GamesListScreen();
       },
     ),
     GoRoute(
@@ -214,9 +202,7 @@ final GoRouter goRouter = GoRouter(
       path: '/gaming-sessions',
       name: 'gaming-sessions-list',
       builder: (BuildContext context, GoRouterState state) {
-        final gameId = int.tryParse(state.uri.queryParameters['gameId'] ?? '');
-
-        return GamingSessionListScreen(gameId: gameId);
+        return GamingSessionListScreen();
       },
     ),
     GoRoute(

@@ -11,7 +11,7 @@ final gamingSessionsPaginatedProvider =
 class GamingSessionsNotifier extends BaseNotifier {
   @override
   bool reverseOrdering = true;
-  bool onlyIsFinished = true;
+  bool? isFinished = true;
   int? gameId;
 
   @override
@@ -19,7 +19,7 @@ class GamingSessionsNotifier extends BaseNotifier {
     final dao = ref.read(gamingSessionDaoProvider);
 
     totalItems = await dao.getTotalCount(
-      onlyIsFinished: onlyIsFinished,
+      isFinished: isFinished,
       gameId: gameId,
       searchQuery: searchQuery,
     );
@@ -28,7 +28,7 @@ class GamingSessionsNotifier extends BaseNotifier {
       page: page,
       pageSize: pageSize,
       reverseOrdering: reverseOrdering,
-      onlyIsFinished: onlyIsFinished,
+      isFinished: isFinished,
       gameId: gameId,
       searchQuery: searchQuery,
     );
@@ -40,15 +40,22 @@ class GamingSessionsNotifier extends BaseNotifier {
     state = await AsyncValue.guard(() => load());
   }
 
-  Future<void> toggleonlyIsFinished() async {
-    onlyIsFinished = !onlyIsFinished;
-    state = await AsyncValue.guard(() => load());
-  }
-
   @override
   void resetAdditionalParams() async {
-    onlyIsFinished = true;
+    isFinished = true;
     gameId = null;
     reverseOrdering = true;
+  }
+
+  int countActiveFilters() {
+    int counter = 0;
+    if (isFinished != null) {
+      counter += 1;
+    }
+    if (gameId != null) {
+      counter += 1;
+    }
+
+    return counter;
   }
 }

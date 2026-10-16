@@ -152,7 +152,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   }) async {
     SimpleSelectStatement query = _getFilteredQuery(
       query: _getBaseQuery(),
-      onlyIsFinished: true,
+      isFinished: true,
       gameId: gameId,
       periodStart: periodStart,
       periodEnd: periodEnd,
@@ -178,7 +178,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   }) async {
     SimpleSelectStatement query = _getFilteredQuery(
       query: _getBaseQuery(),
-      onlyIsFinished: true,
+      isFinished: true,
       gameId: gameId,
       periodStart: periodStart,
       periodEnd: periodEnd,
@@ -245,7 +245,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     required int page,
     required int pageSize,
     required bool reverseOrdering,
-    required bool onlyIsFinished,
+    bool? isFinished,
     int? gameId,
     String? searchQuery,
   }) async {
@@ -253,7 +253,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
     SimpleSelectStatement query = _getFilteredQuery(
       query: _getBaseQuery(reverse: reverseOrdering),
-      onlyIsFinished: onlyIsFinished,
+      isFinished: isFinished,
       gameId: gameId,
       searchQuery: searchQuery,
     )..limit(pageSize, offset: offset);
@@ -272,7 +272,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
   // Общее число игровых сессий, соответствующих условию
   Future<int> getTotalCount({
-    required bool onlyIsFinished,
+    bool? isFinished,
     int? gameId,
     String? searchQuery,
   }) async {
@@ -281,7 +281,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     );
     query = _getFilteredQuery(
       query: query,
-      onlyIsFinished: onlyIsFinished,
+      isFinished: isFinished,
       gameId: gameId,
       searchQuery: searchQuery,
     );
@@ -348,7 +348,7 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   Future<GamingSessionData?> getLast() async {
     SimpleSelectStatement query = _getFilteredQuery(
       query: _getBaseQuery(reverse: true),
-      onlyIsFinished: true,
+      isFinished: true,
     )..limit(1);
     final joinedQuery = query.join([
       innerJoin(games, games.id.equalsExp(gamingSessions.gameId)),
@@ -483,14 +483,14 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
 
   SimpleSelectStatement<$GamingSessionsTable, GamingSession> _getFilteredQuery({
     required SimpleSelectStatement<$GamingSessionsTable, GamingSession> query,
-    required bool onlyIsFinished,
+    bool? isFinished,
     int? gameId,
     String? searchQuery,
     DateTime? periodStart,
     DateTime? periodEnd,
   }) {
-    if (onlyIsFinished) {
-      query = query..where((gs) => gs.isFinished.equals(true));
+    if (isFinished != null) {
+      query = query..where((gs) => gs.isFinished.equals(isFinished));
     }
 
     if (gameId != null) {

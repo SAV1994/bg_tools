@@ -661,7 +661,15 @@ class _GamingSessionDetailScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Icon(sessionsIcon, color: silverColor),
+        title: Row(
+          children: [
+            IconButton(
+              onPressed: () => context.goNamed('home'),
+              icon: Icon(homeIcon, color: greenColor),
+            ),
+            Icon(sessionsIcon, color: silverColor),
+          ],
+        ),
         actions: [
           // Кнопка редактирования
           IconButton(

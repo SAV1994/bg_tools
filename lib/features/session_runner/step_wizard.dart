@@ -123,29 +123,30 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(appName),
-        leading: _currentStep > 0
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: _previousStep,
-              )
-            : IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  ref.invalidate(sessionDataProvider);
-                  Navigator.pop(context);
-                },
-              ),
+        title: Row(
+          children: [
+            IconButton(
+              onPressed: () => context.goNamed('home'),
+              icon: Icon(homeIcon, color: greenColor),
+            ),
+            Icon(Icons.play_arrow, color: goldColor),
+          ],
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            ref.invalidate(sessionDataProvider);
+            Navigator.pop(context);
+          },
+        ),
         actions: [
           IconButton(
-            visualDensity: VisualDensity(horizontal: -4.0),
             icon: Icon(randomIcon),
             onPressed: () => context.pushNamed('randomizer'),
             tooltip: 'Рандомайзер',
           ),
 
           IconButton(
-            visualDensity: VisualDensity(horizontal: -4.0),
             icon: Icon(countersIcon),
             onPressed: () => _openCounter(),
             tooltip: 'Каунтеры',
@@ -154,19 +155,10 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
           if (sessionData['gamers'].isNotEmpty &&
               sessionData['roles'].isNotEmpty)
             IconButton(
-              visualDensity: VisualDensity(horizontal: -4.0),
               icon: Icon(rolesManagementIcon),
               onPressed: () => _openRolesManagement(),
               tooltip: 'Назначние роли/персонажа ',
             ),
-
-          TextButton(
-            onPressed: () {
-              ref.invalidate(sessionDataProvider);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
-          ),
         ],
       ),
       body: Column(

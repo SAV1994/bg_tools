@@ -15,9 +15,7 @@ import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
 
 class GamingSessionListScreen extends ConsumerStatefulWidget {
-  final int? gameId;
-
-  const GamingSessionListScreen({super.key, this.gameId});
+  const GamingSessionListScreen({super.key});
 
   @override
   ConsumerState<GamingSessionListScreen> createState() =>
@@ -27,10 +25,9 @@ class GamingSessionListScreen extends ConsumerStatefulWidget {
 class _GamingSessionListScreenState
     extends ConsumerState<GamingSessionListScreen> {
   List<Game> _games = [];
-  Game? _game;
-  bool _isGameSelectOpen = false;
   // Контроллеры
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _modalScrollController = ScrollController();
   // Загрузка
   bool _isLoading = false;
 
@@ -44,17 +41,181 @@ class _GamingSessionListScreenState
   Future<void> _loadData() async {
     final GameDao gameDao = ref.read(gameDaoProvider);
     _games = await gameDao.getAlreadyPlayed();
-    if (widget.gameId != null) {
-      _game = await gameDao.getSingle(widget.gameId!);
-      _isGameSelectOpen = true;
-    }
 
     setState(() => _isLoading = false);
+  }
+
+  Future<void> _showFilterModal(GamingSessionsNotifier notifier) async {
+    bool? isFinished = notifier.isFinished;
+    Game? selectedGame = notifier.gameId != null
+        ? _games.firstWhere((game) => game.id == notifier.gameId)
+        : null;
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Dialog(
+              insetPadding: const EdgeInsets.all(15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Container(
+                width: double.maxFinite,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.9,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: secondColor, // ← Фон заголовка
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(Icons.filter, color: Colors.white),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Text(
+                              'Фильтры',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        color: firstColor,
+                        child: Scrollbar(
+                          controller: _modalScrollController,
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            padding: EdgeInsetsGeometry.symmetric(
+                              horizontal: 10,
+                            ),
+                            controller: _modalScrollController,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SelectWithSearch<Game>(
+                                  label: 'Игра',
+                                  isRequired: true,
+                                  getItems: () async => _games,
+                                  selectedItem: selectedGame,
+                                  onSelectionChanged: (game) {
+                                    setStateDialog(() => selectedGame = game);
+                                  },
+                                  displayName: (game) => game.name,
+                                  getId: (game) => game.id,
+                                  searchHint: 'Поиск игры...',
+                                  placeholder: 'Не выбрана',
+                                  customItemBuilder: (game) => Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        game.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 7),
+
+                                SectionTitle(
+                                  title: 'Завершённость',
+                                  icon: Icons.done_outline,
+                                ),
+                                TriStateBtn(
+                                  value: isFinished,
+                                  onChanged: (value) {
+                                    setStateDialog(() => isFinished = value);
+                                  },
+                                  labels: const [
+                                    'Не важно',
+                                    'Завершена',
+                                    'В процессе',
+                                  ],
+                                ),
+
+                                const SizedBox(height: 7),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: secondColor,
+                        border: Border(
+                          top: BorderSide(color: Colors.grey.shade200),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              notifier.reset();
+                              Navigator.pop(context);
+                            },
+                            child: Text('Сбросить'),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: goldColor,
+                              foregroundColor: firstColor,
+                            ),
+                            onPressed: () {
+                              notifier.isFinished = isFinished;
+                              notifier.gameId = selectedGame?.id;
+
+                              notifier.refresh();
+
+                              Navigator.pop(context);
+                            },
+                            child: Text('Применить'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _modalScrollController.dispose();
     super.dispose();
   }
 
@@ -74,61 +235,33 @@ class _GamingSessionListScreenState
       },
       child: Scaffold(
         appBar: AppBar(
-          title: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            child: _isGameSelectOpen
-                ? AppBarSelect(
-                    items: _games
-                        .map((game) => SelectItem(game.id, game.name))
-                        .toList(),
-                    onSelectionChanged: (game) {
-                      notifier.filterByGame(game?.id);
-                    },
-                    selectedItem: (_game != null)
-                        ? SelectItem(_game!.id, _game!.name)
-                        : null,
-                  )
-                : Icon(sessionsIcon),
+          title: Tooltip(
+            message: 'Список записей\nо игровых сессиях',
+            child: const Icon(sessionsIcon),
           ),
+
           actions: [
             IconButton(
-              icon: Icon(
-                _isGameSelectOpen ? Icons.close : gamesIcon,
-                color: _isGameSelectOpen ? redColor : textColor,
+              icon: getFilterIcon(
+                numActiveFilters: notifier.countActiveFilters(),
               ),
-              onPressed: () {
-                setState(() {
-                  if (_isGameSelectOpen) {
-                    notifier.filterByGame(null);
-                  }
-                  _isGameSelectOpen = !_isGameSelectOpen;
-                });
-              },
+              onPressed: () => _showFilterModal(notifier),
             ),
-            if (!_isGameSelectOpen) ...[
-              IconButton(
-                icon: Icon(
-                  notifier.onlyIsFinished
-                      ? Icons.visibility_off
-                      : Icons.visibility,
-                  color: notifier.onlyIsFinished ? textColor : goldColor,
-                ),
-                onPressed: () => notifier.toggleonlyIsFinished(),
+
+            IconButton(
+              icon: Icon(
+                notifier.reverseOrdering
+                    ? Icons.arrow_upward
+                    : Icons.arrow_downward,
+                color: notifier.reverseOrdering ? goldColor : textColor,
               ),
-              IconButton(
-                icon: Icon(
-                  notifier.reverseOrdering
-                      ? Icons.arrow_upward
-                      : Icons.arrow_downward,
-                  color: notifier.reverseOrdering ? goldColor : textColor,
-                ),
-                onPressed: () => notifier.toggleOrdering(),
-              ),
-              IconButton(
-                icon: Icon(addBtnIcon),
-                onPressed: () => context.pushNamed('gaming-sessions-add'),
-              ),
-            ],
+              onPressed: () => notifier.toggleOrdering(),
+            ),
+
+            IconButton(
+              icon: Icon(addBtnIcon),
+              onPressed: () => context.pushNamed('gaming-sessions-add'),
+            ),
           ],
         ),
         body: Column(

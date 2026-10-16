@@ -217,10 +217,15 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Icon(
-            gamesIcon,
-            color: widget.gameId == null ? bronzeColor : blueColor,
-          ),
+          title: widget.gameId == null
+              ? Tooltip(
+                  message: 'Форма добавления\nнастольной игры',
+                  child: const Icon(gamesIcon, color: bronzeColor),
+                )
+              : Tooltip(
+                  message: 'Форма редактирования\nнастольной игры',
+                  child: const Icon(gamesIcon, color: blueColor),
+                ),
           actions: [
             if (widget.gameId == null)
               IconButton(

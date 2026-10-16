@@ -18,7 +18,12 @@ class _StatisticsMainScreenState extends ConsumerState<StatisticsMainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Icon(statisticsIcon)),
+      appBar: AppBar(
+        title: Tooltip(
+          message: 'Меню статистики',
+          child: const Icon(statisticsIcon),
+        ),
+      ),
       body: Center(
         child: Scrollbar(
           thumbVisibility: true,

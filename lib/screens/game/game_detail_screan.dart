@@ -261,10 +261,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 onTap: (designerId) {
                   final notifier = ref.read(gamesPaginatedProvider.notifier);
                   notifier.filterByDesigner(designerId);
-                  context.pushNamed(
-                    'games-list',
-                    queryParameters: {'designerId': designerId.toString()},
-                  );
+                  context.pushNamed('games-list');
                 },
               ),
             if (artists.isNotEmpty)
@@ -275,10 +272,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 onTap: (artistId) {
                   final notifier = ref.read(gamesPaginatedProvider.notifier);
                   notifier.filterByArtist(artistId);
-                  context.pushNamed(
-                    'games-list',
-                    queryParameters: {'artistId': artistId.toString()},
-                  );
+                  context.pushNamed('games-list');
                 },
               ),
             if (tags.isNotEmpty)
@@ -289,10 +283,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 onTap: (tagId) {
                   final notifier = ref.read(gamesPaginatedProvider.notifier);
                   notifier.filterByTag(tagId);
-                  context.pushNamed(
-                    'games-list',
-                    queryParameters: {'tagId': tagId.toString()},
-                  );
+                  context.pushNamed('games-list');
                 },
               ),
           ],
@@ -318,26 +309,25 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 data: (sessionsCount) {
                   return Row(
                     children: [
-                      IconButton(
-                        onPressed: () => context.goNamed('home'),
-                        icon: Icon(homeIcon, color: greenColor),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          final notifier = ref.read(
-                            gamingSessionsPaginatedProvider.notifier,
-                          );
-                          notifier.filterByGame(game.id);
-                          context.pushNamed(
-                            'gaming-sessions-list',
-                            queryParameters: {'gameId': game.id.toString()},
-                          );
-                        },
-                        child: Text(
-                          sessionsCount.toString(),
-                          style: TextStyle(
-                            color: goldColor,
-                            fontWeight: FontWeight.w900,
+                      HomeBtn(context: context),
+
+                      Tooltip(
+                        message:
+                            'Количество сыгранных партий\n*является ссылкой',
+                        child: GestureDetector(
+                          onTap: () {
+                            final notifier = ref.read(
+                              gamingSessionsPaginatedProvider.notifier,
+                            );
+                            notifier.filterByGame(game.id);
+                            context.pushNamed('gaming-sessions-list');
+                          },
+                          child: Text(
+                            sessionsCount.toString(),
+                            style: TextStyle(
+                              color: goldColor,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ),
                       ),

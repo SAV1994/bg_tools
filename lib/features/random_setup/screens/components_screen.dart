@@ -506,10 +506,7 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Tooltip(
-          message: _game!.name,
-          child: const Icon(componentsIcon, size: 25),
-        ),
+        title: Tooltip(message: _game!.name, child: const Icon(componentsIcon)),
         actions: [
           if (_selectedType != null) ...[
             IconButton(

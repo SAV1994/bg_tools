@@ -206,13 +206,7 @@ class _ListWithModalFormScreenState
                                     'tagId') {
                                   notifier.filterByTag(item.id);
                                 }
-                                context.pushNamed(
-                                  'games-list',
-                                  queryParameters: {
-                                    widget.config.filterParam: item.id
-                                        .toString(),
-                                  },
-                                );
+                                context.pushNamed('games-list');
                               }
                             },
                           ),

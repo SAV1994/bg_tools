@@ -1153,8 +1153,8 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(statisticsIcon, color: silverColor),
-            Icon(gameStatIcon),
+            HomeBtn(context: context),
+            Tooltip(message: 'Статистика', child: const Icon(gameStatIcon)),
           ],
         ),
         actions: [
@@ -1183,11 +1183,13 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
               Icon(Icons.show_chart, color: Colors.white),
             ],
           ),
+
           IconButton(
             icon: Icon(Icons.people),
             onPressed: _showPlayerSelection,
             tooltip: 'Выбрать игроков',
           ),
+
           Container(
             margin: EdgeInsets.symmetric(vertical: 8),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1201,13 +1203,6 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
           ),
         ],
       ),

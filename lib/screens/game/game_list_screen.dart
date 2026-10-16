@@ -15,18 +15,7 @@ import 'package:bg_tools/core/widgets/export.dart';
 import 'package:bg_tools/screens/game/mixins/export.dart';
 
 class GamesListScreen extends ConsumerStatefulWidget {
-  final int? artistId;
-  final int? designerId;
-  final int? tagId;
-  final bool opportunitiesShelf;
-
-  const GamesListScreen({
-    super.key,
-    this.artistId,
-    this.designerId,
-    this.tagId,
-    this.opportunitiesShelf = false,
-  });
+  const GamesListScreen({super.key});
 
   @override
   ConsumerState<GamesListScreen> createState() => _GamesListScreenState();
@@ -35,40 +24,10 @@ class GamesListScreen extends ConsumerStatefulWidget {
 class _GamesListScreenState extends ConsumerState<GamesListScreen>
     with UpdateIsFaforiteMixin {
   bool _isSearchOpen = false;
-
-  String? filterObjTitle;
-
   // Контроллеры
   final ScrollController _scrollController = ScrollController();
   final ScrollController _modalScrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  // Загрузка
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    _isLoading = true;
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    if (widget.artistId != null) {
-      final ArtistDao artistDao = ref.read(artistDaoProvider);
-      final Artist? artist = await artistDao.get(widget.artistId!);
-      filterObjTitle = 'Художник: ${artist!.name}';
-    } else if (widget.designerId != null) {
-      final DesignerDao designerDao = ref.read(designerDaoProvider);
-      final Designer? designer = await designerDao.get(widget.designerId!);
-      filterObjTitle = 'Геймдизайнер: ${designer!.name}';
-    } else if (widget.tagId != null) {
-      final TagDao tagDao = ref.read(tagDaoProvider);
-      final Tag? tag = await tagDao.get(widget.tagId!);
-      filterObjTitle = 'Тэг: ${tag!.name}';
-    }
-
-    setState(() => _isLoading = false);
-  }
 
   Future<List<Game>> getItemsForForBaseGamesSelect() async {
     final GameDao gameDao = ref.read(gameDaoProvider);
@@ -172,7 +131,10 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                _buildSectionTitle('Год', Icons.date_range),
+                                SectionTitle(
+                                  title: 'Год',
+                                  icon: Icons.date_range,
+                                ),
                                 YearRangeField(
                                   initialStartYear: startYear,
                                   initialEndYear: endYear,
@@ -184,9 +146,10 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                                 const SizedBox(height: 7),
 
-                                _buildSectionTitle(
-                                  'Количество игроков: ${numPlayers == 0 ? emptyFilterVal : numPlayers}',
-                                  Icons.people,
+                                SectionTitle(
+                                  title:
+                                      'Количество игроков: ${numPlayers == 0 ? emptyFilterVal : numPlayers}',
+                                  icon: Icons.people,
                                 ),
                                 Slider(
                                   value: numPlayers.toDouble(),
@@ -202,7 +165,10 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                                 const SizedBox(height: 7),
 
-                                _buildSectionTitle('Рейтинг', Icons.star),
+                                SectionTitle(
+                                  title: 'Рейтинг',
+                                  icon: Icons.star,
+                                ),
                                 Row(
                                   children: [
                                     Expanded(
@@ -250,11 +216,11 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                                 const SizedBox(height: 7),
 
-                                _buildSectionTitle(
-                                  'Наличие в коллекции',
-                                  Icons.inventory_2,
+                                SectionTitle(
+                                  title: 'Наличие в коллекции',
+                                  icon: Icons.inventory_2,
                                 ),
-                                _buildTriState(
+                                TriStateBtn(
                                   value: isInCollection,
                                   onChanged: (value) {
                                     setStateDialog(
@@ -270,11 +236,11 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                                 const SizedBox(height: 7),
 
-                                _buildSectionTitle(
-                                  'Самодостаточность',
-                                  Icons.extension,
+                                SectionTitle(
+                                  title: 'Самодостаточность',
+                                  icon: Icons.extension,
                                 ),
-                                _buildTriState(
+                                TriStateBtn(
                                   value: isStandalone,
                                   onChanged: (value) {
                                     setStateDialog(() => isStandalone = value);
@@ -288,11 +254,11 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                                 const SizedBox(height: 7),
 
-                                _buildSectionTitle(
-                                  'В избранном',
-                                  Icons.favorite,
+                                SectionTitle(
+                                  title: 'В избранном',
+                                  icon: Icons.favorite,
                                 ),
-                                _buildTriState(
+                                TriStateBtn(
                                   value: isFavorite,
                                   onChanged: (value) {
                                     setStateDialog(() => isFavorite = value);
@@ -306,11 +272,11 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
                                 const SizedBox(height: 7),
 
-                                _buildSectionTitle(
-                                  'Наличие игровых сессий',
-                                  sessionsIcon,
+                                SectionTitle(
+                                  title: 'Наличие игровых сессий',
+                                  icon: sessionsIcon,
                                 ),
-                                _buildTriState(
+                                TriStateBtn(
                                   value: isPlayed,
                                   onChanged: (value) {
                                     setStateDialog(() => isPlayed = value);
@@ -505,102 +471,6 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
     }
   }
 
-  Widget _buildSectionTitle(String title, IconData icon) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 20, color: textColor),
-            const SizedBox(width: 6),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 5),
-      ],
-    );
-  }
-
-  Widget _buildTriState({
-    required bool? value,
-    required Function(bool?) onChanged,
-    required List<String> labels, // [не важно, да, нет]
-  }) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildTriStateButton(
-            label: labels[0],
-            isSelected: value == null,
-            onTap: () => onChanged(null),
-          ),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: _buildTriStateButton(
-            label: labels[1],
-            isSelected: value == true,
-            onTap: () => onChanged(true),
-            selectedColor: Colors.green,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: _buildTriStateButton(
-            label: labels[2],
-            isSelected: value == false,
-            onTap: () => onChanged(false),
-            selectedColor: Colors.red,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTriStateButton({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-    Color selectedColor = Colors.deepPurple,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? selectedColor.withValues(alpha: 0.15)
-              : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected ? selectedColor : Colors.grey.shade300,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              color: isSelected ? selectedColor : Colors.grey.shade700,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -611,10 +481,6 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return LoadingScreen();
-    }
-
     final gamesAsync = ref.watch(gamesPaginatedProvider);
     final notifier = ref.read(gamesPaginatedProvider.notifier);
 
@@ -640,12 +506,10 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : filterObjTitle != null
-                ? Tooltip(
-                    message: filterObjTitle,
-                    child: const Icon(gamesIcon, size: 25, color: goldColor),
-                  )
-                : Icon(gamesIcon, color: textColor),
+                : Tooltip(
+                    message: 'Список настольных игр',
+                    child: const Icon(gamesIcon),
+                  ),
           ),
           actions: [
             IconButton(

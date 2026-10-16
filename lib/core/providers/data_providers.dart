@@ -31,7 +31,7 @@ final gameSessionCountDataProvider = FutureProvider.family<int, int>((
   gameId,
 ) async {
   final dao = ref.watch(gamingSessionDaoProvider);
-  return await dao.getTotalCount(onlyIsFinished: true, gameId: gameId);
+  return await dao.getTotalCount(isFinished: true, gameId: gameId);
 });
 
 // Владелец приложения
