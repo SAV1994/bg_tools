@@ -13,6 +13,9 @@ class GamingSessionsNotifier extends BaseNotifier {
   bool reverseOrdering = true;
   bool? isFinished = true;
   int? gameId;
+  DateTime? periodStart;
+  DateTime? periodEnd;
+  int? gameTypeId;
 
   @override
   Future<List<dynamic>> load() async {
@@ -21,6 +24,9 @@ class GamingSessionsNotifier extends BaseNotifier {
     totalItems = await dao.getTotalCount(
       isFinished: isFinished,
       gameId: gameId,
+      periodStart: periodStart,
+      periodEnd: periodEnd,
+      gameTypeId: gameTypeId,
       searchQuery: searchQuery,
     );
 
@@ -30,6 +36,9 @@ class GamingSessionsNotifier extends BaseNotifier {
       reverseOrdering: reverseOrdering,
       isFinished: isFinished,
       gameId: gameId,
+      periodStart: periodStart,
+      periodEnd: periodEnd,
+      gameTypeId: gameTypeId,
       searchQuery: searchQuery,
     );
   }
@@ -44,6 +53,9 @@ class GamingSessionsNotifier extends BaseNotifier {
   void resetAdditionalParams() async {
     isFinished = true;
     gameId = null;
+    periodStart = null;
+    periodEnd = null;
+    gameTypeId = null;
     reverseOrdering = true;
   }
 
@@ -53,6 +65,15 @@ class GamingSessionsNotifier extends BaseNotifier {
       counter += 1;
     }
     if (gameId != null) {
+      counter += 1;
+    }
+    if (periodStart != null) {
+      counter += 1;
+    }
+    if (periodEnd != null) {
+      counter += 1;
+    }
+    if (gameTypeId != null) {
       counter += 1;
     }
 

@@ -184,6 +184,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                     ? 'Игра добавлена'
                     : 'Изменения сохранены',
               ),
+              duration: const Duration(seconds: 1),
             ),
           );
         }
@@ -217,20 +218,21 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: widget.gameId == null
-              ? Tooltip(
-                  message: 'Форма добавления\nнастольной игры',
-                  child: const Icon(gamesIcon, color: bronzeColor),
-                )
-              : Tooltip(
-                  message: 'Форма редактирования\nнастольной игры',
-                  child: const Icon(gamesIcon, color: blueColor),
-                ),
+          title: Tooltip(
+            message: widget.gameId == null
+                ? 'Форма добавления\nнастольной игры'
+                : 'Форма редактирования\nнастольной игры',
+            child: Icon(
+              gamesIcon,
+              color: widget.gameId == null ? bronzeColor : blueColor,
+            ),
+          ),
           actions: [
             if (widget.gameId == null)
               IconButton(
                 visualDensity: VisualDensity(horizontal: -4.0),
-                icon: Icon(importIcon),
+                icon: Icon(importIcon, color: borderColor),
+                tooltip: 'Импорт игры',
                 onPressed: () => importData(
                   context: context,
                   mover: GameMover(ref: ref),

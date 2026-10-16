@@ -35,6 +35,7 @@ class RandomPlayersScreenState extends RandomInstancesScreenStateState {
   String get emtyListMsg => 'Выберите игроков';
   @override
   IconData get instIcon => gamersIcon;
+  String get tooltip => 'Рандомайзер:\nСлучайный игрок';
   @override
   IconData get singleInstIcon => Icons.person;
 

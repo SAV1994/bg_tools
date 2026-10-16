@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
-
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class RandomCoinScreen extends StatefulWidget {
   const RandomCoinScreen({super.key});
@@ -101,11 +100,11 @@ class _RandomCoinScreenState extends State<RandomCoinScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Рандомайзер:\nМонетка',
+              child: Icon(randCoinIcon),
             ),
-            Icon(randCoinIcon),
           ],
         ),
         backgroundColor: secondColor,

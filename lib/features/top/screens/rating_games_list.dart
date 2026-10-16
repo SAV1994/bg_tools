@@ -61,7 +61,15 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : Icon(topsIcon, color: goldColor),
+                : Row(
+                    children: [
+                      HomeBtn(context: context),
+                      Tooltip(
+                        message: 'Результаты топа',
+                        child: Icon(topsIcon, color: goldColor),
+                      ),
+                    ],
+                  ),
           ),
           actions: [
             IconButton(
@@ -69,6 +77,7 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                 _isSearchOpen ? Icons.close : Icons.search,
                 color: _isSearchOpen ? redColor : textColor,
               ),
+              tooltip: _isSearchOpen ? 'Закрыть поиск' : 'Поиск',
               onPressed: () {
                 setState(() {
                   if (_isSearchOpen) {
@@ -79,6 +88,7 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                 });
               },
             ),
+
             if (!_isSearchOpen) ...[
               IconButton(
                 visualDensity: VisualDensity(horizontal: -4.0),
@@ -88,11 +98,14 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                       : Icons.arrow_downward,
                   color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
+                tooltip:
+                    'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 onPressed: () => notifier.toggleOrdering(),
               ),
 
               IconButton(
                 icon: const Icon(delIcon, color: redColor),
+                tooltip: 'Удалить топ',
                 onPressed: () {
                   final rating = ratingGamesAsync.value?[0].rating;
                   buildDelModal(
@@ -110,15 +123,6 @@ class _RatingGamesListScreenState extends ConsumerState<RatingGamesListScreen>
                     },
                   );
                 },
-              ),
-
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: const Text('Выйти', style: TextStyle(color: redColor)),
               ),
             ],
           ],

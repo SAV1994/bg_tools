@@ -13,6 +13,7 @@ import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/export.dart';
 import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/core/widgets/export.dart';
+import 'package:bg_tools/features/session_runner/categories.dart';
 
 class GamingSessionListScreen extends ConsumerStatefulWidget {
   const GamingSessionListScreen({super.key});
@@ -49,6 +50,11 @@ class _GamingSessionListScreenState
     bool? isFinished = notifier.isFinished;
     Game? selectedGame = notifier.gameId != null
         ? _games.firstWhere((game) => game.id == notifier.gameId)
+        : null;
+    DateTime? periodStart = notifier.periodStart;
+    DateTime? periodEnd = notifier.periodEnd;
+    GameTypeEnum? gameType = notifier.gameTypeId != null
+        ? GameTypeEnum.fromId(notifier.gameTypeId!)
         : null;
 
     if (mounted) {
@@ -114,6 +120,80 @@ class _GamingSessionListScreenState
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                EnumSelector(
+                                  label: GameTypeEnum.title,
+                                  choices: GameTypeEnum.getDropdownMenuItems(),
+                                  selected: gameType,
+                                  onChanged: (value) => setStateDialog(
+                                    () => gameType = value as GameTypeEnum,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 15),
+
+                                Row(
+                                  spacing: 5,
+                                  children: [
+                                    Expanded(
+                                      child: InkWell(
+                                        onTap: () async {
+                                          selectDateTime(
+                                            context: context,
+                                            initialDate: periodStart,
+                                            onSelect: (dateTime) =>
+                                                setStateDialog(
+                                                  () => periodStart = dateTime,
+                                                ),
+                                          );
+                                        },
+                                        child: InputDecorator(
+                                          decoration: const InputDecoration(
+                                            labelText: 'Начало периода *',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          child: Text(
+                                            periodStart != null
+                                                ? DateFormats.formatDateTime(
+                                                    periodStart!,
+                                                  )
+                                                : emptyFilterVal,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    Expanded(
+                                      child: InkWell(
+                                        onTap: () async {
+                                          selectDateTime(
+                                            context: context,
+                                            initialDate: periodEnd,
+                                            onSelect: (dateTime) =>
+                                                setStateDialog(
+                                                  () => periodEnd = dateTime,
+                                                ),
+                                          );
+                                        },
+                                        child: InputDecorator(
+                                          decoration: const InputDecoration(
+                                            labelText: 'Конец периода *',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          child: Text(
+                                            periodEnd != null
+                                                ? DateFormats.formatDateTime(
+                                                    periodEnd!,
+                                                  )
+                                                : emptyFilterVal,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 7),
+
                                 SelectWithSearch<Game>(
                                   label: 'Игра',
                                   isRequired: true,
@@ -157,8 +237,6 @@ class _GamingSessionListScreenState
                                     'В процессе',
                                   ],
                                 ),
-
-                                const SizedBox(height: 7),
                               ],
                             ),
                           ),
@@ -192,6 +270,9 @@ class _GamingSessionListScreenState
                             onPressed: () {
                               notifier.isFinished = isFinished;
                               notifier.gameId = selectedGame?.id;
+                              notifier.periodStart = periodStart;
+                              notifier.periodEnd = periodEnd;
+                              notifier.gameTypeId = gameType?.id;
 
                               notifier.refresh();
 
@@ -236,7 +317,7 @@ class _GamingSessionListScreenState
       child: Scaffold(
         appBar: AppBar(
           title: Tooltip(
-            message: 'Список записей\nо игровых сессиях',
+            message: 'Список записей\nигровых сессиях',
             child: const Icon(sessionsIcon),
           ),
 
@@ -245,6 +326,7 @@ class _GamingSessionListScreenState
               icon: getFilterIcon(
                 numActiveFilters: notifier.countActiveFilters(),
               ),
+              tooltip: 'Фильтры',
               onPressed: () => _showFilterModal(notifier),
             ),
 
@@ -255,11 +337,14 @@ class _GamingSessionListScreenState
                     : Icons.arrow_downward,
                 color: notifier.reverseOrdering ? goldColor : textColor,
               ),
+              tooltip:
+                  'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
               onPressed: () => notifier.toggleOrdering(),
             ),
 
             IconButton(
               icon: Icon(addBtnIcon),
+              tooltip: 'Добавить игровую сессию',
               onPressed: () => context.pushNamed('gaming-sessions-add'),
             ),
           ],

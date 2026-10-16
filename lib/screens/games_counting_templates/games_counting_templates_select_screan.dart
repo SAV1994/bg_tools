@@ -80,11 +80,11 @@ class _GamesCountingTemplatesSelectScreenState
                   )
                 : Row(
                     children: [
-                      IconButton(
-                        onPressed: () => context.goNamed('home'),
-                        icon: Icon(homeIcon, color: greenColor),
+                      HomeBtn(context: context),
+                      Tooltip(
+                        message: 'Выбор шаблона сессии',
+                        child: const Icon(templatesIcon, color: goldColor),
                       ),
-                      Icon(templatesIcon, color: goldColor),
                     ],
                   ),
           ),
@@ -92,8 +92,9 @@ class _GamesCountingTemplatesSelectScreenState
             IconButton(
               icon: Icon(
                 _isSearchOpen ? Icons.close : Icons.search,
-                color: _isSearchOpen ? redColor : borderColor,
+                color: _isSearchOpen ? redColor : textColor,
               ),
+              tooltip: _isSearchOpen ? 'Закрыть поиск' : 'Поиск',
               onPressed: () {
                 setState(() {
                   if (_isSearchOpen) {
@@ -104,14 +105,17 @@ class _GamesCountingTemplatesSelectScreenState
                 });
               },
             ),
+
             if (!_isSearchOpen) ...[
               IconButton(
                 icon: Icon(
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
                       : Icons.arrow_downward,
-                  color: notifier.reverseOrdering ? goldColor : borderColor,
+                  color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
+                tooltip:
+                    'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 onPressed: () => notifier.toggleOrdering(),
               ),
             ],

@@ -26,6 +26,8 @@ class RandomGamesScreenState extends RandomInstancesScreenStateState {
   @override
   IconData get instIcon => gamesIcon;
   @override
+  String get tooltip => 'Рандомайзер:\nСлучайная игра';
+  @override
   IconData get singleInstIcon => Icons.insert_photo;
 
   @override

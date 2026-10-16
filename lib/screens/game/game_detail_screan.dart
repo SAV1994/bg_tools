@@ -336,10 +336,7 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                 },
                 loading: () => Row(
                   children: [
-                    IconButton(
-                      onPressed: () => context.goNamed('home'),
-                      icon: Icon(homeIcon, color: greenColor),
-                    ),
+                    HomeBtn(context: context),
                     Icon(gamesIcon, color: silverColor),
                   ],
                 ),
@@ -347,13 +344,15 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
               ),
               actions: [
                 if (game.isStandalone) ...[
-                  // Кнопка запуска партии
                   if (templatesCount > 0)
                     IconButton(
                       visualDensity: VisualDensity(horizontal: -4.0),
                       icon: (templatesCount == 1)
                           ? Icon(Icons.play_arrow)
                           : Icon(Icons.play_arrow_outlined),
+                      tooltip: (templatesCount == 1)
+                          ? 'Запуск игровой сессии'
+                          : 'Выбор шаблона игровой сессии',
                       onPressed: () async {
                         if (templatesCount == 1) {
                           _runSession();
@@ -368,10 +367,10 @@ class _GamesDetailScreenState extends ConsumerState<GamesDetailScreen>
                       },
                     ),
 
-                  // Заметки
                   IconButton(
                     visualDensity: VisualDensity(horizontal: -4.0),
                     icon: const Icon(notesIcon),
+                    tooltip: 'Список заметок игры',
                     onPressed: () {
                       final notifier = ref.read(
                         notesPaginatedProvider.notifier,

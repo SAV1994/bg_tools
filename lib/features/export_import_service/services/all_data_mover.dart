@@ -668,6 +668,7 @@ class AllDataMover extends BaseMover {
               ),
             );
       }
+
       for (final gdJson in data['gameDesigners']) {
         await database
             .into(database.gamesDesigners)

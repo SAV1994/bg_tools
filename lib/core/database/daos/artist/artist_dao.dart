@@ -4,6 +4,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/artist.dart';
 import 'package:bg_tools/core/database/tables/games_artists.dart';
 import 'package:bg_tools/core/database/tables/rating.dart';
+import 'package:bg_tools/core/dataclasses/export.dart';
 
 part 'artist_dao.g.dart';
 
@@ -63,7 +64,7 @@ class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
   }
 
   // Художники с пагинацией
-  Future<List<Artist>> getPaginated({
+  Future<List<ArtistData>> getPaginated({
     required int page,
     required int pageSize,
     required bool reverseOrdering,
@@ -76,7 +77,34 @@ class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
     )..limit(pageSize, offset: offset);
     query = _getFilteredQuery(query: query, searchQuery: searchQuery);
 
-    return await query.get();
+    final joinedQuery = query.join([
+      rightOuterJoin(gamesArtists, gamesArtists.artistId.equalsExp(artists.id)),
+    ]);
+
+    final rows = await joinedQuery.get();
+    final Map<int, dynamic> artistsMap = {};
+    for (final row in rows) {
+      final Artist artist = row.readTable(artists);
+      final GamesArtist? junction = row.readTable(gamesArtists);
+
+      if (artistsMap[artist.id] != null) {
+        artistsMap[artist.id]['gamesCount'] += 1;
+      } else {
+        artistsMap[artist.id] = {
+          'artist': artist,
+          'gamesCount': junction != null ? 1 : 0,
+        };
+      }
+    }
+
+    return artistsMap.values
+        .map(
+          (artistData) => ArtistData(
+            instance: artistData['artist'],
+            gamesCount: artistData['gamesCount'],
+          ),
+        )
+        .toList();
   }
 
   // Общее количество художников, соответствующих условию

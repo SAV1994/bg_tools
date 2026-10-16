@@ -72,21 +72,25 @@ class _CountingTemplateDetailScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _gamesTemplateCount.toString(),
-          style: TextStyle(color: silverColor, fontWeight: FontWeight.w900),
+        title: Tooltip(
+          message: 'Количество использований шаблона',
+          child: Text(
+            _gamesTemplateCount.toString(),
+            style: TextStyle(color: silverColor, fontWeight: FontWeight.w900),
+          ),
         ),
         actions: [
-          // Кнопка редактирования
           IconButton(
             icon: const Icon(Icons.edit),
+            tooltip: 'Редактировть шаблон',
             onPressed: () async {
               _openUpdateForm();
             },
           ),
-          // Кнопка удаления
+
           IconButton(
             icon: const Icon(delIcon, color: redColor),
+            tooltip: 'Удалить шаблон',
             onPressed: () {
               final template = gamingSessionAsync.value;
               if (template != null) {

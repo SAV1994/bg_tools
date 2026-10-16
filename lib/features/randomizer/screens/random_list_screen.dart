@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/consts/export.dart';
 import 'package:bg_tools/core/database/app_database.dart';
@@ -396,17 +395,18 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Рандомайзер:\nСписок',
+              child: Icon(randomListIcon),
             ),
-            Icon(randomListIcon),
           ],
         ),
         actions: [
           if (_items.isNotEmpty) ...[
             IconButton(
               icon: Icon(Icons.clear),
+              tooltip: 'Удалить всё',
               onPressed: () => setState(() {
                 _items.clear();
                 _selectedRandomList = null;
@@ -415,6 +415,7 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
 
             IconButton(
               icon: Icon(saveIcon),
+              tooltip: 'Сохранить',
               onPressed: () {
                 if (_selectedRandomList != null) {
                   _textController.text = _selectedRandomList!.name;
@@ -427,10 +428,15 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
             ),
 
             if (_selectedRandomList != null) ...[
-              IconButton(icon: Icon(copyIcon), onPressed: () => _copyList()),
+              IconButton(
+                icon: Icon(copyIcon),
+                tooltip: 'Копировать',
+                onPressed: () => _copyList(),
+              ),
 
               IconButton(
                 icon: Icon(delIcon, color: redColor),
+                tooltip: 'Удалить список',
                 onPressed: () => buildDelModal(
                   context,
                   ref,
@@ -445,7 +451,11 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
             ],
           ],
 
-          IconButton(icon: Icon(addBtnIcon), onPressed: () => _addItem()),
+          IconButton(
+            icon: Icon(addBtnIcon),
+            tooltip: 'Добавить новый элемент',
+            onPressed: () => _addItem(),
+          ),
         ],
       ),
       body: Column(

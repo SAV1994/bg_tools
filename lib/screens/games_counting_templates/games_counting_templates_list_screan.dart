@@ -62,11 +62,11 @@ class _GamesCountingTemplateslistScreenState
                   )
                 : Row(
                     children: [
-                      IconButton(
-                        onPressed: () => context.goNamed('home'),
-                        icon: Icon(homeIcon, color: greenColor),
+                      HomeBtn(context: context),
+                      Tooltip(
+                        message: 'Настройка шаблонов',
+                        child: Icon(templatesIcon),
                       ),
-                      Icon(templatesIcon),
                     ],
                   ),
           ),
@@ -77,6 +77,7 @@ class _GamesCountingTemplateslistScreenState
                 _isSearchOpen ? Icons.close : Icons.search,
                 color: _isSearchOpen ? redColor : textColor,
               ),
+              tooltip: _isSearchOpen ? 'Закрыть поиск' : 'Поиск',
               onPressed: () {
                 setState(() {
                   if (_isSearchOpen) {
@@ -95,10 +96,13 @@ class _GamesCountingTemplateslistScreenState
                       : Icons.arrow_downward,
                   color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
+                tooltip:
+                    'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 onPressed: () => notifier.toggleOrdering(),
               ),
               IconButton(
                 icon: Icon(addBtnIcon),
+                tooltip: 'Добавить шаблон',
                 onPressed: () => context.pushNamed(
                   'counting-templates-add',
                   pathParameters: {'gameId': widget.gameId.toString()},

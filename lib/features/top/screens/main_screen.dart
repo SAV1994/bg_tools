@@ -23,7 +23,7 @@ class _TopMainScreenState extends ConsumerState<TopMainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Icon(topsIcon),
+        title: Tooltip(message: 'Меню рейтинга', child: Icon(topsIcon)),
         actions: [
           if (ratingDataAsync.value != null)
             IconButton(

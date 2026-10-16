@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
-
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class BlockData {
   final int id;
@@ -445,11 +444,8 @@ class _RandomFateScreenState extends State<RandomFateScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
-            ),
-            Icon(fateIcon),
+            HomeBtn(context: context),
+            Tooltip(message: 'Рандомайзер:\nЖребий', child: Icon(fateIcon)),
           ],
         ),
         backgroundColor: secondColor,

@@ -18,6 +18,7 @@ class DesignersListScreen extends ConsumerWidget {
       config:
           ListWithModalFormConfig<Designer, DesignerDao, DesignersCompanion>(
             icon: Icons.account_balance,
+            tooltip: 'Список геймдизайнеров',
             dataProvider: designersPaginatedProvider,
             daoProvier: designerDaoProvider,
             companionFactory: (name) => DesignersCompanion(name: Value(name)),

@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
-
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class DiceType {
   final int sides;
@@ -330,11 +329,11 @@ class _RandomDiceScreenState extends State<RandomDiceScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Рандомайзер:\nИгральные кости',
+              child: Icon(diceIcon),
             ),
-            Icon(diceIcon),
           ],
         ),
         backgroundColor: secondColor,

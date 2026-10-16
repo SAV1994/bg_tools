@@ -17,7 +17,9 @@ class _TagsMenuScreenState extends ConsumerState<TagsMenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Icon(tagsIcon)),
+      appBar: AppBar(
+        title: Tooltip(message: 'Меню тэгов', child: Icon(tagsIcon)),
+      ),
       body: Center(
         child: Scrollbar(
           thumbVisibility: true,

@@ -17,6 +17,7 @@ class ByDesignersTopListScreen extends ConsumerWidget {
     return TopListScreen<Designer, DesignerDao>(
       topType: TopTypeEnum.byDesigner,
       icon: designersIcon,
+      tooltip: 'Топ по геймдизайнеру',
       getSubtitle: (ratingData) =>
           '${TopTypeEnum.byDesigner.label} - ${ratingData.designer?.name}',
       filterConfig: FiltreConfig<DesignerDao>(

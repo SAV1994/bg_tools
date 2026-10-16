@@ -247,6 +247,9 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     required bool reverseOrdering,
     bool? isFinished,
     int? gameId,
+    DateTime? periodStart,
+    DateTime? periodEnd,
+    int? gameTypeId,
     String? searchQuery,
   }) async {
     final offset = page * pageSize;
@@ -255,6 +258,9 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
       query: _getBaseQuery(reverse: reverseOrdering),
       isFinished: isFinished,
       gameId: gameId,
+      periodStart: periodStart,
+      periodEnd: periodEnd,
+      gameTypeId: gameTypeId,
       searchQuery: searchQuery,
     )..limit(pageSize, offset: offset);
     final joinedQuery = query.join([
@@ -274,6 +280,9 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   Future<int> getTotalCount({
     bool? isFinished,
     int? gameId,
+    DateTime? periodStart,
+    DateTime? periodEnd,
+    int? gameTypeId,
     String? searchQuery,
   }) async {
     SimpleSelectStatement<$GamingSessionsTable, GamingSession> query = select(
@@ -283,6 +292,9 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
       query: query,
       isFinished: isFinished,
       gameId: gameId,
+      periodStart: periodStart,
+      periodEnd: periodEnd,
+      gameTypeId: gameTypeId,
       searchQuery: searchQuery,
     );
 
@@ -434,13 +446,13 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Все корневые сессии по игре
-  Future<List<GamingSession>> getByGame(int gameId, int gameType) async {
+  Future<List<GamingSession>> getByGame(int gameId, int gameTypeId) async {
     final sessions =
         await (select(gamingSessions)
               ..where(
                 (gs) =>
                     gs.gameId.equals(gameId) &
-                    gs.gameType.equals(gameType) &
+                    gs.gameType.equals(gameTypeId) &
                     gs.rootSessionId.isNull(),
               )
               ..orderBy([
@@ -485,9 +497,10 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     required SimpleSelectStatement<$GamingSessionsTable, GamingSession> query,
     bool? isFinished,
     int? gameId,
-    String? searchQuery,
     DateTime? periodStart,
     DateTime? periodEnd,
+    int? gameTypeId,
+    String? searchQuery,
   }) {
     if (isFinished != null) {
       query = query..where((gs) => gs.isFinished.equals(isFinished));
@@ -505,6 +518,10 @@ class GamingSessionDao extends DatabaseAccessor<AppDatabase>
     if (periodEnd != null) {
       query = query
         ..where((gs) => gs.finishedAt.isSmallerOrEqualValue(periodEnd));
+    }
+
+    if (gameTypeId != null) {
+      query = query..where((gs) => gs.gameType.equals(gameTypeId));
     }
 
     if (searchQuery != null && searchQuery.isNotEmpty) {

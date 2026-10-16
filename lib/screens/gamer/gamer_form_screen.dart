@@ -90,6 +90,7 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
                     ? 'Игрок добавлен'
                     : 'Изменения сохранены',
               ),
+              duration: const Duration(seconds: 1),
             ),
           );
         }
@@ -126,14 +127,20 @@ class _GamersFormScreenState extends ConsumerState<GamersFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Icon(
-          gamersIcon,
-          color: widget.gamerId == null ? bronzeColor : blueColor,
+        title: Tooltip(
+          message: widget.gamerId == null
+              ? 'Форма добавления\nигрока'
+              : 'Форма редактирования\nигрока',
+          child: Icon(
+            gamersIcon,
+            color: widget.gamerId == null ? bronzeColor : blueColor,
+          ),
         ),
         actions: [
           if (widget.gamerId != null && gamer!.isOwner == false)
             IconButton(
               icon: Icon(delIcon, color: redColor),
+              tooltip: 'Удаление игрока',
               onPressed: () => {
                 buildDelModal(
                   context,

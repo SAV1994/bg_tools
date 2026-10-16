@@ -210,6 +210,7 @@ class _CountingTemplateFormFormState
           content: Text(
             'Нельзя изменить тип игры, сначала удалите связи с играми.',
           ),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -225,6 +226,7 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Выберите тип определения первого игрока'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -233,6 +235,7 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Выберите тип определения результативности'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -241,6 +244,7 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Укажите есть ли возможность общего поражения'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -249,13 +253,17 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Выберите тип игровых очков при командной игре'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
     }
     if (_showPointType && _selectedPointType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите тип игровых очков')),
+        const SnackBar(
+          content: Text('Выберите тип игровых очков'),
+          duration: Duration(seconds: 1),
+        ),
       );
       return;
     }
@@ -269,6 +277,7 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Укажите есть ли возможность победы другим путём'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -277,6 +286,7 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Выберите тип определения первого игрока в раунде'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -286,6 +296,7 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Выберите тип очков для определения первого игрока'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -295,26 +306,36 @@ class _CountingTemplateFormFormState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Выберите тип последовательности ходов игроков'),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
     }
     if (_showGameHostType && _selectedGameHostType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите тип организации игры')),
+        const SnackBar(
+          content: Text('Выберите тип организации игры'),
+          duration: Duration(seconds: 1),
+        ),
       );
       return;
     }
     if (_showSecretRolesDistributionType &&
         _selectedSecretRolesDistributionType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите способ распределения ролей')),
+        const SnackBar(
+          content: Text('Выберите способ распределения ролей'),
+          duration: Duration(seconds: 1),
+        ),
       );
       return;
     }
     if (_showUniquenessRolesType && _selectedUniquenessRolesType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите уникальность ролей')),
+        const SnackBar(
+          content: Text('Выберите уникальность ролей'),
+          duration: Duration(seconds: 1),
+        ),
       );
       return;
     }
@@ -362,13 +383,18 @@ class _CountingTemplateFormFormState
                   ? 'Шаблон добавлен'
                   : 'Изменения сохранены',
             ),
+            duration: const Duration(seconds: 1),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Ошибка: $e'),
+            duration: const Duration(seconds: 1),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -398,9 +424,14 @@ class _CountingTemplateFormFormState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Icon(
-          templatesIcon,
-          color: widget.templateId == null ? bronzeColor : blueColor,
+        title: Tooltip(
+          message: widget.templateId == null
+              ? 'Форма добавления\nшаблона'
+              : 'Форма редактирования\nшаблона',
+          child: Icon(
+            templatesIcon,
+            color: widget.templateId == null ? bronzeColor : blueColor,
+          ),
         ),
       ),
       body: _isLoading

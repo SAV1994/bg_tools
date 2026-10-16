@@ -76,7 +76,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : Icon(gamersIcon),
+                : Tooltip(message: 'Список игроков', child: Icon(gamersIcon)),
           ),
           actions: [
             IconButton(
@@ -84,6 +84,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
                 _isSearchOpen ? Icons.close : Icons.search,
                 color: _isSearchOpen ? redColor : textColor,
               ),
+              tooltip: _isSearchOpen ? 'Закрыть поиск' : 'Поиск',
               onPressed: () {
                 setState(() {
                   if (_isSearchOpen) {
@@ -94,6 +95,7 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
                 });
               },
             ),
+
             if (!_isSearchOpen) ...[
               IconButton(
                 icon: Icon(
@@ -102,10 +104,14 @@ class _GamersListScreenState extends ConsumerState<GamersListScreen> {
                       : Icons.arrow_downward,
                   color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
+                tooltip:
+                    'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 onPressed: () => notifier.toggleOrdering(),
               ),
+
               IconButton(
                 onPressed: () => {_openAddForm()},
+                tooltip: 'Добавить игрока',
                 icon: Icon(addBtnIcon),
               ),
             ],

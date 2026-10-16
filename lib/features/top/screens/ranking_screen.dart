@@ -173,7 +173,10 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Icon(topsIcon, color: goldColor),
+        title: Tooltip(
+          message: 'Ранжирование коллекции',
+          child: Icon(topsIcon, color: goldColor),
+        ),
         backgroundColor: secondColor,
         foregroundColor: textColor,
         actions: [

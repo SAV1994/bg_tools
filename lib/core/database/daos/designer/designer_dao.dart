@@ -4,6 +4,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/designer.dart';
 import 'package:bg_tools/core/database/tables/games_designers.dart';
 import 'package:bg_tools/core/database/tables/rating.dart';
+import 'package:bg_tools/core/dataclasses/export.dart';
 
 part 'designer_dao.g.dart';
 
@@ -66,7 +67,7 @@ class DesignerDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Геймдизайнеры с пагинацией
-  Future<List<Designer>> getPaginated({
+  Future<List<DesignertData>> getPaginated({
     required int page,
     required int pageSize,
     required bool reverseOrdering,
@@ -79,7 +80,37 @@ class DesignerDao extends DatabaseAccessor<AppDatabase>
     )..limit(pageSize, offset: offset);
     query = _getFilteredQuery(query: query, searchQuery: searchQuery);
 
-    return await query.get();
+    final joinedQuery = query.join([
+      rightOuterJoin(
+        gamesDesigners,
+        gamesDesigners.designerId.equalsExp(designers.id),
+      ),
+    ]);
+
+    final rows = await joinedQuery.get();
+    final Map<int, dynamic> designersMap = {};
+    for (final row in rows) {
+      final Designer designer = row.readTable(designers);
+      final GamesDesigner? junction = row.readTable(gamesDesigners);
+
+      if (designersMap[designer.id] != null) {
+        designersMap[designer.id]['gamesCount'] += 1;
+      } else {
+        designersMap[designer.id] = {
+          'designer': designer,
+          'gamesCount': junction != null ? 1 : 0,
+        };
+      }
+    }
+
+    return designersMap.values
+        .map(
+          (artistData) => DesignertData(
+            instance: artistData['designer'],
+            gamesCount: artistData['gamesCount'],
+          ),
+        )
+        .toList();
   }
 
   // Общее количество геймдизайнеров, соответствующих условию

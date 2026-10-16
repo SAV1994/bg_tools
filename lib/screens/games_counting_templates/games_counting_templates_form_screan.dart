@@ -217,6 +217,7 @@ class _GamesCountingTemplatesModalFormState
                     ? 'Шаблон добавлен'
                     : 'Изменения сохранены',
               ),
+              duration: const Duration(seconds: 1),
             ),
           );
         }
@@ -326,6 +327,7 @@ class _GamesCountingTemplatesModalFormState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Введите название роли'),
+          duration: const Duration(seconds: 1),
           backgroundColor: Colors.red,
         ),
       );
@@ -336,6 +338,7 @@ class _GamesCountingTemplatesModalFormState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Роли должны быть уникальными'),
+          duration: const Duration(seconds: 1),
           backgroundColor: Colors.red,
         ),
       );
@@ -346,6 +349,7 @@ class _GamesCountingTemplatesModalFormState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Количество должно быть не менее 1'),
+          duration: const Duration(seconds: 1),
           backgroundColor: Colors.red,
         ),
       );
@@ -727,6 +731,7 @@ class _GamesCountingTemplatesModalFormState
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Заполните обязательные поля'),
+                    duration: const Duration(seconds: 1),
                     backgroundColor: redColor,
                   ),
                 );
@@ -785,6 +790,7 @@ class _GamesCountingTemplatesModalFormState
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Заполните обязательные поля'),
+                    duration: const Duration(seconds: 1),
                     backgroundColor: redColor,
                   ),
                 );
@@ -862,7 +868,10 @@ class _GamesCountingTemplatesModalFormState
                 FocusScope.of(context).unfocus();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Введите название роли')),
+                  const SnackBar(
+                    content: Text('Введите название роли'),
+                    duration: Duration(seconds: 1),
+                  ),
                 );
               }
             },
@@ -991,15 +1000,28 @@ class _GamesCountingTemplatesModalFormState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Icon(
-          templatesIcon,
-          color: widget.gamesCountingTemplatesId == null
-              ? bronzeColor
-              : blueColor,
+        title: Tooltip(
+          message: widget.gamesCountingTemplatesId == null
+              ? 'Форма добавления\nшаблона сессии'
+              : 'Форма редактирования\nшаблона сессии',
+          child: Icon(
+            templatesIcon,
+            color: widget.gamesCountingTemplatesId == null
+                ? bronzeColor
+                : blueColor,
+          ),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
+            tooltip:
+                ([
+                      _SelectMode.secretTeams,
+                      _SelectMode.secretRoles,
+                    ].contains(_mode) &&
+                    _secretRolesConfig.length < 4)
+                ? 'Добавить команду'
+                : 'Добавить роль',
             onPressed: () {
               if ([
                     _SelectMode.secretTeams,
@@ -1016,7 +1038,8 @@ class _GamesCountingTemplatesModalFormState
           if (widget.gamesCountingTemplatesId == null)
             IconButton(
               visualDensity: VisualDensity(horizontal: -4.0),
-              icon: const Icon(importIcon),
+              icon: const Icon(importIcon, color: borderColor),
+              tooltip: 'Импорт шаблона сессии',
               onPressed: () => importData(
                 context: context,
                 mover: GameTemplateMover(ref: ref, gameId: widget.gameId),
@@ -1042,7 +1065,8 @@ class _GamesCountingTemplatesModalFormState
           if (widget.gamesCountingTemplatesId != null) ...[
             IconButton(
               visualDensity: VisualDensity(horizontal: -4.0),
-              icon: const Icon(exportIcon),
+              icon: const Icon(exportIcon, color: greenColor),
+              tooltip: 'Экспорт шаблона сессии',
               onPressed: () => exportData(
                 context: context,
                 mover: GameTemplateMover(
@@ -1054,6 +1078,7 @@ class _GamesCountingTemplatesModalFormState
             ),
             IconButton(
               icon: const Icon(delIcon, color: redColor),
+              tooltip: 'Удалить шаблон сессии',
               onPressed: () {
                 buildDelModal(
                   context,

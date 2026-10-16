@@ -3,9 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
-
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class TouchPoint {
   final int id;
@@ -169,27 +168,30 @@ class _RandomTouchScreenState extends State<RandomTouchScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Рандомайзер:\nКасания',
+              child: Icon(randTouchIcon),
             ),
-            Icon(randTouchIcon),
           ],
         ),
         backgroundColor:
             _selectedColor?.$1.withValues(alpha: 0.8) ?? secondColor,
         foregroundColor: textColor,
         actions: [
-          Container(
-            margin: EdgeInsets.all(8),
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: textColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              '${_touches.length}/10',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Tooltip(
+            message: 'Количество касаний',
+            child: Container(
+              margin: EdgeInsets.all(8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: textColor.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${_touches.length}/10',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],

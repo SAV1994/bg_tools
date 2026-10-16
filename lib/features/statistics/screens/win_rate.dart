@@ -554,8 +554,8 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(statisticsIcon, color: silverColor),
-            Icon(winRateIcon),
+            HomeBtn(context: context),
+            Tooltip(message: 'Статистика побед', child: Icon(winRateIcon)),
           ],
         ),
         actions: [
@@ -564,26 +564,23 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
             onPressed: _showPlayerSelection,
             tooltip: 'Выбрать игроков',
           ),
-          Container(
-            margin: EdgeInsets.all(8),
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(
-                '${_selectedPlayers.length}/5',
-                style: TextStyle(fontWeight: FontWeight.bold),
+
+          Tooltip(
+            message: 'Количество игроков',
+            child: Container(
+              margin: EdgeInsets.all(8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  '${_selectedPlayers.length}/5',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
           ),
         ],
       ),

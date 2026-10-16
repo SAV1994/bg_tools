@@ -88,7 +88,10 @@ class _TopInitScreenState extends ConsumerState<TopInitScreen> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Недостаточно игр для ранжирования')),
+        SnackBar(
+          content: Text('Недостаточно игр для ранжирования'),
+          duration: const Duration(seconds: 1),
+        ),
       );
     }
   }
@@ -96,7 +99,12 @@ class _TopInitScreenState extends ConsumerState<TopInitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Icon(topsIcon, color: bronzeColor)),
+      appBar: AppBar(
+        title: Tooltip(
+          message: 'Инициализация топа',
+          child: Icon(topsIcon, color: bronzeColor),
+        ),
+      ),
       body: _isLoading
           ? LoadingScreen()
           : SingleChildScrollView(

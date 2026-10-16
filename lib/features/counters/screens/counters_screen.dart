@@ -217,7 +217,7 @@ class _CountersScreenState extends ConsumerState<CountersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Icon(countersIcon),
+        title: Tooltip(message: 'Каунтеры', child: Icon(countersIcon)),
         actions: [
           if (!_isLoading &&
               _sessionData != null &&
@@ -229,9 +229,17 @@ class _CountersScreenState extends ConsumerState<CountersScreen> {
             ),
 
           if (_counterControllers.isNotEmpty)
-            IconButton(icon: Icon(delIcon), onPressed: () => _clearData()),
+            IconButton(
+              icon: Icon(delIcon),
+              tooltip: 'Удалить все',
+              onPressed: () => _clearData(),
+            ),
 
-          IconButton(icon: Icon(addBtnIcon), onPressed: () => _addCounter()),
+          IconButton(
+            icon: Icon(addBtnIcon),
+            tooltip: 'Добавить каунтер',
+            onPressed: () => _addCounter(),
+          ),
         ],
       ),
       body: _isLoading

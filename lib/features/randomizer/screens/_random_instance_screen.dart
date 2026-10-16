@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:bg_tools/core/app_data.dart';
 import 'package:bg_tools/core/consts/export.dart';
@@ -26,6 +25,7 @@ abstract class RandomInstancesScreenStateState
   AdditionalOptionType? get additionalOption;
   String get emtyListMsg;
   IconData get instIcon;
+  String get tooltip;
   IconData get singleInstIcon;
 
   List allData = [];
@@ -144,21 +144,26 @@ abstract class RandomInstancesScreenStateState
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
-            ),
-            Icon(instIcon),
+            HomeBtn(context: context),
+            Tooltip(message: tooltip, child: Icon(instIcon)),
           ],
         ),
         actions: [
           if (selectedData.isNotEmpty)
-            IconButton(icon: Icon(delIcon), onPressed: () => _clearData()),
+            IconButton(
+              icon: Icon(delIcon),
+              tooltip: 'Очистить всё',
+              onPressed: () => _clearData(),
+            ),
 
           if (additionalOption != null && additionalOption!.show(sessionData))
             additionalOption!.btn,
 
-          IconButton(icon: Icon(addBtnIcon), onPressed: () => _showAddDialog()),
+          IconButton(
+            icon: Icon(addBtnIcon),
+            tooltip: 'Добавить',
+            onPressed: () => _showAddDialog(),
+          ),
         ],
       ),
       body: selectedData.isEmpty

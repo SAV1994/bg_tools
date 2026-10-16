@@ -18,6 +18,7 @@ class TagsListScreen extends ConsumerWidget {
     return ListWithModalFormScreen<ListWithModalFormConfig>(
       config: ListWithModalFormConfig<Tag, TagDao, TagsCompanion>(
         icon: categoriesIcon,
+        tooltip: 'Список категорий',
         dataProvider: tagsPaginatedProvider,
         daoProvier: tagDaoProvider,
         companionFactory: (name) => TagsCompanion(name: Value(name)),

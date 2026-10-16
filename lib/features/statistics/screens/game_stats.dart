@@ -1154,34 +1154,39 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
         title: Row(
           children: [
             HomeBtn(context: context),
-            Tooltip(message: 'Статистика', child: const Icon(gameStatIcon)),
+            Tooltip(
+              message: 'Статистика по игре',
+              child: const Icon(gameStatIcon),
+            ),
           ],
         ),
         actions: [
-          // Переключение между графиками
-          ToggleButtons(
-            isSelected: [
-              _chartMode == _ChartMode.winRate,
-              _chartMode == _ChartMode.wp,
-            ],
-            onPressed: (_selectedGame == null || _gameStat['scores'].isEmpty)
-                ? null
-                : (index) {
-                    setState(() {
-                      _toggleChart();
-                      _selectedIndex = null;
-                    });
-                  },
-            constraints: BoxConstraints(maxWidth: 50, maxHeight: 40),
-            color: Colors.white70,
-            selectedColor: Colors.white,
-            fillColor: Colors.white.withValues(alpha: 0.2),
-            borderColor: Colors.white54,
-            selectedBorderColor: Colors.white,
-            children: [
-              Icon(Icons.bar_chart, color: Colors.white),
-              Icon(Icons.show_chart, color: Colors.white),
-            ],
+          Tooltip(
+            message: 'Выбор режима',
+            child: ToggleButtons(
+              isSelected: [
+                _chartMode == _ChartMode.winRate,
+                _chartMode == _ChartMode.wp,
+              ],
+              onPressed: (_selectedGame == null || _gameStat['scores'].isEmpty)
+                  ? null
+                  : (index) {
+                      setState(() {
+                        _toggleChart();
+                        _selectedIndex = null;
+                      });
+                    },
+              constraints: BoxConstraints(maxWidth: 50, maxHeight: 40),
+              color: Colors.white70,
+              selectedColor: Colors.white,
+              fillColor: Colors.white.withValues(alpha: 0.2),
+              borderColor: Colors.white54,
+              selectedBorderColor: Colors.white,
+              children: [
+                Icon(Icons.bar_chart, color: Colors.white),
+                Icon(Icons.show_chart, color: Colors.white),
+              ],
+            ),
           ),
 
           IconButton(
@@ -1190,17 +1195,20 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
             tooltip: 'Выбрать игроков',
           ),
 
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 8),
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(
-                '${_selectedPlayers.length}/5',
-                style: TextStyle(fontWeight: FontWeight.bold),
+          Tooltip(
+            message: 'Количество игроков',
+            child: Container(
+              margin: EdgeInsets.all(8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  '${_selectedPlayers.length}/5',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ),

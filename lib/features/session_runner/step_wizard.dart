@@ -125,11 +125,11 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Сессия',
+              child: Icon(Icons.play_arrow, color: goldColor),
             ),
-            Icon(Icons.play_arrow, color: goldColor),
           ],
         ),
         leading: IconButton(
@@ -157,7 +157,7 @@ class _StepWizardScreenState extends ConsumerState<StepWizardScreen> {
             IconButton(
               icon: Icon(rolesManagementIcon),
               onPressed: () => _openRolesManagement(),
-              tooltip: 'Назначние роли/персонажа ',
+              tooltip: 'Назначение роли/персонажа ',
             ),
         ],
       ),

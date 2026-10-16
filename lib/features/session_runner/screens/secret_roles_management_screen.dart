@@ -78,6 +78,7 @@ class _SecretRolesManagementScreenState
               fontWeight: FontWeight(800),
             ),
           ),
+          duration: const Duration(seconds: 1),
           backgroundColor: redColor,
         ),
       );

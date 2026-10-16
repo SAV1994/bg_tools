@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
-
 import 'package:bg_tools/core/consts/export.dart';
+import 'package:bg_tools/core/widgets/export.dart';
 
 class RandomNumberScreen extends StatefulWidget {
   const RandomNumberScreen({super.key});
@@ -155,11 +154,11 @@ class _RandomNumberScreenState extends State<RandomNumberScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Рандомайзер:\nСлучайное число',
+              child: Icon(randNumIcon),
             ),
-            Icon(randNumIcon),
           ],
         ),
         backgroundColor: secondColor,
@@ -170,6 +169,7 @@ class _RandomNumberScreenState extends State<RandomNumberScreen>
             onPressed: _history.isEmpty ? null : () => _showHistoryDialog(),
             tooltip: 'История',
           ),
+
           IconButton(
             icon: Icon(Icons.delete_outline),
             onPressed: _history.isEmpty ? null : _clearHistory,

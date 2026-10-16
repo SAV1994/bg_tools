@@ -83,6 +83,7 @@ class _NoteFormState extends ConsumerState<NoteForm> {
             content: Text(
               note == null ? 'Заметка создана' : 'Заметка обновлена',
             ),
+            duration: const Duration(seconds: 1),
             backgroundColor: Colors.green,
           ),
         );
@@ -90,7 +91,11 @@ class _NoteFormState extends ConsumerState<NoteForm> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Ошибка: $e'),
+            duration: const Duration(seconds: 1),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {

@@ -14,6 +14,7 @@ class CommonTopListScreen extends ConsumerWidget {
     return TopListScreen(
       topType: TopTypeEnum.common,
       icon: gamersIcon,
+      tooltip: 'Общий топ',
       getSubtitle: (ratingData) => TopTypeEnum.common.label,
     );
   }

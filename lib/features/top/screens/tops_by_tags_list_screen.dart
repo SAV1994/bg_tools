@@ -17,6 +17,7 @@ class ByTagsTopListScreen extends ConsumerWidget {
     return TopListScreen<Tag, TagDao>(
       topType: TopTypeEnum.byTag,
       icon: tagsIcon,
+      tooltip: 'Топ по категории',
       getSubtitle: (ratingData) =>
           '${TopTypeEnum.byTag.label} - ${ratingData.tag?.name}',
       filterConfig: FiltreConfig<TagDao>(

@@ -82,7 +82,10 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Запись о игровой сессии добавлена')),
+          SnackBar(
+            content: Text('Запись о игровой сессии добавлена'),
+            duration: const Duration(seconds: 1),
+          ),
         );
       }
     }

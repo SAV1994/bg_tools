@@ -191,50 +191,6 @@ class _GamingSessionFormScreenState
     );
   }
 
-  Future<void> _selectDateTime({bool isFinishedAt = false}) async {
-    final DateTime initialDate = isFinishedAt ? _finishedAt : _startedAt;
-
-    final date = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: secondColor),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (date == null) return;
-
-    if (mounted) {
-      final time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(date),
-      );
-      if (time == null) return;
-
-      final DateTime dateTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-      if (isFinishedAt) {
-        setState(() => _finishedAt = dateTime);
-      } else {
-        setState(() => _startedAt = dateTime);
-      }
-    }
-  }
-
   void _setCurrentDateTime() {
     setState(() => _finishedAt = DateTime.now());
   }
@@ -294,6 +250,7 @@ class _GamingSessionFormScreenState
                     ? 'Запись о игровой сессии добавлена'
                     : 'Изменения сохранены',
               ),
+              duration: const Duration(seconds: 1),
             ),
           );
         }
@@ -342,20 +299,20 @@ class _GamingSessionFormScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Icon(
-          sessionsIcon,
-          color: widget.gamingSessionId == null ? bronzeColor : blueColor,
+        title: Tooltip(
+          message: widget.gamingSessionId == null
+              ? 'Форма добавления\nсессии игры'
+              : 'Форма редактирования\nсессии игры',
+          child: Icon(
+            sessionsIcon,
+            color: widget.gamingSessionId == null ? bronzeColor : blueColor,
+          ),
         ),
         actions: [
-          TextButton(
+          IconButton(
+            icon: Icon(Icons.add),
+            tooltip: 'Добавить игрока',
             onPressed: _showAddGamerDialog,
-            child: const Row(
-              children: [
-                Icon(Icons.add),
-                SizedBox(width: 4),
-                Text('Добавить игрока', style: TextStyle(color: textColor)),
-              ],
-            ),
           ),
         ],
       ),
@@ -469,7 +426,12 @@ class _GamingSessionFormScreenState
                       ),
                       InkWell(
                         onTap: () async {
-                          _selectDateTime();
+                          selectDateTime(
+                            context: context,
+                            initialDate: _startedAt,
+                            onSelect: (dateTime) =>
+                                setState(() => _startedAt = dateTime),
+                          );
                         },
                         child: InputDecorator(
                           decoration: const InputDecoration(
@@ -485,7 +447,12 @@ class _GamingSessionFormScreenState
                           Expanded(
                             child: InkWell(
                               onTap: () async {
-                                _selectDateTime(isFinishedAt: true);
+                                selectDateTime(
+                                  context: context,
+                                  initialDate: _finishedAt,
+                                  onSelect: (dateTime) =>
+                                      setState(() => _finishedAt = dateTime),
+                                );
                               },
                               child: InputDecorator(
                                 decoration: const InputDecoration(

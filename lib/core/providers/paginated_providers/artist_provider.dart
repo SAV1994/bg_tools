@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bg_tools/core/database/app_database.dart';
+import 'package:bg_tools/core/dataclasses/export.dart';
 import 'package:bg_tools/core/providers/database_providers.dart';
 import 'package:bg_tools/core/providers/paginated_providers/base.dart';
 
@@ -11,7 +11,7 @@ final artistsPaginatedProvider =
 
 class ArtistsNotifier extends BaseNotifier {
   @override
-  Future<List<Artist>> load() async {
+  Future<List<ArtistData>> load() async {
     final dao = ref.read(artistDaoProvider);
 
     totalItems = await dao.getTotalCount(searchQuery: searchQuery);

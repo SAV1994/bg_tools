@@ -4,6 +4,7 @@ import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/games_tags.dart';
 import 'package:bg_tools/core/database/tables/rating.dart';
 import 'package:bg_tools/core/database/tables/tag.dart';
+import 'package:bg_tools/core/dataclasses/export.dart';
 
 part 'tag_dao.g.dart';
 
@@ -63,7 +64,7 @@ class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
   }
 
   // Метки с пагинацией
-  Future<List<Tag>> getPaginated({
+  Future<List<TagData>> getPaginated({
     required int page,
     required int pageSize,
     required bool reverseOrdering,
@@ -76,7 +77,31 @@ class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
     )..limit(pageSize, offset: offset);
     query = _getFilteredQuery(query: query, searchQuery: searchQuery);
 
-    return await query.get();
+    final joinedQuery = query.join([
+      rightOuterJoin(gamesTags, gamesTags.tagId.equalsExp(tags.id)),
+    ]);
+
+    final rows = await joinedQuery.get();
+    final Map<int, dynamic> tagsMap = {};
+    for (final row in rows) {
+      final Tag tag = row.readTable(tags);
+      final GamesTag? junction = row.readTable(gamesTags);
+
+      if (tagsMap[tag.id] != null) {
+        tagsMap[tag.id]['gamesCount'] += 1;
+      } else {
+        tagsMap[tag.id] = {'tag': tag, 'gamesCount': junction != null ? 1 : 0};
+      }
+    }
+
+    return tagsMap.values
+        .map(
+          (artistData) => TagData(
+            instance: artistData['tag'],
+            gamesCount: artistData['gamesCount'],
+          ),
+        )
+        .toList();
   }
 
   // Общее количество меток, соответствующих условию

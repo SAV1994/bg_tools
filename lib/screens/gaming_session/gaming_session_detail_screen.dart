@@ -663,24 +663,25 @@ class _GamingSessionDetailScreenState
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () => context.goNamed('home'),
-              icon: Icon(homeIcon, color: greenColor),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Запись о игровой сессии',
+              child: Icon(sessionsIcon, color: silverColor),
             ),
-            Icon(sessionsIcon, color: silverColor),
           ],
         ),
         actions: [
-          // Кнопка редактирования
           IconButton(
             icon: const Icon(Icons.edit),
+            tooltip: 'Редактировать игровую сессию',
             onPressed: () async {
               _openUpdateForm();
             },
           ),
-          // Кнопка удаления
+
           IconButton(
             icon: const Icon(delIcon, color: redColor),
+            tooltip: 'Удалить игровую сессию',
             onPressed: () {
               final gamingSession = gamingSessionAsync.value?.gamingSession;
               if (gamingSession != null) {

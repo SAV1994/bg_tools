@@ -517,6 +517,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                 _isSearchOpen ? Icons.close : Icons.search,
                 color: _isSearchOpen ? redColor : textColor,
               ),
+              tooltip: _isSearchOpen ? 'Закрыть поиск' : 'Поиск',
               onPressed: () {
                 setState(() {
                   if (_isSearchOpen) {
@@ -532,6 +533,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                 icon: getFilterIcon(
                   numActiveFilters: notifier.countActiveFilters(),
                 ),
+                tooltip: 'Фильтры',
                 onPressed: () => _showFilterModal(notifier),
               ),
               IconButton(
@@ -541,10 +543,13 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                       : Icons.arrow_downward,
                   color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
+                tooltip:
+                    'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 onPressed: () => notifier.toggleOrdering(),
               ),
               IconButton(
                 icon: Icon(addBtnIcon),
+                tooltip: 'Добавить игру',
                 onPressed: () => context.pushNamed('games-add'),
               ),
             ],

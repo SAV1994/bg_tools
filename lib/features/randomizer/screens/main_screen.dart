@@ -19,7 +19,9 @@ class _SelectionRandomizerScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Icon(randomIcon)),
+      appBar: AppBar(
+        title: Tooltip(message: 'Меню рандомайзера', child: Icon(randomIcon)),
+      ),
       body: Center(
         child: Scrollbar(
           thumbVisibility: true,

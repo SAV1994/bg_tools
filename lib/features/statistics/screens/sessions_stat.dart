@@ -1,3 +1,4 @@
+import 'package:bg_tools/core/widgets/export.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -80,19 +81,13 @@ class _SessionsStatisticsScreenState
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(statisticsIcon, color: silverColor),
-            Icon(sessionsStatIcon),
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Статистика партий',
+              child: Icon(sessionsStatIcon),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Выйти', style: TextStyle(color: redColor)),
-          ),
-        ],
       ),
 
       body: isLoading

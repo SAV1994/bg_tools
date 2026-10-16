@@ -17,6 +17,7 @@ class ArtistsListScreen extends ConsumerWidget {
     return ListWithModalFormScreen<ListWithModalFormConfig>(
       config: ListWithModalFormConfig<Artist, ArtistDao, ArtistsCompanion>(
         icon: Icons.color_lens,
+        tooltip: 'Список художников',
         dataProvider: artistsPaginatedProvider,
         daoProvier: artistDaoProvider,
         companionFactory: (name) => ArtistsCompanion(name: Value(name)),

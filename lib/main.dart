@@ -167,6 +167,21 @@ class MyApp extends StatelessWidget {
           interactive: true,
         ),
         scaffoldBackgroundColor: firstColor,
+        timePickerTheme: TimePickerThemeData(
+          helpTextStyle: const TextStyle(color: secondColor),
+          confirmButtonStyle: TextButton.styleFrom(
+            foregroundColor: secondColor,
+          ),
+          cancelButtonStyle: TextButton.styleFrom(foregroundColor: secondColor),
+          dialHandColor: Colors.lightGreen,
+          dialBackgroundColor: Colors.lightGreen.shade50,
+          hourMinuteColor: Colors.lightGreen.shade100,
+          hourMinuteTextColor: secondColor,
+          backgroundColor: textColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
         colorScheme: ColorScheme.fromSeed(seedColor: firstColor),
         useMaterial3: true,
       ),

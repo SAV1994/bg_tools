@@ -12,6 +12,7 @@ import 'package:bg_tools/core/widgets/export.dart';
 
 class ListWithModalFormConfig<T, D, C> {
   final IconData icon;
+  final String tooltip;
   final AsyncNotifierProvider<BaseNotifier, dynamic> dataProvider;
   final Provider<D> daoProvier;
   final C Function(String name) companionFactory;
@@ -20,6 +21,7 @@ class ListWithModalFormConfig<T, D, C> {
 
   const ListWithModalFormConfig({
     required this.icon,
+    required this.tooltip,
     required this.dataProvider,
     required this.daoProvier,
     required this.companionFactory,
@@ -55,7 +57,7 @@ class ListWithModalFormScreen<T> extends ConsumerStatefulWidget {
 class _ListWithModalFormScreenState
     extends ConsumerState<ListWithModalFormScreen> {
   bool _isSearchOpen = false;
-  bool _isEditMode = false;
+  bool _isEditMode = true;
   // Контроллеры
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
@@ -107,11 +109,11 @@ class _ListWithModalFormScreenState
                 )
               : Row(
                   children: [
-                    IconButton(
-                      onPressed: () => context.goNamed('home'),
-                      icon: Icon(homeIcon, color: greenColor),
+                    HomeBtn(context: context),
+                    Tooltip(
+                      message: widget.config.tooltip,
+                      child: Icon(widget.config.icon),
                     ),
-                    Icon(widget.config.icon),
                   ],
                 ),
         ),
@@ -121,6 +123,7 @@ class _ListWithModalFormScreenState
               _isSearchOpen ? Icons.close : Icons.search,
               color: _isSearchOpen ? redColor : textColor,
             ),
+            tooltip: _isSearchOpen ? 'Закрыть поиск' : 'Поиск',
             onPressed: () {
               setState(() {
                 if (_isSearchOpen) {
@@ -131,6 +134,7 @@ class _ListWithModalFormScreenState
               });
             },
           ),
+
           if (!_isSearchOpen) ...[
             IconButton(
               icon: Icon(
@@ -139,17 +143,21 @@ class _ListWithModalFormScreenState
                     : Icons.arrow_downward,
                 color: notifier.reverseOrdering ? goldColor : textColor,
               ),
+              tooltip:
+                  'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
               onPressed: () => notifier.toggleOrdering(),
             ),
+
             IconButton(
+              icon: Icon(_isEditMode ? gamesIcon : editIcon, color: goldColor),
+              tooltip: _isEditMode ? 'Связь с играми' : 'Режим редактирования',
               onPressed: () => setState(() => _isEditMode = !_isEditMode),
-              icon: _isEditMode
-                  ? Icon(Icons.edit, color: textColor)
-                  : Icon(gamesIcon, color: goldColor),
             ),
+
             IconButton(
-              onPressed: () => {_showModalForm(context, ref)},
               icon: Icon(addBtnIcon),
+              tooltip: 'Добавить новый тэг',
+              onPressed: () => {_showModalForm(context, ref)},
             ),
           ],
         ],
@@ -181,30 +189,35 @@ class _ListWithModalFormScreenState
                           child: ListTile(
                             leading: Icon(widget.config.icon),
                             title: Text(
-                              item.name,
+                              item.instance.name,
                               style: TextStyle(
                                 color: _isEditMode ? textColor : goldColor,
                               ),
                             ),
                             trailing: _isEditMode
                                 ? Icon(Icons.edit)
-                                : Icon(gamesIcon, color: goldColor),
+                                : Text(
+                                    item.gamesCount.toString(),
+                                    style: TextStyle(color: goldColor),
+                                  ),
                             onTap: () {
                               if (_isEditMode) {
-                                _showModalForm(context, ref, item.id);
+                                _showModalForm(context, ref, item.instance.id);
                               } else {
                                 final notifier = ref.read(
                                   gamesPaginatedProvider.notifier,
                                 );
 
+                                notifier.isInCollection = null;
+                                notifier.isStandalone = null;
                                 if (widget.config.filterParam == 'artistId') {
-                                  notifier.filterByArtist(item.id);
+                                  notifier.filterByArtist(item.instance.id);
                                 } else if (widget.config.filterParam ==
                                     'designerId') {
-                                  notifier.filterByDesigner(item.id);
+                                  notifier.filterByDesigner(item.instance.id);
                                 } else if (widget.config.filterParam ==
                                     'tagId') {
-                                  notifier.filterByTag(item.id);
+                                  notifier.filterByTag(item.instance.id);
                                 }
                                 context.pushNamed('games-list');
                               }
@@ -317,8 +330,9 @@ class _ModalFormState extends ConsumerState<ModalForm> {
               ? [LoadingScreen()]
               : [
                   if (widget.instanceId != null)
-                    IconButton(
+                    TextButton.icon(
                       icon: const Icon(delIcon, color: redColor),
+                      label: Text('Удалить', style: TextStyle(color: redColor)),
                       onPressed: () {
                         buildDelModal(
                           context,

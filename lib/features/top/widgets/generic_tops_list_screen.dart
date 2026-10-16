@@ -26,6 +26,7 @@ class FiltreConfig<D> {
 class TopListScreen<M, D> extends ConsumerStatefulWidget {
   final TopTypeEnum topType;
   final IconData icon;
+  final String tooltip;
   final String Function(RatingData) getSubtitle;
   final FiltreConfig<D>? filterConfig;
 
@@ -33,6 +34,7 @@ class TopListScreen<M, D> extends ConsumerStatefulWidget {
     super.key,
     required this.topType,
     required this.icon,
+    required this.tooltip,
     required this.getSubtitle,
     this.filterConfig,
   });
@@ -117,8 +119,16 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
                   )
                 : Row(
                     children: [
-                      Icon(topsIcon, color: silverColor),
-                      Icon(widget.icon),
+                      HomeBtn(context: context),
+                      Tooltip(
+                        message: widget.tooltip,
+                        child: Row(
+                          children: [
+                            Icon(topsIcon, color: silverColor),
+                            Icon(widget.icon),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
           ),
@@ -129,6 +139,7 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
                   _isInstanceSelectOpen ? Icons.close : commonSelectIcon,
                   color: _isInstanceSelectOpen ? redColor : textColor,
                 ),
+                tooltip: _isInstanceSelectOpen ? 'Закрыть' : 'Фильтр',
                 onPressed: () {
                   setState(() {
                     if (_isInstanceSelectOpen) {
@@ -140,7 +151,8 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
               ),
             if (!_isInstanceSelectOpen) ...[
               IconButton(
-                visualDensity: VisualDensity(horizontal: -4.0),
+                tooltip:
+                    'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 icon: Icon(
                   notifier.reverseOrdering
                       ? Icons.arrow_upward
@@ -148,14 +160,6 @@ class _TopListScreenState<M, D> extends ConsumerState<TopListScreen>
                   color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
                 onPressed: () => notifier.toggleOrdering(),
-              ),
-
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: const Text('Выйти', style: TextStyle(color: redColor)),
               ),
             ],
           ],
