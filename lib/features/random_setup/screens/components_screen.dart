@@ -506,7 +506,15 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Tooltip(message: _game!.name, child: const Icon(componentsIcon)),
+        title: Row(
+          children: [
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Компоненты игры:\n${_game!.name}',
+              child: const Icon(componentsIcon),
+            ),
+          ],
+        ),
         actions: [
           if (_selectedType != null) ...[
             IconButton(
@@ -586,11 +594,11 @@ class _ComponentsScreenState extends ConsumerState<ComponentsScreen> {
                 const SizedBox(width: 8),
                 // Кнопка добавления типа
                 IconButton(
-                  onPressed: () => _showTypeDialog(),
                   icon: const Icon(Icons.add_circle),
+                  tooltip: 'Добавить тип',
+                  onPressed: () => _showTypeDialog(),
                   color: goldColor,
                   iconSize: 32,
-                  tooltip: 'Добавить тип',
                 ),
               ],
             ),

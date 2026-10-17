@@ -1302,7 +1302,15 @@ class _RandomSetupScreenState extends ConsumerState<RandomSetupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Icon(setupsIcon, color: silverColor),
+        title: Row(
+          children: [
+            HomeBtn(context: context),
+            Tooltip(
+              message: 'Случайный сетап',
+              child: Icon(setupsIcon, color: silverColor),
+            ),
+          ],
+        ),
         actions: [
           if (_result != null)
             IconButton(

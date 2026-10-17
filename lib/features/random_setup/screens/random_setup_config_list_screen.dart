@@ -83,9 +83,15 @@ class _RandomSetupConfigScreenState
                     style: const TextStyle(color: textColor),
                     onChanged: (value) => notifier.search(value),
                   )
-                : Tooltip(
-                    message: _game!.name,
-                    child: const Icon(setupsConfigIcon, size: 25),
+                : Row(
+                    children: [
+                      HomeBtn(context: context),
+                      Tooltip(
+                        message:
+                            'Конфигурации сетапов по игре:\n${_game!.name}',
+                        child: const Icon(setupsConfigIcon, size: 25),
+                      ),
+                    ],
                   ),
           ),
 
@@ -95,6 +101,7 @@ class _RandomSetupConfigScreenState
                 _isSearchOpen ? Icons.close : Icons.search,
                 color: _isSearchOpen ? redColor : textColor,
               ),
+              tooltip: _isSearchOpen ? 'Закрыть поиск' : 'Поиск',
               onPressed: () {
                 setState(() {
                   if (_isSearchOpen) {
@@ -105,6 +112,7 @@ class _RandomSetupConfigScreenState
                 });
               },
             ),
+
             if (!_isSearchOpen) ...[
               IconButton(
                 icon: Icon(
@@ -113,10 +121,14 @@ class _RandomSetupConfigScreenState
                       : Icons.arrow_downward,
                   color: notifier.reverseOrdering ? goldColor : textColor,
                 ),
+                tooltip:
+                    'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 onPressed: () => notifier.toggleOrdering(),
               ),
+
               IconButton(
                 icon: Icon(addBtnIcon),
+                tooltip: 'Добавить конфигурацию сетапа',
                 onPressed: () => context.pushNamed(
                   'random-setups-setup-add',
                   pathParameters: {'gameId': widget.gameId.toString()},

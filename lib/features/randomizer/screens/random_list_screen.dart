@@ -403,7 +403,7 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
           ],
         ),
         actions: [
-          if (_items.isNotEmpty) ...[
+          if (_items.isNotEmpty)
             IconButton(
               icon: Icon(Icons.clear),
               tooltip: 'Удалить всё',
@@ -413,49 +413,64 @@ class _RandomListScreenState extends ConsumerState<RandomListScreen> {
               }),
             ),
 
-            IconButton(
-              icon: Icon(saveIcon),
-              tooltip: 'Сохранить',
-              onPressed: () {
-                if (_selectedRandomList != null) {
-                  _textController.text = _selectedRandomList!.name;
-                } else {
-                  _textController.clear();
-                }
-
-                _showModalDialog(saveForm: true);
-              },
-            ),
-
-            if (_selectedRandomList != null) ...[
-              IconButton(
-                icon: Icon(copyIcon),
-                tooltip: 'Копировать',
-                onPressed: () => _copyList(),
-              ),
-
-              IconButton(
-                icon: Icon(delIcon, color: redColor),
-                tooltip: 'Удалить список',
-                onPressed: () => buildDelModal(
-                  context,
-                  ref,
-                  randomListDaoProvider,
-                  mounted,
-                  _selectedRandomList,
-                  () {
-                    setState(() => _selectedRandomList = null);
-                  },
-                ),
-              ),
-            ],
-          ],
-
           IconButton(
             icon: Icon(addBtnIcon),
             tooltip: 'Добавить новый элемент',
             onPressed: () => _addItem(),
           ),
+
+          if (_selectedRandomList != null || _items.isNotEmpty)
+            PopupMenuButton(
+              icon: Icon(Icons.more_vert),
+              itemBuilder: (context) => [
+                if (_items.isNotEmpty)
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(saveIcon),
+                      title: const Text('Сохранить'),
+                      dense: true,
+                    ),
+                    onTap: () {
+                      if (_selectedRandomList != null) {
+                        _textController.text = _selectedRandomList!.name;
+                      } else {
+                        _textController.clear();
+                      }
+
+                      _showModalDialog(saveForm: true);
+                    },
+                  ),
+
+                if (_selectedRandomList != null) ...[
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(copyIcon),
+                      title: const Text('Копировать список'),
+                      dense: true,
+                    ),
+                    onTap: () => _copyList(),
+                  ),
+
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(delIcon, color: redColor),
+                      title: const Text('Удалить'),
+                      dense: true,
+                    ),
+                    onTap: () => buildDelModal(
+                      context,
+                      ref,
+                      randomListDaoProvider,
+                      mounted,
+                      _selectedRandomList,
+                      () {
+                        setState(() => _selectedRandomList = null);
+                      },
+                    ),
+                  ),
+                ],
+              ],
+            ),
         ],
       ),
       body: Column(

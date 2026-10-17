@@ -20,7 +20,9 @@ class _RandomSetupMenuScreenState extends ConsumerState<RandomSetupMenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Icon(setupsMenuIcon)),
+      appBar: AppBar(
+        title: Tooltip(message: 'Меню сетапа', child: Icon(setupsMenuIcon)),
+      ),
       body: Center(
         child: Scrollbar(
           thumbVisibility: true,

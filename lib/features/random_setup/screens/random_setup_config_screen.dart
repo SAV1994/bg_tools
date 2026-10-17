@@ -1494,15 +1494,28 @@ class _RandomSetupScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Icon(
-          setupsConfigIcon,
-          color: widget.randomSetupId == null ? bronzeColor : blueColor,
+        title: Tooltip(
+          message: widget.randomSetupId == null
+              ? 'Форма добавления\nконфигурации сетапа'
+              : 'Форма редактирования\nконфигурации сетапа',
+          child: Icon(
+            setupsConfigIcon,
+            color: widget.randomSetupId == null ? bronzeColor : blueColor,
+          ),
         ),
         actions: [
           if (widget.randomSetupId != null) ...[
-            IconButton(onPressed: _copySetup, icon: Icon(copyIcon)),
+            IconButton(
+              onPressed: _copySetup,
+              tooltip: 'Копировать',
+              icon: Icon(copyIcon),
+            ),
 
-            IconButton(onPressed: _saveSetup, icon: Icon(saveIcon)),
+            IconButton(
+              onPressed: _saveSetup,
+              tooltip: 'Сохранить\n*Важно для изменения названия',
+              icon: Icon(saveIcon),
+            ),
 
             IconButton(
               icon: const Icon(delIcon, color: redColor),
