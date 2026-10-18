@@ -560,16 +560,9 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
         ),
         actions: [
           IconButton(
-            icon: Icon(gamersIcon),
-            onPressed: _showPlayerSelection,
-            tooltip: 'Выбрать игроков',
-          ),
-
-          Tooltip(
-            message: 'Количество игроков',
-            child: Container(
+            icon: Container(
               margin: EdgeInsets.all(8),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
@@ -581,6 +574,8 @@ class _WinRateScreenState extends ConsumerState<WinRateScreen>
                 ),
               ),
             ),
+            onPressed: _showPlayerSelection,
+            tooltip: 'Выбрать игроков',
           ),
         ],
       ),

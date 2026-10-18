@@ -185,10 +185,11 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
 
       for (final _PlayerStats playerStats in playersStat.values) {
         if (playerStats.scores.isNotEmpty) {
-          playerStats.scores.sort(((a, b) => a.compareTo(b)));
-          playerStats.maxWP = playerStats.scores.last;
-          playerStats.minWP = playerStats.scores.first;
-          playerStats.avgWP = average(playerStats.scores).toStringAsFixed(2);
+          final List<int> playerScores = [...playerStats.scores];
+          playerScores.sort(((a, b) => a.compareTo(b)));
+          playerStats.maxWP = playerScores.last;
+          playerStats.minWP = playerScores.first;
+          playerStats.avgWP = average(playerScores).toStringAsFixed(2);
         }
 
         playerStats.winRate = (playerStats.wins / playerStats.totalPlayed * 100)
@@ -1190,16 +1191,9 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
           ),
 
           IconButton(
-            icon: Icon(Icons.people),
-            onPressed: _showPlayerSelection,
-            tooltip: 'Выбрать игроков',
-          ),
-
-          Tooltip(
-            message: 'Количество игроков',
-            child: Container(
+            icon: Container(
               margin: EdgeInsets.all(8),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
@@ -1211,6 +1205,8 @@ class _GameStatsScreenState extends ConsumerState<GameStatsScreen>
                 ),
               ),
             ),
+            onPressed: _showPlayerSelection,
+            tooltip: 'Выбрать игроков',
           ),
         ],
       ),
