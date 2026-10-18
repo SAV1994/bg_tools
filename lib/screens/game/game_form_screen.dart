@@ -100,7 +100,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
     setState(() => _isLoading = false);
   }
 
-  Future<List<Game>> getItemsForForBaseGamesSelect() async {
+  Future<List<Game>> getItemsForBaseGamesSelect() async {
     final GameDao gameDao = ref.read(gameDaoProvider);
     if (widget.gameId != null) {
       return await gameDao.getAllExceptSelected([widget.gameId!]);
@@ -109,17 +109,17 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
     }
   }
 
-  Future<List<Designer>> getItemsForForDesignersSelect() async {
+  Future<List<Designer>> getItemsForDesignersSelect() async {
     final designerDao = ref.read(designerDaoProvider);
     return await designerDao.getAll();
   }
 
-  Future<List<Artist>> getItemsForForArtistsSelect() async {
+  Future<List<Artist>> getItemsForArtistsSelect() async {
     final artistDao = ref.read(artistDaoProvider);
     return await artistDao.getAll();
   }
 
-  Future<List<Tag>> getItemsForForTagsSelect() async {
+  Future<List<Tag>> getItemsForTagsSelect() async {
     final tagDao = ref.read(tagDaoProvider);
     return await tagDao.getAll();
   }
@@ -414,7 +414,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                         ),
                         MultiSelectWithSearch<Game>(
                           label: 'Базовая игра',
-                          getItems: () => getItemsForForBaseGamesSelect(),
+                          getItems: () => getItemsForBaseGamesSelect(),
                           selectedIds: _selectedBaseIds,
                           onSelectionChanged: (newSelected) {
                             setState(() => _selectedBaseIds = newSelected);
@@ -445,7 +445,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                           ),
                         MultiSelectWithSearch<Designer>(
                           label: 'Геймдизайнеры',
-                          getItems: () => getItemsForForDesignersSelect(),
+                          getItems: () => getItemsForDesignersSelect(),
                           selectedIds: _selectedDesignerIds,
                           onSelectionChanged: (newSelected) {
                             setState(() => _selectedDesignerIds = newSelected);
@@ -474,7 +474,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                         ),
                         MultiSelectWithSearch<Artist>(
                           label: 'Художники',
-                          getItems: () => getItemsForForArtistsSelect(),
+                          getItems: () => getItemsForArtistsSelect(),
                           selectedIds: _selectedArtistIds,
                           onSelectionChanged: (newSelected) {
                             setState(() => _selectedArtistIds = newSelected);
@@ -503,7 +503,7 @@ class _GamesFormScreenState extends ConsumerState<GamesFormScreen> {
                         ),
                         MultiSelectWithSearch<Tag>(
                           label: 'Категории',
-                          getItems: () => getItemsForForTagsSelect(),
+                          getItems: () => getItemsForTagsSelect(),
                           selectedIds: _selectedTagIds,
                           onSelectionChanged: (newSelected) {
                             setState(() => _selectedTagIds = newSelected);

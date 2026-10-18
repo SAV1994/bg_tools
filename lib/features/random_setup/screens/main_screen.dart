@@ -21,7 +21,12 @@ class _RandomSetupMenuScreenState extends ConsumerState<RandomSetupMenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Tooltip(message: 'Меню сетапа', child: Icon(setupsMenuIcon)),
+        title: Row(
+          children: [
+            HomeBtn(context: context),
+            Tooltip(message: 'Меню сетапа', child: Icon(setupsMenuIcon)),
+          ],
+        ),
       ),
       body: Center(
         child: Scrollbar(

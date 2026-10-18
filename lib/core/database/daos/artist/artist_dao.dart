@@ -3,12 +3,16 @@ import 'package:drift/drift.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/artist.dart';
 import 'package:bg_tools/core/database/tables/games_artists.dart';
+import 'package:bg_tools/core/database/tables/games_designers.dart';
+import 'package:bg_tools/core/database/tables/games_tags.dart';
 import 'package:bg_tools/core/database/tables/rating.dart';
 import 'package:bg_tools/core/dataclasses/export.dart';
 
 part 'artist_dao.g.dart';
 
-@DriftAccessor(tables: [Artists, Ratings, GamesArtists])
+@DriftAccessor(
+  tables: [Artists, Ratings, GamesArtists, GamesDesigners, GamesTags],
+)
 class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
   ArtistDao(super.db);
 
@@ -51,14 +55,50 @@ class ArtistDao extends DatabaseAccessor<AppDatabase> with _$ArtistDaoMixin {
   }
 
   // Художники игры которых есть
-  Future<List<Artist>> getHasGames() async {
-    final gamesArtistsQuery = selectOnly(gamesArtists, distinct: true)
+  Future<List<Artist>> getHasGames({Rating? rating}) async {
+    var query = _getBaseQuery();
+
+    var gamesArtistsQuery = selectOnly(gamesArtists, distinct: true)
       ..addColumns([gamesArtists.artistId]);
+
+    if (rating != null) {
+      final List<int> gamesIds = [];
+
+      if (rating.artistId != null) {
+        final gamesArtistsAdvQuery = selectOnly(gamesArtists, distinct: true)
+          ..addColumns([gamesArtists.gameId])
+          ..where(gamesArtists.artistId.equals(rating.artistId!));
+        gamesIds.addAll(
+          await gamesArtistsAdvQuery
+              .map((row) => row.read(gamesArtists.gameId)!)
+              .get(),
+        );
+      } else if (rating.designerId != null) {
+        final gamesDesignersQuery = selectOnly(gamesDesigners, distinct: true)
+          ..addColumns([gamesDesigners.gameId])
+          ..where(gamesDesigners.designerId.equals(rating.designerId!));
+        gamesIds.addAll(
+          await gamesDesignersQuery
+              .map((row) => row.read(gamesDesigners.gameId)!)
+              .get(),
+        );
+      } else if (rating.tagId != null) {
+        final gamesTagsQuery = selectOnly(gamesTags, distinct: true)
+          ..addColumns([gamesTags.gameId])
+          ..where(gamesTags.tagId.equals(rating.tagId!));
+        gamesIds.addAll(
+          await gamesTagsQuery.map((row) => row.read(gamesTags.gameId)!).get(),
+        );
+      }
+
+      gamesArtistsQuery = gamesArtistsQuery
+        ..where(gamesArtists.gameId.isIn(gamesIds));
+    }
+
     final List<int> artistsHasGamesIds = await gamesArtistsQuery
         .map((row) => row.read(gamesArtists.artistId)!)
         .get();
 
-    var query = _getBaseQuery();
     query = query..where((a) => a.id.isIn(artistsHasGamesIds));
     return await query.get();
   }

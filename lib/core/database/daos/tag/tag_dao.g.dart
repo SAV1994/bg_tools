@@ -9,6 +9,8 @@ mixin _$TagDaoMixin on DatabaseAccessor<AppDatabase> {
   $DesignersTable get designers => attachedDatabase.designers;
   $RatingsTable get ratings => attachedDatabase.ratings;
   $GamesTable get games => attachedDatabase.games;
+  $GamesArtistsTable get gamesArtists => attachedDatabase.gamesArtists;
+  $GamesDesignersTable get gamesDesigners => attachedDatabase.gamesDesigners;
   $GamesTagsTable get gamesTags => attachedDatabase.gamesTags;
   TagDaoManager get managers => TagDaoManager(this);
 }
@@ -26,6 +28,13 @@ class TagDaoManager {
       $$RatingsTableTableManager(_db.attachedDatabase, _db.ratings);
   $$GamesTableTableManager get games =>
       $$GamesTableTableManager(_db.attachedDatabase, _db.games);
+  $$GamesArtistsTableTableManager get gamesArtists =>
+      $$GamesArtistsTableTableManager(_db.attachedDatabase, _db.gamesArtists);
+  $$GamesDesignersTableTableManager get gamesDesigners =>
+      $$GamesDesignersTableTableManager(
+        _db.attachedDatabase,
+        _db.gamesDesigners,
+      );
   $$GamesTagsTableTableManager get gamesTags =>
       $$GamesTagsTableTableManager(_db.attachedDatabase, _db.gamesTags);
 }

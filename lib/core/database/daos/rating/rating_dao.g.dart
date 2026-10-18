@@ -10,6 +10,11 @@ mixin _$RatingDaoMixin on DatabaseAccessor<AppDatabase> {
   $RatingsTable get ratings => attachedDatabase.ratings;
   $GamesTable get games => attachedDatabase.games;
   $RatingsGamesTable get ratingsGames => attachedDatabase.ratingsGames;
+  $ExpansionsGamesTable get expansionsGames => attachedDatabase.expansionsGames;
+  $GamesDesignersTable get gamesDesigners => attachedDatabase.gamesDesigners;
+  $GamesArtistsTable get gamesArtists => attachedDatabase.gamesArtists;
+  $GamesTagsTable get gamesTags => attachedDatabase.gamesTags;
+  $GamingSessionsTable get gamingSessions => attachedDatabase.gamingSessions;
   RatingDaoManager get managers => RatingDaoManager(this);
 }
 
@@ -28,4 +33,23 @@ class RatingDaoManager {
       $$GamesTableTableManager(_db.attachedDatabase, _db.games);
   $$RatingsGamesTableTableManager get ratingsGames =>
       $$RatingsGamesTableTableManager(_db.attachedDatabase, _db.ratingsGames);
+  $$ExpansionsGamesTableTableManager get expansionsGames =>
+      $$ExpansionsGamesTableTableManager(
+        _db.attachedDatabase,
+        _db.expansionsGames,
+      );
+  $$GamesDesignersTableTableManager get gamesDesigners =>
+      $$GamesDesignersTableTableManager(
+        _db.attachedDatabase,
+        _db.gamesDesigners,
+      );
+  $$GamesArtistsTableTableManager get gamesArtists =>
+      $$GamesArtistsTableTableManager(_db.attachedDatabase, _db.gamesArtists);
+  $$GamesTagsTableTableManager get gamesTags =>
+      $$GamesTagsTableTableManager(_db.attachedDatabase, _db.gamesTags);
+  $$GamingSessionsTableTableManager get gamingSessions =>
+      $$GamingSessionsTableTableManager(
+        _db.attachedDatabase,
+        _db.gamingSessions,
+      );
 }

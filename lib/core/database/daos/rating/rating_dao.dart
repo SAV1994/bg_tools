@@ -3,11 +3,22 @@ import 'package:drift/drift.dart';
 import 'package:bg_tools/core/database/app_database.dart';
 import 'package:bg_tools/core/database/tables/export.dart';
 import 'package:bg_tools/core/dataclasses/rating_dataclasses.dart';
+import 'package:bg_tools/core/utils/export.dart';
 import 'package:bg_tools/features/top/consts.dart';
 
 part 'rating_dao.g.dart';
 
-@DriftAccessor(tables: [Ratings, RatingsGames])
+@DriftAccessor(
+  tables: [
+    Ratings,
+    RatingsGames,
+    ExpansionsGames,
+    GamesDesigners,
+    GamesArtists,
+    GamesTags,
+    GamingSessions,
+  ],
+)
 class RatingDao extends DatabaseAccessor<AppDatabase> with _$RatingDaoMixin {
   RatingDao(super.db);
 
@@ -145,16 +156,40 @@ class RatingDao extends DatabaseAccessor<AppDatabase> with _$RatingDaoMixin {
     required int page,
     required int pageSize,
     required bool reverseOrdering,
+    int? startYear,
+    int? endYear,
+    double? startRating,
+    double? endRating,
+    int? numPlayers,
+    Set<int>? artistIds,
+    Set<int>? designerIds,
+    Set<int>? tagIds,
+    bool? isPlayed,
+    bool? isInCollection,
+    bool? isFavorite,
     String? searchQuery,
   }) async {
     final offset = page * pageSize;
 
     final query = select(ratings)..where((r) => r.id.equals(ratingId));
-    final gamesQuery = _getGamesQuery(
-      ratingId: ratingId,
-      reverse: reverseOrdering,
-      searchQuery: searchQuery,
-    )..limit(pageSize, offset: offset);
+    final gamesQuery =
+        await _getGamesQuery(
+            ratingId: ratingId,
+            reverse: reverseOrdering,
+            startYear: startYear,
+            endYear: endYear,
+            startRating: startRating,
+            endRating: endRating,
+            numPlayers: numPlayers,
+            isPlayed: isPlayed,
+            isInCollection: isInCollection,
+            isFavorite: isFavorite,
+            artistIds: artistIds,
+            designerIds: designerIds,
+            tagIds: tagIds,
+            searchQuery: searchQuery,
+          )
+          ..limit(pageSize, offset: offset);
 
     final List<RatingGameData> gamesData = await gamesQuery.get().then(
       (rows) => rows.map((row) {
@@ -222,9 +257,34 @@ class RatingDao extends DatabaseAccessor<AppDatabase> with _$RatingDaoMixin {
   // Общее количество игр рейтинга, соответствующих условию
   Future<int> getTotalGamesCount({
     required int ratingId,
+    int? startYear,
+    int? endYear,
+    double? startRating,
+    double? endRating,
+    int? numPlayers,
+    Set<int>? artistIds,
+    Set<int>? designerIds,
+    Set<int>? tagIds,
+    bool? isPlayed,
+    bool? isInCollection,
+    bool? isFavorite,
     String? searchQuery,
   }) async {
-    final query = _getGamesQuery(ratingId: ratingId, searchQuery: searchQuery);
+    final query = await _getGamesQuery(
+      ratingId: ratingId,
+      startYear: startYear,
+      endYear: endYear,
+      startRating: startRating,
+      endRating: endRating,
+      numPlayers: numPlayers,
+      isPlayed: isPlayed,
+      isInCollection: isInCollection,
+      isFavorite: isFavorite,
+      artistIds: artistIds,
+      designerIds: designerIds,
+      tagIds: tagIds,
+      searchQuery: searchQuery,
+    );
 
     return await query.get().then((list) => list.length);
   }
@@ -280,11 +340,29 @@ class RatingDao extends DatabaseAccessor<AppDatabase> with _$RatingDaoMixin {
     return query;
   }
 
-  JoinedSelectStatement<HasResultSet, dynamic> _getGamesQuery({
+  // Рейтинг
+  Future<Rating?> getSingle(int ratingId) async {
+    return await (select(
+      ratings,
+    )..where((r) => r.id.equals(ratingId))).getSingleOrNull();
+  }
+
+  Future<JoinedSelectStatement<HasResultSet, dynamic>> _getGamesQuery({
     required int ratingId,
     bool reverse = false,
+    int? startYear,
+    int? endYear,
+    double? startRating,
+    double? endRating,
+    int? numPlayers,
+    bool? isPlayed,
+    bool? isInCollection,
+    bool? isFavorite,
+    Set<int>? artistIds,
+    Set<int>? designerIds,
+    Set<int>? tagIds,
     String? searchQuery,
-  }) {
+  }) async {
     SimpleSelectStatement<$RatingsGamesTable, RatingsGame> query =
         select(ratingsGames)
           ..where((rt) => rt.ratingId.equals(ratingId))
@@ -297,6 +375,80 @@ class RatingDao extends DatabaseAccessor<AppDatabase> with _$RatingDaoMixin {
     var joinedQuery = query.join([
       innerJoin(games, games.id.equalsExp(ratingsGames.gameId)),
     ]);
+
+    if (startYear != null) {
+      joinedQuery.where(games.year.isBiggerOrEqualValue(startYear.toString()));
+    }
+
+    if (endYear != null) {
+      joinedQuery.where(games.year.isSmallerOrEqualValue(endYear.toString()));
+    }
+
+    if (startRating != null) {
+      joinedQuery.where(
+        games.rating.isBiggerOrEqualValue(roundDouble(startRating, 1)),
+      );
+    }
+
+    if (endRating != null) {
+      joinedQuery.where(
+        games.rating.isSmallerOrEqualValue(roundDouble(endRating, 1)),
+      );
+    }
+
+    if (numPlayers != null) {
+      joinedQuery.where(
+        games.minPlayers.isSmallerOrEqualValue(numPlayers) &
+            games.maxPlayers.isBiggerOrEqualValue(numPlayers),
+      );
+    }
+
+    if (isPlayed != null) {
+      final gamingSessionsQuery = selectOnly(gamingSessions, distinct: true)
+        ..addColumns([gamingSessions.gameId]);
+      final List<int> gamesPlayedIds = await gamingSessionsQuery
+          .map((row) => row.read(gamingSessions.gameId)!)
+          .get();
+      if (isPlayed) {
+        joinedQuery.where(games.id.isIn(gamesPlayedIds));
+      } else {
+        joinedQuery.where(games.id.isNotIn(gamesPlayedIds));
+      }
+    }
+
+    if (isInCollection != null) {
+      joinedQuery.where(games.isInCollection.isValue(isInCollection));
+    }
+
+    if (isFavorite != null) {
+      joinedQuery.where(games.isFavorite.isValue(isFavorite));
+    }
+
+    if (artistIds != null && artistIds.isNotEmpty) {
+      final artistsQuery = select(gamesArtists)
+        ..where((ga) => ga.artistId.isIn(artistIds));
+      final List<int> gamesIds = await artistsQuery
+          .map((gamesArtist) => gamesArtist.gameId)
+          .get();
+      joinedQuery.where(games.id.isIn(gamesIds));
+    }
+
+    if (designerIds != null && designerIds.isNotEmpty) {
+      final designersQuery = select(gamesDesigners)
+        ..where((gd) => gd.designerId.isIn(designerIds));
+      final List<int> gamesIds = await designersQuery
+          .map((gamesDesigner) => gamesDesigner.gameId)
+          .get();
+      joinedQuery.where(games.id.isIn(gamesIds));
+    }
+
+    if (tagIds != null && tagIds.isNotEmpty) {
+      final tagsQuery = select(gamesTags)..where((gt) => gt.tagId.isIn(tagIds));
+      final List<int> gamesIds = await tagsQuery
+          .map((gamesTag) => gamesTag.gameId)
+          .get();
+      joinedQuery.where(games.id.isIn(gamesIds));
+    }
 
     if (searchQuery != null) {
       final searchCondition = CustomExpression<bool>(

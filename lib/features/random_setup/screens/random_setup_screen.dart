@@ -1305,10 +1305,7 @@ class _RandomSetupScreenState extends ConsumerState<RandomSetupScreen> {
         title: Row(
           children: [
             HomeBtn(context: context),
-            Tooltip(
-              message: 'Случайный сетап',
-              child: Icon(setupsIcon, color: silverColor),
-            ),
+            Tooltip(message: 'Случайный сетап', child: Icon(setupsIcon)),
           ],
         ),
         actions: [

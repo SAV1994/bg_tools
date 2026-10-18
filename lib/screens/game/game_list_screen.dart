@@ -29,23 +29,23 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
   final ScrollController _modalScrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
-  Future<List<Game>> getItemsForForBaseGamesSelect() async {
+  Future<List<Game>> getItemsForBaseGamesSelect() async {
     final GameDao gameDao = ref.read(gameDaoProvider);
     return await gameDao.getHasExpansions();
   }
 
-  Future<List<Designer>> getItemsForForDesignersSelect() async {
-    final designerDao = ref.read(designerDaoProvider);
+  Future<List<Designer>> getItemsForDesignersSelect() async {
+    final DesignerDao designerDao = ref.read(designerDaoProvider);
     return await designerDao.getHasGames();
   }
 
-  Future<List<Artist>> getItemsForForArtistsSelect() async {
-    final artistDao = ref.read(artistDaoProvider);
+  Future<List<Artist>> getItemsForArtistsSelect() async {
+    final ArtistDao artistDao = ref.read(artistDaoProvider);
     return await artistDao.getHasGames();
   }
 
-  Future<List<Tag>> getItemsForForTagsSelect() async {
-    final tagDao = ref.read(tagDaoProvider);
+  Future<List<Tag>> getItemsForTagsSelect() async {
+    final TagDao tagDao = ref.read(tagDaoProvider);
     return await tagDao.getHasGames();
   }
 
@@ -293,8 +293,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                                 MultiSelectWithSearch<Game>(
                                   label: 'Базовая игра',
                                   labelIcon: gamesIcon,
-                                  getItems: () =>
-                                      getItemsForForBaseGamesSelect(),
+                                  getItems: () => getItemsForBaseGamesSelect(),
                                   selectedIds: baseIds,
                                   onSelectionChanged: (newSelected) {
                                     setStateDialog(() => baseIds = newSelected);
@@ -321,8 +320,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                                 MultiSelectWithSearch<Designer>(
                                   label: 'Геймдизайнеры',
                                   labelIcon: designersIcon,
-                                  getItems: () =>
-                                      getItemsForForDesignersSelect(),
+                                  getItems: () => getItemsForDesignersSelect(),
                                   selectedIds: designerIds,
                                   onSelectionChanged: (newSelected) {
                                     setStateDialog(
@@ -351,7 +349,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                                 MultiSelectWithSearch<Artist>(
                                   label: 'Художники',
                                   labelIcon: artistsIcon,
-                                  getItems: () => getItemsForForArtistsSelect(),
+                                  getItems: () => getItemsForArtistsSelect(),
                                   selectedIds: artistIds,
                                   onSelectionChanged: (newSelected) {
                                     setStateDialog(
@@ -380,7 +378,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                                 MultiSelectWithSearch<Tag>(
                                   label: 'Категории',
                                   labelIcon: categoriesIcon,
-                                  getItems: () => getItemsForForTagsSelect(),
+                                  getItems: () => getItemsForTagsSelect(),
                                   selectedIds: tagIds,
                                   onSelectionChanged: (newSelected) {
                                     setStateDialog(() => tagIds = newSelected);
@@ -536,6 +534,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                 tooltip: 'Фильтры',
                 onPressed: () => _showFilterModal(notifier),
               ),
+
               IconButton(
                 icon: Icon(
                   notifier.reverseOrdering
@@ -547,6 +546,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen>
                     'Сортировка по ${notifier.reverseOrdering ? 'убыванию' : 'возрастанию'}',
                 onPressed: () => notifier.toggleOrdering(),
               ),
+
               IconButton(
                 icon: Icon(addBtnIcon),
                 tooltip: 'Добавить игру',

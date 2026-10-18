@@ -528,30 +528,16 @@ class GameDao extends DatabaseAccessor<AppDatabase> with _$GameDaoMixin {
       query = query..where((g) => g.id.isIn(ids));
     }
 
-    if (searchQuery != null && searchQuery.isNotEmpty) {
-      final regex = RegExp(r'^>=(\d+)$');
-
-      final match = regex.firstMatch(searchQuery);
-      if (match != null) {
-        // group(0) — всё совпадение, group(1) — первая группа из (...)
-        final int playersCount = int.parse(match.group(1)!);
-        query = query
-          ..where(
-            (g) =>
-                games.minPlayers.isSmallerOrEqualValue(playersCount) &
-                games.maxPlayers.isBiggerOrEqualValue(playersCount),
+    if (searchQuery != null) {
+      query = query
+        ..where((g) {
+          final lowerNameExpression = CustomExpression<String>(
+            'lower_unicode(name)',
+            watchedTables: [games],
           );
-      } else {
-        query = query
-          ..where((g) {
-            final lowerNameExpression = CustomExpression<String>(
-              'lower_unicode(name)',
-              watchedTables: [games],
-            );
 
-            return lowerNameExpression.like('%${searchQuery.toLowerCase()}%');
-          });
-      }
+          return lowerNameExpression.like('%${searchQuery.toLowerCase()}%');
+        });
     }
 
     return query;
